@@ -88,6 +88,7 @@ class MainMenu(Menu):
         # Create menu items
         self.items = [
             MenuItem('Start Game', self._start_game),
+            MenuItem('High Scores', self._show_high_scores),
             MenuItem('Options', self._show_options),
             MenuItem('Quit', self._quit_game)
         ]
@@ -97,6 +98,10 @@ class MainMenu(Menu):
         """Start new game."""
         self.game.state = self.game.GameState.PLAYING
         self.game.reset_game()
+    
+    def _show_high_scores(self) -> None:
+        """Show high scores screen."""
+        self.game.state = self.game.GameState.HIGH_SCORES
     
     def _show_options(self) -> None:
         """Show options menu."""
@@ -116,6 +121,7 @@ class OptionsMenu(Menu):
         self.items = [
             MenuItem('Controls: ' + self.game.settings['controls']['scheme'],
                     self._toggle_controls),
+            MenuItem('Clear High Scores', self._clear_high_scores),
             MenuItem('Back', self._back_to_main)
         ]
         self._update_selection()
@@ -134,6 +140,51 @@ class OptionsMenu(Menu):
         self.items[0].hover_surface = self.items[0].font.render(
             self.items[0].text, True, self.items[0].hover_color
         )
+    
+    def _clear_high_scores(self) -> None:
+        """Clear all high scores."""
+        self.game.high_scores.clear_scores()
+    
+    def _back_to_main(self) -> None:
+        """Return to main menu."""
+        self.game.state = self.game.GameState.MENU
+
+class HighScoreMenu(Menu):
+    """High scores display menu."""
+    
+    def __init__(self, game: 'Game'):
+        super().__init__(game)
+        self.title_font = pygame.font.Font(None, 48)
+        self.score_font = pygame.font.Font(None, 36)
+        
+        # Create menu items
+        self.items = [
+            MenuItem('Back', self._back_to_main)
+        ]
+        self._update_selection()
+    
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw high scores and menu items."""
+        # Draw title
+        title = self.title_font.render('High Scores', True, (255, 255, 255))
+        title_rect = title.get_rect(center=(screen.get_width() // 2, 100))
+        screen.blit(title, title_rect)
+        
+        # Draw scores
+        scores = self.game.high_scores.get_scores()
+        start_y = 200
+        for i, entry in enumerate(scores):
+            score_text = f"{i+1}. {entry.name}: {entry.score} ({entry.date})"
+            score_surf = self.score_font.render(score_text, True, (255, 255, 255))
+            score_rect = score_surf.get_rect(
+                center=(screen.get_width() // 2, start_y + i * 40)
+            )
+            screen.blit(score_surf, score_rect)
+        
+        # Draw menu items at bottom
+        for i, item in enumerate(self.items):
+            pos = (screen.get_width() // 2, screen.get_height() - 100)
+            item.draw(screen, pos)
     
     def _back_to_main(self) -> None:
         """Return to main menu."""
