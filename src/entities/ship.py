@@ -18,6 +18,7 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     WHITE
 )
+from src.entities.bullet import Bullet
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -25,8 +26,11 @@ if TYPE_CHECKING:
 class Ship(Entity):
     """Player controlled ship entity."""
     
+    SHOOT_COOLDOWN = 0.25  # seconds between shots
+    
     def __init__(self, game: 'Game'):
         super().__init__(game)
+        self.shoot_timer = 0.0
         
         # Add components
         self._init_transform()
@@ -72,15 +76,18 @@ class Ship(Entity):
             thrust_key = pygame.K_UP
             left_key = pygame.K_LEFT
             right_key = pygame.K_RIGHT
+            shoot_key = pygame.K_SPACE
         else:  # wasd
             thrust_key = pygame.K_w
             left_key = pygame.K_a
             right_key = pygame.K_d
+            shoot_key = pygame.K_SPACE
         
         # Bind continuous actions
         input_component.bind_key(thrust_key, self._apply_thrust, continuous=True)
         input_component.bind_key(left_key, self._rotate_left, continuous=True)
         input_component.bind_key(right_key, self._rotate_right, continuous=True)
+        input_component.bind_key(shoot_key, self._shoot, continuous=False)
     
     def _init_effects(self) -> None:
         """Initialize visual effects component."""
@@ -142,9 +149,43 @@ class Ship(Entity):
         if transform:
             transform.rotation += SHIP_ROTATION_SPEED * self.game.dt * 60
     
+    def _shoot(self) -> None:
+        """Fire a bullet in the current direction."""
+        if self.shoot_timer > 0:
+            return
+            
+        transform = self.get_component('transform')
+        if not transform:
+            return
+            
+        # Calculate bullet direction
+        angle_rad = np.radians(transform.rotation)
+        direction = np.array([
+            np.cos(angle_rad),
+            np.sin(angle_rad)
+        ])
+        
+        # Create bullet at ship's nose
+        nose_offset = direction * 20.0  # Offset from center
+        bullet = Bullet(
+            self.game,
+            transform.position[0] + nose_offset[0],
+            transform.position[1] + nose_offset[1],
+            direction
+        )
+        
+        # Add bullet to game
+        self.game.entities.append(bullet)
+        
+        # Reset shoot timer
+        self.shoot_timer = self.SHOOT_COOLDOWN
+    
     def update(self, dt: float) -> None:
         """Update ship state."""
         super().update(dt)
+        
+        # Update shoot cooldown
+        self.shoot_timer = max(0.0, self.shoot_timer - dt)
         
         # Deactivate thrust effect if not thrusting
         effects = self.get_component('effects')

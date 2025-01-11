@@ -149,5 +149,23 @@ Blocking Issues: None
 - Established design-first workflow
 => Next: Designer to review and begin GDD
 
+[2024-01-11 11:35] [IMPL] Implemented shooting mechanics using component system
+- Added Bullet entity with component-based architecture
+- Updated Ship class with shooting functionality
+- Added shoot cooldown and bullet lifetime management
+- Integrated bullet-asteroid collision detection
+- Next: Implement collision detection and response system
+
+[2024-01-11 11:30] [IMPL] Refactored Ship class to use component system
+- Separated concerns into individual components:
+  - Transform
+  - Physics
+  - Input
+  - Effects
+  - Collision
+  - Screen wrap
+- Added thrust visual effects
+- Improved input handling with key bindings
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW] 
