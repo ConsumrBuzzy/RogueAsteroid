@@ -10,14 +10,22 @@
 7. [X] Add options menu with control schemes
 8. [X] Implement asteroid spawning
 9. [ ] Add shooting mechanics
+10. [ ] Refactor entities to use component system
 
 ## Session State
-Last Session: [2024-01-11 11:20]
+Last Session: [2024-01-11 11:25]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 11:25] [DESIGN] Entity Component System
+- Created base Component class
+- Added TransformComponent for movement
+- Added RenderComponent for graphics
+- Added CollisionComponent for physics
+=> Next: Refactor existing entities to use component system
 
 [2024-01-11 11:20] [FIX] Circular Import Resolution
 - Fixed circular import between Ship and Game classes
