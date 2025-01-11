@@ -9,6 +9,8 @@ class GameState(Enum):
     PAUSED = auto()
     OPTIONS = auto()
     HIGH_SCORE = auto()
+    NEW_HIGH_SCORE = auto()  # For entering name when achieving high score
+    GAME_OVER = auto()
 
 class StateManager:
     def __init__(self, game):
@@ -19,9 +21,10 @@ class StateManager:
         self.selected_option = 0
         self.menu_options = {
             GameState.MAIN_MENU: ['New Game', 'High Scores', 'Options', 'Quit'],
-            GameState.OPTIONS: ['Controls: Arrows', 'Controls: WASD', 'Back'],
+            GameState.OPTIONS: [f'Control Scheme: {self.game.settings["controls"].upper()}', 'Back'],
             GameState.PAUSED: ['Resume', 'Options', 'Main Menu']
         }
+        self.high_score_name = ""  # For new high score entry
         print(f"Initial state: {self.current_state}")  # Debug info
     
     def change_state(self, new_state):
@@ -57,13 +60,17 @@ class StateManager:
             self._handle_options_input(event)
         elif self.current_state == GameState.HIGH_SCORE:
             self._handle_high_score_input(event)
+        elif self.current_state == GameState.NEW_HIGH_SCORE:
+            self._handle_new_high_score_input(event)
+        elif self.current_state == GameState.GAME_OVER:
+            self._handle_game_over()  # No input needed, just handle transition
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
         print(f"Main menu input: {event.key}")  # Debug info
-        if event.key == pygame.K_UP:
+        if event.key in (pygame.K_UP, pygame.K_w):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
-        elif event.key == pygame.K_DOWN:
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
         elif event.key == pygame.K_RETURN:
             if self.selected_option == 0:  # New Game
@@ -79,12 +86,16 @@ class StateManager:
         """Handle input in the playing state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_p):
             self.change_state(GameState.PAUSED)
+        elif event.key == pygame.K_o:
+            self.change_state(GameState.OPTIONS)
+        elif event.key == pygame.K_h:
+            self.change_state(GameState.HIGH_SCORE)
     
     def _handle_pause_input(self, event):
         """Handle input in the pause state."""
-        if event.key == pygame.K_UP:
+        if event.key in (pygame.K_UP, pygame.K_w):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.PAUSED])
-        elif event.key == pygame.K_DOWN:
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.PAUSED])
         elif event.key == pygame.K_RETURN:
             if self.selected_option == 0:  # Resume
@@ -93,18 +104,28 @@ class StateManager:
                 self.change_state(GameState.OPTIONS)
             elif self.selected_option == 2:  # Main Menu
                 self.change_state(GameState.MAIN_MENU)
-        elif event.key in (pygame.K_ESCAPE, pygame.K_p):
+        elif event.key in (pygame.K_ESCAPE, pygame.K_p, pygame.K_r):  # Added R for resume
             self.change_state(GameState.PLAYING)
+        elif event.key == pygame.K_o:  # O for options
+            self.change_state(GameState.OPTIONS)
+        elif event.key == pygame.K_m:  # M for main menu
+            self.change_state(GameState.MAIN_MENU)
+        elif event.key == pygame.K_h:  # H for high scores
+            self.change_state(GameState.HIGH_SCORE)
     
     def _handle_options_input(self, event):
         """Handle input in the options state."""
-        if event.key == pygame.K_UP:
+        if event.key in (pygame.K_UP, pygame.K_w):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
-        elif event.key == pygame.K_DOWN:
+        elif event.key in (pygame.K_DOWN, pygame.K_s):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.OPTIONS])
         elif event.key == pygame.K_RETURN:
-            if self.selected_option < 2:  # Control scheme selection
-                self.game.settings['controls'] = 'arrows' if self.selected_option == 0 else 'wasd'
+            if self.selected_option == 0:  # Control scheme toggle
+                # Toggle between arrows and wasd
+                new_scheme = 'wasd' if self.game.settings['controls'] == 'arrows' else 'arrows'
+                self.game.settings['controls'] = new_scheme
+                # Update menu text
+                self.menu_options[GameState.OPTIONS][0] = f'Control Scheme: {new_scheme.upper()}'
             else:  # Back
                 self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_ESCAPE:
@@ -113,6 +134,25 @@ class StateManager:
     def _handle_high_score_input(self, event):
         """Handle input in the high score state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_RETURN):
+            self.change_state(GameState.MAIN_MENU)
+    
+    def _handle_new_high_score_input(self, event):
+        """Handle input in new high score state."""
+        if event.key == pygame.K_RETURN and self.high_score_name:
+            # Save high score and return to main menu
+            self.game.scoring.add_high_score(self.high_score_name, self.game.level)
+            self.change_state(GameState.MAIN_MENU)
+        elif event.key == pygame.K_BACKSPACE:
+            self.high_score_name = self.high_score_name[:-1]
+        elif event.unicode.isalnum() and len(self.high_score_name) < 10:
+            self.high_score_name += event.unicode.upper()
+    
+    def _handle_game_over(self):
+        """Handle game over state transition."""
+        if self.game.scoring.check_high_score():
+            self.high_score_name = ""
+            self.change_state(GameState.NEW_HIGH_SCORE)
+        else:
             self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
@@ -128,6 +168,8 @@ class StateManager:
             self._draw_options(screen)
         elif self.current_state == GameState.HIGH_SCORE:
             self._draw_high_scores(screen)
+        elif self.current_state == GameState.NEW_HIGH_SCORE:
+            self._draw_new_high_score(screen)
     
     def _draw_main_menu(self, screen):
         """Draw the main menu."""
@@ -202,3 +244,28 @@ class StateManager:
         font = pygame.font.Font(None, 36)
         text = font.render("Press ENTER or ESC to return", True, WHITE)
         screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 500)) 
+    
+    def _draw_new_high_score(self, screen):
+        """Draw the new high score entry screen."""
+        screen.fill((0, 0, 0))
+        font = pygame.font.Font(None, 48)
+        
+        # Draw title
+        title = font.render("NEW HIGH SCORE!", True, WHITE)
+        screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
+        
+        # Draw score
+        score_text = font.render(f"Score: {self.game.score}", True, WHITE)
+        screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 200))
+        
+        # Draw name entry
+        font = pygame.font.Font(None, 36)
+        name_prompt = font.render("Enter your name:", True, WHITE)
+        screen.blit(name_prompt, (WINDOW_WIDTH/2 - name_prompt.get_width()/2, 300))
+        
+        name_text = font.render(self.high_score_name + "_", True, (255, 255, 0))
+        screen.blit(name_text, (WINDOW_WIDTH/2 - name_text.get_width()/2, 350))
+        
+        # Draw instructions
+        instructions = font.render("Press ENTER when done", True, WHITE)
+        screen.blit(instructions, (WINDOW_WIDTH/2 - instructions.get_width()/2, 450)) 
