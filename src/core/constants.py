@@ -1,0 +1,21 @@
+# Window Settings
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+FPS = 60
+GAME_TITLE = "RogueAsteroid"
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+# Physics
+SHIP_ACCELERATION = 0.5
+SHIP_MAX_SPEED = 10.0
+SHIP_ROTATION_SPEED = 5.0
+SHIP_FRICTION = 0.99
+
+# Game Settings
+INITIAL_LIVES = 3
+ASTEROID_SPAWN_DISTANCE = 100  # Minimum distance from player
+PROJECTILE_SPEED = 15.0
+PROJECTILE_LIFETIME = 1.0  # seconds 

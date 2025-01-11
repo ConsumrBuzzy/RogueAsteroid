@@ -1,18 +1,27 @@
 # RogueAsteroid Development Log
 
 ## Active Tasks
-1. [ ] Designer review of Project Charter
+1. [X] Designer review of Project Charter
 2. [ ] Begin filling Game Design Document
 3. [ ] Define core gameplay mechanics
 4. [ ] Review and approve technical design
+5. [ ] Implement player ship entity
+6. [ ] Add basic movement controls
 
 ## Session State
-Last Session: [2024-01-11 15:45]
-Current Phase: Initial Setup
+Last Session: [2024-01-11 16:15]
+Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 16:15] [IMPL] Core System Implementation
+- Created basic project structure
+- Implemented Entity base class
+- Added Game class with main loop
+- Created constants and configuration
+=> Next: Implement player ship and movement
 
 [2024-01-11 16:00] [DESIGN] Technical Architecture Draft
 - Created TECHNICAL_DESIGN.md
