@@ -184,12 +184,8 @@ class Ship(Entity):
         if transform:
             transform.rotation += SHIP_ROTATION_SPEED * self.game.dt * 60
     
-    def _shoot(self) -> None:
-        """Fire a bullet in the current direction."""
-        if self.shoot_timer > 0:
-            return
-            
-        # Check bullet limit
+    def _shoot(self):
+        """Create and fire a bullet."""
         if len(self.game.bullets) >= MAX_BULLETS:
             return
             
@@ -197,31 +193,14 @@ class Ship(Entity):
         if not transform:
             return
             
-        # Calculate bullet direction based on ship's rotation
-        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's upward orientation
-        direction = np.array([
-            np.cos(angle_rad),
-            np.sin(angle_rad)
-        ])
+        # Create bullet at ship's position
+        bullet = Bullet(self.game, transform.position, transform.rotation)
         
-        # Create bullet at ship's nose
-        nose_offset = direction * 20.0  # Offset from center to avoid self-collision
-        bullet = Bullet(
-            self.game,
-            transform.position[0] + nose_offset[0],
-            transform.position[1] + nose_offset[1],
-            direction
-        )
-        
-        # Add bullet to game
+        # Add to tracking lists
+        self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
-        self.game.bullets.append(bullet)  # Track bullet
         
-        # Play shoot sound
-        self.game.sound.play_sound('shoot')
-        
-        # Reset shoot timer
-        self.shoot_timer = self.SHOOT_COOLDOWN
+        print("Bullet fired")  # Debug info
     
     def _create_thrust_particles(self):
         """Create particles for engine thrust effect"""
