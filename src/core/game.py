@@ -1,305 +1,133 @@
-"""Core game loop and state management."""
+"""Main game class."""
 import pygame
-import numpy as np
-from typing import List, Optional, Dict, Any
-from src.core.constants import (
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
-    FPS,
-    BLACK,
-    INITIAL_LIVES
-)
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
-from src.core.logging import get_logger
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
-from src.entities.bullet import Bullet
+from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
 class Game:
-    """Main game class managing entities and game loop."""
-    
     def __init__(self):
-        """Initialize game."""
         pygame.init()
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        pygame.display.set_caption("Rogue Asteroid")
         
-        # Initialize logger
-        self.logger = get_logger()
-        self.logger.info("Initializing game...")
-        
-        # Initialize display
-        self.width = WINDOW_WIDTH
-        self.height = WINDOW_HEIGHT
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption('Rogue Asteroid')
-        
-        # Initialize clock
         self.clock = pygame.time.Clock()
         self.dt = 0
+        self.running = True
         
-        # Game settings
+        # Game properties
+        self.level = 1
+        self.lives = 3
+        self.score = 0
+        
+        # Settings
         self.settings = {
-            'controls': {
-                'scheme': 'arrows'  # or 'wasd'
-            }
+            'controls': 'arrows'  # or 'wasd'
         }
         
-        # Initialize scoring system
-        self.scoring = ScoringSystem()
-        self.lives = INITIAL_LIVES
-        
-        # Initialize state manager
+        # Systems
         self.state_manager = StateManager(self)
+        self.scoring = ScoringSystem()
         
-        # Initialize game objects
+        # Entities
         self.ship = None
         self.entities = []
         self.asteroids = []
-        self.level = 1
-        
-        # Reset game to initialize entities
-        self.reset_game()
-        self.logger.info("Game initialization complete")
     
-    def reset_game(self) -> None:
-        """Reset game state."""
+    def reset_game(self):
+        """Reset the game state."""
         print("Resetting game...")  # Debug info
         
         # Clear entities
         self.entities.clear()
         self.asteroids.clear()
         
-        # Reset game state
-        self.scoring.reset()
-        self.lives = INITIAL_LIVES
+        # Reset game properties
         self.level = 1
+        self.lives = 3
+        self.score = 0
+        self.scoring.reset()
         
         # Create player ship
         self.ship = Ship(self)
-        if not self.ship:
-            print("Failed to create ship!")  # Debug info
-            return
-            
-        # Initialize ship components
-        transform = self.ship.get_component('transform')
-        render = self.ship.get_component('render')
-        if not transform or not render:
-            print("Ship components missing!")  # Debug info
-            return
-            
-        # Set ship position and visibility
-        transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-        transform.velocity = np.array([0.0, 0.0])
-        render.visible = True
-        print(f"Ship position: {transform.position}, visible: {render.visible}")  # Debug info
-        
-        # Add ship to entities
         self.entities.append(self.ship)
+        print(f"Ship created: {self.ship}")  # Debug info
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
-        
-        # Change state to PLAYING if state manager exists
-        if self.state_manager:
-            print("Changing state to PLAYING")  # Debug info
-            self.state_manager.change_state(GameState.PLAYING)
-        else:
-            print("No state manager found!")  # Debug info
     
-    def spawn_asteroid_wave(self) -> None:
+    def spawn_asteroid_wave(self):
         """Spawn a wave of asteroids based on current level."""
         if not self.ship:
             return
             
-        num_asteroids = 2 + self.level
         ship_transform = self.ship.get_component('transform')
         if not ship_transform:
             return
-        
-        for _ in range(num_asteroids):
-            # Spawn asteroids away from player
-            while True:
-                x = np.random.uniform(0, WINDOW_WIDTH)
-                y = np.random.uniform(0, WINDOW_HEIGHT)
-                
-                dist = np.hypot(x - ship_transform.position[0],
-                              y - ship_transform.position[1])
-                if dist > 200:  # Minimum safe distance
-                    break
             
-            asteroid = Asteroid(self, x, y, 'large')
+        num_asteroids = min(3 + self.level, 8)  # Cap at 8 asteroids
+        for _ in range(num_asteroids):
+            asteroid = Asteroid.spawn_random(self, ship_transform.position)
             self.asteroids.append(asteroid)
             self.entities.append(asteroid)
     
-    def update_entities(self) -> None:
+    def update_entities(self):
         """Update all game entities."""
-        # Update scoring system
-        self.scoring.update(self.dt)
-        
-        # Handle ship respawn
-        if self.ship and hasattr(self, 'respawn_timer'):
-            self.respawn_timer -= self.dt
-            if self.respawn_timer <= 0:
-                # Reset ship state
-                transform = self.ship.get_component('transform')
-                if transform:
-                    transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-                    transform.velocity = np.array([0.0, 0.0])
-                
-                render = self.ship.get_component('render')
-                if render:
-                    render.visible = True
-                
-                collision = self.ship.get_component('collision')
-                if collision:
-                    collision.active = True
-                
-                delattr(self, 'respawn_timer')
-        
         # Update all entities
-        for entity in self.entities[:]:  # Copy list for safe removal
-            if entity:  # Ensure entity exists
+        for entity in self.entities[:]:  # Copy list to allow removal during iteration
+            if entity:
                 entity.update(self.dt)
     
-    def handle_collisions(self) -> None:
+    def handle_collisions(self):
         """Handle collisions between entities."""
         if not self.ship:
             return
             
+        # Check ship collision with asteroids
         ship_collision = self.ship.get_component('collision')
-        if not ship_collision or not ship_collision.active:
+        if not ship_collision:
             return
             
-        # Check ship collision with asteroids
-        for asteroid in self.asteroids[:]:  # Copy list for safe removal
-            if not asteroid:  # Skip if asteroid was removed
-                continue
-                
+        for asteroid in self.asteroids[:]:  # Copy list to allow removal
             asteroid_collision = asteroid.get_component('collision')
             if not asteroid_collision:
                 continue
                 
             if ship_collision.check_collision(asteroid_collision):
-                # Get collision details
-                collision_normal = ship_collision.get_collision_normal(asteroid_collision)
-                if collision_normal is not None:
-                    # Apply knockback to ship
-                    ship_physics = self.ship.get_component('physics')
-                    if ship_physics:
-                        knockback = collision_normal * 200.0  # Knockback force
-                        ship_physics.velocity = knockback
-                
-                # Reduce lives and handle ship destruction
                 self.lives -= 1
-                ship_collision.active = False  # Disable collisions temporarily
-                
                 if self.lives <= 0:
-                    if self.ship in self.entities:
-                        self.entities.remove(self.ship)
-                    self.ship = None
-                    
-                    # Check for high score
-                    if self.scoring.check_high_score():
-                        self.state_manager.change_state(GameState.HIGH_SCORE_ENTRY)
-                    else:
-                        self.state_manager.change_state(GameState.GAME_OVER)
+                    self.state_manager.change_state(GameState.GAME_OVER)
                 else:
                     # Respawn ship after delay
-                    render = self.ship.get_component('render')
-                    if render:
-                        render.visible = False
-                    self.respawn_timer = 2.0  # Seconds until respawn
-                break
-        
-        # Check bullet collisions with asteroids
-        for entity in self.entities[:]:  # Copy list for safe removal
-            if not isinstance(entity, Bullet):
-                continue
-                
-            bullet_collision = entity.get_component('collision')
-            if not bullet_collision:
-                continue
-                
-            for asteroid in self.asteroids[:]:  # Copy list for safe removal
-                if not asteroid:  # Skip if asteroid was removed
-                    continue
-                    
-                asteroid_collision = asteroid.get_component('collision')
-                if not asteroid_collision:
-                    continue
-                    
-                if bullet_collision.check_collision(asteroid_collision):
-                    # Remove bullet
-                    if entity in self.entities:
-                        self.entities.remove(entity)
-                    
-                    # Split asteroid
-                    new_asteroids = asteroid.split()
-                    if asteroid in self.asteroids:
-                        self.asteroids.remove(asteroid)
-                    if asteroid in self.entities:
-                        self.entities.remove(asteroid)
-                    
-                    # Add score with combo system
-                    points = self.scoring.add_points(asteroid.config['points'])
-                    
-                    # Add new asteroids
-                    for new_asteroid in new_asteroids:
-                        self.asteroids.append(new_asteroid)
-                        self.entities.append(new_asteroid)
-                    break
+                    self.ship = None
+                    self.entities.remove(self.ship)
     
-    def run(self) -> None:
+    def run(self):
         """Main game loop."""
-        self.logger.info("Starting game loop")
-        running = True
+        while self.running:
+            # Time
+            self.dt = self.clock.tick(60) / 1000.0
+            
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                else:
+                    self.state_manager.handle_input(event)
+            
+            # Clear screen
+            self.screen.fill((0, 0, 0))
+            
+            # Update and draw based on current state
+            if self.state_manager.current_state == GameState.PLAYING:
+                self.update_entities()
+                self.handle_collisions()
+            
+            # Draw current state
+            self.state_manager.draw(self.screen)
+            
+            # Update display
+            pygame.display.flip()
         
-        try:
-            while running:
-                # Update timing
-                self.dt = self.clock.tick(60) / 1000.0
-                
-                # Handle events
-                for event in pygame.event.get():
-                    try:
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_o and self.state_manager.current_state == GameState.MAIN_MENU:
-                                self.logger.debug("Opening options menu")
-                                self.state_manager.change_state(GameState.OPTIONS)
-                            elif event.key == pygame.K_m and self.state_manager.current_state == GameState.PAUSED:
-                                self.logger.debug("Returning to main menu")
-                                self.state_manager.change_state(GameState.MAIN_MENU)
-                                self.reset_game()
-                        
-                        if self.state_manager.handle_input(event):
-                            self.logger.info("Quitting game")
-                            running = False
-                            break
-                    except Exception as e:
-                        self.logger.error(f"Error handling event: {str(e)}")
-                
-                try:
-                    # Update game state
-                    self.state_manager.update()
-                    
-                    # Clear screen
-                    self.screen.fill((0, 0, 0))
-                    
-                    # Draw current state
-                    self.state_manager.draw(self.screen)
-                    
-                    # Update display
-                    pygame.display.flip()
-                except Exception as e:
-                    self.logger.error(f"Error in game loop: {str(e)}")
-        
-        except Exception as e:
-            self.logger.critical(f"Critical error in game loop: {str(e)}")
-        finally:
-            self.logger.info("Shutting down game")
-            pygame.quit()
-
-    @property
-    def score(self) -> int:
-        """Get current score."""
-        return self.scoring.current_score 
+        pygame.quit() 

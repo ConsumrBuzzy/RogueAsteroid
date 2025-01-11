@@ -60,6 +60,21 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
+[2024-01-11 12:34PM] [IMPL] Enhanced menu system and game flow:
+- Implemented proper main menu with New Game/High Score/Options/Quit
+- Added arrow key navigation and Enter selection
+- Fixed state transitions between menus
+- Improved menu rendering with highlighting
+- Added proper game initialization from menu
+Next: Fix ship controls and movement
+
+[2024-01-11 12:33PM] [FIX] Fixed bullet movement:
+- Updated bullet physics to use force-based movement
+- Corrected bullet direction calculation
+- Improved bullet-asteroid collision cleanup
+- Added proper entity removal on collision
+Next: Implement asteroid-asteroid collisions
+
 [2024-01-11 12:31PM] [IMPL] Added dual logging system:
 - Created GameLogger class for error tracking
 - Added current_session.log for active debugging
