@@ -133,16 +133,19 @@ class Asteroid(Entity):
         
         # Create split pieces with distinct velocities
         pieces = []
-        # Use wider angle spread and add some randomness
-        base_angles = [-45, 45]  # Base angles for splitting
+        # Use much wider angle spread and significant randomness
+        base_angles = [-120, 120]  # Much wider base separation (240 degrees apart)
+        
+        # Get original velocity angle
+        orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
         
         for base_angle in base_angles:
-            # Add some randomness to the split angle
-            angle = base_angle + random.uniform(-15, 15)
+            # Add significant randomness to the split angle
+            angle = orig_angle + base_angle + random.uniform(-30, 30)
             
-            # Calculate new velocity for this piece
+            # Calculate new velocity for this piece with higher speed
             min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
-            new_speed = random.uniform(min_speed, max_speed)
+            new_speed = random.uniform(min_speed * 1.5, max_speed * 1.5)  # 50% faster
             
             # Create velocity vector at the split angle
             new_velocity = pygame.Vector2(
@@ -154,7 +157,7 @@ class Asteroid(Entity):
             piece = Asteroid(self.game, new_size, transform.position, new_velocity)
             pieces.append(piece)
             
-            print(f"Created split piece: size={new_size}, angle={angle}, speed={new_speed}")  # Debug info
+            print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}")  # Debug info
         
         return pieces
 
