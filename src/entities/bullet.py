@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 class Bullet(Entity):
     """Projectile fired by the player ship."""
     
-    SPEED = 1200.0  # pixels per second
-    LIFETIME = 0.6  # seconds before despawning
+    SPEED = 25000.0  # pixels per second
+    LIFETIME = 2  # seconds before despawning
     
     def __init__(self, game: 'Game', x: float, y: float, direction: np.ndarray):
         super().__init__(game)

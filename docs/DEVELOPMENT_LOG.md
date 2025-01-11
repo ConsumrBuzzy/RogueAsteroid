@@ -329,6 +329,21 @@ Next: Test asteroid spawning and movement
 - Added error handling for invalid values
 Next: Continue code review with PhysicsComponent and InputComponent
 
+[2024-01-11 13:00PM] [FIX] Enhanced bullet mechanics and menu controls:
+- Increased bullet speed to 1200 pixels/second for better gameplay
+- Reduced bullet lifetime to 0.6 seconds to balance range
+- Simplified control scheme options to single toggle
+- Added WASD support for all menu navigation
+- Fixed control scheme display in options menu
+Next: Test gameplay balance with new bullet speed
+
+[2024-01-11 12:59PM] [FIX] Menu system improvements:
+- Consolidated control scheme options into single toggle
+- Added proper control scheme state persistence
+- Fixed menu navigation to work with both WASD and arrows
+- Updated options menu display for clarity
+Next: Update bullet mechanics for better feel
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
