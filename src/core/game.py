@@ -58,6 +58,7 @@ class Game:
         self.asteroids = []
         
         print("Game initialization complete")
+        print(f"Game initialized with settings: {self.settings}")
     
     @property
     def state(self):
@@ -90,8 +91,8 @@ class Game:
         
         # Reset game properties
         self.level = 1
-        self.lives = 3
-        self.scoring_system.reset()  # Reset scoring system
+        self.lives = STARTING_LIVES
+        self.scoring.reset()  # Use self.scoring instead of self.scoring_system
         
         # Create player ship
         self.ship = Ship(self)
