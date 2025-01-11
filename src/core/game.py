@@ -60,9 +60,14 @@ class Game:
         self.entities.clear()
         self.asteroids.clear()
         
-        # Create player ship
+        # Create player ship first
         self.ship = Ship(self)
         self.entities.append(self.ship)
+        
+        # Ensure ship is fully initialized before spawning asteroids
+        transform = self.ship.get_component('transform')
+        if not transform:
+            return
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
@@ -70,6 +75,7 @@ class Game:
     def spawn_asteroid_wave(self) -> None:
         """Spawn a wave of asteroids based on current level."""
         num_asteroids = 2 + self.level
+        ship_transform = self.ship.get_component('transform') if self.ship else None
         
         for _ in range(num_asteroids):
             # Spawn asteroids away from player
@@ -77,9 +83,9 @@ class Game:
                 x = np.random.uniform(0, WINDOW_WIDTH)
                 y = np.random.uniform(0, WINDOW_HEIGHT)
                 
-                if self.ship:
-                    dist = np.hypot(x - self.ship.get_component('transform').position[0],
-                                  y - self.ship.get_component('transform').position[1])
+                if ship_transform:
+                    dist = np.hypot(x - ship_transform.position[0],
+                                  y - ship_transform.position[1])
                     if dist > 200:  # Minimum safe distance
                         break
                 else:
