@@ -204,9 +204,18 @@ class Game:
                 if ship_collision.check_collision(asteroid_collision):
                     print("Ship collided with asteroid")  # Debug info
                     self.lives -= 1
-                    self.entities.remove(self.ship)
+                    print(f"Lives remaining: {self.lives}")  # Debug info
+                    
+                    # Remove ship from entities
+                    if self.ship in self.entities:
+                        self.entities.remove(self.ship)
                     self.ship = None
-                    self.respawn_timer = 2.0  # Wait 2 seconds before respawning
+                    
+                    if self.lives <= 0:
+                        print("Game Over!")  # Debug info
+                        self.state_manager.change_state(GameState.GAME_OVER)
+                    else:
+                        self.respawn_timer = 2.0  # Wait 2 seconds before respawning
                     break
         
         # Check bullet collisions with asteroids

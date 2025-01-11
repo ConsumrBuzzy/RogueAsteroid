@@ -151,11 +151,11 @@ class StateManager:
         """Handle input in game over state."""
         if event.key in (pygame.K_RETURN, pygame.K_ESCAPE):
             if self.game.scoring.check_high_score():
-                print("New high score!")  # Debug info
-                self.high_score_name = ""
+                print("New high score achieved!")  # Debug info
+                self.high_score_name = ""  # Reset name input
                 self.change_state(GameState.NEW_HIGH_SCORE)
             else:
-                print("Not a high score")  # Debug info
+                print("Returning to main menu")  # Debug info
                 self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
@@ -322,24 +322,28 @@ class StateManager:
         # Draw semi-transparent overlay
         overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         overlay.fill((0, 0, 0))
-        overlay.set_alpha(128)
+        overlay.set_alpha(192)  # More opaque for better readability
         screen.blit(overlay, (0, 0))
         
         # Draw game over text
-        font = pygame.font.Font(None, 64)
+        font = pygame.font.Font(None, 72)  # Larger font for main text
         title = font.render("GAME OVER", True, WHITE)
-        screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 200))
+        screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 180))
         
-        # Draw final score
+        # Draw final stats
         font = pygame.font.Font(None, 48)
         score_text = font.render(f"Final Score: {self.game.scoring.current_score}", True, WHITE)
-        screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 300))
+        screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 280))
         
-        # Draw level reached
-        level_text = font.render(f"Level: {self.game.level}", True, WHITE)
-        screen.blit(level_text, (WINDOW_WIDTH/2 - level_text.get_width()/2, 350))
+        level_text = font.render(f"Level Reached: {self.game.level}", True, WHITE)
+        screen.blit(level_text, (WINDOW_WIDTH/2 - level_text.get_width()/2, 340))
         
-        # Draw continue prompt
+        # Draw high score message if applicable
         font = pygame.font.Font(None, 36)
-        prompt = font.render("Press ENTER to continue", True, WHITE)
-        screen.blit(prompt, (WINDOW_WIDTH/2 - prompt.get_width()/2, 450)) 
+        if self.game.scoring.check_high_score():
+            high_score_text = font.render("NEW HIGH SCORE!", True, (255, 255, 0))  # Yellow for emphasis
+            screen.blit(high_score_text, (WINDOW_WIDTH/2 - high_score_text.get_width()/2, 400))
+            prompt = font.render("Press ENTER to save your score", True, WHITE)
+        else:
+            prompt = font.render("Press ENTER to continue", True, WHITE)
+        screen.blit(prompt, (WINDOW_WIDTH/2 - prompt.get_width()/2, 460)) 
