@@ -2,7 +2,7 @@
 import numpy as np
 from typing import TYPE_CHECKING
 from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
-from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
+from src.core.entities.components import PhysicsComponent, ScreenWrapComponent, ParticleComponent
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT, ASTEROID_SIZES
 from src.entities.asteroid import Asteroid
 from src.entities.particle import Particle
@@ -69,18 +69,20 @@ class Bullet(Entity):
     
     def _create_impact_particles(self, hit_pos):
         """Create particles for bullet impact effect"""
+        print(f"Creating impact particles at {hit_pos}")  # Debug info
         num_particles = random.randint(4, 6)
-        for _ in range(num_particles):
+        for i in range(num_particles):
             particle = Particle(self.game, lifetime=0.2, color=(255, 220, 50))
             
             # Position slightly randomized around impact point
             offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
-            transform = particle.get_component('transform')
+            transform = particle.get_component(TransformComponent)
             if transform:
                 transform.position = hit_pos + offset
+                print(f"Particle {i} position: {transform.position}")  # Debug info
             
             # Set velocity through physics component
-            physics = particle.get_component('physics')
+            physics = particle.get_component(PhysicsComponent)
             if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(50, 100)
@@ -89,10 +91,11 @@ class Bullet(Entity):
                     math.sin(angle) * speed
                 )
                 physics.velocity = velocity
+                print(f"Particle {i} velocity: {velocity}")  # Debug info
             
             # Add to game entities
             self.game.entities.append(particle)
-            print(f"Created impact particle at {hit_pos} with velocity {velocity}")  # Debug info
+            print(f"Created impact particle {i}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update bullet state."""
