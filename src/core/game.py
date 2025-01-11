@@ -10,6 +10,7 @@ from src.core.constants import (
     SHIP_INVULNERABLE_TIME
 )
 import random
+import math
 
 class Game:
     def __init__(self):
@@ -156,9 +157,19 @@ class Game:
                     direction = pygame.Vector2(
                         transform2.position.x - transform1.position.x,
                         transform2.position.y - transform1.position.y
-                    ).normalize()
-                    transform1.position -= direction * 5
-                    transform2.position += direction * 5
+                    )
+                    
+                    # If asteroids are exactly overlapping, use a random direction
+                    if direction.length() == 0:
+                        angle = random.uniform(0, 2 * math.pi)
+                        direction = pygame.Vector2(math.cos(angle), math.sin(angle))
+                    else:
+                        direction = direction.normalize()
+                    
+                    # Push asteroids apart
+                    separation = 10.0  # Increased separation distance
+                    transform1.position -= direction * separation
+                    transform2.position += direction * separation
         
         # Then check ship-asteroid collisions
         for asteroid in self.asteroids[:]:  # Copy list to allow removal
