@@ -17,12 +17,32 @@
 14. [ ] Implement proper game state management
 
 ## Session State
-Last Session: [2024-01-11 11:45]
+Last Session: [2024-01-11 11:55]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 11:55] [IMPL] Game Class Refactor
+- Converted Game class to use component system
+- Added proper game state management
+- Improved entity management and collision handling
+- Added level progression system
+- Simplified rendering and input handling
+=> Next: Add shooting mechanics
+
+[2024-01-11 11:50] [IMPL] Asteroid Class Refactor
+- Converted Asteroid to use component system
+- Added AsteroidConfig class for size-based configurations
+- Improved asteroid splitting mechanics
+- Components added:
+  * Transform for position/rotation
+  * Physics for movement
+  * Render for polygon shape
+  * Collision for hit detection
+  * Screen wrap for boundaries
+=> Next: Update Game class to use new component system
 
 [2024-01-11 11:45] [IMPL] Ship Class Refactor
 - Converted Ship to use component system

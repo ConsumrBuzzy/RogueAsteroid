@@ -11,10 +11,6 @@ from src.core.constants import (
 )
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
-from src.ui.menus import MainMenu, OptionsMenu, HighScoreMenu
-from src.core.audio import AudioManager
-from src.core.particles import ParticleSystem
-from src.core.highscores import HighScoreManager
 
 class GameState:
     """Game state management."""
@@ -22,9 +18,6 @@ class GameState:
     PLAYING = "playing"
     PAUSED = "paused"
     GAME_OVER = "game_over"
-    OPTIONS = "options"
-    HIGH_SCORES = "high_scores"
-    NEW_HIGH_SCORE = "new_high_score"
 
 class Game:
     """Main game class managing entities and game loop."""
@@ -54,20 +47,6 @@ class Game:
         self.entities: List[Any] = []
         self.ship: Optional[Ship] = None
         self.asteroids: List[Asteroid] = []
-        
-        # Systems
-        self.audio = AudioManager()
-        self.particles = ParticleSystem()
-        self.high_scores = HighScoreManager()
-        
-        # UI
-        self.main_menu = MainMenu(self)
-        self.options_menu = OptionsMenu(self)
-        self.high_score_menu = HighScoreMenu(self)
-        
-        # High score input
-        self.player_name = ""
-        self.name_font = pygame.font.Font(None, 48)
     
     def reset_game(self) -> None:
         """Reset game state for new game."""
@@ -76,7 +55,6 @@ class Game:
         self.level = 1
         self.entities.clear()
         self.asteroids.clear()
-        self.particles.clear()
         
         # Create player ship
         self.ship = Ship(self)
@@ -84,19 +62,6 @@ class Game:
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
-    
-    def handle_high_score_input(self, event: pygame.event.Event) -> None:
-        """Handle input for new high score name entry."""
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN and self.player_name:
-                # Save high score
-                self.high_scores.add_score(self.score, self.player_name)
-                self.state = GameState.HIGH_SCORES
-                self.player_name = ""
-            elif event.key == pygame.K_BACKSPACE:
-                self.player_name = self.player_name[:-1]
-            elif len(self.player_name) < 10 and event.unicode.isalnum():
-                self.player_name += event.unicode.upper()
     
     def spawn_asteroid_wave(self) -> None:
         """Spawn a wave of asteroids based on current level."""
@@ -137,18 +102,6 @@ class Game:
                 
             if ship_collision.collides_with(asteroid_collision):
                 self.lives -= 1
-                
-                # Create explosion effect
-                transform = self.ship.get_component('transform')
-                if transform:
-                    self.particles.create_explosion(
-                        transform.position,
-                        (255, 0, 0),  # Red explosion
-                        num_particles=30,
-                        speed_range=(100, 200)
-                    )
-                    self.audio.play_sound('explosion_large')
-                
                 self.entities.remove(self.ship)
                 self.ship = None
                 
@@ -164,15 +117,10 @@ class Game:
         """Update game state and entities."""
         self.dt = self.clock.tick(FPS) / 1000.0
         
-        if self.state == GameState.MENU:
-            self.main_menu.update()
-        elif self.state == GameState.PLAYING:
+        if self.state == GameState.PLAYING:
             # Update all entities
             for entity in self.entities[:]:  # Copy list for safe removal
                 entity.update(self.dt)
-            
-            # Update particles
-            self.particles.update(self.dt)
             
             # Handle collisions
             self.handle_collisions()
@@ -186,21 +134,12 @@ class Game:
         """Draw current game state."""
         self.screen.fill(BLACK)
         
-        if self.state == GameState.MENU:
-            self.main_menu.draw(self.screen)
-        elif self.state == GameState.OPTIONS:
-            self.options_menu.draw(self.screen)
-        elif self.state == GameState.HIGH_SCORES:
-            self.high_score_menu.draw(self.screen)
-        elif self.state == GameState.NEW_HIGH_SCORE:
-            self._draw_high_score_input()
-        elif self.state in [GameState.PLAYING, GameState.PAUSED]:
+        if self.state == GameState.PLAYING:
             # Draw all entities
             for entity in self.entities:
-                entity.draw(self.screen)
-            
-            # Draw particles
-            self.particles.draw(self.screen)
+                render = entity.get_component('render')
+                if render:
+                    render.draw(self.screen)
             
             # Draw HUD
             self._draw_hud()
@@ -225,28 +164,6 @@ class Game:
         level_text = font.render(f"Level: {self.level}", True, (255, 255, 255))
         self.screen.blit(level_text, (WINDOW_WIDTH - 120, 10))
     
-    def _draw_high_score_input(self) -> None:
-        """Draw high score input screen."""
-        # Draw title
-        title = self.name_font.render('New High Score!', True, (255, 255, 0))
-        title_rect = title.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100))
-        self.screen.blit(title, title_rect)
-        
-        # Draw score
-        score_text = self.name_font.render(f'Score: {self.score}', True, (255, 255, 255))
-        score_rect = score_text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 40))
-        self.screen.blit(score_text, score_rect)
-        
-        # Draw name input
-        name_text = self.name_font.render('Enter Your Name:', True, (255, 255, 255))
-        name_rect = name_text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 20))
-        self.screen.blit(name_text, name_rect)
-        
-        # Draw input box
-        input_text = self.name_font.render(self.player_name + '_', True, (255, 255, 255))
-        input_rect = input_text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 80))
-        self.screen.blit(input_text, input_rect)
-    
     def _draw_game_over(self) -> None:
         """Draw game over screen."""
         font = pygame.font.Font(None, 74)
@@ -258,15 +175,6 @@ class Game:
         score_text = font.render(f'Final Score: {self.score}', True, (255, 255, 255))
         score_rect = score_text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 50))
         self.screen.blit(score_text, score_rect)
-        
-        # Check for high score
-        if self.high_scores.is_high_score(self.score):
-            self.state = GameState.NEW_HIGH_SCORE
-        else:
-            # Show prompt to continue
-            prompt = font.render('Press SPACE to continue', True, (255, 255, 255))
-            prompt_rect = prompt.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 100))
-            self.screen.blit(prompt, prompt_rect)
     
     def run(self) -> None:
         """Main game loop."""
@@ -276,15 +184,20 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
-                    if self.state == GameState.NEW_HIGH_SCORE:
-                        self.handle_high_score_input(event)
-                    elif event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE:
                         if self.state == GameState.PLAYING:
                             self.state = GameState.PAUSED
                         elif self.state == GameState.PAUSED:
                             self.state = GameState.PLAYING
-                    elif event.key == pygame.K_SPACE and self.state == GameState.GAME_OVER:
-                        self.state = GameState.MENU
+                elif event.type in [pygame.KEYDOWN, pygame.KEYUP]:
+                    # Handle input for all entities
+                    for entity in self.entities:
+                        input_component = entity.get_component('input')
+                        if input_component:
+                            if event.type == pygame.KEYDOWN:
+                                input_component.handle_keydown(event.key)
+                            else:
+                                input_component.handle_keyup(event.key)
             
             self.update()
             self.draw()
