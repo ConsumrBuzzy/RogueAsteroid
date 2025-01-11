@@ -88,17 +88,20 @@ class Ship(Entity):
         # Bind controls based on scheme
         if self.game.settings.get('controls', 'scheme') == 'arrows':
             thrust_key = pygame.K_UP
+            reverse_key = pygame.K_DOWN
             left_key = pygame.K_LEFT
             right_key = pygame.K_RIGHT
             shoot_key = pygame.K_SPACE
         else:  # wasd
             thrust_key = pygame.K_w
+            reverse_key = pygame.K_s
             left_key = pygame.K_a
             right_key = pygame.K_d
             shoot_key = pygame.K_SPACE
         
         # Bind continuous actions
         input_component.bind_key(thrust_key, self._apply_thrust, continuous=True)
+        input_component.bind_key(reverse_key, self._apply_reverse_thrust, continuous=True)
         input_component.bind_key(left_key, self._rotate_left, continuous=True)
         input_component.bind_key(right_key, self._rotate_right, continuous=True)
         input_component.bind_key(shoot_key, self._shoot, continuous=False)
@@ -130,7 +133,15 @@ class Ship(Entity):
         self.add_component(ScreenWrapComponent, WINDOW_WIDTH, WINDOW_HEIGHT)
     
     def _apply_thrust(self) -> None:
-        """Apply thrust force in current direction."""
+        """Apply forward thrust force."""
+        self._apply_thrust_force(1.0)
+    
+    def _apply_reverse_thrust(self) -> None:
+        """Apply reverse thrust force."""
+        self._apply_thrust_force(-0.5)  # Half power for reverse
+    
+    def _apply_thrust_force(self, power: float) -> None:
+        """Apply thrust force in current direction with given power."""
         transform = self.get_component('transform')
         physics = self.get_component('physics')
         effects = self.get_component('effects')
@@ -145,14 +156,14 @@ class Ship(Entity):
             ])
             
             # Debug thrust direction
-            print(f"Rotation: {transform.rotation}, Thrust direction: {direction}")  # Debug info
+            print(f"Rotation: {transform.rotation}, Thrust direction: {direction}, Power: {power}")  # Debug info
             
             # Apply force
-            force = direction * SHIP_ACCELERATION
+            force = direction * SHIP_ACCELERATION * power
             physics.apply_force(force)
             
-            # Activate thrust effect
-            if effects:
+            # Activate thrust effect only for forward thrust
+            if effects and power > 0:
                 effects.set_effect_active('thrust', True)
     
     def _rotate_left(self) -> None:

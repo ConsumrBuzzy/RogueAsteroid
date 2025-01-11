@@ -35,10 +35,13 @@ class Bullet(Entity):
     
     def _init_physics(self) -> None:
         """Initialize physics component."""
-        physics = self.add_component(PhysicsComponent, mass=0.1)
-        # Set initial velocity
-        physics.velocity = self.direction * self.SPEED
+        physics = self.add_component(PhysicsComponent, mass=0.1, max_speed=self.SPEED)
+        # Set initial velocity directly on transform component
+        transform = self.get_component('transform')
+        if transform:
+            transform.velocity = self.direction * self.SPEED
         physics.friction = 0.0  # No friction for bullets
+        print(f"Bullet velocity: {self.direction * self.SPEED}")  # Debug info
     
     def _init_render(self) -> None:
         """Initialize render component."""
