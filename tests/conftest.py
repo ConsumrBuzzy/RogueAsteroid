@@ -8,13 +8,21 @@ import pygame
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-# Initialize pygame for tests
-pygame.init()
-
-@pytest.fixture(autouse=True)
-def cleanup_pygame():
-    """Cleanup pygame after each test."""
+@pytest.fixture(scope="session", autouse=True)
+def pygame_setup():
+    """Initialize pygame for the test session."""
+    # Initialize pygame with only the modules we need
+    pygame.display.init()
+    pygame.font.init()
+    
+    # Create a dummy display surface
+    pygame.display.set_mode((1, 1), pygame.NOFRAME)
+    
     yield
+    
+    # Cleanup pygame
+    pygame.display.quit()
+    pygame.font.quit()
     pygame.quit()
 
 @pytest.fixture(scope="session", autouse=True)
