@@ -17,22 +17,33 @@ import math
 class Game:
     def __init__(self):
         """Initialize the game."""
-        try:
-            pygame.init()
-            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-            pygame.display.set_caption("Rogue Asteroid")
-        except pygame.error as e:
-            print(f"Error initializing pygame: {e}")
-            raise
+        print("Game initialized")
+        pygame.init()
         
+        # Window dimensions
+        self.width = WINDOW_WIDTH
+        self.height = WINDOW_HEIGHT
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption("RogueAsteroid")
+        
+        # Game properties
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.running = True
-        
-        # Game properties
         self.level = 1
         self.lives = 3
-        self.respawn_timer = 0.0  # Timer for ship respawn
+        
+        # Initialize systems
+        self.state_manager = StateManager(self)
+        self.state = GameState.MAIN_MENU
+        self.scoring_system = ScoringSystem()
+        
+        # Entity lists
+        self.entities = []
+        self.bullets = []
+        self.asteroids = []
+        self.particles = []
+        self.ship = None
         
         # Settings
         self.settings = {

@@ -7,10 +7,18 @@ from src.core.entities.base import Component, Entity, TransformComponent
 class ScreenWrapComponent(Component):
     """Component for wrapping entities around screen edges."""
     
-    def __init__(self, entity: Entity, width: float, height: float):
+    def __init__(self, entity, width=WINDOW_WIDTH, height=WINDOW_HEIGHT):
+        """Initialize the screen wrap component.
+        
+        Args:
+            entity: The entity this component belongs to
+            width: Screen width to wrap at
+            height: Screen height to wrap at
+        """
         super().__init__(entity)
         self.width = width
         self.height = height
+        print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update entity position to wrap around screen."""
