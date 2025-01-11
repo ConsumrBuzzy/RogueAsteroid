@@ -1,7 +1,14 @@
 # Development Log
 
-Last Session: [2024-01-11 12:42PM]
+Last Session: [2024-01-11 12:43PM]
 Current Phase: Core Gameplay Implementation
+
+[2024-01-11 12:43PM] [FIX] Fixed velocity handling:
+- Updated TransformComponent to use pygame.Vector2 for position and velocity
+- Modified Asteroid class to use Vector2 throughout
+- Improved type hints and documentation
+- Removed numpy dependency
+Next: Review code for SOLID principles and PEP8 compliance
 
 ## Core Gameplay Objectives (MVP)
 1. Ship Control

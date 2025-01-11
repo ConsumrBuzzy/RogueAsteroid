@@ -21,10 +21,14 @@ class Asteroid(Entity):
         """Initialize the asteroid with the given size and optional position/velocity."""
         super().__init__(game)
         self.size = size
+        if position is None:
+            position = pygame.Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+        if velocity is None:
+            velocity = pygame.Vector2(0, 0)
         self._init_components(position, velocity)
     
     @classmethod
-    def spawn_random(cls, game, ship_pos: Tuple[float, float]) -> 'Asteroid':
+    def spawn_random(cls, game, ship_pos: pygame.Vector2) -> 'Asteroid':
         """Create a new asteroid at a random position away from the ship."""
         print("Creating new Asteroid")  # Debug info
         
@@ -35,21 +39,24 @@ class Asteroid(Entity):
         distance = random.uniform(min_distance, max_distance)
         
         # Calculate spawn position
-        spawn_x = (ship_pos[0] + math.cos(angle) * distance) % WINDOW_WIDTH
-        spawn_y = (ship_pos[1] + math.sin(angle) * distance) % WINDOW_HEIGHT
-        position = (spawn_x, spawn_y)
+        spawn_x = (ship_pos.x + math.cos(angle) * distance) % WINDOW_WIDTH
+        spawn_y = (ship_pos.y + math.sin(angle) * distance) % WINDOW_HEIGHT
+        position = pygame.Vector2(spawn_x, spawn_y)
         
         # Random velocity
         speed = random.uniform(50, 100)
         velocity_angle = random.uniform(0, 2 * math.pi)
-        velocity = (math.cos(velocity_angle) * speed, math.sin(velocity_angle) * speed)
+        velocity = pygame.Vector2(
+            math.cos(velocity_angle) * speed,
+            math.sin(velocity_angle) * speed
+        )
         
         return cls(game, 'large', position, velocity)
     
-    def _init_components(self, position, velocity):
+    def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):
         """Initialize asteroid components."""
         # Transform component
-        transform = self.add_component(TransformComponent, x=position[0], y=position[1])
+        transform = self.add_component(TransformComponent, x=position.x, y=position.y)
         transform.velocity = velocity
 
         # Render component
@@ -103,7 +110,10 @@ class Asteroid(Entity):
             # Random velocity for new pieces
             speed = random.uniform(100, 150)
             angle = random.uniform(0, 2 * math.pi)
-            velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
+            velocity = pygame.Vector2(
+                math.cos(angle) * speed,
+                math.sin(angle) * speed
+            )
             
             # Create new asteroid
             new_asteroid = Asteroid(self.game, new_size, transform.position, velocity)
@@ -115,6 +125,5 @@ class Asteroid(Entity):
     def update(self, dt: float):
         """Update the asteroid's state."""
         super().update(dt)
-        
         # Add any asteroid-specific update logic here
         pass 
