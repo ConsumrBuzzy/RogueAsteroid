@@ -169,8 +169,8 @@ class Ship(Entity):
         """Rotate ship counter-clockwise."""
         transform = self.get_component('transform')
         if transform:
-            # Ensure rotation speed is applied correctly
-            rotation_change = SHIP_ROTATION_SPEED * self.game.dt * 60
+            # Apply rotation speed based on delta time
+            rotation_change = SHIP_ROTATION_SPEED * self.game.dt
             transform.rotation = (transform.rotation - rotation_change) % 360
             print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
@@ -178,8 +178,8 @@ class Ship(Entity):
         """Rotate ship clockwise."""
         transform = self.get_component('transform')
         if transform:
-            # Ensure rotation speed is applied correctly
-            rotation_change = SHIP_ROTATION_SPEED * self.game.dt * 60
+            # Apply rotation speed based on delta time
+            rotation_change = SHIP_ROTATION_SPEED * self.game.dt
             transform.rotation = (transform.rotation + rotation_change) % 360
             print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     

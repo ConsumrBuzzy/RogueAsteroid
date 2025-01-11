@@ -126,6 +126,28 @@ class Asteroid(Entity):
     
     def split(self):
         """Split asteroid into smaller pieces."""
+        # Get current size and properties
+        transform = self.get_component('transform')
+        if not transform:
+            return []
+            
+        collision = self.get_component('collision')
+        if not collision:
+            return []
+            
+        current_size = collision.radius
+        
+        # Determine points based on size
+        points = 0
+        for size_name, props in ASTEROID_SIZES.items():
+            if abs(props['radius'] - current_size) < 0.1:  # Float comparison
+                points = props['points']
+                break
+        
+        # Award points
+        self.game.scoring.add_points(points)
+        print(f"Hit asteroid size {size_name}, awarded {points} points")
+        
         if self.size == 'small':
             # Award points for destroying small asteroid
             self.game.scoring_system.add_points(100)
@@ -133,15 +155,6 @@ class Asteroid(Entity):
             self._create_destruction_particles()
             return []
             
-        # Get current properties
-        transform = self.get_component('transform')
-        if not transform:
-            return []
-            
-        # Award points based on size
-        points = 50 if self.size == 'large' else 75  # More points for medium asteroids
-        self.game.scoring_system.add_points(points)
-        
         # Create split effect particles
         self._create_split_particles()
             
@@ -270,4 +283,5 @@ class Asteroid(Entity):
         """Update the asteroid's state."""
         super().update(dt)
         # Add any asteroid-specific update logic here
+        pass 
         pass 
