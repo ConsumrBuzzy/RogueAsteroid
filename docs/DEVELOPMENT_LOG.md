@@ -535,3 +535,16 @@ Next: Test complete high score flow
   * Random velocities and proper cleanup via lifetime system
 - Fixed entity management to use proper list methods
 Next: Add engine thrust particles and bullet impact effects 
+
+[2024-01-11 13:25PM] [IMPL] Added more particle effects:
+- Ship engine thrust:
+  * Blue-white particles emitted when thrusting
+  * 2-3 particles per frame with 20° spread
+  * Positioned behind ship with slight randomization
+  * Short lifetime (0.2-0.4s) for quick fade
+- Bullet impacts:
+  * Yellow-white spark particles on asteroid hits
+  * 4-6 particles per impact
+  * Random directional spread
+  * Very short lifetime (0.1-0.2s) for spark effect
+Next: Add sound effects for enhanced feedback 

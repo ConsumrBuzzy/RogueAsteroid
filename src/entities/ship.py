@@ -21,6 +21,8 @@ from src.core.constants import (
     SHIP_INVULNERABLE_TIME
 )
 from src.entities.bullet import Bullet
+from src.entities.particle import Particle
+import random
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -216,6 +218,38 @@ class Ship(Entity):
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
+    
+    def _create_thrust_particles(self):
+        """Create particles for engine thrust effect"""
+        if not self.input.thrust_active:
+            return
+        
+        # Get ship's rear position (opposite of direction)
+        transform = self.get_component('transform')
+        direction = transform.get_direction()
+        rear_pos = transform.position - direction * 15  # 15 pixels behind ship
+        
+        # Create 2-3 particles per frame when thrusting
+        num_particles = random.randint(2, 3)
+        for _ in range(num_particles):
+            particle = Particle(self.game)
+            
+            # Position slightly randomized around rear
+            offset = pygame.Vector2(random.uniform(-3, 3), random.uniform(-3, 3))
+            particle_transform = particle.get_component('transform')
+            particle_transform.position = rear_pos + offset
+            
+            # Velocity opposite of ship direction with spread
+            angle = random.uniform(-20, 20)  # 20 degree spread
+            velocity = direction.rotate(180 + angle) * random.uniform(100, 150)
+            particle.physics.velocity = velocity
+            
+            # Blue-white color with random variation
+            r = random.randint(180, 220)
+            particle.particle.color = (r, r, 255)
+            particle.particle.lifetime = random.uniform(0.2, 0.4)
+            
+            self.game.entities.append(particle)
     
     def update(self, dt: float) -> None:
         """Update ship state."""
