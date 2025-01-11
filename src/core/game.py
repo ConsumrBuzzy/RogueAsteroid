@@ -81,7 +81,6 @@ class Game:
             return
             
         num_asteroids = min(3 + self.level, 8)  # Cap at 8 asteroids
-        spawn_positions = []  # Track spawn positions
         
         for _ in range(num_asteroids):
             # Try to find a valid spawn position
@@ -111,9 +110,9 @@ class Game:
                         break
                 
                 if not too_close:
-                    spawn_positions.append(position)
                     self.asteroids.append(asteroid)
                     self.entities.append(asteroid)
+                    print(f"Spawned asteroid at {position}")  # Debug info
                     break
                 else:
                     # Remove invalid asteroid
@@ -143,10 +142,50 @@ class Game:
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
+        print(f"Respawning ship with {SHIP_INVULNERABLE_TIME} seconds invulnerability")  # Debug info
         self.ship = Ship(self)
         self.entities.append(self.ship)
-        self.respawn_timer = 0.0
-        print(f"Ship respawned with {SHIP_INVULNERABLE_TIME} seconds invulnerability")  # Debug info
+        
+        # Set initial invulnerability
+        self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
+        
+        # Make sure ship spawns in a safe location
+        ship_transform = self.ship.get_component('transform')
+        if ship_transform:
+            # Try to find a safe spawn position
+            for attempt in range(10):  # Limit attempts
+                ship_transform.position = pygame.Vector2(
+                    random.randint(100, WINDOW_WIDTH - 100),
+                    random.randint(100, WINDOW_HEIGHT - 100)
+                )
+                
+                # Check if position is safe from asteroids
+                ship_collision = self.ship.get_component('collision')
+                if not ship_collision:
+                    break
+                    
+                safe_position = True
+                for asteroid in self.asteroids:
+                    asteroid_collision = asteroid.get_component('collision')
+                    if not asteroid_collision:
+                        continue
+                        
+                    distance = (pygame.Vector2(ship_transform.position) - 
+                              pygame.Vector2(asteroid.get_component('transform').position)).length()
+                    min_distance = (ship_collision.radius + asteroid_collision.radius) * 2.0
+                    
+                    if distance < min_distance:
+                        safe_position = False
+                        break
+                
+                if safe_position:
+                    print(f"Ship respawned at safe position: {ship_transform.position}")  # Debug info
+                    break
+            
+            # If no safe position found, just use center
+            if not safe_position:
+                ship_transform.position = pygame.Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
+                print("No safe position found, respawning at center")  # Debug info
     
     def handle_collisions(self):
         """Handle collisions between entities."""
@@ -230,21 +269,33 @@ class Game:
                     transform2.position += direction * separation * 0.4
         
         # Then check ship-asteroid collisions
-        for asteroid in self.asteroids[:]:  # Copy list to allow removal
-            asteroid_collision = asteroid.get_component('collision')
-            if not asteroid_collision:
-                continue
+        if self.ship:
+            ship_collision = self.ship.get_component('collision')
+            if not ship_collision:
+                return
                 
-            if ship_collision.check_collision(asteroid_collision):
-                self.lives -= 1
-                if self.lives <= 0:
-                    self.state_manager.change_state(GameState.GAME_OVER)
-                else:
-                    # Remove ship and set respawn timer
-                    if self.ship in self.entities:
-                        self.entities.remove(self.ship)
-                    self.ship = None
-                    self.respawn_timer = SHIP_INVULNERABLE_TIME  # Set respawn delay
+            for asteroid in self.asteroids[:]:  # Copy list to allow removal
+                asteroid_collision = asteroid.get_component('collision')
+                if not asteroid_collision:
+                    continue
+                    
+                if ship_collision.check_collision(asteroid_collision):
+                    self.lives -= 1
+                    print(f"Ship hit! Lives remaining: {self.lives}")  # Debug info
+                    
+                    if self.lives <= 0:
+                        print("Game Over!")  # Debug info
+                        if self.ship in self.entities:
+                            self.entities.remove(self.ship)
+                        self.ship = None
+                        self.state_manager.change_state(GameState.GAME_OVER)
+                    else:
+                        # Remove ship and set respawn timer
+                        if self.ship in self.entities:
+                            self.entities.remove(self.ship)
+                        self.ship = None
+                        self.respawn_timer = SHIP_INVULNERABLE_TIME  # Set respawn delay
+                        print(f"Ship will respawn in {SHIP_INVULNERABLE_TIME} seconds")  # Debug info
     
     def run(self):
         """Main game loop."""
