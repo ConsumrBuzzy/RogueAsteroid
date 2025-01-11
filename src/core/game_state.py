@@ -149,10 +149,13 @@ class StateManager:
     
     def _handle_game_over(self):
         """Handle game over state transition."""
+        print(f"Game Over - Score: {self.game.score}")  # Debug info
         if self.game.scoring.check_high_score():
+            print("New high score!")  # Debug info
             self.high_score_name = ""
             self.change_state(GameState.NEW_HIGH_SCORE)
         else:
+            print("Not a high score")  # Debug info
             self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
@@ -243,13 +246,25 @@ class StateManager:
     def _draw_high_scores(self, screen):
         """Draw the high scores screen."""
         screen.fill((0, 0, 0))
+        
+        # Draw title
         font = pygame.font.Font(None, 48)
         title = font.render("HIGH SCORES", True, WHITE)
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
         
+        # Draw scores
         font = pygame.font.Font(None, 36)
+        scores = self.game.scoring.get_high_scores()
+        y = 200
+        for i, score in enumerate(scores):
+            text = f"{i+1}. {score.name}: {score.score} (Level {score.level})"
+            score_surf = font.render(text, True, WHITE)
+            screen.blit(score_surf, (WINDOW_WIDTH/2 - score_surf.get_width()/2, y))
+            y += 40
+        
+        # Draw return instruction
         text = font.render("Press ENTER or ESC to return", True, WHITE)
-        screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 500)) 
+        screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 500))
     
     def _draw_new_high_score(self, screen):
         """Draw the new high score entry screen."""
