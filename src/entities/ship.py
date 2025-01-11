@@ -37,10 +37,18 @@ class Ship(Entity):
         self.turning_right = False
     
     def handle_input(self, keys: List[bool]) -> None:
-        """Process keyboard input."""
-        self.thrusting = keys[pygame.K_UP] or keys[pygame.K_w]
-        self.turning_left = keys[pygame.K_LEFT] or keys[pygame.K_a]
-        self.turning_right = keys[pygame.K_RIGHT] or keys[pygame.K_d]
+        """Process keyboard input based on control scheme."""
+        from ..core.game import Game
+        game = self.game  # type: Game
+        
+        if game.settings.get('controls', 'scheme') == 'arrows':
+            self.thrusting = keys[pygame.K_UP]
+            self.turning_left = keys[pygame.K_LEFT]
+            self.turning_right = keys[pygame.K_RIGHT]
+        else:  # wasd
+            self.thrusting = keys[pygame.K_w]
+            self.turning_left = keys[pygame.K_a]
+            self.turning_right = keys[pygame.K_d]
     
     def update(self, dt: float) -> None:
         """Update ship state based on input."""

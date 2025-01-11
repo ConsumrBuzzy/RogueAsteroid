@@ -3,7 +3,9 @@ import sys
 from typing import List
 from .constants import *
 from .entity import Entity
-from ..entities.ship import Ship
+from .settings import Settings
+from .menu import MainMenu, OptionsMenu
+from entities.ship import Ship
 
 class Game:
     """Main game class handling the game loop and state management."""
@@ -21,26 +23,36 @@ class Game:
         self.score = 0
         self.lives = INITIAL_LIVES
         self.entities: List[Entity] = []
+        self.settings = Settings()
+        
+        # Menu system
+        self.current_menu = None
+        self.in_menu = True
+        self.main_menu = MainMenu(self)
+        self.options_menu = OptionsMenu(self)
         
         # Time tracking
         self.dt = 0  # delta time in seconds
         
         # Create player ship
-        self.player = Ship()
-        self.add_entity(self.player)
+        self.player = None
     
     def run(self) -> None:
         """Main game loop."""
         self.running = True
+        self.show_main_menu()
         
         while self.running:
             self.dt = self.clock.tick(FPS) / 1000.0  # Convert to seconds
             
             self._handle_events()
-            self._handle_input()
             
             if not self.paused:
-                self._update()
+                if self.in_menu:
+                    self.current_menu.update()
+                else:
+                    self._handle_input()
+                    self._update()
             
             self._render()
             
@@ -54,12 +66,20 @@ class Game:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.paused = not self.paused
+                    if self.in_menu:
+                        if isinstance(self.current_menu, OptionsMenu):
+                            self.show_main_menu()
+                    else:
+                        self.paused = not self.paused
+            
+            if self.in_menu:
+                self.current_menu.handle_input(event)
     
     def _handle_input(self) -> None:
         """Process continuous keyboard input."""
-        keys = pygame.key.get_pressed()
-        self.player.handle_input(keys)
+        if self.player:
+            keys = pygame.key.get_pressed()
+            self.player.handle_input(keys)
     
     def _update(self) -> None:
         """Update game state."""
@@ -89,13 +109,16 @@ class Game:
     
     def _render(self) -> None:
         """Render the game state."""
-        # Clear screen
-        self.screen.fill(BLACK)
-        
-        # Draw all entities
-        for entity in self.entities:
-            if entity.active:
-                entity.draw(self.screen)
+        if self.in_menu:
+            self.current_menu.draw(self.screen)
+        else:
+            # Clear screen
+            self.screen.fill(BLACK)
+            
+            # Draw all entities
+            for entity in self.entities:
+                if entity.active:
+                    entity.draw(self.screen)
         
         # Update display
         pygame.display.flip()
@@ -106,4 +129,27 @@ class Game:
     
     def remove_entity(self, entity: Entity) -> None:
         """Remove an entity from the game."""
-        entity.active = False 
+        entity.active = False
+    
+    # Menu management methods
+    def show_main_menu(self) -> None:
+        """Show the main menu."""
+        self.current_menu = self.main_menu
+        self.in_menu = True
+    
+    def show_options(self) -> None:
+        """Show the options menu."""
+        self.current_menu = self.options_menu
+        self.in_menu = True
+    
+    def start_game(self) -> None:
+        """Start a new game."""
+        self.in_menu = False
+        self.paused = False
+        self.entities.clear()
+        self.score = 0
+        self.lives = INITIAL_LIVES
+        
+        # Create player
+        self.player = Ship()
+        self.add_entity(self.player) 
