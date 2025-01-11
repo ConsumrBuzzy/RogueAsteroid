@@ -9,7 +9,8 @@ from src.core.constants import (
     BLACK,
     INITIAL_LIVES
 )
-from src.core.game_state import StateManager
+from src.core.game_state import StateManager, GameState
+from src.core.scoring import ScoringSystem
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
@@ -27,7 +28,6 @@ class Game:
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
         self.dt = 0.0
-        self.score = 0
         self.lives = INITIAL_LIVES
         self.level = 1
         
@@ -43,12 +43,18 @@ class Game:
         self.ship: Optional[Ship] = None
         self.asteroids: List[Asteroid] = []
         
-        # State management
+        # Systems
         self.state_manager = StateManager(self)
+        self.scoring = ScoringSystem()
+    
+    @property
+    def score(self) -> int:
+        """Get current score."""
+        return self.scoring.current_score
     
     def reset_game(self) -> None:
         """Reset game state for new game."""
-        self.score = 0
+        self.scoring.reset()
         self.lives = INITIAL_LIVES
         self.level = 1
         self.entities.clear()
@@ -85,6 +91,9 @@ class Game:
     
     def update_entities(self) -> None:
         """Update all game entities."""
+        # Update scoring system
+        self.scoring.update(self.dt)
+        
         # Handle ship respawn
         if self.ship and hasattr(self, 'respawn_timer'):
             self.respawn_timer -= self.dt
@@ -135,7 +144,12 @@ class Game:
                 if self.lives <= 0:
                     self.entities.remove(self.ship)
                     self.ship = None
-                    self.state_manager.change_state(GameState.GAME_OVER)
+                    
+                    # Check for high score
+                    if self.scoring.check_high_score():
+                        self.state_manager.change_state(GameState.HIGH_SCORE)
+                    else:
+                        self.state_manager.change_state(GameState.GAME_OVER)
                 else:
                     # Respawn ship after delay
                     self.ship.get_component('render').visible = False
@@ -168,8 +182,8 @@ class Game:
                     if asteroid in self.entities:
                         self.entities.remove(asteroid)
                     
-                    # Add score
-                    self.score += asteroid.config['points']
+                    # Add score with combo system
+                    points = self.scoring.add_points(asteroid.config['points'])
                     
                     # Add new asteroids
                     for new_asteroid in new_asteroids:
