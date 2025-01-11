@@ -39,13 +39,7 @@ class Ship(Entity):
         self.invulnerable_timer = SHIP_INVULNERABLE_TIME
         
         # Add components
-        self._init_transform()
-        self._init_physics()
-        self._init_render()
-        self._init_input()
-        self._init_effects()
-        self._init_collision()
-        self._init_screen_wrap()
+        self._init_components()
         
         # Verify components
         transform = self.get_component('transform')
@@ -57,34 +51,49 @@ class Ship(Entity):
         else:
             print("Failed to initialize ship components!")  # Debug info
     
-    def _init_transform(self) -> None:
-        """Initialize transform component."""
-        transform = self.add_component(TransformComponent, 
-            WINDOW_WIDTH / 2,  # Start at center
-            WINDOW_HEIGHT / 2
-        )
-        print(f"Transform component added: {transform}")  # Debug info
-    
-    def _init_physics(self) -> None:
-        """Initialize physics component."""
-        physics = self.add_component(PhysicsComponent, mass=1.0, max_speed=SHIP_MAX_SPEED)
-        physics.friction = SHIP_FRICTION
-    
-    def _init_render(self) -> None:
-        """Initialize render component."""
-        render = self.add_component(RenderComponent)
-        print(f"Render component added: {render}")  # Debug info
+    def _init_components(self) -> None:
+        """Initialize ship components."""
+        print("Initializing ship...")
         
-        # Define ship shape (triangle pointing up)
-        size = 20.0
+        # Transform component
+        transform = self.add_component(TransformComponent)
+        transform.position = pygame.Vector2(self.game.width/2, self.game.height/2)
+        print(f"Transform component added: {transform}")
+        
+        # Render component
+        render = self.add_component(RenderComponent)
         render.vertices = [
-            (0, -size),           # nose (top)
-            (-size/2, size/2),    # left wing (bottom)
-            (size/2, size/2)      # right wing (bottom)
+            (0, -20.0),      # Nose
+            (-10.0, 10.0),   # Left wing
+            (10.0, 10.0)     # Right wing
         ]
         render.color = WHITE
         render.visible = True
-        print(f"Render vertices: {render.vertices}")  # Debug info
+        print(f"Render component added: {render}")
+        print(f"Render vertices: {render.vertices}")
+        
+        # Physics component
+        physics = self.add_component(PhysicsComponent)
+        physics.mass = 1.0
+        physics.max_speed = SHIP_MAX_SPEED
+        physics.friction = SHIP_FRICTION
+        
+        # Collision component
+        collision = self.add_component(CollisionComponent, radius=15.0)
+        
+        # Screen wrap component
+        screen_wrap = self.add_component(ScreenWrapComponent, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+        
+        # Input component
+        self._init_input()
+        
+        # Effect component for thrust
+        effects = self.add_component(EffectComponent)
+        self._init_thrust_effect(effects)
+        
+        print(f"Transform component: {transform}")
+        print(f"Render component: {render}")
+        print("Ship components initialized successfully")
     
     def _init_input(self) -> None:
         """Initialize input component with control bindings."""
@@ -110,32 +119,6 @@ class Ship(Entity):
         input_component.bind_key(left_key, self._rotate_left, continuous=True)
         input_component.bind_key(right_key, self._rotate_right, continuous=True)
         input_component.bind_key(shoot_key, self._shoot, continuous=False)
-    
-    def _init_effects(self) -> None:
-        """Initialize visual effects component."""
-        effects = self.add_component(EffectComponent)
-        
-        # Add thrust flame effect
-        flame_size = 10.0
-        rear_offset = (0, 15)  # Offset from center
-        effects.add_effect(
-            'thrust',
-            vertices=[
-                (0, 0),
-                (-flame_size/2, flame_size),
-                (flame_size/2, flame_size)
-            ],
-            color=(255, 165, 0),  # Orange
-            offset=rear_offset
-        )
-    
-    def _init_collision(self) -> None:
-        """Initialize collision component."""
-        self.add_component(CollisionComponent, radius=12.0)
-    
-    def _init_screen_wrap(self) -> None:
-        """Initialize screen wrapping component."""
-        self.add_component(ScreenWrapComponent, WINDOW_WIDTH, WINDOW_HEIGHT)
     
     def _apply_thrust(self) -> None:
         """Apply forward thrust force."""
@@ -176,13 +159,19 @@ class Ship(Entity):
         """Rotate ship counter-clockwise."""
         transform = self.get_component('transform')
         if transform:
-            transform.rotation = (transform.rotation - SHIP_ROTATION_SPEED * self.game.dt * 60) % 360
+            # Ensure rotation speed is applied correctly
+            rotation_change = SHIP_ROTATION_SPEED * self.game.dt * 60
+            transform.rotation = (transform.rotation - rotation_change) % 360
+            print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
     def _rotate_right(self) -> None:
         """Rotate ship clockwise."""
         transform = self.get_component('transform')
         if transform:
-            transform.rotation = (transform.rotation + SHIP_ROTATION_SPEED * self.game.dt * 60) % 360
+            # Ensure rotation speed is applied correctly
+            rotation_change = SHIP_ROTATION_SPEED * self.game.dt * 60
+            transform.rotation = (transform.rotation + rotation_change) % 360
+            print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
     def _shoot(self):
         """Create and fire a bullet."""

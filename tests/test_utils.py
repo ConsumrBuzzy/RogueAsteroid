@@ -17,34 +17,52 @@ class GameConfig:
 
 class MockGame:
     """Mock game class for testing."""
-    def __init__(self, config: Optional[GameConfig] = None):
-        self.config = config or GameConfig()
-        self.width = self.config.width
-        self.height = self.config.height
-        self.dt = self.config.dt
-        self.state = GameState.PLAYING
-        self.entities: list[Entity] = []
-        self.screen = pygame.Surface((self.width, self.height))
-        self._debug = False
-        
-    def add_entity(self, entity: Entity) -> None:
+    def __init__(self):
+        self.width = 800
+        self.height = 600
+        self.dt = 0.016  # 60 FPS
+        self.settings = {
+            'controls': {'scheme': 'arrows'},
+            'sound': {'enabled': False, 'volume': 0.5}
+        }
+        self.entities = []
+        self.bullets = []
+        self.asteroids = []
+        self.particles = []
+        self.state = 'PLAYING'
+        self.score = 0
+        self.high_scores = []
+        self.sound = MockSound()
+        self.scoring_system = MockScoringSystem()
+
+    def add_entity(self, entity):
         """Add entity to game."""
         self.entities.append(entity)
         
-    def remove_entity(self, entity: Entity) -> None:
+    def remove_entity(self, entity):
         """Remove entity from game."""
         if entity in self.entities:
             self.entities.remove(entity)
-            
-    @property
-    def debug(self) -> bool:
-        """Get debug state."""
-        return self._debug
-    
-    @debug.setter
-    def debug(self, value: bool) -> None:
-        """Set debug state."""
-        self._debug = value
+
+class MockSound:
+    """Mock sound system for testing."""
+    def play_sound(self, sound_name):
+        """Mock playing a sound."""
+        pass
+
+class MockScoringSystem:
+    """Mock scoring system for testing."""
+    def __init__(self):
+        self.score = 0
+        self.high_scores = []
+        
+    def add_points(self, points):
+        """Add points to score."""
+        self.score += points
+        
+    def reset(self):
+        """Reset score."""
+        self.score = 0
 
 class MockEntity(Entity):
     """Mock entity for testing."""

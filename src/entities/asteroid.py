@@ -81,7 +81,8 @@ class Asteroid(Entity):
     def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):
         """Initialize asteroid components."""
         # Transform component
-        transform = self.add_component(TransformComponent, x=position.x, y=position.y)
+        transform = self.add_component(TransformComponent)
+        transform.position = position
         transform.velocity = velocity
 
         # Render component
