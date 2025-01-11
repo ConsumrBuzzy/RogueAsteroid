@@ -95,9 +95,13 @@ class CollisionComponent(Component):
     def __init__(self, entity: Entity, radius: float):
         super().__init__(entity)
         self.radius = radius
+        self.active = True  # Can be disabled temporarily
     
-    def collides_with(self, other: 'CollisionComponent') -> bool:
+    def check_collision(self, other: 'CollisionComponent') -> bool:
         """Check for collision with another entity."""
+        if not self.active or not other.active:
+            return False
+            
         transform = self.entity.get_component('transform')
         other_transform = other.entity.get_component('transform')
         
@@ -110,4 +114,37 @@ class CollisionComponent(Component):
         )
         
         # Check if circles overlap
-        return distance < (self.radius + other.radius) 
+        return distance < (self.radius + other.radius)
+    
+    def get_collision_normal(self, other: 'CollisionComponent') -> Optional[np.ndarray]:
+        """Get the collision normal vector pointing from other to self."""
+        transform = self.entity.get_component('transform')
+        other_transform = other.entity.get_component('transform')
+        
+        if not transform or not other_transform:
+            return None
+        
+        # Calculate vector from other to self
+        delta = transform.position - other_transform.position
+        distance = np.linalg.norm(delta)
+        
+        if distance == 0:
+            # Objects are at same position, return arbitrary normal
+            return np.array([1.0, 0.0])
+            
+        return delta / distance
+    
+    def get_collision_point(self, other: 'CollisionComponent') -> Optional[np.ndarray]:
+        """Get the approximate point of collision."""
+        transform = self.entity.get_component('transform')
+        other_transform = other.entity.get_component('transform')
+        
+        if not transform or not other_transform:
+            return None
+        
+        # Calculate point halfway between the objects at their radii
+        normal = self.get_collision_normal(other)
+        if normal is None:
+            return None
+            
+        return transform.position - normal * self.radius 

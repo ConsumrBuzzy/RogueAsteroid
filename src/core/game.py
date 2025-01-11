@@ -11,6 +11,7 @@ from src.core.constants import (
 )
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
+from src.entities.bullet import Bullet
 
 class GameState:
     """Game state management."""
@@ -100,24 +101,84 @@ class Game:
             if not asteroid_collision:
                 continue
                 
-            if ship_collision.collides_with(asteroid_collision):
-                self.lives -= 1
-                self.entities.remove(self.ship)
-                self.ship = None
+            if ship_collision.check_collision(asteroid_collision):
+                # Get collision details
+                collision_normal = ship_collision.get_collision_normal(asteroid_collision)
+                if collision_normal is not None:
+                    # Apply knockback to ship
+                    ship_physics = self.ship.get_component('physics')
+                    if ship_physics:
+                        knockback = collision_normal * 200.0  # Knockback force
+                        ship_physics.velocity = knockback
                 
-                if self.lives > 0:
-                    # Respawn ship after delay
-                    self.ship = Ship(self)
-                    self.entities.append(self.ship)
-                else:
+                # Reduce lives and handle ship destruction
+                self.lives -= 1
+                ship_collision.active = False  # Disable collisions temporarily
+                
+                if self.lives <= 0:
+                    self.entities.remove(self.ship)
+                    self.ship = None
                     self.state = GameState.GAME_OVER
+                else:
+                    # Respawn ship after delay
+                    self.ship.get_component('render').visible = False
+                    self.respawn_timer = 2.0  # Seconds until respawn
                 break
+        
+        # Check bullet collisions with asteroids
+        for entity in self.entities[:]:  # Copy list for safe removal
+            if not isinstance(entity, Bullet):
+                continue
+                
+            bullet_collision = entity.get_component('collision')
+            if not bullet_collision:
+                continue
+                
+            for asteroid in self.asteroids[:]:  # Copy list for safe removal
+                asteroid_collision = asteroid.get_component('collision')
+                if not asteroid_collision:
+                    continue
+                    
+                if bullet_collision.check_collision(asteroid_collision):
+                    # Remove bullet
+                    if entity in self.entities:
+                        self.entities.remove(entity)
+                    
+                    # Split asteroid
+                    new_asteroids = asteroid.split()
+                    if asteroid in self.asteroids:
+                        self.asteroids.remove(asteroid)
+                    if asteroid in self.entities:
+                        self.entities.remove(asteroid)
+                    
+                    # Add score
+                    self.score += asteroid.config['points']
+                    
+                    # Add new asteroids
+                    for new_asteroid in new_asteroids:
+                        self.asteroids.append(new_asteroid)
+                        self.entities.append(new_asteroid)
+                    break
     
     def update(self) -> None:
         """Update game state and entities."""
         self.dt = self.clock.tick(FPS) / 1000.0
         
         if self.state == GameState.PLAYING:
+            # Handle ship respawn
+            if self.ship and hasattr(self, 'respawn_timer'):
+                self.respawn_timer -= self.dt
+                if self.respawn_timer <= 0:
+                    # Reset ship state
+                    transform = self.ship.get_component('transform')
+                    if transform:
+                        transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+                        transform.velocity = np.array([0.0, 0.0])
+                    
+                    self.ship.get_component('render').visible = True
+                    self.ship.get_component('collision').active = True
+                    delattr(self, 'respawn_timer')
+            
             # Update all entities
             for entity in self.entities[:]:  # Copy list for safe removal
                 entity.update(self.dt)
