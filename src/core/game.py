@@ -3,6 +3,7 @@ import sys
 from typing import List
 from .constants import *
 from .entity import Entity
+from ..entities.ship import Ship
 
 class Game:
     """Main game class handling the game loop and state management."""
@@ -23,6 +24,10 @@ class Game:
         
         # Time tracking
         self.dt = 0  # delta time in seconds
+        
+        # Create player ship
+        self.player = Ship()
+        self.add_entity(self.player)
     
     def run(self) -> None:
         """Main game loop."""
@@ -32,6 +37,7 @@ class Game:
             self.dt = self.clock.tick(FPS) / 1000.0  # Convert to seconds
             
             self._handle_events()
+            self._handle_input()
             
             if not self.paused:
                 self._update()
@@ -49,6 +55,11 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.paused = not self.paused
+    
+    def _handle_input(self) -> None:
+        """Process continuous keyboard input."""
+        keys = pygame.key.get_pressed()
+        self.player.handle_input(keys)
     
     def _update(self) -> None:
         """Update game state."""

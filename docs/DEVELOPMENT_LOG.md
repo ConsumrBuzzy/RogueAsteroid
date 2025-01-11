@@ -5,16 +5,25 @@
 2. [ ] Begin filling Game Design Document
 3. [ ] Define core gameplay mechanics
 4. [ ] Review and approve technical design
-5. [ ] Implement player ship entity
-6. [ ] Add basic movement controls
+5. [X] Implement player ship entity
+6. [X] Add basic movement controls
+7. [ ] Implement asteroid spawning
+8. [ ] Add shooting mechanics
 
 ## Session State
-Last Session: [2024-01-11 16:15]
+Last Session: [2024-01-11 16:30]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 16:30] [IMPL] Player Ship Implementation
+- Created Ship class with movement controls
+- Added thrust and rotation mechanics
+- Implemented screen wrapping
+- Added visual thrust effect
+=> Next: Add asteroid spawning and shooting mechanics
 
 [2024-01-11 16:15] [IMPL] Core System Implementation
 - Created basic project structure
