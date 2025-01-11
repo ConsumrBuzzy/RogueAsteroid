@@ -201,8 +201,14 @@ class StateManager:
         
         # Draw HUD
         font = pygame.font.Font(None, 36)
+        
+        # Draw score
         score_text = font.render(f"Score: {self.game.score}", True, WHITE)
         screen.blit(score_text, (10, 10))
+        
+        # Draw lives
+        lives_text = font.render(f"Lives: {self.game.lives}", True, WHITE)
+        screen.blit(lives_text, (10, 50))  # Position below score
     
     def _draw_pause_overlay(self, screen):
         """Draw the pause menu overlay."""

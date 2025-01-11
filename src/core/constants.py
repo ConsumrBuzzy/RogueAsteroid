@@ -29,7 +29,7 @@ MAX_BULLETS = 8          # Maximum bullets on screen
 ASTEROID_SIZES = {
     'large': {
         'radius': 40.0,
-        'points': 20,
+        'points': 3,
         'splits': 2,
         'speed_range': (50.0, 100.0),
         'vertices_range': (10, 14),
@@ -37,7 +37,7 @@ ASTEROID_SIZES = {
     },
     'medium': {
         'radius': 20.0,
-        'points': 50,
+        'points': 2,
         'splits': 2,
         'speed_range': (75.0, 150.0),
         'vertices_range': (8, 12),
@@ -45,7 +45,7 @@ ASTEROID_SIZES = {
     },
     'small': {
         'radius': 10.0,
-        'points': 100,
+        'points': 1,
         'splits': 0,
         'speed_range': (100.0, 200.0),
         'vertices_range': (6, 10),

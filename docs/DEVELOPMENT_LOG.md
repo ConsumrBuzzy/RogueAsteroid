@@ -359,6 +359,12 @@ Next: Test bullet mechanics and scoring system
 - Improved asteroid splitting with proper point values
 Next: Test scoring system with different asteroid sizes
 
+[2024-01-11 13:03PM] [FIX] Updated scoring and lives display:
+- Changed asteroid points to incremental values (1/2/3 points)
+- Added lives counter to game HUD
+- Positioned lives display below score
+Next: Test scoring with new point values
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
