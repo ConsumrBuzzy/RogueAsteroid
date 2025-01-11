@@ -42,10 +42,6 @@ class StateManager:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
             print("Game Over!")  # Debug info
-            self.game.sound.play_sound('game_over')
-        elif new_state == GameState.PLAYING and self.current_state == GameState.MAIN_MENU:
-            # Starting a new game
-            self.game.sound.play_sound('level_complete')  # Use level complete sound for game start
         
         self.current_state = new_state
         self.selected_option = 0
@@ -159,7 +155,6 @@ class StateManager:
             if self.game.scoring.check_high_score():
                 print("New high score achieved!")  # Debug info
                 self.high_score_name = ""  # Reset name input
-                self.game.sound.play_sound('level_complete')  # Play celebratory sound for high score
                 self.change_state(GameState.NEW_HIGH_SCORE)
             else:
                 print("Returning to main menu")  # Debug info

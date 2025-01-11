@@ -4,7 +4,6 @@ import random
 import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
-from src.core.sound import SoundManager
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
@@ -39,16 +38,6 @@ class Game:
         # Systems
         self.state_manager = StateManager(self)
         self.scoring = ScoringSystem()
-        
-        # Initialize sound system
-        try:
-            if not pygame.mixer.get_init():
-                pygame.mixer.init()
-            self.sound = SoundManager()
-            print("Sound system initialized successfully")  # Debug info
-        except Exception as e:
-            print(f"Warning: Sound system initialization failed: {e}")
-            self.sound = None
         
         # Entities
         self.ship = None
@@ -149,8 +138,6 @@ class Game:
         # Check for level completion
         if len(self.asteroids) == 0:
             print(f"Level {self.level} complete!")  # Debug info
-            if self.sound:
-                self.sound.play_sound('level_complete')  # Play level complete sound
             
             # Increment level
             self.level += 1
@@ -228,9 +215,6 @@ class Game:
                     self.lives -= 1
                     print(f"Lives remaining: {self.lives}")  # Debug info
                     
-                    # Play explosion sound
-                    self.sound.play_sound('explosion_medium')
-                    
                     # Remove ship from entities
                     if self.ship in self.entities:
                         self.entities.remove(self.ship)
@@ -238,7 +222,6 @@ class Game:
                     
                     if self.lives <= 0:
                         print("Game Over!")  # Debug info
-                        self.sound.play_sound('game_over')
                         self.state_manager.change_state(GameState.GAME_OVER)
                     else:
                         self.respawn_timer = 2.0  # Wait 2 seconds before respawning
@@ -257,14 +240,6 @@ class Game:
                     
                 if bullet_collision.check_collision(asteroid_collision):
                     print(f"Bullet hit asteroid")  # Debug info
-                    
-                    # Play explosion sound based on asteroid size
-                    if asteroid.size == 'large':
-                        self.sound.play_sound('explosion_large')
-                    elif asteroid.size == 'medium':
-                        self.sound.play_sound('explosion_medium')
-                    else:
-                        self.sound.play_sound('explosion_small')
                     
                     # Create new asteroids from split
                     new_asteroids = asteroid.split()
