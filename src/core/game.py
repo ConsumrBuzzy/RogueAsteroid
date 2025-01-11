@@ -11,7 +11,8 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     SHIP_INVULNERABLE_TIME,
     MAX_ASTEROIDS,
-    STARTING_LIVES
+    STARTING_LIVES,
+    ASTEROID_SIZES
 )
 import math
 
