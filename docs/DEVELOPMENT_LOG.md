@@ -60,39 +60,41 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
-[2024-01-11 12:24PM] [IMPL] Collision System
-- Improved asteroid splitting mechanics
-- Added proper bullet-asteroid collision handling
-- Implemented size-based asteroid properties
-- Added debug logging for collisions
-- Next: Add asteroid-asteroid collisions
+[2024-01-11 12:25PM] [IMPL] Added options menu and pause functionality:
+- Added options menu with control scheme selection (Arrows/WASD)
+- Implemented pause menu with P/Esc keys
+- Added semi-transparent overlay for pause state
+- Added main menu navigation (O for options, M for menu from pause)
+- Improved state transitions and UI rendering
+Next: Fix bullet movement and implement asteroid collisions
 
-[2024-01-11 12:23PM] [IMPL] Movement Improvements
-- Fixed bullet velocity initialization
-- Added reverse thrust capability (DOWN/S key)
-- Set reverse thrust to half power
-- Added debug logging for movement
-- Next: Test bullet collisions
+[2024-01-11 12:24PM] [FIX] Fixed bullet collision handling:
+- Updated bullet-asteroid collision detection
+- Implemented proper asteroid splitting
+- Added new asteroids to game entities list
+Next: Add options menu and pause functionality
 
-[2024-01-11 12:22PM] [FIX] Bullet Direction
-- Fixed bullet initialization
+[2024-01-11 12:23PM] [IMPL] Added reverse thrust:
+- Implemented reverse movement with down arrow / S key
+- Applied same speed limit as forward thrust
+- Updated physics component to handle reverse thrust
+Next: Fix bullet collision handling
+
+[2024-01-11 12:22PM] [FIX] Fixed bullet initialization:
 - Corrected bullet direction calculation
-- Adjusted for ship's upward orientation
-- Fixed direction parameter handling
-- Next: Test shooting mechanics
+- Fixed bullet velocity initialization
+- Updated ship's shoot method
+Next: Add reverse thrust capability
 
-[2024-01-11 12:21PM] [FIX] Ship Movement
-- Fixed thrust direction calculation
-- Adjusted for ship's upward orientation
+[2024-01-11 12:21PM] [FIX] Fixed ship movement direction:
+- Corrected thrust angle calculation
 - Added debug logging for movement
-- Verified ship shape vertices
-- Next: Test ship movement and rotation
+- Improved ship orientation handling
+Next: Fix bullet initialization
 
-[2024-01-11 12:20PM] [NOTE] Time Format Standard
-- Standardized time format to use 1-minute intervals
-- Format: [YYYY-MM-DD HH:MM(AM/PM)]
-- All timestamps should follow this format
-- Next: Continue debugging ship components
+[2024-01-11 12:20PM] [NOTE] Standardized time format:
+Using [YYYY-MM-DD HH:MM(AM/PM)] for all timestamps
+Next: Fix ship movement direction
 
 [2024-01-11 12:19PM] [FIX] Component System Debug
 - Fixed component name handling in Entity base class

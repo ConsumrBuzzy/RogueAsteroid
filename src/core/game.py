@@ -19,84 +19,74 @@ class Game:
     """Main game class managing entities and game loop."""
     
     def __init__(self):
+        """Initialize game."""
         pygame.init()
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Rogue Asteroid")
-        self.clock = pygame.time.Clock()
         
-        # Game properties
+        # Initialize display
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
-        self.dt = 0.0
-        self.lives = INITIAL_LIVES
-        self.level = 1
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption('Rogue Asteroid')
         
-        # Settings with defaults
-        self.settings: Dict[str, Any] = {
+        # Initialize clock
+        self.clock = pygame.time.Clock()
+        self.dt = 0
+        
+        # Game settings
+        self.settings = {
             'controls': {
                 'scheme': 'arrows'  # or 'wasd'
             }
         }
         
-        # Entity management
-        self.entities: List[Any] = []
-        self.ship: Optional[Ship] = None
-        self.asteroids: List[Asteroid] = []
-        
-        # Systems
-        self.scoring = ScoringSystem()  # Initialize scoring before state manager
+        # Initialize state manager
         self.state_manager = StateManager(self)
-    
-    @property
-    def score(self) -> int:
-        """Get current score."""
-        return self.scoring.current_score
+        
+        # Initialize game objects
+        self.ship = None
+        self.entities = []
+        self.asteroids = []
+        self.level = 1
+        
+        # Reset game to initialize entities
+        self.reset_game()
     
     def reset_game(self) -> None:
-        """Reset game state for new game."""
+        """Reset game state."""
         print("Resetting game...")  # Debug info
         
-        # Clear all entities first
+        # Clear entities
         self.entities.clear()
         self.asteroids.clear()
-        self.ship = None
-        
-        # Reset game state
-        self.scoring.reset()
-        self.lives = INITIAL_LIVES
-        self.level = 1
         
         # Create player ship
         self.ship = Ship(self)
         if not self.ship:
             print("Failed to create ship!")  # Debug info
             return
-        
-        # Ensure ship is properly initialized
-        ship_transform = self.ship.get_component('transform')
-        ship_render = self.ship.get_component('render')
-        
-        if not ship_transform or not ship_render:
+            
+        # Initialize ship components
+        transform = self.ship.get_component('transform')
+        render = self.ship.get_component('render')
+        if not transform or not render:
             print("Ship components missing!")  # Debug info
             return
+            
+        # Set ship position and visibility
+        transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+        transform.velocity = np.array([0.0, 0.0])
+        render.visible = True
+        print(f"Ship position: {transform.position}, visible: {render.visible}")  # Debug info
         
-        # Initialize ship position and state
-        ship_transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-        ship_transform.velocity = np.array([0.0, 0.0])
-        ship_render.visible = True
-        
-        print(f"Ship position: {ship_transform.position}")  # Debug info
-        print(f"Ship visibility: {ship_render.visible}")  # Debug info
-        
-        # Add ship to entities list
+        # Add ship to entities
         self.entities.append(self.ship)
-        print(f"Entities count: {len(self.entities)}")  # Debug info
         
-        # Spawn initial asteroids
+        # Reset level and spawn asteroids
+        self.level = 1
         self.spawn_asteroid_wave()
         
-        # Ensure we're in PLAYING state
-        if hasattr(self, 'state_manager'):
+        # Change state to PLAYING if state manager exists
+        if self.state_manager:
             print("Changing state to PLAYING")  # Debug info
             self.state_manager.change_state(GameState.PLAYING)
         else:
@@ -247,31 +237,34 @@ class Game:
     
     def run(self) -> None:
         """Main game loop."""
-        while True:
+        running = True
+        while running:
             # Update timing
-            self.dt = self.clock.tick(FPS) / 1000.0
+            self.dt = self.clock.tick(60) / 1000.0
             
             # Handle events
             for event in pygame.event.get():
-                if self.state_manager.handle_input(event):
-                    pygame.quit()
-                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_o and self.state_manager.current_state == GameState.MAIN_MENU:
+                        self.state_manager.change_state(GameState.OPTIONS)
+                    elif event.key == pygame.K_m and self.state_manager.current_state == GameState.PAUSED:
+                        self.state_manager.change_state(GameState.MAIN_MENU)
+                        self.reset_game()
                 
-                # Handle entity input
-                if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
-                    for entity in self.entities:
-                        if entity:  # Ensure entity exists
-                            input_component = entity.get_component('input')
-                            if input_component:
-                                if event.type == pygame.KEYDOWN:
-                                    input_component.handle_keydown(event.key)
-                                else:
-                                    input_component.handle_keyup(event.key)
+                if self.state_manager.handle_input(event):
+                    running = False
+                    break
             
             # Update game state
             self.state_manager.update()
             
-            # Draw
-            self.screen.fill(BLACK)
+            # Clear screen
+            self.screen.fill((0, 0, 0))
+            
+            # Draw current state
             self.state_manager.draw(self.screen)
-            pygame.display.flip() 
+            
+            # Update display
+            pygame.display.flip()
+        
+        pygame.quit() 

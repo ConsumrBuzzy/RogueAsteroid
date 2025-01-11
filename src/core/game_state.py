@@ -8,6 +8,7 @@ class GameState(Enum):
     MAIN_MENU = auto()
     PLAYING = auto()
     PAUSED = auto()
+    OPTIONS = auto()
     GAME_OVER = auto()
     HIGH_SCORE = auto()
     HIGH_SCORE_ENTRY = auto()
@@ -26,6 +27,7 @@ class StateManager:
             GameState.MAIN_MENU: self._handle_main_menu,
             GameState.PLAYING: self._handle_playing,
             GameState.PAUSED: self._handle_paused,
+            GameState.OPTIONS: self._handle_options,
             GameState.GAME_OVER: self._handle_game_over,
             GameState.HIGH_SCORE: self._handle_high_score,
             GameState.HIGH_SCORE_ENTRY: self._handle_high_score_entry
@@ -37,6 +39,13 @@ class StateManager:
             'medium': pygame.font.Font(None, 48),
             'small': pygame.font.Font(None, 36)
         }
+        
+        # Options menu settings
+        self.selected_option = 0
+        self.options = [
+            ('Controls', ['Arrows', 'WASD']),
+            ('Back', None)
+        ]
     
     def change_state(self, new_state: GameState) -> None:
         """Change to a new game state."""
@@ -71,42 +80,45 @@ class StateManager:
             return True
             
         if event.type == pygame.KEYDOWN:
-            if self.current_state == GameState.HIGH_SCORE_ENTRY:
-                return self._handle_high_score_input(event)
-            
             if event.key == pygame.K_ESCAPE:
                 if self.current_state == GameState.PLAYING:
                     self.change_state(GameState.PAUSED)
                 elif self.current_state == GameState.PAUSED:
                     self.change_state(GameState.PLAYING)
-                elif self.current_state in [GameState.MAIN_MENU, GameState.HIGH_SCORE]:
+                elif self.current_state == GameState.OPTIONS:
+                    self.change_state(GameState.MAIN_MENU)
+                elif self.current_state == GameState.MAIN_MENU:
                     return True
+            
+            elif event.key == pygame.K_p and self.current_state == GameState.PLAYING:
+                self.change_state(GameState.PAUSED)
             
             elif event.key == pygame.K_RETURN:
                 if self.current_state == GameState.MAIN_MENU:
                     self.change_state(GameState.PLAYING)
+                elif self.current_state == GameState.OPTIONS:
+                    if self.selected_option == len(self.options) - 1:  # Back option
+                        self.change_state(GameState.MAIN_MENU)
                 elif self.current_state == GameState.GAME_OVER:
                     self.change_state(GameState.MAIN_MENU)
-                elif self.current_state == GameState.HIGH_SCORE:
-                    self.change_state(GameState.MAIN_MENU)
+            
+            elif self.current_state == GameState.OPTIONS:
+                self._handle_options_input(event)
         
         return False
     
-    def _handle_high_score_input(self, event: pygame.event.Event) -> bool:
-        """Handle input during high score entry."""
-        if event.key == pygame.K_RETURN and self.player_name:
-            # Save high score
-            self.game.scoring.add_high_score(self.player_name, self.game.level)
-            self.change_state(GameState.HIGH_SCORE)
-            return False
-        elif event.key == pygame.K_BACKSPACE:
-            self.player_name = self.player_name[:-1]
-            return False
-        elif event.unicode.isalnum() and len(self.player_name) < 10:
-            self.player_name += event.unicode.upper()
-            return False
-            
-        return False
+    def _handle_options_input(self, event: pygame.event.Event) -> None:
+        """Handle input in options menu."""
+        if event.key == pygame.K_UP:
+            self.selected_option = (self.selected_option - 1) % len(self.options)
+        elif event.key == pygame.K_DOWN:
+            self.selected_option = (self.selected_option + 1) % len(self.options)
+        elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            option, values = self.options[self.selected_option]
+            if values:  # If this option has multiple values
+                current_value = self.game.settings.get('controls', 'scheme').lower()
+                new_value = values[1].lower() if current_value == values[0].lower() else values[0].lower()
+                self.game.settings['controls']['scheme'] = new_value
     
     def update(self) -> None:
         """Update current state."""
@@ -157,12 +169,10 @@ class StateManager:
         elif self.current_state == GameState.PAUSED:
             self._draw_game(screen)
             self._draw_pause_overlay(screen)
+        elif self.current_state == GameState.OPTIONS:
+            self._draw_options(screen)
         elif self.current_state == GameState.GAME_OVER:
             self._draw_game_over(screen)
-        elif self.current_state == GameState.HIGH_SCORE:
-            self._draw_high_scores(screen)
-        elif self.current_state == GameState.HIGH_SCORE_ENTRY:
-            self._draw_high_score_entry(screen)
     
     def _draw_main_menu(self, screen: pygame.Surface) -> None:
         """Draw main menu screen."""
@@ -176,43 +186,36 @@ class StateManager:
         start_rect = start_text.get_rect(center=(self.game.width/2, self.game.height*2/3))
         screen.blit(start_text, start_rect)
         
-        quit_text = self.fonts['small'].render('Press ESC to Quit', True, (255, 255, 255))
-        quit_rect = quit_text.get_rect(center=(self.game.width/2, self.game.height*2/3 + 50))
+        options_text = self.fonts['small'].render('O - Options', True, (255, 255, 255))
+        options_rect = options_text.get_rect(center=(self.game.width/2, self.game.height*2/3 + 40))
+        screen.blit(options_text, options_rect)
+        
+        quit_text = self.fonts['small'].render('ESC - Quit', True, (255, 255, 255))
+        quit_rect = quit_text.get_rect(center=(self.game.width/2, self.game.height*2/3 + 80))
         screen.blit(quit_text, quit_rect)
     
-    def _draw_game(self, screen: pygame.Surface) -> None:
-        """Draw game screen."""
-        print("\nDrawing game screen...")  # Debug info
-        print(f"Number of entities: {len(self.game.entities)}")  # Debug info
+    def _draw_options(self, screen: pygame.Surface) -> None:
+        """Draw options menu screen."""
+        # Title
+        title = self.fonts['large'].render('OPTIONS', True, (255, 255, 255))
+        title_rect = title.get_rect(center=(self.game.width/2, self.game.height/4))
+        screen.blit(title, title_rect)
         
-        # Draw all entities
-        for entity in self.game.entities:
-            if not entity:
-                print("Found null entity!")  # Debug info
-                continue
+        # Options
+        for i, (option, values) in enumerate(self.options):
+            color = (255, 255, 0) if i == self.selected_option else (255, 255, 255)
             
-            print(f"Drawing entity: {entity.__class__.__name__}")  # Debug info
-            
-            render = entity.get_component('render')
-            effects = entity.get_component('effects')
-            
-            if not render:
-                print(f"No render component for {entity.__class__.__name__}")  # Debug info
-                continue
-            
-            print(f"Render visibility: {render.visible}")  # Debug info
-            print(f"Vertices count: {len(render.vertices)}")  # Debug info
-            
-            # Draw main entity
-            if render.visible:
-                render.draw(screen)
-            
-            # Draw effects
-            if effects:
-                effects.draw(screen)
-        
-        # Draw HUD
-        self._draw_hud(screen)
+            if values:  # Option with multiple values
+                current_value = self.game.settings.get('controls', 'scheme')
+                text = f"{option}: < {current_value} >"
+            else:  # Simple option (like Back)
+                text = option
+                
+            option_text = self.fonts['medium'].render(text, True, color)
+            option_rect = option_text.get_rect(
+                center=(self.game.width/2, self.game.height/2 + i * 60)
+            )
+            screen.blit(option_text, option_rect)
     
     def _draw_pause_overlay(self, screen: pygame.Surface) -> None:
         """Draw pause screen overlay."""
@@ -227,9 +230,14 @@ class StateManager:
         text_rect = text.get_rect(center=(self.game.width/2, self.game.height/2))
         screen.blit(text, text_rect)
         
-        resume_text = self.fonts['small'].render('Press ESC to Resume', True, (255, 255, 255))
+        # Instructions
+        resume_text = self.fonts['small'].render('Press P or ESC to Resume', True, (255, 255, 255))
         resume_rect = resume_text.get_rect(center=(self.game.width/2, self.game.height/2 + 50))
         screen.blit(resume_text, resume_rect)
+        
+        menu_text = self.fonts['small'].render('Press M for Main Menu', True, (255, 255, 255))
+        menu_rect = menu_text.get_rect(center=(self.game.width/2, self.game.height/2 + 90))
+        screen.blit(menu_text, menu_rect)
     
     def _draw_game_over(self, screen: pygame.Surface) -> None:
         """Draw game over screen."""
@@ -244,58 +252,6 @@ class StateManager:
         continue_text = self.fonts['small'].render('Press ENTER to Continue', True, (255, 255, 255))
         continue_rect = continue_text.get_rect(center=(self.game.width/2, self.game.height/2 + 100))
         screen.blit(continue_text, continue_rect)
-    
-    def _draw_high_scores(self, screen: pygame.Surface) -> None:
-        """Draw high scores screen."""
-        title = self.fonts['large'].render('HIGH SCORES', True, (255, 255, 255))
-        title_rect = title.get_rect(center=(self.game.width/2, self.game.height/6))
-        screen.blit(title, title_rect)
-        
-        # Draw high scores
-        scores = self.game.scoring.get_high_scores()
-        for i, entry in enumerate(scores):
-            y_pos = self.game.height/3 + (i * 40)
-            
-            # Rank and name
-            rank_text = self.fonts['small'].render(f'{i+1:2d}. {entry.name:10}', True, (255, 255, 255))
-            rank_rect = rank_text.get_rect(left=self.game.width/4, centery=y_pos)
-            screen.blit(rank_text, rank_rect)
-            
-            # Score and level
-            score_text = self.fonts['small'].render(f'{entry.score:8d} pts  (Level {entry.level})', True, (255, 255, 255))
-            score_rect = score_text.get_rect(right=3*self.game.width/4, centery=y_pos)
-            screen.blit(score_text, score_rect)
-        
-        # Return prompt
-        back_text = self.fonts['small'].render('Press ENTER to Return', True, (255, 255, 255))
-        back_rect = back_text.get_rect(center=(self.game.width/2, self.game.height - 50))
-        screen.blit(back_text, back_rect)
-    
-    def _draw_high_score_entry(self, screen: pygame.Surface) -> None:
-        """Draw high score entry screen."""
-        # Title
-        title = self.fonts['large'].render('NEW HIGH SCORE!', True, (255, 255, 0))
-        title_rect = title.get_rect(center=(self.game.width/2, self.game.height/3))
-        screen.blit(title, title_rect)
-        
-        # Score display
-        score_text = self.fonts['medium'].render(f'Score: {self.game.score}', True, (255, 255, 255))
-        score_rect = score_text.get_rect(center=(self.game.width/2, self.game.height/2 - 50))
-        screen.blit(score_text, score_rect)
-        
-        # Name entry
-        prompt = self.fonts['medium'].render('Enter Your Name:', True, (255, 255, 255))
-        prompt_rect = prompt.get_rect(center=(self.game.width/2, self.game.height/2 + 20))
-        screen.blit(prompt, prompt_rect)
-        
-        name = self.fonts['medium'].render(self.player_name + '_', True, (255, 255, 255))
-        name_rect = name.get_rect(center=(self.game.width/2, self.game.height/2 + 70))
-        screen.blit(name, name_rect)
-        
-        # Instructions
-        instr = self.fonts['small'].render('Press ENTER when done', True, (255, 255, 255))
-        instr_rect = instr.get_rect(center=(self.game.width/2, self.game.height/2 + 120))
-        screen.blit(instr, instr_rect)
     
     def _draw_hud(self, screen: pygame.Surface) -> None:
         """Draw heads-up display."""
