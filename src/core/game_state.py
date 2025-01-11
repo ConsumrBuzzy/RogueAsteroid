@@ -112,11 +112,15 @@ class StateManager:
     
     def _handle_playing(self) -> None:
         """Handle playing state."""
+        if not self.game.ship:
+            return  # Don't update if ship is destroyed
+            
         self.game.update_entities()
         self.game.handle_collisions()
         
         # Check for level completion
-        if not self.game.asteroids and self.game.ship:
+        if len(self.game.asteroids) == 0:  # Only progress if all asteroids are destroyed
+            print(f"Level {self.game.level} completed")  # Debug info
             self.game.level += 1
             self.game.spawn_asteroid_wave()
     

@@ -1,6 +1,7 @@
 """Base classes for entity component system."""
 from typing import Dict, Type, TypeVar, Optional, Any
 import numpy as np
+import pygame  # Add at top level to avoid circular import
 
 T = TypeVar('T', bound='Component')
 
@@ -62,11 +63,16 @@ class RenderComponent(Component):
     
     def draw(self, surface: Any) -> None:
         """Draw the entity on the surface."""
-        if not self.visible or not self.vertices:
+        if not self.visible:
+            return
+            
+        if not self.vertices:
+            print(f"Warning: No vertices defined for {self.entity.__class__.__name__}")
             return
             
         transform = self.entity.get_component('transform')
         if not transform:
+            print(f"Warning: No transform component for {self.entity.__class__.__name__}")
             return
             
         # Convert vertices to screen space
@@ -92,6 +98,10 @@ class RenderComponent(Component):
             else:
                 # Draw polygon for ship and asteroids
                 pygame.draw.polygon(surface, self.color, screen_vertices)
+                
+                # Debug: Draw center point
+                center = (int(transform.position[0]), int(transform.position[1]))
+                pygame.draw.circle(surface, (255, 0, 0), center, 2)
 
 class CollisionComponent(Component):
     """Component for collision detection."""
