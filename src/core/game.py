@@ -41,6 +41,8 @@ class Game:
         # Initialize state management
         self.state_manager = StateManager(self)
         print("Initializing StateManager")
+        self.state_manager.change_state(GameState.MAIN_MENU)  # Set initial state
+        print(f"Initial state set to: {self.state_manager.current_state}")
         
         # Initialize game properties
         self.dt = 0

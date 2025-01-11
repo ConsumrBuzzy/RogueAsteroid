@@ -17,7 +17,7 @@ class StateManager:
         """Initialize the state manager."""
         print("Initializing StateManager")  # Debug info
         self.game = game
-        self.current_state = GameState.MAIN_MENU
+        self.current_state = None  # Initialize to None, let Game class set initial state
         self.selected_option = 0
         self.menu_options = {
             GameState.MAIN_MENU: ['New Game', 'High Scores', 'Options', 'Quit'],
@@ -25,20 +25,20 @@ class StateManager:
             GameState.PAUSED: ['Resume', 'Options', 'Main Menu']
         }
         self.high_score_name = ""  # For new high score entry
-        print(f"Initial state: {self.current_state}")  # Debug info
     
     def change_state(self, new_state):
         """Change the current game state."""
-        print(f"Changing state from {self.current_state} to {new_state}")  # Debug info
+        old_state = self.current_state
+        print(f"Changing state from {old_state} to {new_state}")  # Debug info
         
         if new_state == self.current_state:
             return
         
         if new_state == GameState.PLAYING:
-            if self.current_state == GameState.MAIN_MENU:
+            if old_state == GameState.MAIN_MENU:
                 print("Starting new game")  # Debug info
                 self.game.reset_game()
-            elif self.current_state == GameState.PAUSED:
+            elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
             print("Game Over!")  # Debug info
