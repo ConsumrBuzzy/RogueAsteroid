@@ -10,10 +10,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Game settings
-INITIAL_LIVES = 3
 STARTING_LIVES = 3  # Number of lives player starts with
 SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after respawn
-MAX_ASTEROIDS = 10  # Maximum number of asteroids on screen
 MAX_BULLETS = 8  # Maximum number of bullets on screen
 
 # Ship settings
@@ -89,12 +87,6 @@ THRUST_PARTICLES = {
     'spread_angle': 30.0  # Degrees
 }
 
-# Audio settings
-AUDIO_VOLUMES = {
-    'music': 0.5,
-    'sfx': 0.7
-}
-
 # High score settings
-MAX_HIGH_SCORES = 10
+MAX_HIGH_SCORES = 5  # Reduced from 10 to match current implementation
 HIGH_SCORE_NAME_LENGTH = 10 
