@@ -195,10 +195,55 @@ class Game:
             
         # Check ship collision with asteroids
         ship_collision = self.ship.get_component('collision')
-        if not ship_collision:
-            return
-            
-        # Check asteroid-asteroid collisions first
+        if ship_collision and ship_collision.active:
+            for asteroid in self.asteroids[:]:  # Copy list to allow removal
+                asteroid_collision = asteroid.get_component('collision')
+                if not asteroid_collision:
+                    continue
+                    
+                if ship_collision.check_collision(asteroid_collision):
+                    print("Ship collided with asteroid")  # Debug info
+                    self.lives -= 1
+                    self.entities.remove(self.ship)
+                    self.ship = None
+                    self.respawn_timer = 2.0  # Wait 2 seconds before respawning
+                    break
+        
+        # Check bullet collisions with asteroids
+        for bullet in self.bullets[:]:  # Copy list to allow removal
+            bullet_collision = bullet.get_component('collision')
+            if not bullet_collision:
+                continue
+                
+            for asteroid in self.asteroids[:]:  # Copy list to allow removal
+                asteroid_collision = asteroid.get_component('collision')
+                if not asteroid_collision:
+                    continue
+                    
+                if bullet_collision.check_collision(asteroid_collision):
+                    print(f"Bullet hit asteroid")  # Debug info
+                    
+                    # Create new asteroids from split
+                    new_asteroids = asteroid.split()
+                    
+                    # Remove bullet and original asteroid
+                    if bullet in self.entities:
+                        self.entities.remove(bullet)
+                    if bullet in self.bullets:
+                        self.bullets.remove(bullet)
+                    if asteroid in self.entities:
+                        self.entities.remove(asteroid)
+                    if asteroid in self.asteroids:
+                        self.asteroids.remove(asteroid)
+                    
+                    # Add new asteroids from split
+                    for new_asteroid in new_asteroids:
+                        self.asteroids.append(new_asteroid)
+                        self.entities.append(new_asteroid)
+                    
+                    break  # Bullet can only hit one asteroid
+        
+        # Check asteroid-asteroid collisions
         for i, asteroid1 in enumerate(self.asteroids[:-1]):
             collision1 = asteroid1.get_component('collision')
             if not collision1:
@@ -216,18 +261,16 @@ class Game:
                     if not transform1 or not transform2:
                         continue
                     
-                    # Simple direction calculation
-                    direction = pygame.Vector2(
-                        transform2.position.x - transform1.position.x,
-                        transform2.position.y - transform1.position.y
-                    )
+                    # Get collision normal and depth
+                    normal = collision1.get_collision_normal(collision2)
+                    if not normal:
+                        continue
+                        
+                    depth = collision1.get_collision_depth(collision2)
                     
-                    # If asteroids are exactly overlapping, use a random direction
-                    if direction.length() == 0:
-                        angle = random.uniform(0, 2 * math.pi)
-                        direction = pygame.Vector2(math.cos(angle), math.sin(angle))
-                    else:
-                        direction = direction.normalize()
+                    # Separate asteroids
+                    transform1.position -= normal * (depth * 0.5)
+                    transform2.position += normal * (depth * 0.5)
                     
                     # Get current speeds
                     speed1 = transform1.velocity.length()
@@ -248,55 +291,15 @@ class Game:
                         vel2.y * 0.2 + vel1.y * 0.8
                     )
                     
-                    # Normalize and scale to maintain speed
+                    # Normalize and scale to maintain average speed
                     if new_vel1.length() > 0:
-                        new_vel1 = new_vel1.normalize() * avg_speed
+                        new_vel1.scale_to_length(avg_speed)
                     if new_vel2.length() > 0:
-                        new_vel2 = new_vel2.normalize() * avg_speed
+                        new_vel2.scale_to_length(avg_speed)
                     
-                    # Add subtle deflection
-                    deflection = random.uniform(-0.15, 0.15)  # Even smoother deflection
-                    transform1.velocity = new_vel1.rotate(deflection * 90)
-                    transform2.velocity = new_vel2.rotate(deflection * 90)
-                    
-                    # Gentler spin
-                    spin = random.uniform(10, 30)  # Reduced spin range further
-                    transform1.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
-                    transform2.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
-                    
-                    # Very minimal separation
-                    separation = (collision1.radius + collision2.radius) * 0.2  # Further reduced separation
-                    transform1.position -= direction * separation * 0.4
-                    transform2.position += direction * separation * 0.4
-        
-        # Then check ship-asteroid collisions
-        if self.ship:
-            ship_collision = self.ship.get_component('collision')
-            if not ship_collision:
-                return
-                
-            for asteroid in self.asteroids[:]:  # Copy list to allow removal
-                asteroid_collision = asteroid.get_component('collision')
-                if not asteroid_collision:
-                    continue
-                    
-                if ship_collision.check_collision(asteroid_collision):
-                    self.lives -= 1
-                    print(f"Ship hit! Lives remaining: {self.lives}")  # Debug info
-                    
-                    if self.lives <= 0:
-                        print("Game Over!")  # Debug info
-                        if self.ship in self.entities:
-                            self.entities.remove(self.ship)
-                        self.ship = None
-                        self.state_manager.change_state(GameState.GAME_OVER)
-                    else:
-                        # Remove ship and set respawn timer
-                        if self.ship in self.entities:
-                            self.entities.remove(self.ship)
-                        self.ship = None
-                        self.respawn_timer = SHIP_INVULNERABLE_TIME  # Set respawn delay
-                        print(f"Ship will respawn in {SHIP_INVULNERABLE_TIME} seconds")  # Debug info
+                    # Apply new velocities
+                    transform1.velocity = new_vel1
+                    transform2.velocity = new_vel2
     
     def run(self):
         """Main game loop."""

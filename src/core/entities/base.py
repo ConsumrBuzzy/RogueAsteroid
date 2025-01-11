@@ -258,8 +258,8 @@ class RenderComponent(Component):
 class CollisionComponent(Component):
     """Component for handling collisions.
     
-    Manages collision detection between entities using circular collision bounds.
-    Supports active/inactive states for temporary collision disabling.
+    Manages collision detection and provides collision information for response.
+    Uses circular collision bounds for simplicity and performance.
     """
     
     def __init__(self, entity: Entity, radius: float) -> None:
@@ -268,31 +268,43 @@ class CollisionComponent(Component):
         Args:
             entity: The entity this component belongs to.
             radius: The radius of the collision circle.
+            
+        Raises:
+            ValueError: If radius is not positive.
         """
         super().__init__(entity)
+        if radius <= 0:
+            raise ValueError("Collision radius must be positive")
         self._radius = radius
-        self._active = True
+        self._active = True  # For enabling/disabling collisions (e.g., during invulnerability)
     
     @property
     def radius(self) -> float:
         """Get the collision radius."""
         return self._radius
-        
+    
     @radius.setter
     def radius(self, value: float) -> None:
-        """Set the collision radius."""
+        """Set the collision radius.
+        
+        Args:
+            value: The new radius value.
+            
+        Raises:
+            ValueError: If value is not positive.
+        """
         if value <= 0:
             raise ValueError("Collision radius must be positive")
         self._radius = value
     
     @property
     def active(self) -> bool:
-        """Get the current active state."""
+        """Get whether collision detection is active."""
         return self._active
-        
+    
     @active.setter
     def active(self, value: bool) -> None:
-        """Set the current active state."""
+        """Set whether collision detection is active."""
         self._active = value
     
     def check_collision(self, other: 'CollisionComponent') -> bool:
@@ -304,7 +316,7 @@ class CollisionComponent(Component):
         Returns:
             True if the components are colliding, False otherwise.
         """
-        if not self._active or not other.active:
+        if not (self._active and other._active):
             return False
             
         transform = self.entity.get_component('transform')
@@ -312,6 +324,73 @@ class CollisionComponent(Component):
         
         if not transform or not other_transform:
             return False
+            
+        # Get positions as Vector2
+        pos1 = pygame.Vector2(transform.position)
+        pos2 = pygame.Vector2(other_transform.position)
         
-        distance = transform.position.distance_to(other_transform.position)
-        return distance < (self._radius + other.radius) 
+        # Calculate distance between centers
+        distance = (pos2 - pos1).length()
+        
+        # Check if distance is less than sum of radii
+        return distance < (self._radius + other.radius)
+    
+    def get_collision_normal(self, other: 'CollisionComponent') -> Optional[pygame.Vector2]:
+        """Get the collision normal vector pointing from this to other.
+        
+        Args:
+            other: The other collision component.
+            
+        Returns:
+            Normalized vector from this component's center to other's center,
+            or None if components are not colliding or at same position.
+        """
+        if not self.check_collision(other):
+            return None
+            
+        transform = self.entity.get_component('transform')
+        other_transform = other.entity.get_component('transform')
+        
+        if not transform or not other_transform:
+            return None
+            
+        # Get positions as Vector2
+        pos1 = pygame.Vector2(transform.position)
+        pos2 = pygame.Vector2(other_transform.position)
+        
+        # Calculate direction
+        direction = pos2 - pos1
+        
+        # Handle case where objects are at same position
+        if direction.length() == 0:
+            return None
+            
+        return direction.normalize()
+    
+    def get_collision_depth(self, other: 'CollisionComponent') -> float:
+        """Get the overlap distance between colliding components.
+        
+        Args:
+            other: The other collision component.
+            
+        Returns:
+            Positive overlap distance if colliding, 0 otherwise.
+        """
+        if not self.check_collision(other):
+            return 0.0
+            
+        transform = self.entity.get_component('transform')
+        other_transform = other.entity.get_component('transform')
+        
+        if not transform or not other_transform:
+            return 0.0
+            
+        # Get positions as Vector2
+        pos1 = pygame.Vector2(transform.position)
+        pos2 = pygame.Vector2(other_transform.position)
+        
+        # Calculate actual and desired distances
+        actual_distance = (pos2 - pos1).length()
+        desired_distance = self._radius + other.radius
+        
+        return max(0.0, desired_distance - actual_distance) 
