@@ -57,13 +57,6 @@ class Game:
         self.bullets = []
         self.asteroids = []
         
-        # Dummy sound system (since we removed sound)
-        self.sound = type('DummySound', (), {
-            'play_sound': lambda *args, **kwargs: None,  # Accept any arguments
-            'stop_sound': lambda *args, **kwargs: None   # Accept any arguments
-        })()
-        print("Sound system initialized (dummy)")
-        
         print("Game initialization complete")
     
     @property
