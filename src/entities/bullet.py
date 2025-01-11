@@ -140,7 +140,7 @@ class Bullet(Entity):
                         
                         # Handle asteroid hit and scoring
                         points = ASTEROID_SIZES[entity.size]['points']
-                        self.game.score += points
+                        self.game.scoring.add_points(points)
                         print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
                         
                         # Split asteroid if not smallest size
