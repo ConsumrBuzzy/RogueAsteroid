@@ -121,12 +121,17 @@ class Asteroid(Entity):
     def split(self):
         """Split asteroid into smaller pieces."""
         if self.size == 'small':
+            # Create small explosion for final destruction
+            self._create_destruction_particles()
             return []
             
         # Get current properties
         transform = self.get_component('transform')
         if not transform:
             return []
+            
+        # Create split effect particles
+        self._create_split_particles()
             
         # Determine new size
         new_size = 'medium' if self.size == 'large' else 'small'
@@ -178,6 +183,68 @@ class Asteroid(Entity):
             print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}, offset={offset_distance}")  # Debug info
         
         return pieces
+    
+    def _create_destruction_particles(self):
+        """Create particles for final destruction."""
+        from src.entities.particle import Particle
+        transform = self.get_component('transform')
+        if not transform:
+            return
+            
+        # Create more particles for larger asteroids
+        num_particles = {
+            'large': 24,
+            'medium': 16,
+            'small': 12
+        }.get(self.size, 12)
+        
+        # Adjust particle parameters based on size
+        speed_range = (100, 200)  # Faster particles for more dramatic effect
+        lifetime_range = (0.4, 0.8)
+        size_range = (1.5, 3.0)
+        
+        # Create explosion particles
+        particles = Particle.create_explosion(
+            self.game,
+            transform.position,
+            color=(255, 200, 50),  # Orange/yellow for destruction
+            num_particles=num_particles,
+            speed_range=speed_range,
+            lifetime_range=lifetime_range,
+            size_range=size_range
+        )
+        
+        # Add particles to game
+        for particle in particles:
+            self.game.add_entity(particle)
+            
+    def _create_split_particles(self):
+        """Create particles for splitting effect."""
+        from src.entities.particle import Particle
+        transform = self.get_component('transform')
+        if not transform:
+            return
+            
+        # Fewer particles for split effect
+        num_particles = {
+            'large': 16,
+            'medium': 12,
+        }.get(self.size, 8)
+        
+        # Create split particles
+        particles = Particle.create_explosion(
+            self.game,
+            transform.position,
+            color=(200, 200, 200),  # White/grey for splits
+            num_particles=num_particles,
+            speed_range=(50, 150),
+            lifetime_range=(0.3, 0.6),
+            size_range=(1.0, 2.0)
+        )
+        
+        # Add particles to game
+        for particle in particles:
+            self.game.add_entity(particle)
 
     def update(self, dt: float):
         """Update the asteroid's state."""

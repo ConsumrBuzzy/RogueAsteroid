@@ -165,3 +165,67 @@ class EffectComponent(Component):
             # Draw effect
             if len(screen_vertices) >= 3:
                 pygame.draw.polygon(surface, effect.color, screen_vertices) 
+
+class ParticleComponent(Component):
+    """Component for managing particle effects."""
+    
+    def __init__(self, lifetime: float = 1.0, color: tuple = (255, 255, 255)):
+        """Initialize the particle component.
+        
+        Args:
+            lifetime: How long the particle lives in seconds
+            color: RGB color tuple for the particle
+        """
+        super().__init__()
+        self.lifetime = lifetime
+        self.time_remaining = lifetime
+        self.color = color
+        self.alpha = 255  # For fade out effect
+        self.size = 2.0  # Particle size in pixels
+        self.velocity = pygame.Vector2(0, 0)
+        
+    def update(self, dt: float):
+        """Update particle state."""
+        if not self.entity:
+            return
+            
+        # Update lifetime
+        self.time_remaining -= dt
+        if self.time_remaining <= 0:
+            self.entity.game.remove_entity(self.entity)
+            return
+            
+        # Update alpha for fade out
+        self.alpha = int((self.time_remaining / self.lifetime) * 255)
+        
+        # Update position based on velocity
+        transform = self.entity.get_component('transform')
+        if transform:
+            transform.position += self.velocity * dt
+            
+    def draw(self, screen: pygame.Surface):
+        """Draw the particle."""
+        if not self.entity:
+            return
+            
+        transform = self.entity.get_component('transform')
+        if not transform:
+            return
+            
+        # Create a surface with per-pixel alpha
+        particle_surface = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+        
+        # Draw the particle with current alpha
+        color_with_alpha = (*self.color, self.alpha)
+        pygame.draw.circle(
+            particle_surface,
+            color_with_alpha,
+            (self.size, self.size),
+            self.size
+        )
+        
+        # Draw to screen
+        screen.blit(
+            particle_surface,
+            (transform.position.x - self.size, transform.position.y - self.size)
+        ) 

@@ -524,3 +524,13 @@ Next: Test split behavior with new spawn offsets
 - Improved debug logging for high score addition
 - Verified high score saving and sorting
 Next: Test complete high score flow 
+
+[2024-01-11 13:22PM] [IMPL] Added particle system for visual effects
+- Implemented ParticleComponent with fade-out and size control
+- Created Particle entity with explosion effect generator
+- Added particle effects to asteroids:
+  * Orange/yellow explosion particles for final destruction
+  * White/grey particles for asteroid splits
+  * Size-based particle counts and parameters
+  * Proper particle cleanup via lifetime system
+Next: Add engine thrust particles and bullet impact effects 
