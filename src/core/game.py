@@ -123,24 +123,33 @@ class Game:
         """Update all game entities."""
         # Update all entities
         for entity in self.entities[:]:  # Copy list to allow removal during iteration
-            if entity:
-                entity.update(self.dt)
+            entity.update(self.dt)
+        
+        # Check for level completion
+        if len(self.asteroids) == 0:
+            print(f"Level {self.level} complete!")  # Debug info
+            self.sound.play_sound('level_complete')
+            self.level += 1
+            
+            # Award extra life every 2 levels (max 5 lives)
+            if self.level % 2 == 0 and self.lives < 5:
+                self.lives += 1
+                print(f"Extra life awarded! Lives: {self.lives}")  # Debug info
+            
+            # Spawn new wave of asteroids
+            self.spawn_asteroid_wave()
+        
+        # Update respawn timer
+        if self.respawn_timer > 0:
+            self.respawn_timer -= self.dt
+            if self.respawn_timer <= 0:
+                print("Respawning ship")  # Debug info
+                self.ship = Ship(self)
+                self.entities.append(self.ship)
+                self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME  # Make ship temporarily invulnerable
         
         # Update scoring system
         self.scoring.update(self.dt)
-        
-        # Handle ship respawning
-        if self.ship is None and self.lives > 0:
-            self.respawn_timer -= self.dt
-            if self.respawn_timer <= 0:
-                self.respawn_ship()
-        
-        # Check if we need to spawn more asteroids
-        if len(self.asteroids) == 0:
-            self.level += 1
-            print(f"Level {self.level} completed! Awarding extra life.")  # Debug info
-            self.lives = min(self.lives + 1, 5)  # Award life, cap at 5
-            self.spawn_asteroid_wave()
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
