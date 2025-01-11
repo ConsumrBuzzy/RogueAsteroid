@@ -69,8 +69,8 @@ class Ship(Entity):
         
         # Physics component for thrust and momentum
         physics = self.add_component(PhysicsComponent)
-        physics.max_speed = 400  # Maximum speed in pixels per second
-        physics.friction = 0.02  # Gradual slowdown
+        physics.max_speed = SHIP_MAX_SPEED
+        physics.friction = SHIP_FRICTION
         
         # Collision component for hit detection
         collision = self.add_component(CollisionComponent, radius=15)  # Pass radius in constructor
@@ -84,52 +84,40 @@ class Ship(Entity):
         self._init_thrust_effect(effects)  # Initialize thrust effect
         
         # Input component for controls
-        input_component = self.add_component(InputComponent)
-        
-        # Bind controls based on scheme
-        controls = self.game.settings.get('controls', 'arrows')
-        if controls == 'arrows':
-            thrust_key = pygame.K_UP
-            left_key = pygame.K_LEFT
-            right_key = pygame.K_RIGHT
-        else:  # wasd
-            thrust_key = pygame.K_w
-            left_key = pygame.K_a
-            right_key = pygame.K_d
-        
-        input_component.bind_key(thrust_key, self._apply_thrust, True)
-        input_component.bind_key(left_key, self._rotate_left, True)
-        input_component.bind_key(right_key, self._rotate_right, True)
-        input_component.bind_key(pygame.K_SPACE, self._shoot)
-        
-        print(f"Transform component: {transform}")
-        print(f"Render component: {render}")
-        print("Ship components initialized successfully")
+        self.input_component = self.add_component(InputComponent)
+        self.update_controls()  # Initialize controls
     
-    def _init_input(self) -> None:
-        """Initialize input component with control bindings."""
-        input_component = self.add_component(InputComponent)
+    def update_controls(self) -> None:
+        """Update control bindings based on current control scheme."""
+        if not self.input_component:
+            return
+            
+        # Clear existing bindings
+        self.input_component.clear_bindings()
         
-        # Bind controls based on scheme
-        if self.game.settings.get('controls', 'scheme') == 'arrows':
+        # Get current control scheme
+        controls = self.game.settings.get('controls', 'arrows')
+        
+        # Set up keys based on control scheme
+        if controls == 'arrows':
             thrust_key = pygame.K_UP
             reverse_key = pygame.K_DOWN
             left_key = pygame.K_LEFT
             right_key = pygame.K_RIGHT
-            shoot_key = pygame.K_SPACE
         else:  # wasd
             thrust_key = pygame.K_w
             reverse_key = pygame.K_s
             left_key = pygame.K_a
             right_key = pygame.K_d
-            shoot_key = pygame.K_SPACE
         
-        # Bind continuous actions
-        input_component.bind_key(thrust_key, self._apply_thrust, continuous=True)
-        input_component.bind_key(reverse_key, self._apply_reverse_thrust, continuous=True)
-        input_component.bind_key(left_key, self._rotate_left, continuous=True)
-        input_component.bind_key(right_key, self._rotate_right, continuous=True)
-        input_component.bind_key(shoot_key, self._shoot, continuous=False)
+        # Bind controls
+        self.input_component.bind_key(thrust_key, self._apply_thrust, True)
+        self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
+        self.input_component.bind_key(left_key, self._rotate_left, True)
+        self.input_component.bind_key(right_key, self._rotate_right, True)
+        self.input_component.bind_key(pygame.K_SPACE, self._shoot)
+        
+        print(f"Controls updated to scheme: {controls}")  # Debug info
     
     def _apply_thrust(self) -> None:
         """Apply forward thrust force."""
