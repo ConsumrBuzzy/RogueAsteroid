@@ -6,6 +6,7 @@ The system is designed to be flexible, extensible, and maintainable, following S
 
 from typing import Dict, Type, TypeVar, Optional, List, Tuple, Any
 import pygame
+import math
 from pygame import Vector2
 
 T = TypeVar('T', bound='Component')
@@ -238,9 +239,9 @@ class RenderComponent(Component):
             List of vertices in world space.
         """
         world_vertices = []
-        rotation_rad = pygame.math.radians(transform.rotation)
-        cos_rot = pygame.math.cos(rotation_rad)
-        sin_rot = pygame.math.sin(rotation_rad)
+        rotation_rad = math.radians(transform.rotation)
+        cos_rot = math.cos(rotation_rad)
+        sin_rot = math.sin(rotation_rad)
         
         for vertex in self._vertices:
             # Rotate vertex
@@ -251,7 +252,7 @@ class RenderComponent(Component):
             world_x = x + transform.position.x
             world_y = y + transform.position.y
             world_vertices.append((world_x, world_y))
-        
+            
         return world_vertices
 
 class CollisionComponent(Component):
