@@ -300,60 +300,52 @@ class Game:
         # Check asteroid-asteroid collisions
         for i, asteroid1 in enumerate(self.asteroids[:-1]):
             collision1 = asteroid1.get_component('collision')
-            if not collision1:
+            transform1 = asteroid1.get_component('transform')
+            if not collision1 or not transform1:
                 continue
                 
             for asteroid2 in self.asteroids[i+1:]:
                 collision2 = asteroid2.get_component('collision')
-                if not collision2:
+                transform2 = asteroid2.get_component('transform')
+                if not collision2 or not transform2:
                     continue
                     
                 if collision1.check_collision(collision2):
-                    # Get transforms
-                    transform1 = asteroid1.get_component('transform')
-                    transform2 = asteroid2.get_component('transform')
-                    if not transform1 or not transform2:
-                        continue
+                    # Calculate collision normal and depth
+                    pos1 = pygame.Vector2(transform1.position)
+                    pos2 = pygame.Vector2(transform2.position)
+                    normal = (pos2 - pos1).normalize()
+                    overlap = (collision1.radius + collision2.radius) - (pos2 - pos1).length()
                     
-                    # Get collision normal and depth
-                    normal = collision1.get_collision_normal(collision2)
-                    if not normal:
-                        continue
+                    if overlap > 0:
+                        # Separate asteroids
+                        separation = normal * (overlap * 0.5)
+                        transform1.position -= separation
+                        transform2.position += separation
                         
-                    depth = collision1.get_collision_depth(collision2)
-                    
-                    # Separate asteroids
-                    transform1.position -= normal * (depth * 0.5)
-                    transform2.position += normal * (depth * 0.5)
-                    
-                    # Get current speeds
-                    speed1 = transform1.velocity.length()
-                    speed2 = transform2.velocity.length()
-                    avg_speed = (speed1 + speed2) * 0.5  # Use average speed
-                    
-                    # Blend velocities with speed preservation
-                    vel1 = pygame.Vector2(transform1.velocity)
-                    vel2 = pygame.Vector2(transform2.velocity)
-                    
-                    # Calculate new velocities (80% new, 20% old)
-                    new_vel1 = pygame.Vector2(
-                        vel1.x * 0.2 + vel2.x * 0.8,
-                        vel1.y * 0.2 + vel2.y * 0.8
-                    )
-                    new_vel2 = pygame.Vector2(
-                        vel2.x * 0.2 + vel1.x * 0.8,
-                        vel2.y * 0.2 + vel1.y * 0.8
-                    )
-                    
-                    # Normalize and scale to maintain average speed
-                    if new_vel1.length() > 0:
-                        new_vel1.scale_to_length(avg_speed)
-                    if new_vel2.length() > 0:
-                        new_vel2.scale_to_length(avg_speed)
-                    
-                    # Apply new velocities
-                    transform1.velocity = new_vel1
-                    transform2.velocity = new_vel2
+                        # Get velocities
+                        vel1 = pygame.Vector2(transform1.velocity)
+                        vel2 = pygame.Vector2(transform2.velocity)
+                        
+                        # Calculate relative velocity
+                        rel_vel = vel2 - vel1
+                        
+                        # Calculate impulse (elastic collision)
+                        restitution = 0.8  # Bouncy collisions
+                        impulse = -(1 + restitution) * rel_vel.dot(normal) / 2
+                        
+                        # Apply impulse
+                        mass1 = ASTEROID_SIZES[asteroid1.size]['mass']
+                        mass2 = ASTEROID_SIZES[asteroid2.size]['mass']
+                        
+                        transform1.velocity = vel1 - (normal * impulse / mass1)
+                        transform2.velocity = vel2 + (normal * impulse / mass2)
+                        
+                        # Add some random spin
+                        spin1 = random.uniform(-45, 45)
+                        spin2 = random.uniform(-45, 45)
+                        transform1.rotation_speed = spin1
+                        transform2.rotation_speed = spin2
     
     def run(self):
         """Main game loop."""
