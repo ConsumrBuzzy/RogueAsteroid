@@ -32,8 +32,8 @@ class Asteroid(Entity):
         
         # Choose a random angle and distance from the ship
         angle = random.uniform(0, 2 * math.pi)
-        min_distance = 100  # Minimum safe distance from ship
-        max_distance = 200  # Maximum spawn distance
+        min_distance = 150  # Increased minimum safe distance
+        max_distance = 250  # Increased maximum spawn distance
         distance = random.uniform(min_distance, max_distance)
         
         # Calculate spawn position
@@ -41,14 +41,28 @@ class Asteroid(Entity):
         spawn_y = (ship_pos.y + math.sin(angle) * distance) % WINDOW_HEIGHT
         position = pygame.Vector2(spawn_x, spawn_y)
         
-        # Random velocity
+        # Calculate direction to ship
+        to_ship = pygame.Vector2(
+            ship_pos.x - spawn_x,
+            ship_pos.y - spawn_y
+        ).normalize()
+        
+        # Generate velocity angle that's not toward the ship
+        # Calculate forbidden angle range (toward ship ±45 degrees)
+        ship_angle = math.atan2(to_ship.y, to_ship.x)
+        min_allowed = ship_angle + math.pi/4  # +45 degrees
+        max_allowed = ship_angle + 7*math.pi/4  # +315 degrees
+        
+        # Choose a random angle outside the forbidden range
+        velocity_angle = random.uniform(min_allowed, max_allowed)
         speed = random.uniform(50, 100)
-        velocity_angle = random.uniform(0, 2 * math.pi)
+        
         velocity = pygame.Vector2(
             math.cos(velocity_angle) * speed,
             math.sin(velocity_angle) * speed
         )
         
+        print(f"Spawning asteroid at {position} with velocity {velocity}")  # Debug info
         return cls(game, 'large', position, velocity)
     
     def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):

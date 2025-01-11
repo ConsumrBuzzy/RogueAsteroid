@@ -385,6 +385,12 @@ Next: Test ship respawning after asteroid collision
 - Improved high score entry screen with level display
 Next: Test high score system end-to-end
 
+[2024-01-11 13:07PM] [FIX] Improved asteroid spawning safety:
+- Increased minimum spawn distance from ship (150-250 pixels)
+- Added velocity angle restrictions to prevent direct paths toward ship
+- Added debug logging for asteroid spawn positions and velocities
+Next: Test asteroid spawning behavior
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
