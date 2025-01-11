@@ -178,6 +178,10 @@ class StateManager:
         """Handle high score entry state."""
         pass  # Handle in input method
     
+    def _handle_options(self) -> None:
+        """Handle options menu state."""
+        pass  # Options are handled in input method
+    
     def draw(self, screen: pygame.Surface) -> None:
         """Draw current state UI."""
         if self.current_state == GameState.MAIN_MENU:
