@@ -1,7 +1,7 @@
 """Asteroid entity for the game."""
 import random
 import math
-from typing import List, Tuple
+from typing import List, Tuple, Union, Optional
 import pygame
 from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
 from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
@@ -15,15 +15,27 @@ from src.core.constants import (
 class Asteroid(Entity):
     """Asteroid entity that can be destroyed by bullets and split into smaller pieces."""
     
-    def __init__(self, game, size='large', position=None, velocity=None):
-        """Initialize the asteroid with the given size and optional position/velocity."""
+    def __init__(self, game, size: str, position: Union[pygame.Vector2, Tuple[float, float]], velocity: Optional[pygame.Vector2] = None):
+        """Initialize the asteroid."""
         super().__init__(game)
         self.size = size
-        if position is None:
-            position = pygame.Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+        
+        # Convert position tuple to Vector2 if needed
+        if isinstance(position, tuple):
+            position = pygame.Vector2(position[0], position[1])
+        
+        # Default velocity if none provided
         if velocity is None:
-            velocity = pygame.Vector2(0, 0)
+            min_speed, max_speed = ASTEROID_SIZES[size]['speed_range']
+            speed = random.uniform(min_speed, max_speed)
+            angle = random.uniform(0, 2 * math.pi)
+            velocity = pygame.Vector2(
+                math.cos(angle) * speed,
+                math.sin(angle) * speed
+            )
+        
         self._init_components(position, velocity)
+        print(f"Asteroid created: size={size}, pos={position}, vel={velocity}")  # Debug info
     
     @classmethod
     def spawn_random(cls, game, ship_pos: pygame.Vector2) -> 'Asteroid':
@@ -124,8 +136,8 @@ class Asteroid(Entity):
         split_angles = [-30, 30]  # Angles in degrees to split apart
         
         for angle in split_angles:
-            # Create new asteroid
-            piece = Asteroid(self.game, transform.position.x, transform.position.y, new_size)
+            # Create new asteroid with current position
+            piece = Asteroid(self.game, new_size, transform.position, None)
             
             # Get piece's transform
             piece_transform = piece.get_component('transform')
