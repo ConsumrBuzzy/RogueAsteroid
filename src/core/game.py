@@ -39,8 +39,12 @@ class Game:
         # Systems
         self.state_manager = StateManager(self)
         self.scoring = ScoringSystem()
-        self.sound = SoundManager()  # Initialize sound manager
-        self.score = 0  # Initialize score property
+        try:
+            pygame.mixer.init()
+            self.sound = SoundManager()  # Initialize sound manager
+        except pygame.error as e:
+            print(f"Warning: Sound system initialization failed: {e}")
+            self.sound = None
         
         # Entities
         self.ship = None
@@ -122,37 +126,30 @@ class Game:
                     # Remove invalid asteroid
                     del asteroid
     
-    def update_entities(self):
-        """Update all game entities."""
+    def update(self, dt):
+        """Update game state."""
         # Update all entities
-        for entity in self.entities[:]:  # Copy list to allow removal during iteration
-            entity.update(self.dt)
+        for entity in self.entities[:]:  # Use copy to allow removal
+            entity.update(dt)
+            
+        # Handle collisions
+        self.handle_collisions()
         
         # Check for level completion
         if len(self.asteroids) == 0:
             print(f"Level {self.level} complete!")  # Debug info
-            self.sound.play_sound('level_complete')
+            self.sound.play_sound('level_complete')  # Play level complete sound
+            
+            # Increment level
             self.level += 1
             
-            # Award extra life every 2 levels (max 5 lives)
+            # Award extra life every two levels, max 5 lives
             if self.level % 2 == 0 and self.lives < 5:
                 self.lives += 1
                 print(f"Extra life awarded! Lives: {self.lives}")  # Debug info
             
             # Spawn new wave of asteroids
             self.spawn_asteroid_wave()
-        
-        # Update respawn timer
-        if self.respawn_timer > 0:
-            self.respawn_timer -= self.dt
-            if self.respawn_timer <= 0:
-                print("Respawning ship")  # Debug info
-                self.ship = Ship(self)
-                self.entities.append(self.ship)
-                self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME  # Make ship temporarily invulnerable
-        
-        # Update scoring system
-        self.scoring.update(self.dt)
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
@@ -361,8 +358,7 @@ class Game:
             
             # Update game state
             if self.state_manager.current_state == GameState.PLAYING:
-                self.update_entities()
-                self.handle_collisions()
+                self.update(self.dt)
             
             # Draw
             self.state_manager.draw(self.screen)
