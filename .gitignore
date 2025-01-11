@@ -1,6 +1,13 @@
-/.venv/
-*.pyc
-*__pycache__/
-*logs/
-*highscores.json
-*settings.json
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Coverage
+tests/coverage/
+.coverage
+
+# Virtual Environment
+.venv/
+venv/
