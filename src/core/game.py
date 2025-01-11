@@ -10,7 +10,8 @@ from src.core.constants import (
     WINDOW_WIDTH, 
     WINDOW_HEIGHT,
     SHIP_INVULNERABLE_TIME,
-    MAX_ASTEROIDS
+    MAX_ASTEROIDS,
+    STARTING_LIVES
 )
 import math
 
@@ -49,6 +50,7 @@ class Game:
         self.running = True
         self.level = 1
         self.lives = STARTING_LIVES
+        print(f"Game initialized with {self.lives} lives")
         
         # Entity tracking
         self.entities = []

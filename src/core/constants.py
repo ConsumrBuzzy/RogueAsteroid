@@ -11,18 +11,20 @@ WHITE = (255, 255, 255)
 
 # Game settings
 INITIAL_LIVES = 3
+STARTING_LIVES = 3  # Number of lives player starts with
+SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after respawn
+MAX_ASTEROIDS = 10  # Maximum number of asteroids on screen
+MAX_BULLETS = 8  # Maximum number of bullets on screen
 
 # Ship settings
-SHIP_ACCELERATION = 250.0  # Pixels per second squared
-SHIP_MAX_SPEED = 400.0    # Pixels per second
-SHIP_ROTATION_SPEED = 3.0  # Degrees per frame
-SHIP_FRICTION = 0.01      # Velocity multiplier per frame
-SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after spawn
+SHIP_ACCELERATION = 400  # Pixels per second squared
+SHIP_MAX_SPEED = 400  # Maximum speed in pixels per second
+SHIP_ROTATION_SPEED = 180  # Degrees per second
+SHIP_FRICTION = 0.02  # Velocity reduction per frame (0-1)
 
 # Bullet settings
 BULLET_SPEED = 1200.0  # pixels per second
 BULLET_LIFETIME = 0.5  # seconds before despawning
-MAX_BULLETS = 12  # maximum bullets on screen at once
 
 # Asteroid settings
 ASTEROID_SIZES = {
