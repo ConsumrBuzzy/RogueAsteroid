@@ -13,10 +13,10 @@ WHITE = (255, 255, 255)
 INITIAL_LIVES = 3
 
 # Ship settings
-SHIP_ACCELERATION = 200.0  # Pixels per second squared
-SHIP_MAX_SPEED = 300.0    # Pixels per second
+SHIP_ACCELERATION = 250.0  # Pixels per second squared
+SHIP_MAX_SPEED = 400.0    # Pixels per second
 SHIP_ROTATION_SPEED = 3.0  # Degrees per frame
-SHIP_FRICTION = 0.02      # Velocity multiplier per frame
+SHIP_FRICTION = 0.01      # Velocity multiplier per frame
 SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after spawn
 
 # Bullet settings

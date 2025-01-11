@@ -93,12 +93,20 @@ class Game:
                     
                 # Check distance from other asteroids
                 position = pygame.Vector2(transform.position)
-                min_distance = 100  # Minimum distance between asteroids
-                
+                collision = asteroid.get_component('collision')
+                if not collision:
+                    continue
+                    
                 # Check if too close to other asteroids
                 too_close = False
-                for pos in spawn_positions:
-                    if (position - pos).length() < min_distance:
+                for other_asteroid in self.asteroids:
+                    other_collision = other_asteroid.get_component('collision')
+                    if not other_collision:
+                        continue
+                        
+                    other_pos = other_asteroid.get_component('transform').position
+                    min_distance = (collision.radius + other_collision.radius) * 1.5  # 50% buffer
+                    if (pygame.Vector2(position) - pygame.Vector2(other_pos)).length() < min_distance:
                         too_close = True
                         break
                 
