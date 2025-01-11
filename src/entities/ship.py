@@ -193,8 +193,16 @@ class Ship(Entity):
         if not transform:
             return
             
-        # Create bullet at ship's position
-        bullet = Bullet(self.game, transform.position, transform.rotation)
+        # Calculate bullet direction based on ship's rotation
+        # Adjust angle by -90 degrees because ship points up at 0 degrees
+        angle_rad = np.radians(transform.rotation - 90)
+        direction = pygame.Vector2(
+            np.cos(angle_rad),
+            np.sin(angle_rad)
+        )
+        
+        # Create bullet at ship's position with calculated direction
+        bullet = Bullet(self.game, transform.position, transform.rotation, direction)
         
         # Add to tracking lists
         self.game.bullets.append(bullet)
