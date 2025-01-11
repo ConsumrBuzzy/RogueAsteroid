@@ -18,43 +18,50 @@ class Game:
     def __init__(self):
         """Initialize the game."""
         print("Game initialized")
-        pygame.init()
         
-        # Window dimensions
+        # Initialize pygame and display
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
         self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption("RogueAsteroid")
         
-        # Game properties
-        self.clock = pygame.time.Clock()
-        self.dt = 0
-        self.running = True
-        self.level = 1
-        self.lives = 3
-        
-        # Settings - Initialize before state manager
+        # Game settings
         self.settings = {
             'window': {
                 'width': self.width,
                 'height': self.height
             },
-            'controls': 'arrows'  # or 'wasd'
+            'controls': 'arrows'  # Default to arrow keys
         }
         
-        # Initialize systems
+        # Initialize state management
         self.state_manager = StateManager(self)
+        print("Initializing StateManager")
         self.state = GameState.MAIN_MENU
-        self.scoring_system = ScoringSystem()
+        print(f"Initial state: {self.state}")
         
-        # Entity lists
+        # Initialize scoring system
+        self.scoring_system = ScoringSystem()
+        print("Scoring system initialized")
+        
+        # Initialize game properties
+        self.dt = 0
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.level = 1
+        self.lives = STARTING_LIVES
+        
+        # Entity tracking
         self.entities = []
         self.bullets = []
         self.asteroids = []
-        self.particles = []
-        self.ship = None
         
-        print("Game initialized")  # Debug info
+        # Dummy sound system (since we removed sound)
+        self.sound = type('DummySound', (), {
+            'play_sound': lambda x: None,
+            'stop_sound': lambda x: None
+        })()
+        
+        print("Game initialization complete")
     
     @property
     def score(self):
