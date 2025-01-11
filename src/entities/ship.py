@@ -202,11 +202,18 @@ class Ship(Entity):
         )
         
         # Create bullet at ship's position with calculated direction
-        bullet = Bullet(self.game, transform.position, transform.rotation, direction)
+        bullet = Bullet(
+            self.game,
+            pygame.Vector2(transform.position),  # Convert position to Vector2
+            direction
+        )
         
         # Add to tracking lists
         self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
+        
+        # Play sound effect
+        self.game.sound.play_sound('shoot')
         
         print("Bullet fired")  # Debug info
     

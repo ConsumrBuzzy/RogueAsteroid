@@ -6,6 +6,7 @@ from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
 from src.core.entities.base import TransformComponent
+import pygame
 
 class TestShip(unittest.TestCase):
     """Test cases for Ship entity."""
@@ -72,7 +73,12 @@ class TestAsteroid(unittest.TestCase):
     
     def setUp(self):
         self.game = Game()
-        self.asteroid = Asteroid(self.game, 400, 300, 'large')
+        # Create asteroid with position as Vector2
+        self.asteroid = Asteroid(
+            self.game,
+            'large',
+            pygame.Vector2(400, 300)
+        )
     
     def test_initialization(self):
         """Test asteroid initialization."""
@@ -87,13 +93,13 @@ class TestAsteroid(unittest.TestCase):
         # Split large asteroid
         new_asteroids = self.asteroid.split()
         self.assertEqual(len(new_asteroids), 2)
-        self.assertEqual(new_asteroids[0].size_category, 'medium')
+        self.assertEqual(new_asteroids[0].size, 'medium')
         
         # Split medium asteroid
         medium_asteroid = new_asteroids[0]
         new_small_asteroids = medium_asteroid.split()
         self.assertEqual(len(new_small_asteroids), 2)
-        self.assertEqual(new_small_asteroids[0].size_category, 'small')
+        self.assertEqual(new_small_asteroids[0].size, 'small')
         
         # Split small asteroid
         small_asteroid = new_small_asteroids[0]
@@ -105,10 +111,11 @@ class TestBullet(unittest.TestCase):
     
     def setUp(self):
         self.game = Game()
+        # Create bullet with direction as Vector2
         self.bullet = Bullet(
             self.game,
-            400, 300,
-            np.array([1.0, 0.0])  # Right direction
+            pygame.Vector2(400, 300),  # position
+            pygame.Vector2(1.0, 0.0)   # direction
         )
     
     def test_initialization(self):

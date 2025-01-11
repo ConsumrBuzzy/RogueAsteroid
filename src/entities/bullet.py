@@ -19,23 +19,31 @@ class Bullet(Entity):
     SPEED = 25000.0  # pixels per second
     LIFETIME = 2  # seconds before despawning
     
-    def __init__(self, game: 'Game', x: float, y: float, direction: np.ndarray):
+    def __init__(self, game: 'Game', position: pygame.Vector2, direction: pygame.Vector2):
+        """Initialize the bullet.
+        
+        Args:
+            game: The game instance.
+            position: Initial position as Vector2.
+            direction: Direction vector (will be normalized).
+        """
         super().__init__(game)
         self.lifetime = self.LIFETIME
-        self.direction = direction  # Store direction for use in initialization
+        # Normalize direction
+        self.direction = direction.normalize()
         
         # Add components
-        self._init_transform(x, y)
+        self._init_transform(position)
         self._init_physics()
         self._init_render()
         self._init_collision()
         self._init_screen_wrap()
     
-    def _init_transform(self, x: float, y: float) -> None:
+    def _init_transform(self, position: pygame.Vector2) -> None:
         """Initialize transform component."""
-        transform = self.add_component(TransformComponent, x, y)
+        transform = self.add_component(TransformComponent, position.x, position.y)
         # Calculate rotation from direction
-        transform.rotation = np.degrees(np.arctan2(self.direction[1], self.direction[0]))
+        transform.rotation = math.degrees(math.atan2(self.direction.y, self.direction.x))
     
     def _init_physics(self) -> None:
         """Initialize physics component."""
@@ -44,7 +52,7 @@ class Bullet(Entity):
         
         # Set initial velocity using physics component
         velocity = self.direction * self.SPEED
-        physics.apply_force(velocity * physics.mass)  # F = ma to achieve desired velocity instantly
+        physics.velocity = velocity  # Set velocity directly
         print(f"Bullet velocity: {velocity}")  # Debug info
     
     def _init_render(self) -> None:
