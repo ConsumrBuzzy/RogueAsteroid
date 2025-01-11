@@ -59,9 +59,10 @@ class Game:
         
         # Dummy sound system (since we removed sound)
         self.sound = type('DummySound', (), {
-            'play_sound': lambda x: None,
-            'stop_sound': lambda x: None
+            'play_sound': lambda *args, **kwargs: None,  # Accept any arguments
+            'stop_sound': lambda *args, **kwargs: None   # Accept any arguments
         })()
+        print("Sound system initialized (dummy)")
         
         print("Game initialization complete")
     
