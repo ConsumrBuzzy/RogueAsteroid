@@ -243,6 +243,13 @@ Next: Fix ship movement direction
 - Added visual feedback for selected options
 Next: Fix bullet movement and implement asteroid collisions
 
+[2024-01-11 12:33PM] [FIX] Fixed bullet movement:
+- Updated bullet physics to use force-based movement
+- Corrected bullet direction calculation
+- Improved bullet-asteroid collision cleanup
+- Added proper entity removal on collision
+Next: Implement asteroid-asteroid collisions
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 

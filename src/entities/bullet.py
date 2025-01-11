@@ -36,12 +36,12 @@ class Bullet(Entity):
     def _init_physics(self) -> None:
         """Initialize physics component."""
         physics = self.add_component(PhysicsComponent, mass=0.1, max_speed=self.SPEED)
-        # Set initial velocity directly on transform component
-        transform = self.get_component('transform')
-        if transform:
-            transform.velocity = self.direction * self.SPEED
         physics.friction = 0.0  # No friction for bullets
-        print(f"Bullet velocity: {self.direction * self.SPEED}")  # Debug info
+        
+        # Set initial velocity using physics component
+        velocity = self.direction * self.SPEED
+        physics.apply_force(velocity * physics.mass)  # F = ma to achieve desired velocity instantly
+        print(f"Bullet velocity: {velocity}")  # Debug info
     
     def _init_render(self) -> None:
         """Initialize render component."""
@@ -90,15 +90,20 @@ class Bullet(Entity):
             if collision.check_collision(asteroid_collision):
                 print("Bullet hit asteroid!")  # Debug info
                 
-                # Remove bullet
+                # Remove bullet and asteroid
                 if self in self.game.entities:
                     self.game.entities.remove(self)
                 
                 # Split asteroid and add new ones to game
-                new_asteroids = entity.split()
-                for new_asteroid in new_asteroids:
-                    self.game.asteroids.append(new_asteroid)
-                    self.game.entities.append(new_asteroid)
-                
-                print(f"Created {len(new_asteroids)} new asteroids")  # Debug info
+                if entity in self.game.entities:
+                    new_asteroids = entity.split()
+                    self.game.asteroids.remove(entity)
+                    self.game.entities.remove(entity)
+                    
+                    # Add new asteroids
+                    for new_asteroid in new_asteroids:
+                        self.game.asteroids.append(new_asteroid)
+                        self.game.entities.append(new_asteroid)
+                    
+                    print(f"Created {len(new_asteroids)} new asteroids")  # Debug info
                 return 

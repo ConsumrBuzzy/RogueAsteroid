@@ -187,15 +187,15 @@ class Ship(Entity):
         if not transform:
             return
             
-        # Calculate bullet direction (adjust for ship's upward orientation)
-        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's orientation
+        # Calculate bullet direction based on ship's rotation
+        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's upward orientation
         direction = np.array([
             np.cos(angle_rad),
             np.sin(angle_rad)
         ])
         
         # Create bullet at ship's nose
-        nose_offset = direction * 20.0  # Offset from center
+        nose_offset = direction * 20.0  # Offset from center to avoid self-collision
         bullet = Bullet(
             self.game,
             transform.position[0] + nose_offset[0],
