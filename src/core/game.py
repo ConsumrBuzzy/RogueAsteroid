@@ -132,6 +132,13 @@ class Game:
     
     def update(self, dt):
         """Update game state."""
+        # Handle ship respawn timer
+        if self.ship is None and self.lives > 0:
+            self.respawn_timer -= dt
+            if self.respawn_timer <= 0:
+                print("Respawning ship...")  # Debug info
+                self.respawn_ship()
+        
         # Update all entities
         for entity in self.entities[:]:  # Use copy to allow removal
             entity.update(dt)
@@ -142,7 +149,8 @@ class Game:
         # Check for level completion
         if len(self.asteroids) == 0:
             print(f"Level {self.level} complete!")  # Debug info
-            self.sound.play_sound('level_complete')  # Play level complete sound
+            if self.sound:
+                self.sound.play_sound('level_complete')  # Play level complete sound
             
             # Increment level
             self.level += 1
