@@ -101,7 +101,11 @@ class Asteroid(Entity):
         collision = self.add_component(CollisionComponent, radius=radius)
 
         # Screen wrap component
-        self.add_component(ScreenWrapComponent, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+        screen_wrap = self.add_component(ScreenWrapComponent)
+        screen_wrap.width = WINDOW_WIDTH
+        screen_wrap.height = WINDOW_HEIGHT
+        
+        print(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")  # Debug info
     
     def _generate_vertices(self) -> List[Tuple[float, float]]:
         """Generate vertices for the asteroid's shape."""

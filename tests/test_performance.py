@@ -42,12 +42,13 @@ def benchmark(func: Callable, iterations: int = 1000) -> BenchmarkResult:
         times.append(end - start)
     
     total_time = time.perf_counter() - total_start
+    avg_time = np.mean(times)
     
     return BenchmarkResult(
         name=func.__name__,
         iterations=iterations,
         total_time=total_time,
-        avg_time=np.mean(times),
+        avg_time=avg_time,
         min_time=min(times),
         max_time=max(times)
     )
@@ -78,9 +79,9 @@ class TestGamePerformance:
                             collision1.check_collision(collision2)
 
         # Run benchmark
-        result = benchmark(check_collisions, num_iterations=100)
-        print(f"Collision detection average time: {result.average_time_ms:.2f}ms")
-        assert result.average_time_ms < 5.0, f"Collision detection too slow: {result.average_time_ms:.2f}ms"
+        result = benchmark(check_collisions, iterations=100)
+        print(f"Collision detection average time: {result.avg_time*1000:.2f}ms")
+        assert result.avg_time*1000 < 5.0, f"Collision detection too slow: {result.avg_time*1000:.2f}ms"
 
     def test_entity_update_performance(self):
         """Test the performance of entity updates."""
@@ -99,9 +100,9 @@ class TestGamePerformance:
                 entity.update(1/60)  # Update at 60 FPS
 
         # Run benchmark
-        result = benchmark(update_entities, num_iterations=100)
-        print(f"Entity update average time: {result.average_time_ms:.2f}ms")
-        assert result.average_time_ms < 10.0, f"Entity updates too slow: {result.average_time_ms:.2f}ms"
+        result = benchmark(update_entities, iterations=100)
+        print(f"Entity update average time: {result.avg_time*1000:.2f}ms")
+        assert result.avg_time*1000 < 10.0, f"Entity updates too slow: {result.avg_time*1000:.2f}ms"
 
     def test_particle_system_performance(self):
         """Test the performance of the particle system."""
@@ -120,6 +121,6 @@ class TestGamePerformance:
                 particle.update(1/60)  # Update at 60 FPS
 
         # Run benchmark
-        result = benchmark(update_particles, num_iterations=100)
-        print(f"Particle system average time: {result.average_time_ms:.2f}ms")
-        assert result.average_time_ms < 50.0, f"Particle system too slow: {result.average_time_ms:.2f}ms" 
+        result = benchmark(update_particles, iterations=100)
+        print(f"Particle system average time: {result.avg_time*1000:.2f}ms")
+        assert result.avg_time*1000 < 50.0, f"Particle system too slow: {result.avg_time*1000:.2f}ms" 
