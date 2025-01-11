@@ -60,6 +60,15 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
+[2024-01-11 12:31PM] [IMPL] Added dual logging system:
+- Created GameLogger class for error tracking
+- Added current_session.log for active debugging
+- Added timestamped historical logs (game_log_YYYYMMDD_HHMMSS.log)
+- Logs stored in /logs directory
+- Added logging levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+Note: Check current_session.log for active debugging and game_log_* files for historical error tracking
+Next: Fix main menu and controls
+
 [2024-01-11 12:30PM] [FIX] Fixed score display:
 - Added score property to Game class
 - Connected scoring system to HUD display

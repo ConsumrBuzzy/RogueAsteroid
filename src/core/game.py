@@ -11,6 +11,7 @@ from src.core.constants import (
 )
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
+from src.core.logging import get_logger
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
@@ -21,6 +22,10 @@ class Game:
     def __init__(self):
         """Initialize game."""
         pygame.init()
+        
+        # Initialize logger
+        self.logger = get_logger()
+        self.logger.info("Initializing game...")
         
         # Initialize display
         self.width = WINDOW_WIDTH
@@ -54,6 +59,7 @@ class Game:
         
         # Reset game to initialize entities
         self.reset_game()
+        self.logger.info("Game initialization complete")
     
     def reset_game(self) -> None:
         """Reset game state."""
