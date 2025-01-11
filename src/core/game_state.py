@@ -28,12 +28,13 @@ class StateManager:
     
     def change_state(self, new_state):
         """Change the current game state."""
+        if new_state == self.current_state:
+            return
+            
         old_state = self.current_state
         print(f"Changing state from {old_state} to {new_state}")  # Debug info
         
-        if new_state == self.current_state:
-            return
-        
+        # Handle state-specific transitions
         if new_state == GameState.PLAYING:
             if old_state == GameState.MAIN_MENU:
                 print("Starting new game")  # Debug info

@@ -38,12 +38,6 @@ class Game:
         self.scoring = ScoringSystem()
         print("Scoring system initialized")
         
-        # Initialize state management
-        self.state_manager = StateManager(self)
-        print("Initializing StateManager")
-        self.state_manager.change_state(GameState.MAIN_MENU)  # Set initial state
-        print(f"Initial state set to: {self.state_manager.current_state}")
-        
         # Initialize game properties
         self.dt = 0
         self.clock = pygame.time.Clock()
@@ -59,8 +53,16 @@ class Game:
         self.bullets = []
         self.asteroids = []
         
+        # Initialize state management (but don't set state yet)
+        self.state_manager = StateManager(self)
+        print("StateManager initialized")
+        
         print("Game initialization complete")
         print(f"Game initialized with settings: {self.settings}")
+        
+        # Now set initial state
+        self.state_manager.change_state(GameState.MAIN_MENU)
+        print(f"Initial state set to: {self.state_manager.current_state}")
     
     @property
     def state(self):
@@ -103,9 +105,6 @@ class Game:
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
-        
-        # Set game state
-        self.state = GameState.PLAYING
         
         print("Game reset complete")  # Debug info
     
