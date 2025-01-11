@@ -156,24 +156,34 @@ class Game:
                     else:
                         direction = direction.normalize()
                     
-                    # Simple velocity swap with a bit of randomness
+                    # Blend velocities instead of swapping
                     vel1 = pygame.Vector2(transform1.velocity)
                     vel2 = pygame.Vector2(transform2.velocity)
                     
-                    # Add some random deflection
-                    deflection = random.uniform(-0.3, 0.3)
-                    transform1.velocity = vel2.rotate(deflection * 90)
-                    transform2.velocity = vel1.rotate(deflection * 90)
+                    # Calculate new velocities (70% new, 30% old)
+                    new_vel1 = pygame.Vector2(
+                        vel1.x * 0.3 + vel2.x * 0.7,
+                        vel1.y * 0.3 + vel2.y * 0.7
+                    )
+                    new_vel2 = pygame.Vector2(
+                        vel2.x * 0.3 + vel1.x * 0.7,
+                        vel2.y * 0.3 + vel1.y * 0.7
+                    )
                     
-                    # Add some fun spin
-                    spin = random.uniform(20, 60)  # More consistent spin
+                    # Add subtle deflection
+                    deflection = random.uniform(-0.2, 0.2)  # Reduced deflection
+                    transform1.velocity = new_vel1.rotate(deflection * 90)
+                    transform2.velocity = new_vel2.rotate(deflection * 90)
+                    
+                    # Gentler spin
+                    spin = random.uniform(15, 45)  # Reduced spin range
                     transform1.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
                     transform2.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
                     
-                    # Bounce apart
-                    separation = (collision1.radius + collision2.radius) * 0.7  # Reduced separation
-                    transform1.position -= direction * separation
-                    transform2.position += direction * separation
+                    # Very minimal separation
+                    separation = (collision1.radius + collision2.radius) * 0.3  # Reduced separation
+                    transform1.position -= direction * separation * 0.5  # More gradual separation
+                    transform2.position += direction * separation * 0.5
         
         # Then check ship-asteroid collisions
         for asteroid in self.asteroids[:]:  # Copy list to allow removal

@@ -429,6 +429,14 @@ Next: Test smoother asteroid interactions
 - Reduced separation distance for tighter gameplay
 Next: Test arcade-style collision feel
 
+[2024-01-11 13:13PM] [FIX] Made asteroid collisions more gradual:
+- Changed to velocity blending (70/30 mix) instead of swapping
+- Reduced separation distance by 70%
+- Reduced deflection angles for smoother transitions
+- Lowered spin rates (15-45 degrees/sec)
+- Added more gradual position separation
+Next: Test smoother collision appearance
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
