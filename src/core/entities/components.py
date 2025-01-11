@@ -196,8 +196,8 @@ class ParticleComponent(Component):
                 self.entity.game.entities.remove(self.entity)
             return
 
-        # Update alpha for fade out
-        self.alpha = int((self.time_remaining / self.lifetime) * 255)
+        # Update alpha for fade out (ensure it stays between 0 and 255)
+        self.alpha = max(0, min(255, int((self.time_remaining / self.lifetime) * 255)))
 
     def draw(self, screen: pygame.Surface):
         """Draw the particle."""
@@ -205,7 +205,7 @@ class ParticleComponent(Component):
             return
             
         transform = self.entity.get_component('transform')
-        if not transform:
+        if not transform or not hasattr(transform.position, 'x'):
             return
             
         # Create a surface with per-pixel alpha

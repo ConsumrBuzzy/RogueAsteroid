@@ -101,6 +101,7 @@ class Bullet(Entity):
         # Update lifetime and despawn if expired
         self.lifetime -= dt
         if self.lifetime <= 0:
+            # Remove bullet from tracking lists
             if self in self.game.bullets:
                 self.game.bullets.remove(self)
             if self in self.game.entities:
@@ -120,8 +121,9 @@ class Bullet(Entity):
                             hit_pos = pygame.Vector2(transform.position)
                             # Create impact particles first
                             self._create_impact_particles(hit_pos)
+                            print(f"Created impact particles at {hit_pos}")  # Debug info
                         
-                        # Handle asteroid hit
+                        # Handle asteroid hit and scoring
                         points = ASTEROID_SIZES[entity.size]['points']
                         self.game.score += points
                         print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
@@ -133,14 +135,15 @@ class Bullet(Entity):
                             for piece in pieces:
                                 self.game.asteroids.append(piece)
                                 self.game.entities.append(piece)
+                                print(f"Created new asteroid piece size {piece.size}")  # Debug info
                         
-                        # Remove asteroid and bullet
+                        # Remove asteroid from tracking lists
                         if entity in self.game.asteroids:
                             self.game.asteroids.remove(entity)
                         if entity in self.game.entities:
                             self.game.entities.remove(entity)
                             
-                        # Remove bullet last
+                        # Remove bullet from tracking lists
                         if self in self.game.bullets:
                             self.game.bullets.remove(self)
                         if self in self.game.entities:
