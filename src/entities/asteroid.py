@@ -3,7 +3,8 @@ import random
 import math
 from typing import List, Tuple
 import pygame
-from src.core.entities.base import Entity
+from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
+from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT, WHITE
 
 class Asteroid(Entity):
@@ -25,6 +26,8 @@ class Asteroid(Entity):
     @classmethod
     def spawn_random(cls, game, ship_pos: Tuple[float, float]) -> 'Asteroid':
         """Create a new asteroid at a random position away from the ship."""
+        print("Creating new Asteroid")  # Debug info
+        
         # Choose a random angle and distance from the ship
         angle = random.uniform(0, 2 * math.pi)
         min_distance = 100  # Minimum safe distance from ship
@@ -56,28 +59,28 @@ class Asteroid(Entity):
             velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
         
         # Initialize transform
-        transform = self.add_component('transform')
+        transform = self.add_component(TransformComponent)
         transform.position = position
         transform.rotation = random.uniform(0, 360)
         
         # Initialize physics
-        physics = self.add_component('physics')
+        physics = self.add_component(PhysicsComponent)
         physics.velocity = velocity
         physics.max_speed = 200
         physics.friction = 0
         
         # Initialize render with polygon shape
-        render = self.add_component('render')
+        render = self.add_component(RenderComponent)
         render.color = WHITE
         render.vertices = self._generate_vertices()
         render.visible = True
         
         # Initialize collision
-        collision = self.add_component('collision')
+        collision = self.add_component(CollisionComponent)
         collision.radius = self.SIZES[self.size]['radius']
         
         # Initialize screen wrap
-        self.add_component('screen_wrap')
+        self.add_component(ScreenWrapComponent)
     
     def _generate_vertices(self) -> List[Tuple[float, float]]:
         """Generate vertices for the asteroid's shape."""
