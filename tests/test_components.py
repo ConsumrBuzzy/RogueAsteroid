@@ -1,6 +1,6 @@
 """Unit tests for core component system."""
 import unittest
-import numpy as np
+import pygame
 from src.core.entities.base import (
     Entity,
     Component,
@@ -40,25 +40,26 @@ class TestTransformComponent(unittest.TestCase):
     def setUp(self):
         self.game = MockGame()
         self.entity = Entity(self.game)
-        self.transform = self.entity.add_component(TransformComponent, 100.0, 200.0)
+        self.transform = self.entity.add_component(TransformComponent)
+        self.transform.position = pygame.Vector2(100.0, 200.0)
     
     def test_transform_init(self):
         """Test transform initialization."""
-        self.assertTrue(np.array_equal(self.transform.position, np.array([100.0, 200.0])))
-        self.assertTrue(np.array_equal(self.transform.velocity, np.array([0.0, 0.0])))
+        self.assertEqual(self.transform.position, pygame.Vector2(100.0, 200.0))
+        self.assertEqual(self.transform.velocity, pygame.Vector2(0.0, 0.0))
         self.assertEqual(self.transform.rotation, 0.0)
         self.assertEqual(self.transform.rotation_speed, 0.0)
     
     def test_transform_update(self):
         """Test transform update with velocity."""
-        self.transform.velocity = np.array([10.0, -5.0])
+        self.transform.velocity = pygame.Vector2(10.0, -5.0)
         self.transform.rotation_speed = 45.0  # 45 degrees per second
         
         # Update for 1 second
         self.transform.update(1.0)
         
-        expected_pos = np.array([110.0, 195.0])
-        self.assertTrue(np.allclose(self.transform.position, expected_pos))
+        expected_pos = pygame.Vector2(110.0, 195.0)
+        self.assertEqual(self.transform.position, expected_pos)
         self.assertEqual(self.transform.rotation, 45.0)
 
 class TestCollisionComponent(unittest.TestCase):
@@ -70,8 +71,10 @@ class TestCollisionComponent(unittest.TestCase):
         self.entity2 = Entity(self.game)
         
         # Add transform components
-        self.transform1 = self.entity1.add_component(TransformComponent, 0.0, 0.0)
-        self.transform2 = self.entity2.add_component(TransformComponent, 10.0, 0.0)
+        self.transform1 = self.entity1.add_component(TransformComponent)
+        self.transform2 = self.entity2.add_component(TransformComponent)
+        self.transform1.position = pygame.Vector2(0.0, 0.0)
+        self.transform2.position = pygame.Vector2(10.0, 0.0)
         
         # Add collision components
         self.collision1 = self.entity1.add_component(CollisionComponent, radius=5.0)
@@ -83,14 +86,14 @@ class TestCollisionComponent(unittest.TestCase):
         self.assertTrue(self.collision1.check_collision(self.collision2))
         
         # Move objects apart
-        self.transform2.position = np.array([20.0, 0.0])
+        self.transform2.position = pygame.Vector2(20.0, 0.0)
         self.assertFalse(self.collision1.check_collision(self.collision2))
     
     def test_collision_normal(self):
         """Test collision normal calculation."""
         normal = self.collision1.get_collision_normal(self.collision2)
-        expected = np.array([-1.0, 0.0])  # Points from entity2 to entity1
-        self.assertTrue(np.allclose(normal, expected))
+        expected = pygame.Vector2(-1.0, 0.0)  # Points from entity2 to entity1
+        self.assertEqual(normal, expected)
     
     def test_collision_active_state(self):
         """Test collision active state."""
@@ -110,7 +113,8 @@ class TestRenderComponent(unittest.TestCase):
     def setUp(self):
         self.game = MockGame()
         self.entity = Entity(self.game)
-        self.transform = self.entity.add_component(TransformComponent, 100.0, 100.0)
+        self.transform = self.entity.add_component(TransformComponent)
+        self.transform.position = pygame.Vector2(100.0, 100.0)
         self.render = self.entity.add_component(RenderComponent)
     
     def test_render_init(self):

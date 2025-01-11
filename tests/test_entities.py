@@ -34,10 +34,8 @@ class TestShip(unittest.TestCase):
         self.ship.update(1.0)
         
         # Check that ship has moved
-        self.assertGreater(
-            np.linalg.norm(transform.velocity),
-            0.0
-        )
+        velocity_magnitude = (transform.velocity.x ** 2 + transform.velocity.y ** 2) ** 0.5
+        self.assertGreater(velocity_magnitude, 0.0)
     
     def test_rotation(self):
         """Test ship rotation."""
@@ -141,12 +139,12 @@ class TestBullet(unittest.TestCase):
         transform = self.bullet.get_component('transform')
         self.assertIsNotNone(transform)
         
-        initial_pos = transform.position.copy()
+        initial_pos = pygame.Vector2(transform.position)
         self.bullet.update(0.1)
         
         # Check that bullet has moved in the right direction
-        self.assertGreater(transform.position[0], initial_pos[0])
-        self.assertEqual(transform.position[1], initial_pos[1])
+        self.assertGreater(transform.position.x, initial_pos.x)
+        self.assertEqual(transform.position.y, initial_pos.y)
 
 if __name__ == '__main__':
     unittest.main() 
