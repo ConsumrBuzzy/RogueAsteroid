@@ -21,16 +21,24 @@ class Entity:
     def __init__(self, game: Any):
         self.game = game
         self.components: Dict[str, Component] = {}
+        print(f"Created new {self.__class__.__name__}")  # Debug info
     
     def add_component(self, component_type: Type[T], *args, **kwargs) -> T:
         """Add a component to the entity."""
         component = component_type(self, *args, **kwargs)
-        self.components[component_type.__name__.lower()] = component
+        component_name = component_type.__name__.lower().replace('component', '')
+        self.components[component_name] = component
+        print(f"Added {component_type.__name__} to {self.__class__.__name__}")  # Debug info
         return component
     
     def get_component(self, component_name: str) -> Optional[Component]:
         """Get a component by name."""
-        return self.components.get(component_name.lower())
+        # Remove 'component' from the name if present
+        component_name = component_name.lower().replace('component', '')
+        component = self.components.get(component_name)
+        if not component:
+            print(f"Warning: {component_name} component not found in {self.__class__.__name__}")  # Debug info
+        return component
     
     def update(self, dt: float) -> None:
         """Update all components."""

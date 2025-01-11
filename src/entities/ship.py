@@ -30,6 +30,7 @@ class Ship(Entity):
     
     def __init__(self, game: 'Game'):
         super().__init__(game)
+        print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
         
         # Add components
@@ -40,14 +41,24 @@ class Ship(Entity):
         self._init_effects()
         self._init_collision()
         self._init_screen_wrap()
+        
+        # Verify components
+        transform = self.get_component('transform')
+        render = self.get_component('render')
+        print(f"Transform component: {transform}")  # Debug info
+        print(f"Render component: {render}")  # Debug info
+        if transform and render:
+            print("Ship components initialized successfully")  # Debug info
+        else:
+            print("Failed to initialize ship components!")  # Debug info
     
     def _init_transform(self) -> None:
         """Initialize transform component."""
-        self.add_component(
-            TransformComponent,
+        transform = self.add_component(TransformComponent, 
             WINDOW_WIDTH / 2,  # Start at center
             WINDOW_HEIGHT / 2
         )
+        print(f"Transform component added: {transform}")  # Debug info
     
     def _init_physics(self) -> None:
         """Initialize physics component."""
@@ -57,8 +68,7 @@ class Ship(Entity):
     def _init_render(self) -> None:
         """Initialize render component."""
         render = self.add_component(RenderComponent)
-        render.color = WHITE
-        render.visible = True  # Ensure visibility is set
+        print(f"Render component added: {render}")  # Debug info
         
         # Define ship shape (triangle)
         size = 20.0
@@ -67,6 +77,9 @@ class Ship(Entity):
             (-size/2, size/2),    # left wing
             (size/2, size/2)      # right wing
         ]
+        render.color = WHITE
+        render.visible = True
+        print(f"Render vertices: {render.vertices}")  # Debug info
     
     def _init_input(self) -> None:
         """Initialize input component with control bindings."""
