@@ -167,9 +167,10 @@ class Ship(Entity):
             force = direction * SHIP_ACCELERATION * power
             physics.apply_force(force)
             
-            # Activate thrust effect only for forward thrust
+            # Activate thrust effect and sound only for forward thrust
             if effects and power > 0:
                 effects.set_effect_active('thrust', True)
+                self.game.sound.play_sound('thrust')
     
     def _rotate_left(self) -> None:
         """Rotate ship counter-clockwise."""
@@ -216,39 +217,51 @@ class Ship(Entity):
         self.game.entities.append(bullet)
         self.game.bullets.append(bullet)  # Track bullet
         
+        # Play shoot sound
+        self.game.sound.play_sound('shoot')
+        
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
     
     def _create_thrust_particles(self):
         """Create particles for engine thrust effect"""
-        if not self.input.thrust_active:
+        transform = self.get_component('transform')
+        if not transform:
             return
         
-        # Get ship's rear position (opposite of direction)
-        transform = self.get_component('transform')
-        direction = transform.get_direction()
-        rear_pos = transform.position - direction * 15  # 15 pixels behind ship
+        # Calculate thrust direction (opposite of ship's facing direction)
+        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's upward orientation
+        direction = pygame.Vector2(
+            np.cos(angle_rad),
+            np.sin(angle_rad)
+        )
+        
+        # Position particles at ship's rear (opposite of direction)
+        rear_pos = pygame.Vector2(transform.position) - direction * 15  # 15 pixels behind ship
         
         # Create 2-3 particles per frame when thrusting
         num_particles = random.randint(2, 3)
         for _ in range(num_particles):
-            particle = Particle(self.game)
+            particle = Particle(
+                self.game,
+                lifetime=random.uniform(0.2, 0.4),
+                color=(random.randint(180, 220), random.randint(180, 220), 255)  # Blue-white color
+            )
             
             # Position slightly randomized around rear
             offset = pygame.Vector2(random.uniform(-3, 3), random.uniform(-3, 3))
             particle_transform = particle.get_component('transform')
-            particle_transform.position = rear_pos + offset
+            if particle_transform:
+                particle_transform.position = rear_pos + offset
             
             # Velocity opposite of ship direction with spread
             angle = random.uniform(-20, 20)  # 20 degree spread
             velocity = direction.rotate(180 + angle) * random.uniform(100, 150)
-            particle.physics.velocity = velocity
+            physics = particle.get_component('physics')
+            if physics:
+                physics.velocity = velocity
             
-            # Blue-white color with random variation
-            r = random.randint(180, 220)
-            particle.particle.color = (r, r, 255)
-            particle.particle.lifetime = random.uniform(0.2, 0.4)
-            
+            # Add to game entities
             self.game.entities.append(particle)
     
     def update(self, dt: float) -> None:
@@ -271,10 +284,15 @@ class Ship(Entity):
             if render:
                 render.visible = True
         
+        # Create thrust particles if thrusting
+        input_component = self.get_component('input')
+        if input_component:
+            thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
+            if thrust_key in input_component.active_keys:
+                self._create_thrust_particles()
+        
         # Deactivate thrust effect if not thrusting
         effects = self.get_component('effects')
-        input_component = self.get_component('input')
-        
         if effects and input_component:
             thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
             effects.set_effect_active('thrust', thrust_key in input_component.active_keys) 
