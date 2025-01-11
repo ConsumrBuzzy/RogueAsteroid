@@ -185,17 +185,15 @@ class ParticleComponent(Component):
         self.size = 2.0  # Particle size in pixels
         self.velocity = pygame.Vector2(0, 0)
         
-    def update(self, dt: float):
-        """Update particle state."""
-        if not self.entity:
+    def update(self, dt: float) -> None:
+        """Update the particle state."""
+        self.lifetime -= dt
+        if self.lifetime <= 0:
+            # Remove from game entities list directly
+            if self.entity in self.entity.game.entities:
+                self.entity.game.entities.remove(self.entity)
             return
-            
-        # Update lifetime
-        self.time_remaining -= dt
-        if self.time_remaining <= 0:
-            self.entity.game.remove_entity(self.entity)
-            return
-            
+
         # Update alpha for fade out
         self.alpha = int((self.time_remaining / self.lifetime) * 255)
         
