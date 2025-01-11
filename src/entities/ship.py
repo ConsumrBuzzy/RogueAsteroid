@@ -55,41 +55,43 @@ class Ship(Entity):
         """Initialize ship components."""
         print("Initializing ship...")
         
-        # Transform component
+        # Transform component for position and movement
         transform = self.add_component(TransformComponent)
-        transform.position = pygame.Vector2(self.game.width/2, self.game.height/2)
-        print(f"Transform component added: {transform}")
+        transform.position = pygame.Vector2(self.game.width / 2, self.game.height / 2)
+        print(f"Transform component added: {transform}")  # Debug info
         
-        # Render component
+        # Render component for drawing
         render = self.add_component(RenderComponent)
-        render.vertices = [
-            (0, -20.0),      # Nose
-            (-10.0, 10.0),   # Left wing
-            (10.0, 10.0)     # Right wing
-        ]
-        render.color = WHITE
-        render.visible = True
-        print(f"Render component added: {render}")
-        print(f"Render vertices: {render.vertices}")
+        render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]  # Triangle shape
+        render.color = (255, 255, 255)  # White
+        print(f"Render component added: {render}")  # Debug info
+        print(f"Render vertices: {render.vertices}")  # Debug info
         
-        # Physics component
+        # Physics component for thrust and momentum
         physics = self.add_component(PhysicsComponent)
-        physics.mass = 1.0
-        physics.max_speed = SHIP_MAX_SPEED
-        physics.friction = SHIP_FRICTION
+        physics.max_speed = 400  # Maximum speed in pixels per second
+        physics.friction = 0.02  # Gradual slowdown
         
-        # Collision component
-        collision = self.add_component(CollisionComponent, radius=15.0)
+        # Collision component for hit detection
+        collision = self.add_component(CollisionComponent, radius=15)  # Pass radius in constructor
+        print(f"Collision component added: {collision}")  # Debug info
         
-        # Screen wrap component
-        screen_wrap = self.add_component(ScreenWrapComponent, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+        # Screen wrap component to wrap around screen edges
+        screen_wrap = self.add_component(ScreenWrapComponent)
         
-        # Input component
-        self._init_input()
-        
-        # Effect component for thrust
+        # Effects component for visual effects
         effects = self.add_component(EffectComponent)
-        self._init_thrust_effect(effects)
+        self._init_thrust_effect(effects)  # Initialize thrust effect
+        
+        # Input component for controls
+        input_component = self.add_component(InputComponent)
+        input_component.bind_key(pygame.K_UP if self.game.settings['controls'] == 'arrows' else pygame.K_w, 
+                               self._apply_thrust, True)
+        input_component.bind_key(pygame.K_LEFT if self.game.settings['controls'] == 'arrows' else pygame.K_a, 
+                               self._rotate_left, True)
+        input_component.bind_key(pygame.K_RIGHT if self.game.settings['controls'] == 'arrows' else pygame.K_d, 
+                               self._rotate_right, True)
+        input_component.bind_key(pygame.K_SPACE, self._shoot)
         
         print(f"Transform component: {transform}")
         print(f"Render component: {render}")
@@ -279,3 +281,15 @@ class Ship(Entity):
         if effects and input_component:
             thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
             effects.set_effect_active('thrust', thrust_key in input_component.active_keys) 
+    
+    def _init_thrust_effect(self, effects):
+        """Initialize the thrust visual effect."""
+        # Create triangular flame shape
+        thrust_vertices = [
+            (0, 15),      # Tip of flame (at back of ship)
+            (-5, 25),     # Left point
+            (0, 20),      # Middle indent
+            (5, 25),      # Right point
+        ]
+        effects.add_effect('thrust', thrust_vertices, (255, 165, 0))  # Orange flame
+        print("Thrust effect initialized")  # Debug info 
