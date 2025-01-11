@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, TYPE_CHECKING
 from src.core.entity import Entity
 from src.core.constants import (
     SHIP_ACCELERATION,
@@ -11,7 +11,9 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     WHITE
 )
-from src.core.game import Game
+
+if TYPE_CHECKING:
+    from src.core.game import Game
 
 class Ship(Entity):
     """Player controlled ship entity."""
@@ -39,9 +41,7 @@ class Ship(Entity):
     
     def handle_input(self, keys: List[bool]) -> None:
         """Process keyboard input based on control scheme."""
-        game = self.game  # type: Game
-        
-        if game.settings.get('controls', 'scheme') == 'arrows':
+        if self.game.settings.get('controls', 'scheme') == 'arrows':
             self.thrusting = keys[pygame.K_UP]
             self.turning_left = keys[pygame.K_LEFT]
             self.turning_right = keys[pygame.K_RIGHT]
