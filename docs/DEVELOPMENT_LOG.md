@@ -1,7 +1,15 @@
 # Development Log
 
-Last Session: [2024-01-11 12:43PM]
+Last Session: [2024-01-11 13:31PM]
 Current Phase: Core Gameplay Implementation
+
+[2024-01-11 13:31PM] [FIX] Fixed scoring and particle systems:
+- Updated score display to use scoring system's current_score directly
+- Fixed particle component to handle both Vector2 and numpy array positions
+- Improved bullet impact particle creation with proper position handling
+- Enhanced asteroid destruction particles with better color and lifetime
+- Added proper position type conversion throughout particle system
+Next: Test particle effects and scoring in gameplay
 
 [2024-01-11 12:43PM] [FIX] Fixed velocity handling:
 - Updated TransformComponent to use pygame.Vector2 for position and velocity
