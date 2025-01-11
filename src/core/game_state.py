@@ -18,6 +18,7 @@ class StateManager:
         print("Initializing StateManager")  # Debug info
         self.game = game
         self.current_state = None  # Initialize to None, let Game class set initial state
+        self.previous_state = None  # Track previous state for returning from menus
         self.selected_option = 0
         self.menu_options = {
             GameState.MAIN_MENU: ['New Game', 'High Scores', 'Options', 'Quit'],
@@ -33,6 +34,10 @@ class StateManager:
             
         old_state = self.current_state
         print(f"Changing state from {old_state} to {new_state}")  # Debug info
+        
+        # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
+        if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
+            self.previous_state = old_state
         
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
@@ -132,10 +137,22 @@ class StateManager:
                 self.game.settings['controls'] = new_scheme
                 # Update menu text
                 self.menu_options[GameState.OPTIONS][0] = f'Control Scheme: {new_scheme.upper()}'
+                # Update ship controls if it exists
+                if self.game.ship and hasattr(self.game.ship, 'update_controls'):
+                    self.game.ship.update_controls()
+                    print(f"Updated ship controls to {new_scheme}")  # Debug info
             else:  # Back
-                self.change_state(GameState.MAIN_MENU)
+                # Return to previous state (MAIN_MENU or PLAYING)
+                if self.previous_state == GameState.PLAYING:
+                    self.change_state(GameState.PLAYING)
+                else:
+                    self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_ESCAPE:
-            self.change_state(GameState.MAIN_MENU)
+            # Return to previous state (MAIN_MENU or PLAYING)
+            if self.previous_state == GameState.PLAYING:
+                self.change_state(GameState.PLAYING)
+            else:
+                self.change_state(GameState.MAIN_MENU)
     
     def _handle_high_score_input(self, event):
         """Handle input in the high score state."""
