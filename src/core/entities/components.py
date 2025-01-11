@@ -1,142 +1,167 @@
 """Additional components for game entities."""
 import pygame
 import numpy as np
-from typing import Dict, Any, Callable, Set
-from .base import Component, TransformComponent
+from typing import Dict, List, Tuple, Callable, Optional
+from src.core.entities.base import Component, Entity, TransformComponent
 
 class ScreenWrapComponent(Component):
-    """Handles screen wrapping behavior."""
+    """Component for wrapping entities around screen edges."""
     
-    def __init__(self, entity: 'Entity', width: float, height: float):
+    def __init__(self, entity: Entity, width: float, height: float):
         super().__init__(entity)
         self.width = width
         self.height = height
     
     def update(self, dt: float) -> None:
-        """Wrap position around screen edges."""
-        transform = self.entity.get_component(TransformComponent)
+        """Update entity position to wrap around screen."""
+        transform = self.entity.get_component('transform')
         if not transform:
             return
-            
-        transform.position[0] %= self.width
-        transform.position[1] %= self.height
+        
+        # Wrap x position
+        if transform.position[0] < 0:
+            transform.position[0] = self.width
+        elif transform.position[0] > self.width:
+            transform.position[0] = 0
+        
+        # Wrap y position
+        if transform.position[1] < 0:
+            transform.position[1] = self.height
+        elif transform.position[1] > self.height:
+            transform.position[1] = 0
 
 class InputComponent(Component):
-    """Handles entity input processing."""
+    """Component for handling input."""
     
-    def __init__(self, entity: 'Entity'):
+    def __init__(self, entity: Entity):
         super().__init__(entity)
-        self.bindings: Dict[int, Callable] = {}
-        self.continuous_bindings: Dict[int, Callable] = {}
-        self.active_keys: Set[int] = set()
+        self.bindings: Dict[int, Tuple[Callable[[], None], bool]] = {}
+        self.active_keys: List[int] = []
     
-    def bind_key(self, key: int, action: Callable, continuous: bool = False) -> None:
-        """Bind a key to an action."""
-        if continuous:
-            self.continuous_bindings[key] = action
-        else:
-            self.bindings[key] = action
+    def bind_key(self, key: int, action: Callable[[], None], continuous: bool = False) -> None:
+        """Bind a key to an action.
+        
+        Args:
+            key: Pygame key constant
+            action: Function to call when key is pressed
+            continuous: If True, action will be called every frame while key is held
+        """
+        self.bindings[key] = (action, continuous)
     
     def handle_keydown(self, key: int) -> None:
         """Handle key press event."""
-        self.active_keys.add(key)
-        if key in self.bindings:
-            self.bindings[key]()
+        if key not in self.active_keys:
+            self.active_keys.append(key)
+            if key in self.bindings and not self.bindings[key][1]:
+                self.bindings[key][0]()
     
     def handle_keyup(self, key: int) -> None:
         """Handle key release event."""
-        self.active_keys.discard(key)
+        if key in self.active_keys:
+            self.active_keys.remove(key)
     
     def update(self, dt: float) -> None:
-        """Process continuous key inputs."""
-        for key, action in self.continuous_bindings.items():
-            if key in self.active_keys:
-                action()
+        """Process continuous actions for held keys."""
+        for key in self.active_keys:
+            if key in self.bindings and self.bindings[key][1]:
+                self.bindings[key][0]()
 
 class PhysicsComponent(Component):
-    """Handles physics-based movement."""
+    """Component for physics-based movement."""
     
-    def __init__(self, entity: 'Entity', mass: float = 1.0, max_speed: float = float('inf')):
+    def __init__(self, entity: Entity, mass: float = 1.0, max_speed: Optional[float] = None):
         super().__init__(entity)
         self.mass = mass
         self.max_speed = max_speed
-        self.forces = np.array([0.0, 0.0])
-        self.friction = 1.0  # No friction by default
+        self.force = np.array([0.0, 0.0])
+        self.friction = 0.0  # 0 to 1, applied each frame
     
     def apply_force(self, force: np.ndarray) -> None:
         """Apply a force to the entity."""
-        self.forces += force
+        self.force += force
     
     def update(self, dt: float) -> None:
         """Update physics state."""
-        transform = self.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('transform')
         if not transform:
             return
         
         # Apply forces
-        acceleration = self.forces / self.mass
-        transform.velocity += acceleration * dt
+        if self.mass > 0:
+            acceleration = self.force / self.mass
+            transform.velocity += acceleration * dt
         
         # Apply friction
-        transform.velocity *= self.friction
+        if self.friction > 0:
+            transform.velocity *= (1.0 - self.friction)
         
         # Limit speed
-        speed = np.linalg.norm(transform.velocity)
-        if speed > self.max_speed:
-            transform.velocity = (transform.velocity / speed) * self.max_speed
+        if self.max_speed is not None:
+            speed = np.linalg.norm(transform.velocity)
+            if speed > self.max_speed:
+                transform.velocity = (transform.velocity / speed) * self.max_speed
         
         # Reset forces
-        self.forces = np.array([0.0, 0.0])
+        self.force = np.array([0.0, 0.0])
 
 class EffectComponent(Component):
-    """Handles visual effects like thrust flames, explosions, etc."""
+    """Component for visual effects."""
     
-    def __init__(self, entity: 'Entity'):
+    class Effect:
+        """Visual effect definition."""
+        def __init__(self, vertices: List[Tuple[float, float]], 
+                     color: Tuple[int, int, int],
+                     offset: Tuple[float, float] = (0, 0)):
+            self.vertices = vertices
+            self.color = color
+            self.offset = offset
+            self.active = False
+    
+    def __init__(self, entity: Entity):
         super().__init__(entity)
-        self.effects: Dict[str, Dict[str, Any]] = {}
+        self.effects: Dict[str, EffectComponent.Effect] = {}
     
-    def add_effect(self, name: str, vertices: list, color: tuple, 
-                  offset: tuple = (0, 0), active: bool = False) -> None:
+    def add_effect(self, name: str, vertices: List[Tuple[float, float]], 
+                  color: Tuple[int, int, int],
+                  offset: Tuple[float, float] = (0, 0)) -> None:
         """Add a new visual effect."""
-        self.effects[name] = {
-            'vertices': vertices,
-            'color': color,
-            'offset': np.array(offset),
-            'active': active
-        }
+        self.effects[name] = EffectComponent.Effect(vertices, color, offset)
     
     def set_effect_active(self, name: str, active: bool) -> None:
         """Set whether an effect is active."""
         if name in self.effects:
-            self.effects[name]['active'] = active
+            self.effects[name].active = active
     
-    def draw(self, surface: Any) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         """Draw active effects."""
-        transform = self.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('transform')
         if not transform:
             return
-            
+        
         for effect in self.effects.values():
-            if not effect['active']:
+            if not effect.active:
                 continue
-                
-            # Transform effect vertices
-            angle_rad = np.radians(transform.rotation)
-            cos_rot = np.cos(angle_rad)
-            sin_rot = np.sin(angle_rad)
             
-            transformed = []
-            for x, y in effect['vertices']:
+            # Transform vertices
+            screen_vertices = []
+            angle = np.radians(transform.rotation)
+            cos_a = np.cos(angle)
+            sin_a = np.sin(angle)
+            
+            for x, y in effect.vertices:
                 # Apply offset
-                px = x + effect['offset'][0]
-                py = y + effect['offset'][1]
+                x += effect.offset[0]
+                y += effect.offset[1]
+                
                 # Rotate
-                rx = px * cos_rot - py * sin_rot
-                ry = px * sin_rot + py * cos_rot
-                # Translate
-                rx += transform.position[0]
-                ry += transform.position[1]
-                transformed.append((rx, ry))
+                rx = x * cos_a - y * sin_a
+                ry = x * sin_a + y * cos_a
+                
+                # Translate to position
+                screen_x = transform.position[0] + rx
+                screen_y = transform.position[1] + ry
+                screen_vertices.append((int(screen_x), int(screen_y)))
             
             # Draw effect
-            pygame.draw.polygon(surface, effect['color'], transformed) 
+            if len(screen_vertices) >= 3:
+                pygame.draw.polygon(surface, effect.color, screen_vertices) 

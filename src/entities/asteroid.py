@@ -1,5 +1,4 @@
 """Asteroid entity using component system."""
-import pygame
 import numpy as np
 from typing import List, TYPE_CHECKING
 from random import uniform, randint
@@ -83,13 +82,13 @@ class Asteroid(Entity):
                 speed * np.sin(angle)
             ])
         
-        transform = self.get_component(TransformComponent)
+        transform = self.get_component('transform')
         if transform:
             transform.velocity = velocity
             transform.rotation_speed = uniform(-90, 90)  # Random rotation speed
     
     def _init_render(self) -> None:
-        """Initialize render component with random polygon shape."""
+        """Initialize render component."""
         render = self.add_component(RenderComponent)
         render.color = WHITE
         
@@ -125,7 +124,7 @@ class Asteroid(Entity):
         
         # Create new asteroids
         new_asteroids = []
-        transform = self.get_component(TransformComponent)
+        transform = self.get_component('transform')
         
         if not transform:
             return []
