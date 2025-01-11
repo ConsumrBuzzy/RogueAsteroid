@@ -130,11 +130,19 @@ class Bullet(Entity):
                             self._create_impact_particles(transform.position)
                         
                         # Handle asteroid hit
-                        self.game.score += ASTEROID_SIZES[entity.size]['points']
-                        if entity.size > 0:
+                        points = ASTEROID_SIZES[entity.size]['points']
+                        self.game.score += points
+                        print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
+                        
+                        # Split asteroid if not smallest size
+                        if entity.size in ['large', 'medium']:
                             entity.split()
-                        self.game.entities.remove(entity)
-                        self.game.entities.remove(self)
+                        
+                        # Remove asteroid and bullet
+                        if entity in self.game.entities:
+                            self.game.entities.remove(entity)
+                        if self in self.game.entities:
+                            self.game.entities.remove(self)
                         if self in self.game.bullets:
                             self.game.bullets.remove(self)
                         return 
