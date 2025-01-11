@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: rogueasteroid
+Version: 0.1.0
+Requires-Python: >=3.8
+License-File: LICENSE
+Requires-Dist: pygame>=2.5.2
+Requires-Dist: numpy>=1.24.3
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.3; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: coverage>=7.3.2; extra == "dev"
