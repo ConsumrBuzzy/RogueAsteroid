@@ -193,31 +193,48 @@ class StateManager:
         """Draw the game state."""
         screen.fill((0, 0, 0))  # Black background
         
-        # Draw all game entities
-        for entity in self.game.entities:
-            render = entity.get_component('render')
-            if render and render.visible and render.vertices:
-                render.draw(screen)
+        try:
+            # Draw all game entities
+            for entity in self.game.entities:
+                # Draw render component
+                render = entity.get_component('render')
+                if render and render.visible and render.vertices:
+                    render.draw(screen)
+                
+                # Draw particle effects
+                particle = entity.get_component('particle')
+                if particle:
+                    particle.draw(screen)
+                
+                # Draw other effects
+                effects = entity.get_component('effects')
+                if effects:
+                    effects.draw(screen)
+        except Exception as e:
+            print(f"Error drawing game entities: {e}")  # Debug info
+        
+        try:
+            # Draw HUD
+            font = pygame.font.Font(None, 36)
             
-            # Draw effects if any
-            effects = entity.get_component('effects')
-            if effects:
-                effects.draw(screen)
-        
-        # Draw HUD
-        font = pygame.font.Font(None, 36)
-        
-        # Draw score
-        score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
-        screen.blit(score_text, (10, 10))
-        
-        # Draw lives
-        lives_text = font.render(f"Lives: {self.game.lives}", True, WHITE)
-        screen.blit(lives_text, (10, 50))  # Position below score
-        
-        # Draw level
-        level_text = font.render(f"Level: {self.game.level}", True, WHITE)
-        screen.blit(level_text, (10, 90))  # Position below lives
+            # Draw score
+            score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
+            screen.blit(score_text, (10, 10))
+            
+            # Draw multiplier if active
+            if self.game.scoring.score_multiplier > 1.0:
+                mult_text = font.render(f"x{self.game.scoring.score_multiplier:.1f}", True, (255, 255, 0))
+                screen.blit(mult_text, (10, 30))
+            
+            # Draw lives
+            lives_text = font.render(f"Lives: {self.game.lives}", True, WHITE)
+            screen.blit(lives_text, (10, 50))  # Position below score
+            
+            # Draw level
+            level_text = font.render(f"Level: {self.game.level}", True, WHITE)
+            screen.blit(level_text, (10, 90))  # Position below lives
+        except Exception as e:
+            print(f"Error drawing HUD: {e}")  # Debug info
     
     def _draw_pause_overlay(self, screen):
         """Draw the pause menu overlay."""

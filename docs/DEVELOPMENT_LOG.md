@@ -610,3 +610,20 @@ Next steps: Test particle effects with fixed implementation
   - Improved entity removal safety checks
   - Added debug info for asteroid splitting
 Next steps: Test particle effects and scoring in gameplay 
+
+[2024-01-11 14:15PM] [FIX] Fixed scoring and particle systems:
+- Fixed scoring system initialization and point awards:
+  - Added proper score property initialization in Game class
+  - Updated asteroid destruction to use scoring.add_points() instead of direct score manipulation
+  - Added point values: 100 for small asteroids, 75 for medium, 50 for large
+
+- Fixed particle system position handling and rendering:
+  - Added proper Vector2/numpy array position type conversion
+  - Fixed integer position handling for particle drawing
+  - Ensured minimum particle sizes and proper alpha blending
+  - Fixed particle surface creation and blitting
+
+Next Steps:
+- Test scoring system with asteroid destruction
+- Verify particle effects visibility and behavior
+- Check high score tracking and persistence 
