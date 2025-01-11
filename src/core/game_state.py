@@ -63,7 +63,7 @@ class StateManager:
         elif self.current_state == GameState.NEW_HIGH_SCORE:
             self._handle_new_high_score_input(event)
         elif self.current_state == GameState.GAME_OVER:
-            self._handle_game_over()  # No input needed, just handle transition
+            self._handle_game_over_input(event)
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
@@ -147,16 +147,16 @@ class StateManager:
         elif event.unicode.isalnum() and len(self.high_score_name) < 10:
             self.high_score_name += event.unicode.upper()
     
-    def _handle_game_over(self):
-        """Handle game over state transition."""
-        print(f"Game Over - Score: {self.game.score}")  # Debug info
-        if self.game.scoring.check_high_score():
-            print("New high score!")  # Debug info
-            self.high_score_name = ""
-            self.change_state(GameState.NEW_HIGH_SCORE)
-        else:
-            print("Not a high score")  # Debug info
-            self.change_state(GameState.MAIN_MENU)
+    def _handle_game_over_input(self, event):
+        """Handle input in game over state."""
+        if event.key in (pygame.K_RETURN, pygame.K_ESCAPE):
+            if self.game.scoring.check_high_score():
+                print("New high score!")  # Debug info
+                self.high_score_name = ""
+                self.change_state(GameState.NEW_HIGH_SCORE)
+            else:
+                print("Not a high score")  # Debug info
+                self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
         """Draw the current state."""
@@ -173,6 +173,8 @@ class StateManager:
             self._draw_high_scores(screen)
         elif self.current_state == GameState.NEW_HIGH_SCORE:
             self._draw_new_high_score(screen)
+        elif self.current_state == GameState.GAME_OVER:
+            self._draw_game_over(screen)
     
     def _draw_main_menu(self, screen):
         """Draw the main menu."""
@@ -293,4 +295,34 @@ class StateManager:
         
         # Draw instructions
         instructions = font.render("Press ENTER when done", True, WHITE)
-        screen.blit(instructions, (WINDOW_WIDTH/2 - instructions.get_width()/2, 450)) 
+        screen.blit(instructions, (WINDOW_WIDTH/2 - instructions.get_width()/2, 450))
+    
+    def _draw_game_over(self, screen):
+        """Draw the game over screen."""
+        # Draw the final game state in background
+        self._draw_game(screen)
+        
+        # Draw semi-transparent overlay
+        overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+        overlay.fill((0, 0, 0))
+        overlay.set_alpha(128)
+        screen.blit(overlay, (0, 0))
+        
+        # Draw game over text
+        font = pygame.font.Font(None, 64)
+        title = font.render("GAME OVER", True, WHITE)
+        screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 200))
+        
+        # Draw final score
+        font = pygame.font.Font(None, 48)
+        score_text = font.render(f"Final Score: {self.game.score}", True, WHITE)
+        screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 300))
+        
+        # Draw level reached
+        level_text = font.render(f"Level: {self.game.level}", True, WHITE)
+        screen.blit(level_text, (WINDOW_WIDTH/2 - level_text.get_width()/2, 350))
+        
+        # Draw continue prompt
+        font = pygame.font.Font(None, 36)
+        prompt = font.render("Press ENTER to continue", True, WHITE)
+        screen.blit(prompt, (WINDOW_WIDTH/2 - prompt.get_width()/2, 450)) 
