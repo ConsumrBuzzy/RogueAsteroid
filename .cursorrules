@@ -9,6 +9,7 @@
 2. Follow design-first approach
 3. Engineer implements only approved designs
 4. All changes documented in real-time
+5. Use DRY, SOLID, and KISS principles
 
 ## Documentation
 - PROJECT_CHARTER.md: Roles and methodology

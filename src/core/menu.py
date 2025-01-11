@@ -88,7 +88,7 @@ class OptionsMenu(Menu):
         """Toggle between control schemes."""
         current = self.game.settings.get('controls', 'scheme')
         new_scheme = 'wasd' if current == 'arrows' else 'arrows'
-        self.game.settings.set('controls', 'scheme', new_scheme)
+        self.game.settings.set('controls', 'scheme', value=new_scheme)
         
         # Update menu item text
         self.items[0].text = f"Control Scheme: {new_scheme.upper()}"

@@ -11,6 +11,7 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     WHITE
 )
+from src.core.game import Game
 
 class Ship(Entity):
     """Player controlled ship entity."""
@@ -38,7 +39,6 @@ class Ship(Entity):
     
     def handle_input(self, keys: List[bool]) -> None:
         """Process keyboard input based on control scheme."""
-        from ..core.game import Game
         game = self.game  # type: Game
         
         if game.settings.get('controls', 'scheme') == 'arrows':
