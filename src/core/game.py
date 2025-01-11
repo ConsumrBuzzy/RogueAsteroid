@@ -133,4 +133,4 @@ class Game:
             pygame.display.flip()
         
         pygame.quit()
-        print("Game loop ended")  # Debug info 
+        print("Game loop ended")  # Debug info

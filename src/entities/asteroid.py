@@ -63,9 +63,9 @@ class Asteroid(Entity):
         physics.max_speed = 200.0  # Asteroids have no speed limit
         physics.friction = 0.0     # No friction for asteroids
 
-        # Collision component
-        collision = self.add_component(CollisionComponent)
-        collision.radius = self.SIZES[self.size]['radius']
+        # Collision component with radius based on size
+        radius = self.SIZES[self.size]['radius']
+        collision = self.add_component(CollisionComponent, radius=radius)
 
         # Screen wrap component
         self.add_component(ScreenWrapComponent)

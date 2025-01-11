@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2024-01-11 12:24PM]
+Last Session: [2024-01-11 12:41PM]
 Current Phase: Core Gameplay Implementation
 
 ## Core Gameplay Objectives (MVP)
@@ -59,6 +59,11 @@ Current Phase: Core Gameplay Implementation
 - [ ] Add high score system
 
 ## Log Entries
+
+[2024-01-11 12:41PM] [FIX] Fixed asteroid collision initialization:
+- Updated CollisionComponent initialization to properly pass radius parameter
+- Improved component initialization with size-based radius
+Next: Test asteroid spawning and collisions
 
 [2024-01-11 12:39PM] [FIX] Fixed asteroid initialization error:
 - Updated TransformComponent initialization to properly pass x,y coordinates
