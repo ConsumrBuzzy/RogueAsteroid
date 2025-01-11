@@ -1,5 +1,6 @@
-2025-01-11 12:54:09,885 - INFO - Initializing game...
-2025-01-11 12:54:09,960 - INFO - Game initialization complete
-2025-01-11 12:54:09,960 - INFO - Starting game loop
-2025-01-11 12:54:19,463 - INFO - Quitting game
-2025-01-11 12:54:19,468 - INFO - Shutting down game
+2025-01-11 12:59:50,851 - INFO - Initializing game...
+2025-01-11 12:59:50,929 - INFO - Game initialization complete
+2025-01-11 12:59:50,930 - INFO - Starting game loop
+2025-01-11 13:00:09,357 - DEBUG - Returning to main menu
+2025-01-11 13:00:12,272 - INFO - Quitting game
+2025-01-11 13:00:12,274 - INFO - Shutting down game
