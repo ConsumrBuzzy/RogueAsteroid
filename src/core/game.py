@@ -35,6 +35,7 @@ class Game:
         self.ship = None
         self.entities = []
         self.asteroids = []
+        self.bullets = []  # Track active bullets
         
         print("Game initialized")  # Debug info
     
@@ -45,6 +46,7 @@ class Game:
         # Clear entities
         self.entities.clear()
         self.asteroids.clear()
+        self.bullets.clear()  # Clear bullets
         
         # Reset game properties
         self.level = 1

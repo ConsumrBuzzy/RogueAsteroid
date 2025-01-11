@@ -72,6 +72,8 @@ class Bullet(Entity):
         if self.lifetime <= 0:
             if self in self.game.entities:
                 self.game.entities.remove(self)
+            if self in self.game.bullets:
+                self.game.bullets.remove(self)
             return
         
         # Check for collisions with asteroids
@@ -90,9 +92,15 @@ class Bullet(Entity):
             if collision.check_collision(asteroid_collision):
                 print("Bullet hit asteroid!")  # Debug info
                 
+                # Add score based on asteroid size
+                points = entity.SIZES[entity.size]['points']
+                self.game.scoring.add_points(points)  # Points per hit based on size
+                
                 # Remove bullet and asteroid
                 if self in self.game.entities:
                     self.game.entities.remove(self)
+                if self in self.game.bullets:
+                    self.game.bullets.remove(self)
                 
                 # Split asteroid and add new ones to game
                 if entity in self.game.entities:
@@ -104,6 +112,5 @@ class Bullet(Entity):
                     for new_asteroid in new_asteroids:
                         self.game.asteroids.append(new_asteroid)
                         self.game.entities.append(new_asteroid)
-                    
-                    print(f"Created {len(new_asteroids)} new asteroids")  # Debug info
+                    break  # Stop checking other asteroids
                 return 

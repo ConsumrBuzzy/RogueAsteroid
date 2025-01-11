@@ -344,6 +344,14 @@ Next: Test gameplay balance with new bullet speed
 - Updated options menu display for clarity
 Next: Update bullet mechanics for better feel
 
+[2024-01-11 13:01PM] [IMPL] Enhanced bullet mechanics and scoring:
+- Increased bullet speed to 1200 pixels/second
+- Added maximum bullet limit (8 bullets on screen)
+- Implemented proper bullet tracking in game class
+- Updated scoring to award points per hit based on asteroid size
+- Added bullet cleanup from tracking list
+Next: Test bullet mechanics and scoring system
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 

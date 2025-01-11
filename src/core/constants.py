@@ -20,9 +20,10 @@ SHIP_FRICTION = 0.02      # Velocity multiplier per frame
 SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after spawn
 
 # Bullet settings
-BULLET_SPEED = 500.0      # Pixels per second
-BULLET_LIFETIME = 1.0     # Seconds
+BULLET_SPEED = 1200.0      # Pixels per second
+BULLET_LIFETIME = 0.6     # Seconds
 BULLET_COOLDOWN = 0.25    # Seconds between shots
+MAX_BULLETS = 8          # Maximum bullets on screen
 
 # Asteroid settings
 ASTEROID_SIZES = {

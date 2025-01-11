@@ -16,7 +16,8 @@ from src.core.constants import (
     SHIP_FRICTION,
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
-    WHITE
+    WHITE,
+    MAX_BULLETS
 )
 from src.entities.bullet import Bullet
 
@@ -183,6 +184,10 @@ class Ship(Entity):
         if self.shoot_timer > 0:
             return
             
+        # Check bullet limit
+        if len(self.game.bullets) >= MAX_BULLETS:
+            return
+            
         transform = self.get_component('transform')
         if not transform:
             return
@@ -205,6 +210,7 @@ class Ship(Entity):
         
         # Add bullet to game
         self.game.entities.append(bullet)
+        self.game.bullets.append(bullet)  # Track bullet
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
