@@ -52,20 +52,23 @@ class StateManager:
         if event.type != pygame.KEYDOWN:
             return
         
-        if self.current_state == GameState.MAIN_MENU:
-            self._handle_main_menu_input(event)
-        elif self.current_state == GameState.PLAYING:
-            self._handle_playing_input(event)
-        elif self.current_state == GameState.PAUSED:
-            self._handle_pause_input(event)
-        elif self.current_state == GameState.OPTIONS:
-            self._handle_options_input(event)
-        elif self.current_state == GameState.HIGH_SCORE:
-            self._handle_high_score_input(event)
-        elif self.current_state == GameState.NEW_HIGH_SCORE:
-            self._handle_new_high_score_input(event)
-        elif self.current_state == GameState.GAME_OVER:
-            self._handle_game_over_input(event)
+        try:
+            if self.current_state == GameState.MAIN_MENU:
+                self._handle_main_menu_input(event)
+            elif self.current_state == GameState.PLAYING:
+                self._handle_playing_input(event)
+            elif self.current_state == GameState.PAUSED:
+                self._handle_pause_input(event)
+            elif self.current_state == GameState.OPTIONS:
+                self._handle_options_input(event)
+            elif self.current_state == GameState.HIGH_SCORE:
+                self._handle_high_score_input(event)
+            elif self.current_state == GameState.NEW_HIGH_SCORE:
+                self._handle_new_high_score_input(event)
+            elif self.current_state == GameState.GAME_OVER:
+                self._handle_game_over_input(event)
+        except Exception as e:
+            print(f"Error handling input in state {self.current_state}: {e}")  # Debug info
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
@@ -140,9 +143,9 @@ class StateManager:
     
     def _handle_new_high_score_input(self, event):
         """Handle input in new high score state."""
-        if event.key == pygame.K_RETURN and self.high_score_name:
+        if event.key == pygame.K_RETURN and self.high_score_name.strip():
             # Save high score and return to main menu
-            self.game.scoring.add_high_score(self.high_score_name, self.game.level)
+            self.game.scoring.add_high_score(self.high_score_name.strip(), self.game.level)
             self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_BACKSPACE:
             self.high_score_name = self.high_score_name[:-1]
@@ -198,20 +201,24 @@ class StateManager:
         try:
             # Draw all game entities
             for entity in self.game.entities:
-                # Draw render component
-                render = entity.get_component('render')
-                if render and render.visible and render.vertices:
-                    render.draw(screen)
-                
-                # Draw particle effects
-                particle = entity.get_component('particle')
-                if particle:
-                    particle.draw(screen)
-                
-                # Draw other effects
-                effects = entity.get_component('effects')
-                if effects:
-                    effects.draw(screen)
+                try:
+                    # Draw render component
+                    render = entity.get_component('render')
+                    if render and render.visible and render.vertices:
+                        render.draw(screen)
+                    
+                    # Draw particle effects
+                    particle = entity.get_component('particle')
+                    if particle:
+                        particle.draw(screen)
+                    
+                    # Draw other effects
+                    effects = entity.get_component('effects')
+                    if effects:
+                        effects.draw(screen)
+                except Exception as e:
+                    print(f"Error drawing entity {entity}: {e}")  # Debug info
+                    continue
         except Exception as e:
             print(f"Error drawing game entities: {e}")  # Debug info
         

@@ -26,6 +26,7 @@ class ScoringSystem:
         self.score_multiplier = 1.0
         self.combo_timer = 0.0
         self.combo_count = 0
+        self.MAX_SCORE = 999999  # Maximum possible score
         
         # Ensure save file path is absolute
         if not os.path.isabs(save_file):
@@ -55,6 +56,14 @@ class ScoringSystem:
             raise ValueError("Cannot add negative points")
             
         points = int(base_points * self.score_multiplier)
+        
+        # Check if adding points would exceed max score
+        if self.current_score + points > self.MAX_SCORE:
+            points = self.MAX_SCORE - self.current_score
+            self.current_score = self.MAX_SCORE
+            print(f"Score capped at maximum: {self.MAX_SCORE}")  # Debug info
+            return points
+            
         self.current_score += points
         
         # Update combo
@@ -115,25 +124,26 @@ class ScoringSystem:
             entry.score for entry in self.high_scores
         )
     
-    def add_high_score(self, name: str, level: int):
+    def add_high_score(self, name: str, level: int) -> bool:
         """Add a new high score entry.
         
         Args:
             name: Player name
             level: Level reached
             
+        Returns:
+            bool: True if score was added, False if it wasn't high enough
+            
         Raises:
-            ValueError: If name is empty or level is not positive
+            ValueError: If name is empty or level is invalid
         """
         if not name.strip():
             raise ValueError("Player name cannot be empty")
-        if level <= 0:
+        if level < 1:
             raise ValueError("Level must be positive")
             
-        print(f"Adding high score: {self.current_score} by {name} (Level {level})")  # Debug info
-        
-        # Create new entry with current date
-        new_entry = ScoreEntry(
+        # Create new score entry
+        new_score = ScoreEntry(
             name=name.strip()[:10],  # Limit name length
             score=self.current_score,
             level=level,
@@ -141,15 +151,14 @@ class ScoringSystem:
         )
         
         # Add to list and sort
-        self.high_scores.append(new_entry)
+        self.high_scores.append(new_score)
         self.high_scores.sort(key=lambda x: x.score, reverse=True)
         
         # Keep only top 5 scores
         self.high_scores = self.high_scores[:5]
         
-        # Save to file
-        if not self.save_high_scores():
-            print("Warning: Failed to save high scores")  # Debug info
+        # Save updated scores
+        return self.save_high_scores()
     
     def reset(self) -> None:
         """Reset current score and multiplier."""
@@ -189,30 +198,16 @@ class ScoringSystem:
         Returns:
             bool: True if save was successful, False otherwise
         """
-        data = [
-            {
-                'name': entry.name,
-                'score': entry.score,
-                'level': entry.level,
-                'date': entry.date
-            }
-            for entry in self.high_scores
-        ]
-        
         try:
-            # Write to temporary file first
+            # Create a temporary file
             temp_file = self.save_file + '.tmp'
             with open(temp_file, 'w') as f:
-                json.dump(data, f, indent=2)
+                json.dump([score._asdict() for score in self.high_scores], f)
             
-            # Rename temporary file to actual file
+            # Rename temp file to actual file
             os.replace(temp_file, self.save_file)
-            print(f"Saved {len(self.high_scores)} high scores")  # Debug info
+            print(f"High scores saved successfully to {self.save_file}")  # Debug info
             return True
-            
-        except IOError as e:
-            print(f"Error saving high scores: {e}")  # Debug info
-            return False
         except Exception as e:
-            print(f"Unexpected error saving high scores: {e}")  # Debug info
+            print(f"Error saving high scores: {e}")  # Debug info
             return False 

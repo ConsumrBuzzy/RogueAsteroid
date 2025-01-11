@@ -17,9 +17,13 @@ import math
 class Game:
     def __init__(self):
         """Initialize the game."""
-        pygame.init()
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Rogue Asteroid")
+        try:
+            pygame.init()
+            self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+            pygame.display.set_caption("Rogue Asteroid")
+        except pygame.error as e:
+            print(f"Error initializing pygame: {e}")
+            raise
         
         self.clock = pygame.time.Clock()
         self.dt = 0
@@ -59,7 +63,6 @@ class Game:
         # Reset game properties
         self.level = 1
         self.lives = 3
-        self.score = 0  # Reset score
         self.scoring.reset()  # Reset scoring system
         
         # Create player ship
@@ -357,12 +360,8 @@ class Game:
     def _handle_playing_input(self, event):
         """Handle input in the playing state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_p):
-            self.change_state(GameState.PAUSED)
+            self.state_manager.change_state(GameState.PAUSED)
         elif event.key == pygame.K_o:
-            self.change_state(GameState.OPTIONS)
+            self.state_manager.change_state(GameState.OPTIONS)
         elif event.key == pygame.K_h:
-            self.change_state(GameState.HIGH_SCORE)
-        elif event.key == pygame.K_t:  # Test sound
-            print("Testing sound system...")  # Debug info
-            if self.game.sound:
-                self.game.sound.play_test()
+            self.state_manager.change_state(GameState.HIGH_SCORE)
