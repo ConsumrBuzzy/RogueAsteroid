@@ -34,16 +34,13 @@ class Game:
             'controls': 'arrows'  # Default to arrow keys
         }
         
-        # Initialize scoring system first
-        self.scoring = ScoringSystem()  # This is the attribute HUD looks for
-        self.scoring_system = self.scoring  # Keep this for compatibility
+        # Initialize scoring system
+        self.scoring = ScoringSystem()
         print("Scoring system initialized")
         
         # Initialize state management
         self.state_manager = StateManager(self)
         print("Initializing StateManager")
-        self.state = GameState.MAIN_MENU
-        print(f"Initial state: {self.state}")
         
         # Initialize game properties
         self.dt = 0
@@ -51,6 +48,8 @@ class Game:
         self.running = True
         self.level = 1
         self.lives = STARTING_LIVES
+        self.respawn_timer = 0.0
+        self.ship = None
         print(f"Game initialized with {self.lives} lives")
         
         # Entity tracking
@@ -59,6 +58,16 @@ class Game:
         self.asteroids = []
         
         print("Game initialization complete")
+    
+    @property
+    def state(self):
+        """Get current game state."""
+        return self.state_manager.current_state
+    
+    @state.setter
+    def state(self, new_state):
+        """Set game state through state manager."""
+        self.state_manager.change_state(new_state)
     
     @property
     def score(self):
@@ -247,8 +256,7 @@ class Game:
                     
                     if self.lives <= 0:
                         print("Game Over!")  # Debug info
-                        self.state = GameState.GAME_OVER  # Set state directly
-                        self.state_manager.change_state(GameState.GAME_OVER)  # Also notify state manager
+                        self.state = GameState.GAME_OVER  # This will use the state manager
                     else:
                         self.respawn_timer = 2.0  # Wait 2 seconds before respawning
                     break

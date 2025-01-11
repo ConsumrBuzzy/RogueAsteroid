@@ -85,12 +85,21 @@ class Ship(Entity):
         
         # Input component for controls
         input_component = self.add_component(InputComponent)
-        input_component.bind_key(pygame.K_UP if self.game.settings['controls'] == 'arrows' else pygame.K_w, 
-                               self._apply_thrust, True)
-        input_component.bind_key(pygame.K_LEFT if self.game.settings['controls'] == 'arrows' else pygame.K_a, 
-                               self._rotate_left, True)
-        input_component.bind_key(pygame.K_RIGHT if self.game.settings['controls'] == 'arrows' else pygame.K_d, 
-                               self._rotate_right, True)
+        
+        # Bind controls based on scheme
+        controls = self.game.settings.get('controls', 'arrows')
+        if controls == 'arrows':
+            thrust_key = pygame.K_UP
+            left_key = pygame.K_LEFT
+            right_key = pygame.K_RIGHT
+        else:  # wasd
+            thrust_key = pygame.K_w
+            left_key = pygame.K_a
+            right_key = pygame.K_d
+        
+        input_component.bind_key(thrust_key, self._apply_thrust, True)
+        input_component.bind_key(left_key, self._rotate_left, True)
+        input_component.bind_key(right_key, self._rotate_right, True)
         input_component.bind_key(pygame.K_SPACE, self._shoot)
         
         print(f"Transform component: {transform}")
@@ -176,7 +185,7 @@ class Ship(Entity):
     
     def _shoot(self):
         """Create and fire a bullet."""
-        if len(self.game.bullets) >= MAX_BULLETS:
+        if len(self.game.bullets) >= MAX_BULLETS or self.shoot_timer > 0:
             return
             
         transform = self.get_component('transform')
@@ -201,6 +210,9 @@ class Ship(Entity):
         # Add to tracking lists
         self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
+        
+        # Reset shoot timer
+        self.shoot_timer = self.SHOOT_COOLDOWN
         
         print("Bullet fired")  # Debug info
     
@@ -268,15 +280,17 @@ class Ship(Entity):
         # Create thrust particles if thrusting
         input_component = self.get_component('input')
         if input_component:
-            thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
             if thrust_key in input_component.active_keys:
                 self._create_thrust_particles()
         
         # Deactivate thrust effect if not thrusting
         effects = self.get_component('effects')
         if effects and input_component:
-            thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in input_component.active_keys) 
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
+            effects.set_effect_active('thrust', thrust_key in input_component.active_keys)
     
     def _init_thrust_effect(self, effects):
         """Initialize the thrust visual effect."""
