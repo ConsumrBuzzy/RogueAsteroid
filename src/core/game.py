@@ -36,6 +36,7 @@ class Game:
         # Systems
         self.state_manager = StateManager(self)
         self.scoring = ScoringSystem()
+        self.score = 0  # Initialize score property
         
         # Entities
         self.ship = None
@@ -57,7 +58,8 @@ class Game:
         # Reset game properties
         self.level = 1
         self.lives = 3
-        self.scoring.reset()
+        self.score = 0  # Reset score
+        self.scoring.reset()  # Reset scoring system
         
         # Create player ship
         self.ship = Ship(self)

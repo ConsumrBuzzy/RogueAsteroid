@@ -9,8 +9,18 @@ class Particle:
     def __init__(self, position: np.ndarray, velocity: np.ndarray, 
                  color: Tuple[int, int, int], lifetime: float,
                  size: float = 2.0, fade: bool = True):
-        self.position = position.copy()
-        self.velocity = velocity.copy()
+        # Convert position to numpy array if it's a Vector2
+        if hasattr(position, 'x'):
+            self.position = np.array([float(position.x), float(position.y)])
+        else:
+            self.position = position.copy()
+            
+        # Convert velocity to numpy array if it's a Vector2
+        if hasattr(velocity, 'x'):
+            self.velocity = np.array([float(velocity.x), float(velocity.y)])
+        else:
+            self.velocity = velocity.copy()
+            
         self.color = color
         self.initial_lifetime = lifetime
         self.lifetime = lifetime
@@ -33,22 +43,25 @@ class Particle:
     
     def draw(self, screen: pygame.Surface) -> None:
         """Draw particle on screen."""
+        # Convert position to integers for drawing
+        pos = self.position.astype(int)
+        
         if self.alpha < 255:
             # Create surface for alpha blending
-            surf = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            surf = pygame.Surface((int(self.size * 2), int(self.size * 2)), pygame.SRCALPHA)
             pygame.draw.circle(
                 surf,
                 (*self.color, self.alpha),
-                (self.size, self.size),
-                self.size
+                (int(self.size), int(self.size)),
+                max(1, int(self.size))  # Ensure minimum radius of 1
             )
-            screen.blit(surf, self.position - np.array([self.size, self.size]))
+            screen.blit(surf, pos - np.array([int(self.size), int(self.size)]))
         else:
             pygame.draw.circle(
                 screen,
                 self.color,
-                self.position.astype(int),
-                self.size
+                pos,
+                max(1, int(self.size))  # Ensure minimum radius of 1
             )
 
 class ParticleSystem:

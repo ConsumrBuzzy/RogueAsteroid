@@ -122,6 +122,8 @@ class Asteroid(Entity):
     def split(self):
         """Split asteroid into smaller pieces."""
         if self.size == 'small':
+            # Award points for destroying small asteroid
+            self.game.scoring.add_points(100)
             # Create small explosion for final destruction
             self._create_destruction_particles()
             return []
@@ -131,6 +133,10 @@ class Asteroid(Entity):
         if not transform:
             return []
             
+        # Award points based on size
+        points = 50 if self.size == 'large' else 75  # More points for medium asteroids
+        self.game.scoring.add_points(points)
+        
         # Create split effect particles
         self._create_split_particles()
             

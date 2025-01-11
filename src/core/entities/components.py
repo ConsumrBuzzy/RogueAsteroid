@@ -208,13 +208,13 @@ class ParticleComponent(Component):
         if not transform:
             return
             
-        # Handle both Vector2 and numpy array positions
+        # Get position as integers for drawing
         if hasattr(transform.position, 'x'):
-            pos_x = transform.position.x
-            pos_y = transform.position.y
+            pos_x = int(transform.position.x)
+            pos_y = int(transform.position.y)
         else:
-            pos_x = transform.position[0]
-            pos_y = transform.position[1]
+            pos_x = int(transform.position[0])
+            pos_y = int(transform.position[1])
             
         # Create a surface with per-pixel alpha
         size_int = max(1, int(self.size * 2))  # Ensure minimum size of 1
@@ -230,4 +230,4 @@ class ParticleComponent(Component):
         )
         
         # Draw to screen at integer positions
-        screen.blit(particle_surface, (int(pos_x - self.size), int(pos_y - self.size))) 
+        screen.blit(particle_surface, (pos_x - int(self.size), pos_y - int(self.size))) 
