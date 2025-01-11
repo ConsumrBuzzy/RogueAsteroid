@@ -72,17 +72,29 @@ class Bullet(Entity):
         print(f"Creating impact particles at {hit_pos}")  # Debug info
         num_particles = random.randint(4, 6)
         for i in range(num_particles):
-            particle = Particle(self.game, lifetime=0.2, color=(255, 220, 50))
+            # Create particle with proper initial position
+            particle = Particle(
+                self.game,
+                lifetime=0.2,
+                color=(255, 220, 50)
+            )
             
-            # Position slightly randomized around impact point
-            offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
-            transform = particle.get_component(TransformComponent)
+            # Set initial position
+            transform = particle.get_component('transform')
             if transform:
-                transform.position = hit_pos + offset
+                # Convert hit_pos to proper format if needed
+                if isinstance(hit_pos, pygame.Vector2):
+                    transform.position = pygame.Vector2(hit_pos)
+                else:
+                    transform.position = pygame.Vector2(hit_pos[0], hit_pos[1])
+                
+                # Add random offset
+                offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
+                transform.position += offset
                 print(f"Particle {i} position: {transform.position}")  # Debug info
             
             # Set velocity through physics component
-            physics = particle.get_component(PhysicsComponent)
+            physics = particle.get_component('physics')
             if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(50, 100)

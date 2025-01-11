@@ -208,7 +208,7 @@ class StateManager:
         font = pygame.font.Font(None, 36)
         
         # Draw score
-        score_text = font.render(f"Score: {self.game.score}", True, WHITE)
+        score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
         screen.blit(score_text, (10, 10))
         
         # Draw lives

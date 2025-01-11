@@ -194,19 +194,31 @@ class Asteroid(Entity):
         # Number of particles based on size
         num_particles = 24 if self.size == 'large' else 16 if self.size == 'medium' else 12
         
+        # Get current position as Vector2
+        pos = pygame.Vector2(transform.position.x if hasattr(transform.position, 'x') 
+                           else transform.position[0],
+                           transform.position.y if hasattr(transform.position, 'y')
+                           else transform.position[1])
+        
         for _ in range(num_particles):
-            # Create particle with random velocity
-            particle = Particle(self.game)
+            # Create particle with orange/yellow color for explosion
+            particle = Particle(
+                self.game,
+                lifetime=random.uniform(0.3, 0.6),
+                color=(255, random.randint(165, 220), 0)
+            )
             
-            # Set particle properties
+            # Set particle position
             particle_transform = particle.get_component('transform')
             if particle_transform:
-                particle_transform.position = pygame.Vector2(transform.position)
-                
-                # Random direction and speed
+                particle_transform.position = pos.copy()
+            
+            # Set particle velocity
+            physics = particle.get_component('physics')
+            if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(100, 200)
-                particle_transform.velocity = pygame.Vector2(
+                physics.velocity = pygame.Vector2(
                     math.cos(angle) * speed,
                     math.sin(angle) * speed
                 )
