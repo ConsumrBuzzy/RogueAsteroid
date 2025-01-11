@@ -8,6 +8,7 @@ from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
 class Game:
     def __init__(self):
+        """Initialize the game."""
         pygame.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Rogue Asteroid")
@@ -34,6 +35,8 @@ class Game:
         self.ship = None
         self.entities = []
         self.asteroids = []
+        
+        print("Game initialized")  # Debug info
     
     def reset_game(self):
         """Reset the game state."""
@@ -56,6 +59,8 @@ class Game:
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
+        
+        print("Game reset complete")  # Debug info
     
     def spawn_asteroid_wave(self):
         """Spawn a wave of asteroids based on current level."""
@@ -105,6 +110,8 @@ class Game:
     
     def run(self):
         """Main game loop."""
+        print("Starting game loop")  # Debug info
+        
         while self.running:
             # Time
             self.dt = self.clock.tick(60) / 1000.0
@@ -116,18 +123,14 @@ class Game:
                 else:
                     self.state_manager.handle_input(event)
             
-            # Clear screen
-            self.screen.fill((0, 0, 0))
-            
-            # Update and draw based on current state
+            # Update game state
             if self.state_manager.current_state == GameState.PLAYING:
                 self.update_entities()
                 self.handle_collisions()
             
-            # Draw current state
+            # Draw
             self.state_manager.draw(self.screen)
-            
-            # Update display
             pygame.display.flip()
         
-        pygame.quit() 
+        pygame.quit()
+        print("Game loop ended")  # Debug info 

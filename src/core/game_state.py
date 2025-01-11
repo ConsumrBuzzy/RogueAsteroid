@@ -12,6 +12,8 @@ class GameState(Enum):
 
 class StateManager:
     def __init__(self, game):
+        """Initialize the state manager."""
+        print("Initializing StateManager")  # Debug info
         self.game = game
         self.current_state = GameState.MAIN_MENU
         self.selected_option = 0
@@ -20,24 +22,31 @@ class StateManager:
             GameState.OPTIONS: ['Controls: Arrows', 'Controls: WASD', 'Back'],
             GameState.PAUSED: ['Resume', 'Options', 'Main Menu']
         }
-
+        print(f"Initial state: {self.current_state}")  # Debug info
+    
     def change_state(self, new_state):
+        """Change the current game state."""
+        print(f"Changing state from {self.current_state} to {new_state}")  # Debug info
+        
         if new_state == self.current_state:
             return
-
+        
         if new_state == GameState.PLAYING:
             if self.current_state == GameState.MAIN_MENU:
+                print("Starting new game")  # Debug info
                 self.game.reset_game()
             elif self.current_state == GameState.PAUSED:
-                pass  # Just unpause
+                print("Resuming game")  # Debug info
         
         self.current_state = new_state
         self.selected_option = 0
-
+        print(f"State changed to: {self.current_state}")  # Debug info
+    
     def handle_input(self, event):
+        """Handle input based on current state."""
         if event.type != pygame.KEYDOWN:
             return
-
+        
         if self.current_state == GameState.MAIN_MENU:
             self._handle_main_menu_input(event)
         elif self.current_state == GameState.PLAYING:
@@ -48,8 +57,10 @@ class StateManager:
             self._handle_options_input(event)
         elif self.current_state == GameState.HIGH_SCORE:
             self._handle_high_score_input(event)
-
+    
     def _handle_main_menu_input(self, event):
+        """Handle input in the main menu state."""
+        print(f"Main menu input: {event.key}")  # Debug info
         if event.key == pygame.K_UP:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
         elif event.key == pygame.K_DOWN:
@@ -63,12 +74,14 @@ class StateManager:
                 self.change_state(GameState.OPTIONS)
             elif self.selected_option == 3:  # Quit
                 self.game.running = False
-
+    
     def _handle_playing_input(self, event):
+        """Handle input in the playing state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_p):
             self.change_state(GameState.PAUSED)
-
+    
     def _handle_pause_input(self, event):
+        """Handle input in the pause state."""
         if event.key == pygame.K_UP:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.PAUSED])
         elif event.key == pygame.K_DOWN:
@@ -82,8 +95,9 @@ class StateManager:
                 self.change_state(GameState.MAIN_MENU)
         elif event.key in (pygame.K_ESCAPE, pygame.K_p):
             self.change_state(GameState.PLAYING)
-
+    
     def _handle_options_input(self, event):
+        """Handle input in the options state."""
         if event.key == pygame.K_UP:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
         elif event.key == pygame.K_DOWN:
@@ -95,12 +109,14 @@ class StateManager:
                 self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_ESCAPE:
             self.change_state(GameState.MAIN_MENU)
-
+    
     def _handle_high_score_input(self, event):
+        """Handle input in the high score state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_RETURN):
             self.change_state(GameState.MAIN_MENU)
-
+    
     def draw(self, screen):
+        """Draw the current state."""
         if self.current_state == GameState.MAIN_MENU:
             self._draw_main_menu(screen)
         elif self.current_state == GameState.PLAYING:
@@ -112,20 +128,22 @@ class StateManager:
             self._draw_options(screen)
         elif self.current_state == GameState.HIGH_SCORE:
             self._draw_high_scores(screen)
-
+    
     def _draw_main_menu(self, screen):
+        """Draw the main menu."""
         screen.fill((0, 0, 0))  # Black background
         font = pygame.font.Font(None, 64)
         title = font.render("ROGUE ASTEROID", True, WHITE)
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
-
+        
         font = pygame.font.Font(None, 36)
         for i, option in enumerate(self.menu_options[GameState.MAIN_MENU]):
             color = (255, 255, 0) if i == self.selected_option else WHITE
             text = font.render(option, True, color)
             screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 300 + i * 50))
-
+    
     def _draw_game(self, screen):
+        """Draw the game state."""
         screen.fill((0, 0, 0))  # Black background
         
         # Draw all game entities
@@ -138,46 +156,49 @@ class StateManager:
             effects = entity.get_component('effects')
             if effects:
                 effects.draw(screen)
-
+        
         # Draw HUD
         font = pygame.font.Font(None, 36)
         score_text = font.render(f"Score: {self.game.score}", True, WHITE)
         screen.blit(score_text, (10, 10))
-
+    
     def _draw_pause_overlay(self, screen):
+        """Draw the pause menu overlay."""
         overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
         overlay.fill((0, 0, 0))
         overlay.set_alpha(128)
         screen.blit(overlay, (0, 0))
-
+        
         font = pygame.font.Font(None, 48)
         title = font.render("PAUSED", True, WHITE)
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 200))
-
+        
         font = pygame.font.Font(None, 36)
         for i, option in enumerate(self.menu_options[GameState.PAUSED]):
             color = (255, 255, 0) if i == self.selected_option else WHITE
             text = font.render(option, True, color)
             screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 300 + i * 50))
-
+    
     def _draw_options(self, screen):
+        """Draw the options menu."""
         screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 48)
         title = font.render("OPTIONS", True, WHITE)
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
-
+        
         font = pygame.font.Font(None, 36)
         for i, option in enumerate(self.menu_options[GameState.OPTIONS]):
             color = (255, 255, 0) if i == self.selected_option else WHITE
             text = font.render(option, True, color)
             screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 300 + i * 50))
-
+    
     def _draw_high_scores(self, screen):
+        """Draw the high scores screen."""
         screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 48)
         title = font.render("HIGH SCORES", True, WHITE)
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
-
+        
         font = pygame.font.Font(None, 36)
         text = font.render("Press ENTER or ESC to return", True, WHITE)
         screen.blit(text, (WINDOW_WIDTH/2 - text.get_width()/2, 500)) 
