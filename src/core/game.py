@@ -1,13 +1,14 @@
 import pygame
 import sys
+import numpy as np
 from typing import List
-from .constants import *
-from .entity import Entity
-from .settings import Settings
-from .menu import MainMenu, OptionsMenu
-from .spawner import Spawner
-from entities.ship import Ship
-from entities.asteroid import Asteroid
+from src.core.constants import *
+from src.core.entity import Entity
+from src.core.settings import Settings
+from src.core.menu import MainMenu, OptionsMenu
+from src.core.spawner import Spawner
+from src.entities.ship import Ship
+from src.entities.asteroid import Asteroid
 
 class Game:
     """Main game class handling the game loop and state management."""

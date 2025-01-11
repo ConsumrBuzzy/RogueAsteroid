@@ -2,15 +2,15 @@
 import numpy as np
 from random import uniform
 from typing import TYPE_CHECKING, List
-from ..entities.asteroid import Asteroid
-from .constants import (
+from src.entities.asteroid import Asteroid
+from src.core.constants import (
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     ASTEROID_SPAWN_DISTANCE
 )
 
 if TYPE_CHECKING:
-    from .game import Game
+    from src.core.game import Game
 
 class Spawner:
     """Manages entity spawning and wave progression."""

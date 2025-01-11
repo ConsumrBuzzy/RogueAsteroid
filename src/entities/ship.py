@@ -1,8 +1,8 @@
 import pygame
 import numpy as np
 from typing import List, Tuple
-from ..core.entity import Entity
-from ..core.constants import (
+from src.core.entity import Entity
+from src.core.constants import (
     SHIP_ACCELERATION,
     SHIP_MAX_SPEED,
     SHIP_ROTATION_SPEED,

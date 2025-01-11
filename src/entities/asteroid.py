@@ -3,8 +3,8 @@ import pygame
 import numpy as np
 from typing import List, Tuple, Optional
 from random import uniform, randint
-from ..core.entity import Entity
-from ..core.constants import (
+from src.core.entity import Entity
+from src.core.constants import (
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     WHITE
