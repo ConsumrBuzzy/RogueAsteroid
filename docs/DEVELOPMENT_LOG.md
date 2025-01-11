@@ -863,3 +863,14 @@ Next Steps:
   * Removed unused audio settings
   * Updated MAX_HIGH_SCORES to match implementation
 - Added proper cleanup in main game loop 
+
+[2024-01-07 21:45] [FIX] Fixed asteroid collision physics
+- Added ASTEROID_SIZES import to Game class for mass-based collision calculations
+- Implemented proper elastic collision response with restitution coefficient of 0.8
+- Added mass-based velocity changes (larger asteroids are affected less by collisions)
+- Added random spin on collision for more dynamic interactions
+- Added proper separation to prevent asteroids from sticking together
+
+[2024-01-07 21:50] [TUNE] Adjusted ship movement parameters
+- Increased ship acceleration for more responsive controls
+- Reduced friction coefficient for smoother movement 

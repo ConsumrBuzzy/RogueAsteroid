@@ -15,10 +15,10 @@ SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after respawn
 MAX_BULLETS = 8  # Maximum number of bullets on screen
 
 # Ship settings
-SHIP_ACCELERATION = 400  # Pixels per second squared
+SHIP_ACCELERATION = 500  # Increased from 400 - Pixels per second squared
 SHIP_MAX_SPEED = 400  # Maximum speed in pixels per second
 SHIP_ROTATION_SPEED = 180  # Degrees per second
-SHIP_FRICTION = 0.02  # Velocity reduction per frame (0-1)
+SHIP_FRICTION = 0.01  # Reduced from 0.02 - Velocity reduction per frame (0-1)
 
 # Bullet settings
 BULLET_SPEED = 1200.0  # pixels per second
