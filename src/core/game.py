@@ -105,8 +105,9 @@ class Game:
                     self.state_manager.change_state(GameState.GAME_OVER)
                 else:
                     # Respawn ship after delay
+                    if self.ship in self.entities:
+                        self.entities.remove(self.ship)
                     self.ship = None
-                    self.entities.remove(self.ship)
     
     def run(self):
         """Main game loop."""
@@ -122,6 +123,15 @@ class Game:
                     self.running = False
                 else:
                     self.state_manager.handle_input(event)
+                    
+                    # Handle ship input when playing
+                    if self.state_manager.current_state == GameState.PLAYING and self.ship:
+                        input_component = self.ship.get_component('input')
+                        if input_component:
+                            if event.type == pygame.KEYDOWN:
+                                input_component.handle_keydown(event.key)
+                            elif event.type == pygame.KEYUP:
+                                input_component.handle_keyup(event.key)
             
             # Update game state
             if self.state_manager.current_state == GameState.PLAYING:
