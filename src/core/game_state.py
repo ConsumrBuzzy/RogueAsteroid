@@ -282,7 +282,7 @@ class StateManager:
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
         
         # Draw score
-        score_text = font.render(f"Score: {self.game.score}", True, WHITE)
+        score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
         screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 200))
         
         # Draw name entry
@@ -315,7 +315,7 @@ class StateManager:
         
         # Draw final score
         font = pygame.font.Font(None, 48)
-        score_text = font.render(f"Final Score: {self.game.score}", True, WHITE)
+        score_text = font.render(f"Final Score: {self.game.scoring.current_score}", True, WHITE)
         screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 300))
         
         # Draw level reached

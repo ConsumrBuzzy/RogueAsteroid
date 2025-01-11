@@ -1,7 +1,14 @@
 # Development Log
 
-Last Session: [2024-01-11 13:31PM]
+Last Session: [2024-01-11 13:32PM]
 Current Phase: Core Gameplay Implementation
+
+[2024-01-11 13:32PM] [FIX] Fixed scoring system implementation:
+- Removed redundant score property from Game class
+- Updated all score displays to use scoring.current_score
+- Removed unnecessary score syncing in update loop
+- Fixed high score and game over screens to use proper scoring
+Next: Test scoring system with asteroid destruction
 
 [2024-01-11 13:31PM] [FIX] Fixed scoring and particle systems:
 - Updated score display to use scoring system's current_score directly

@@ -26,7 +26,6 @@ class Game:
         # Game properties
         self.level = 1
         self.lives = 3
-        self.score = 0
         self.respawn_timer = 0.0  # Timer for ship respawn
         
         # Settings
@@ -58,7 +57,6 @@ class Game:
         # Reset game properties
         self.level = 1
         self.lives = 3
-        self.score = 0
         self.scoring.reset()
         
         # Create player ship
@@ -125,9 +123,8 @@ class Game:
             if entity:
                 entity.update(self.dt)
         
-        # Update scoring system and sync score
+        # Update scoring system
         self.scoring.update(self.dt)
-        self.score = self.scoring.current_score
         
         # Handle ship respawning
         if self.ship is None and self.lives > 0:
