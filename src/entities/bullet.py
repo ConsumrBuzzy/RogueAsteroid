@@ -84,13 +84,15 @@ class Bullet(Entity):
             if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(50, 100)
-                physics.velocity = pygame.Vector2(
+                velocity = pygame.Vector2(
                     math.cos(angle) * speed,
                     math.sin(angle) * speed
                 )
+                physics.velocity = velocity
             
             # Add to game entities
             self.game.entities.append(particle)
+            print(f"Created impact particle at {hit_pos} with velocity {velocity}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update bullet state."""
@@ -99,39 +101,48 @@ class Bullet(Entity):
         # Update lifetime and despawn if expired
         self.lifetime -= dt
         if self.lifetime <= 0:
-            if self in self.game.entities:
-                self.game.entities.remove(self)
             if self in self.game.bullets:
                 self.game.bullets.remove(self)
+            if self in self.game.entities:
+                self.game.entities.remove(self)
             return
         
         # Check for collisions with asteroids
         collision = self.get_component('collision')
         if collision:
-            for entity in self.game.entities:
+            for entity in self.game.entities[:]:  # Copy list to allow removal
                 if isinstance(entity, Asteroid):
                     other_collision = entity.get_component('collision')
                     if other_collision and collision.check_collision(other_collision):
+                        # Get position before removing asteroid
+                        transform = entity.get_component('transform')
+                        if transform:
+                            hit_pos = pygame.Vector2(transform.position)
+                            # Create impact particles first
+                            self._create_impact_particles(hit_pos)
+                        
                         # Handle asteroid hit
                         points = ASTEROID_SIZES[entity.size]['points']
                         self.game.score += points
                         print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
                         
-                        # Create destruction particles
-                        transform = entity.get_component('transform')
-                        if transform:
-                            # Create impact particles at collision point
-                            self._create_impact_particles(transform.position)
-                        
                         # Split asteroid if not smallest size
                         if entity.size in ['large', 'medium']:
-                            entity.split()
+                            pieces = entity.split()
+                            # Add new pieces to game
+                            for piece in pieces:
+                                self.game.asteroids.append(piece)
+                                self.game.entities.append(piece)
                         
                         # Remove asteroid and bullet
+                        if entity in self.game.asteroids:
+                            self.game.asteroids.remove(entity)
                         if entity in self.game.entities:
                             self.game.entities.remove(entity)
-                        if self in self.game.entities:
-                            self.game.entities.remove(self)
+                            
+                        # Remove bullet last
                         if self in self.game.bullets:
                             self.game.bullets.remove(self)
+                        if self in self.game.entities:
+                            self.game.entities.remove(self)
                         return 

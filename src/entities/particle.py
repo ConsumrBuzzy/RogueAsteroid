@@ -1,7 +1,6 @@
 """Particle entity for visual effects."""
-import pygame
-from src.core.entities.base import Entity, TransformComponent
-from src.core.entities.components import ParticleComponent, PhysicsComponent
+from src.core.entities.base import Entity, TransformComponent, RenderComponent
+from src.core.entities.components import PhysicsComponent, ParticleComponent
 
 class Particle(Entity):
     """A particle entity for visual effects."""
@@ -11,20 +10,22 @@ class Particle(Entity):
         
         Args:
             game: The game instance
-            lifetime: How long the particle lives in seconds
+            lifetime: How long the particle should exist in seconds
             color: RGB color tuple for the particle
         """
         super().__init__(game)
         
-        # Add transform component at origin (will be positioned later)
+        # Add transform at origin
         self.add_component(TransformComponent, 0, 0)
         
-        # Add physics component with no friction
+        # Add physics with no friction and very light mass
         physics = self.add_component(PhysicsComponent)
-        physics.friction = 0.0  # No friction for particles
-        physics.mass = 0.1  # Very light
-        physics.max_speed = 1000.0  # Allow high speeds
+        physics.friction = 0.0
+        physics.mass = 0.1
+        physics.max_speed = 1000.0  # Allow high speeds for particles
         
-        # Add particle component for rendering and lifetime
-        particle = self.add_component(ParticleComponent, lifetime=lifetime, color=color)
+        # Add particle component with lifetime and color
+        particle = self.add_component(ParticleComponent)
+        particle.lifetime = lifetime
+        particle.color = color
         particle.size = 2.0  # Default size in pixels 

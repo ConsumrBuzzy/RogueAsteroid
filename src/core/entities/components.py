@@ -186,12 +186,12 @@ class ParticleComponent(Component):
         
     def update(self, dt: float) -> None:
         """Update the particle state."""
-        if not self.entity:
+        if not self.entity or not self.entity.game:
             return
             
         self.time_remaining -= dt
         if self.time_remaining <= 0:
-            # Remove from game entities list directly
+            # Remove from game entities list if it exists
             if self.entity in self.entity.game.entities:
                 self.entity.game.entities.remove(self.entity)
             return
@@ -209,7 +209,7 @@ class ParticleComponent(Component):
             return
             
         # Create a surface with per-pixel alpha
-        size_int = int(self.size * 2)
+        size_int = max(1, int(self.size * 2))  # Ensure minimum size of 1
         particle_surface = pygame.Surface((size_int, size_int), pygame.SRCALPHA)
         
         # Draw the particle with current alpha
@@ -218,7 +218,7 @@ class ParticleComponent(Component):
             particle_surface,
             color_with_alpha,
             (int(self.size), int(self.size)),
-            int(self.size)
+            max(1, int(self.size))  # Ensure minimum radius of 1
         )
         
         # Draw to screen at integer positions
