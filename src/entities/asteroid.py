@@ -131,31 +131,30 @@ class Asteroid(Entity):
         # Determine new size
         new_size = 'medium' if self.size == 'large' else 'small'
         
-        # Create split pieces with angled velocities
+        # Create split pieces with distinct velocities
         pieces = []
-        split_angles = [-30, 30]  # Angles in degrees to split apart
+        # Use wider angle spread and add some randomness
+        base_angles = [-45, 45]  # Base angles for splitting
         
-        for angle in split_angles:
-            # Create new asteroid with current position
-            piece = Asteroid(self.game, new_size, transform.position, None)
+        for base_angle in base_angles:
+            # Add some randomness to the split angle
+            angle = base_angle + random.uniform(-15, 15)
             
-            # Get piece's transform
-            piece_transform = piece.get_component('transform')
-            if not piece_transform:
-                continue
-                
-            # Calculate new velocity at an angle from original
-            current_speed = transform.velocity.length()
-            new_speed = current_speed * 1.2  # Slightly faster
+            # Calculate new velocity for this piece
+            min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
+            new_speed = random.uniform(min_speed, max_speed)
             
-            # Rotate the original velocity vector
-            new_velocity = pygame.Vector2(transform.velocity)
-            new_velocity = new_velocity.rotate(angle)
-            if new_velocity.length() > 0:
-                new_velocity = new_velocity.normalize() * new_speed
+            # Create velocity vector at the split angle
+            new_velocity = pygame.Vector2(
+                math.cos(math.radians(angle)) * new_speed,
+                math.sin(math.radians(angle)) * new_speed
+            )
             
-            piece_transform.velocity = new_velocity
+            # Create new asteroid with current position and calculated velocity
+            piece = Asteroid(self.game, new_size, transform.position, new_velocity)
             pieces.append(piece)
+            
+            print(f"Created split piece: size={new_size}, angle={angle}, speed={new_speed}")  # Debug info
         
         return pieces
 
