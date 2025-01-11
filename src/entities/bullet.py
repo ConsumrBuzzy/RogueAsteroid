@@ -76,7 +76,8 @@ class Bullet(Entity):
             # Position slightly randomized around impact point
             offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
             particle_transform = particle.get_component('transform')
-            particle_transform.position = hit_pos + offset
+            if particle_transform:
+                particle_transform.position = hit_pos + offset
             
             # Velocity in random direction
             angle = random.uniform(0, 360)
@@ -85,13 +86,20 @@ class Bullet(Entity):
                 math.cos(math.radians(angle)) * speed,
                 math.sin(math.radians(angle)) * speed
             )
-            particle.physics.velocity = velocity
             
-            # Yellow-white spark color
-            r = random.randint(220, 255)
-            g = random.randint(180, 220)
-            particle.particle.color = (r, g, 50)
-            particle.particle.lifetime = random.uniform(0.1, 0.2)
+            # Set velocity through physics component
+            physics = particle.get_component('physics')
+            if physics:
+                physics.velocity = velocity
+            
+            # Set color and lifetime through particle component
+            particle_comp = particle.get_component('particle')
+            if particle_comp:
+                # Yellow-white spark color
+                r = random.randint(220, 255)
+                g = random.randint(180, 220)
+                particle_comp.color = (r, g, 50)
+                particle_comp.lifetime = random.uniform(0.1, 0.2)
             
             self.game.entities.append(particle)
     

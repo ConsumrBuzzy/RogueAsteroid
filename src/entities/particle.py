@@ -1,7 +1,7 @@
 """Particle entity for visual effects."""
 import pygame
 from src.core.entities.base import Entity, TransformComponent
-from src.core.entities.components import ParticleComponent
+from src.core.entities.components import ParticleComponent, PhysicsComponent
 
 class Particle(Entity):
     """A particle entity for visual effects."""
@@ -18,6 +18,10 @@ class Particle(Entity):
         
         # Add transform component
         self.add_component(TransformComponent, 0, 0)
+        
+        # Add physics component
+        physics = self.add_component(PhysicsComponent)
+        physics.friction = 0.0  # No friction for particles
         
         # Add particle component
         particle = self.add_component(ParticleComponent, lifetime=lifetime, color=color)
