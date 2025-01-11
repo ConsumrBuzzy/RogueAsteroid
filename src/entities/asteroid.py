@@ -5,17 +5,15 @@ from typing import List, Tuple
 import pygame
 from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
 from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
-from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT, WHITE
+from src.core.constants import (
+    WINDOW_WIDTH, 
+    WINDOW_HEIGHT, 
+    WHITE,
+    ASTEROID_SIZES
+)
 
 class Asteroid(Entity):
     """Asteroid entity that can be destroyed by bullets and split into smaller pieces."""
-    
-    # Size categories with corresponding radius and points
-    SIZES = {
-        'large': {'radius': 40.0, 'points': 20},
-        'medium': {'radius': 20.0, 'points': 50},
-        'small': {'radius': 10.0, 'points': 100}
-    }
     
     def __init__(self, game, size='large', position=None, velocity=None):
         """Initialize the asteroid with the given size and optional position/velocity."""
@@ -67,11 +65,11 @@ class Asteroid(Entity):
 
         # Physics component
         physics = self.add_component(PhysicsComponent)
-        physics.max_speed = 200.0  # Asteroids have no speed limit
+        physics.max_speed = ASTEROID_SIZES[self.size]['speed_range'][1]  # Use max speed from range
         physics.friction = 0.0     # No friction for asteroids
 
         # Collision component with radius based on size
-        radius = self.SIZES[self.size]['radius']
+        radius = ASTEROID_SIZES[self.size]['radius']
         collision = self.add_component(CollisionComponent, radius=radius)
 
         # Screen wrap component
@@ -79,8 +77,9 @@ class Asteroid(Entity):
     
     def _generate_vertices(self) -> List[Tuple[float, float]]:
         """Generate vertices for the asteroid's shape."""
-        num_vertices = random.randint(8, 12)
-        radius = self.SIZES[self.size]['radius']
+        min_vertices, max_vertices = ASTEROID_SIZES[self.size]['vertices_range']
+        num_vertices = random.randint(min_vertices, max_vertices)
+        radius = ASTEROID_SIZES[self.size]['radius']
         vertices = []
         
         for i in range(num_vertices):
@@ -99,7 +98,7 @@ class Asteroid(Entity):
             return []
             
         new_size = 'medium' if self.size == 'large' else 'small'
-        num_pieces = 2
+        num_pieces = ASTEROID_SIZES[self.size]['splits']
         new_asteroids = []
         
         transform = self.get_component('transform')
@@ -108,7 +107,8 @@ class Asteroid(Entity):
             
         for _ in range(num_pieces):
             # Random velocity for new pieces
-            speed = random.uniform(100, 150)
+            min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
+            speed = random.uniform(min_speed, max_speed)
             angle = random.uniform(0, 2 * math.pi)
             velocity = pygame.Vector2(
                 math.cos(angle) * speed,

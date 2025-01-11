@@ -3,7 +3,7 @@ import numpy as np
 from typing import TYPE_CHECKING
 from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
 from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
-from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT, ASTEROID_SIZES
 from src.entities.asteroid import Asteroid
 
 if TYPE_CHECKING:
@@ -93,7 +93,7 @@ class Bullet(Entity):
                 print("Bullet hit asteroid!")  # Debug info
                 
                 # Add score based on asteroid size
-                points = entity.SIZES[entity.size]['points']
+                points = ASTEROID_SIZES[entity.size]['points']
                 self.game.scoring.add_points(points)  # Points per hit based on size
                 
                 # Remove bullet and asteroid

@@ -85,6 +85,10 @@ class Game:
         for entity in self.entities[:]:  # Copy list to allow removal during iteration
             if entity:
                 entity.update(self.dt)
+        
+        # Update scoring system and sync score
+        self.scoring.update(self.dt)
+        self.score = self.scoring.current_score
     
     def handle_collisions(self):
         """Handle collisions between entities."""

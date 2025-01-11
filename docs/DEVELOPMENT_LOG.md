@@ -352,6 +352,13 @@ Next: Update bullet mechanics for better feel
 - Added bullet cleanup from tracking list
 Next: Test bullet mechanics and scoring system
 
+[2024-01-11 13:02PM] [FIX] Fixed scoring system:
+- Updated game score to sync with scoring system
+- Fixed asteroid points to use constants (20/50/100 points)
+- Corrected bullet collision scoring
+- Improved asteroid splitting with proper point values
+Next: Test scoring system with different asteroid sizes
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
