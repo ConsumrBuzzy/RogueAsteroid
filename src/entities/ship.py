@@ -176,13 +176,13 @@ class Ship(Entity):
         """Rotate ship counter-clockwise."""
         transform = self.get_component('transform')
         if transform:
-            transform.rotation -= SHIP_ROTATION_SPEED * self.game.dt * 60
+            transform.rotation = (transform.rotation - SHIP_ROTATION_SPEED * self.game.dt * 60) % 360
     
     def _rotate_right(self) -> None:
         """Rotate ship clockwise."""
         transform = self.get_component('transform')
         if transform:
-            transform.rotation += SHIP_ROTATION_SPEED * self.game.dt * 60
+            transform.rotation = (transform.rotation + SHIP_ROTATION_SPEED * self.game.dt * 60) % 360
     
     def _shoot(self):
         """Create and fire a bullet."""

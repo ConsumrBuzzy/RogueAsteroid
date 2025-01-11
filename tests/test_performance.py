@@ -9,6 +9,7 @@ from src.core.entities.base import Entity
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
 from src.entities.ship import Ship
+import pygame
 
 @dataclass
 class BenchmarkResult:
@@ -64,7 +65,12 @@ class TestGamePerformance:
         for _ in range(count):
             x = np.random.randint(0, self.game.width)
             y = np.random.randint(0, self.game.height)
-            entity = entity_type(self.game, x, y)
+            if entity_type == Asteroid:
+                entity = entity_type(self.game, 'large', pygame.Vector2(x, y))
+            elif entity_type == Bullet:
+                entity = entity_type(self.game, pygame.Vector2(x, y), pygame.Vector2(1, 0))
+            else:
+                entity = entity_type(self.game)
             entities.append(entity)
             self.game.add_entity(entity)
         return entities
@@ -78,9 +84,14 @@ class TestGamePerformance:
         
         def check_collisions():
             for bullet in bullets:
+                bullet_collision = bullet.get_component('collision')
+                if not bullet_collision:
+                    continue
                 for asteroid in asteroids:
-                    if bullet.get_component('collision').check_collision(
-                        asteroid.get_component('collision')):
+                    asteroid_collision = asteroid.get_component('collision')
+                    if not asteroid_collision:
+                        continue
+                    if bullet_collision.check_collision(asteroid_collision):
                         pass
         
         result = benchmark(check_collisions)
@@ -99,7 +110,7 @@ class TestGamePerformance:
         # Create mix of entities
         self.create_entities(30, Asteroid)
         self.create_entities(5, Bullet)
-        ship = Ship(self.game, self.game.width/2, self.game.height/2)
+        ship = Ship(self.game)
         self.game.add_entity(ship)
         
         def update_entities():
@@ -119,28 +130,31 @@ class TestGamePerformance:
     @pytest.mark.performance
     def test_particle_system_performance(self):
         """Test performance of particle system."""
-        from src.core.entities.components import ParticleComponent
+        from src.entities.particle import Particle
         
-        # Create entities with particle effects
-        entities = []
-        for _ in range(20):
-            entity = create_test_entity(self.game)
-            particle = entity.add_component(ParticleComponent)
-            # Add some test particles
-            for _ in range(50):
-                particle.emit(
-                    position=np.array([np.random.random()*self.game.width,
-                                     np.random.random()*self.game.height]),
-                    velocity=np.array([np.random.random()*100-50,
-                                     np.random.random()*100-50]),
-                    lifetime=1.0
+        # Create test particles
+        particles = []
+        for _ in range(1000):
+            x = np.random.randint(0, self.game.width)
+            y = np.random.randint(0, self.game.height)
+            particle = Particle(
+                self.game,
+                lifetime=1.0,
+                color=(255, 255, 255)
+            )
+            particle_transform = particle.get_component('transform')
+            if particle_transform:
+                particle_transform.position = pygame.Vector2(x, y)
+                particle_transform.velocity = pygame.Vector2(
+                    np.random.random() * 100 - 50,
+                    np.random.random() * 100 - 50
                 )
-            entities.append(entity)
-            self.game.add_entity(entity)
+            particles.append(particle)
+            self.game.add_entity(particle)
         
         def update_particles():
-            for entity in entities:
-                entity.get_component(ParticleComponent).update(self.game.dt)
+            for particle in particles:
+                particle.update(self.game.dt)
         
         result = benchmark(update_particles)
         print(f"\nParticle System Benchmark ({result.iterations} iterations):")

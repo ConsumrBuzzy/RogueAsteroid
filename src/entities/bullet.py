@@ -33,47 +33,31 @@ class Bullet(Entity):
         self.direction = direction.normalize()
         
         # Add components
-        self._init_transform(position)
-        self._init_physics()
-        self._init_render()
-        self._init_collision()
-        self._init_screen_wrap()
+        self._init_components(position, direction)
     
-    def _init_transform(self, position: pygame.Vector2) -> None:
-        """Initialize transform component."""
-        transform = self.add_component(TransformComponent, position.x, position.y)
-        # Calculate rotation from direction
-        transform.rotation = math.degrees(math.atan2(self.direction.y, self.direction.x))
-    
-    def _init_physics(self) -> None:
-        """Initialize physics component."""
-        physics = self.add_component(PhysicsComponent, mass=0.1, max_speed=self.SPEED)
+    def _init_components(self, position: pygame.Vector2, direction: pygame.Vector2) -> None:
+        """Initialize bullet components."""
+        # Transform component
+        transform = self.add_component(TransformComponent, x=position.x, y=position.y)
+        transform.velocity = direction * 1200  # Fixed bullet speed
+        print(f"Bullet velocity: {transform.velocity}")  # Debug info
+        
+        # Physics component
+        physics = self.add_component(PhysicsComponent)
+        physics.max_speed = 1200  # Match bullet speed
         physics.friction = 0.0  # No friction for bullets
         
-        # Set initial velocity using physics component
-        velocity = self.direction * self.SPEED
-        physics.velocity = velocity  # Set velocity directly
-        print(f"Bullet velocity: {velocity}")  # Debug info
-    
-    def _init_render(self) -> None:
-        """Initialize render component."""
+        # Render component
         render = self.add_component(RenderComponent)
-        render.color = WHITE
+        render.vertices = [(0, 0), (0, 2)]  # Simple 2-pixel line
+        render.color = (255, 255, 255)  # White
+        render.visible = True
         
-        # Define bullet shape (small line)
-        size = 4.0
-        render.vertices = [
-            (-size/2, 0),
-            (size/2, 0)
-        ]
-    
-    def _init_collision(self) -> None:
-        """Initialize collision component."""
-        self.add_component(CollisionComponent, radius=2.0)
-    
-    def _init_screen_wrap(self) -> None:
-        """Initialize screen wrapping component."""
-        self.add_component(ScreenWrapComponent, WINDOW_WIDTH, WINDOW_HEIGHT)
+        # Collision component
+        self.add_component(CollisionComponent, radius=1.0)
+        
+        # Screen wrap component
+        self.add_component(ScreenWrapComponent, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
     
     def _create_impact_particles(self, hit_pos):
         """Create particles for bullet impact effect"""
