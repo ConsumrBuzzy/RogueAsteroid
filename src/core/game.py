@@ -276,3 +276,8 @@ class Game:
             pygame.display.flip()
         
         pygame.quit() 
+
+    @property
+    def score(self) -> int:
+        """Get current score."""
+        return self.scoring.current_score 

@@ -60,6 +60,12 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
+[2024-01-11 12:30PM] [FIX] Fixed score display:
+- Added score property to Game class
+- Connected scoring system to HUD display
+- Improved score and multiplier rendering
+Next: Fix bullet movement and implement asteroid collisions
+
 [2024-01-11 12:29PM] [FIX] Fixed game rendering:
 - Added back missing _draw_game method
 - Added debug logging for entity rendering
