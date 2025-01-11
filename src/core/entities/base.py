@@ -8,6 +8,7 @@ from typing import Dict, Type, TypeVar, Optional, List, Tuple, Any
 import pygame
 import math
 from pygame import Vector2
+import numpy as np
 
 T = TypeVar('T', bound='Component')
 
@@ -117,9 +118,10 @@ class TransformComponent(Component):
             y: Initial y position.
         """
         super().__init__(entity)
-        self._position = Vector2(x, y)
+        self._position = Vector2(float(x), float(y))
         self._velocity = Vector2(0, 0)
         self._rotation = 0.0  # Rotation in degrees
+        self._rotation_speed = 0.0  # Rotation speed in degrees per second
     
     @property
     def position(self) -> Vector2:
@@ -127,9 +129,12 @@ class TransformComponent(Component):
         return self._position
         
     @position.setter
-    def position(self, value: Vector2) -> None:
+    def position(self, value) -> None:
         """Set the current position."""
-        self._position = Vector2(value)
+        if isinstance(value, (list, tuple, np.ndarray)):
+            self._position = Vector2(float(value[0]), float(value[1]))
+        else:
+            self._position = Vector2(value)
     
     @property
     def velocity(self) -> Vector2:
@@ -137,9 +142,12 @@ class TransformComponent(Component):
         return self._velocity
         
     @velocity.setter
-    def velocity(self, value: Vector2) -> None:
+    def velocity(self, value) -> None:
         """Set the current velocity."""
-        self._velocity = Vector2(value)
+        if isinstance(value, (list, tuple, np.ndarray)):
+            self._velocity = Vector2(float(value[0]), float(value[1]))
+        else:
+            self._velocity = Vector2(value)
     
     @property
     def rotation(self) -> float:
@@ -151,13 +159,24 @@ class TransformComponent(Component):
         """Set the current rotation in degrees."""
         self._rotation = value % 360.0
     
+    @property
+    def rotation_speed(self) -> float:
+        """Get the current rotation speed in degrees per second."""
+        return self._rotation_speed
+        
+    @rotation_speed.setter
+    def rotation_speed(self, value: float) -> None:
+        """Set the current rotation speed in degrees per second."""
+        self._rotation_speed = value
+    
     def update(self, dt: float) -> None:
-        """Update position based on velocity.
+        """Update position based on velocity and rotation based on rotation speed.
         
         Args:
             dt: Delta time since last update in seconds.
         """
         self._position += self._velocity * dt
+        self._rotation = (self._rotation + self._rotation_speed * dt) % 360.0
 
 class RenderComponent(Component):
     """Component for rendering entities.
@@ -258,8 +277,7 @@ class RenderComponent(Component):
 class CollisionComponent(Component):
     """Component for handling collisions.
     
-    Manages collision detection and provides collision information for response.
-    Uses circular collision bounds for simplicity and performance.
+    Manages collision detection between entities using circular collision bounds.
     """
     
     def __init__(self, entity: Entity, radius: float) -> None:
@@ -267,44 +285,30 @@ class CollisionComponent(Component):
         
         Args:
             entity: The entity this component belongs to.
-            radius: The radius of the collision circle.
-            
-        Raises:
-            ValueError: If radius is not positive.
+            radius: Radius of the collision circle.
         """
         super().__init__(entity)
-        if radius <= 0:
-            raise ValueError("Collision radius must be positive")
         self._radius = radius
-        self._active = True  # For enabling/disabling collisions (e.g., during invulnerability)
+        self._active = True
     
     @property
     def radius(self) -> float:
         """Get the collision radius."""
         return self._radius
-    
+        
     @radius.setter
     def radius(self, value: float) -> None:
-        """Set the collision radius.
-        
-        Args:
-            value: The new radius value.
-            
-        Raises:
-            ValueError: If value is not positive.
-        """
-        if value <= 0:
-            raise ValueError("Collision radius must be positive")
+        """Set the collision radius."""
         self._radius = value
     
     @property
     def active(self) -> bool:
-        """Get whether collision detection is active."""
+        """Get the collision active state."""
         return self._active
-    
+        
     @active.setter
     def active(self, value: bool) -> None:
-        """Set whether collision detection is active."""
+        """Set the collision active state."""
         self._active = value
     
     def check_collision(self, other: 'CollisionComponent') -> bool:
@@ -322,28 +326,20 @@ class CollisionComponent(Component):
         transform = self.entity.get_component('transform')
         other_transform = other.entity.get_component('transform')
         
-        if not transform or not other_transform:
+        if not (transform and other_transform):
             return False
             
-        # Get positions as Vector2
-        pos1 = pygame.Vector2(transform.position)
-        pos2 = pygame.Vector2(other_transform.position)
-        
-        # Calculate distance between centers
-        distance = (pos2 - pos1).length()
-        
-        # Check if distance is less than sum of radii
-        return distance < (self._radius + other.radius)
+        distance = transform.position.distance_to(other_transform.position)
+        return distance <= (self._radius + other._radius)
     
-    def get_collision_normal(self, other: 'CollisionComponent') -> Optional[pygame.Vector2]:
-        """Get the collision normal vector pointing from this to other.
+    def get_collision_normal(self, other: 'CollisionComponent') -> Optional[Vector2]:
+        """Get the collision normal vector between this and another component.
         
         Args:
             other: The other collision component.
             
         Returns:
-            Normalized vector from this component's center to other's center,
-            or None if components are not colliding or at same position.
+            Normalized vector pointing from other to this component, or None if not colliding.
         """
         if not self.check_collision(other):
             return None
@@ -351,30 +347,24 @@ class CollisionComponent(Component):
         transform = self.entity.get_component('transform')
         other_transform = other.entity.get_component('transform')
         
-        if not transform or not other_transform:
+        if not (transform and other_transform):
             return None
             
-        # Get positions as Vector2
-        pos1 = pygame.Vector2(transform.position)
-        pos2 = pygame.Vector2(other_transform.position)
-        
-        # Calculate direction
-        direction = pos2 - pos1
-        
-        # Handle case where objects are at same position
-        if direction.length() == 0:
-            return None
-            
-        return direction.normalize()
+        # Get vector from other to this
+        normal = transform.position - other_transform.position
+        if normal.length() > 0:
+            normal.normalize_ip()
+            return normal
+        return Vector2(1, 0)  # Default direction if positions are identical
     
     def get_collision_depth(self, other: 'CollisionComponent') -> float:
-        """Get the overlap distance between colliding components.
+        """Get the overlap depth between this and another component.
         
         Args:
             other: The other collision component.
             
         Returns:
-            Positive overlap distance if colliding, 0 otherwise.
+            The overlap depth, or 0 if not colliding.
         """
         if not self.check_collision(other):
             return 0.0
@@ -382,15 +372,8 @@ class CollisionComponent(Component):
         transform = self.entity.get_component('transform')
         other_transform = other.entity.get_component('transform')
         
-        if not transform or not other_transform:
+        if not (transform and other_transform):
             return 0.0
             
-        # Get positions as Vector2
-        pos1 = pygame.Vector2(transform.position)
-        pos2 = pygame.Vector2(other_transform.position)
-        
-        # Calculate actual and desired distances
-        actual_distance = (pos2 - pos1).length()
-        desired_distance = self._radius + other.radius
-        
-        return max(0.0, desired_distance - actual_distance) 
+        distance = transform.position.distance_to(other_transform.position)
+        return self._radius + other._radius - distance 
