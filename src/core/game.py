@@ -12,6 +12,8 @@ from src.core.constants import (
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.ui.menus import MainMenu, OptionsMenu
+from src.core.audio import AudioManager
+from src.core.particles import ParticleSystem
 
 class GameState:
     """Game state management."""
@@ -49,6 +51,10 @@ class Game:
         self.ship: Optional[Ship] = None
         self.asteroids: List[Asteroid] = []
         
+        # Systems
+        self.audio = AudioManager()
+        self.particles = ParticleSystem()
+        
         # UI
         self.main_menu = MainMenu(self)
         self.options_menu = OptionsMenu(self)
@@ -60,6 +66,7 @@ class Game:
         self.level = 1
         self.entities.clear()
         self.asteroids.clear()
+        self.particles.clear()
         
         # Create player ship
         self.ship = Ship(self)
@@ -107,6 +114,18 @@ class Game:
                 
             if ship_collision.collides_with(asteroid_collision):
                 self.lives -= 1
+                
+                # Create explosion effect
+                transform = self.ship.get_component('transform')
+                if transform:
+                    self.particles.create_explosion(
+                        transform.position,
+                        (255, 0, 0),  # Red explosion
+                        num_particles=30,
+                        speed_range=(100, 200)
+                    )
+                    self.audio.play_sound('explosion_large')
+                
                 self.entities.remove(self.ship)
                 self.ship = None
                 
@@ -129,6 +148,9 @@ class Game:
             for entity in self.entities[:]:  # Copy list for safe removal
                 entity.update(self.dt)
             
+            # Update particles
+            self.particles.update(self.dt)
+            
             # Handle collisions
             self.handle_collisions()
             
@@ -149,6 +171,9 @@ class Game:
             # Draw all entities
             for entity in self.entities:
                 entity.draw(self.screen)
+            
+            # Draw particles
+            self.particles.draw(self.screen)
             
             # Draw HUD
             self._draw_hud()

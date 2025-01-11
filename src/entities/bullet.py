@@ -24,6 +24,9 @@ class Bullet(Entity):
         self._init_physics()
         self._init_render()
         self._init_collision()
+        
+        # Play shoot sound
+        self.game.audio.play_sound('shoot')
     
     def _init_transform(self, x: float, y: float, direction: np.ndarray) -> None:
         """Initialize transform component."""
@@ -70,6 +73,18 @@ class Bullet(Entity):
                 continue
                 
             if collision.collides_with(asteroid_collision):
+                # Create explosion effect
+                transform = asteroid.get_component(TransformComponent)
+                if transform:
+                    self.game.particles.create_explosion(
+                        transform.position,
+                        (255, 255, 0),  # Yellow explosion
+                        num_particles=15 if asteroid.size_category == 'small' else 25,
+                        speed_range=(75, 150),
+                        lifetime_range=(0.3, 0.6)
+                    )
+                    self.game.audio.play_explosion(asteroid.size_category)
+                
                 # Split asteroid
                 new_asteroids = asteroid.split()
                 

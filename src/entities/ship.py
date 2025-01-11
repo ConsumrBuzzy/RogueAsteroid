@@ -31,6 +31,7 @@ class Ship(Entity):
     def __init__(self, game: 'Game'):
         super().__init__(game)
         self.shoot_timer = 0.0
+        self.thrust_sound_playing = False
         
         # Add components
         self._init_transform()
@@ -133,6 +134,17 @@ class Ship(Entity):
             force = direction * SHIP_ACCELERATION
             physics.apply_force(force)
             
+            # Create particle effect
+            self.game.particles.create_thrust(
+                transform.position - direction * 15.0,  # Offset from center
+                direction
+            )
+            
+            # Play thrust sound
+            if not self.thrust_sound_playing:
+                self.game.audio.play_sound('thrust', loop=True)
+                self.thrust_sound_playing = True
+            
             # Activate thrust effect
             if effects:
                 effects.set_effect_active('thrust', True)
@@ -193,4 +205,10 @@ class Ship(Entity):
         
         if effects and input_component:
             thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in input_component.active_keys) 
+            is_thrusting = thrust_key in input_component.active_keys
+            effects.set_effect_active('thrust', is_thrusting)
+            
+            # Stop thrust sound if not thrusting
+            if not is_thrusting and self.thrust_sound_playing:
+                self.game.audio.stop_sound('thrust')
+                self.thrust_sound_playing = False 
