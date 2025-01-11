@@ -9,6 +9,7 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     SHIP_INVULNERABLE_TIME
 )
+import random
 
 class Game:
     def __init__(self):
@@ -123,6 +124,43 @@ class Game:
         if not ship_collision:
             return
             
+        # Check asteroid-asteroid collisions first
+        for i, asteroid1 in enumerate(self.asteroids[:-1]):
+            collision1 = asteroid1.get_component('collision')
+            if not collision1:
+                continue
+                
+            for asteroid2 in self.asteroids[i+1:]:
+                collision2 = asteroid2.get_component('collision')
+                if not collision2:
+                    continue
+                    
+                if collision1.check_collision(collision2):
+                    # Get transforms
+                    transform1 = asteroid1.get_component('transform')
+                    transform2 = asteroid2.get_component('transform')
+                    if not transform1 or not transform2:
+                        continue
+                        
+                    # Calculate collision response
+                    # Simple elastic collision - swap velocities
+                    vel1 = transform1.velocity
+                    transform1.velocity = transform2.velocity
+                    transform2.velocity = vel1
+                    
+                    # Add some random spin
+                    transform1.rotation_speed = random.uniform(-90, 90)
+                    transform2.rotation_speed = random.uniform(-90, 90)
+                    
+                    # Move apart slightly to prevent sticking
+                    direction = pygame.Vector2(
+                        transform2.position.x - transform1.position.x,
+                        transform2.position.y - transform1.position.y
+                    ).normalize()
+                    transform1.position -= direction * 5
+                    transform2.position += direction * 5
+        
+        # Then check ship-asteroid collisions
         for asteroid in self.asteroids[:]:  # Copy list to allow removal
             asteroid_collision = asteroid.get_component('collision')
             if not asteroid_collision:

@@ -212,6 +212,10 @@ class StateManager:
         # Draw lives
         lives_text = font.render(f"Lives: {self.game.lives}", True, WHITE)
         screen.blit(lives_text, (10, 50))  # Position below score
+        
+        # Draw level
+        level_text = font.render(f"Level: {self.game.level}", True, WHITE)
+        screen.blit(level_text, (10, 90))  # Position below lives
     
     def _draw_pause_overlay(self, screen):
         """Draw the pause menu overlay."""

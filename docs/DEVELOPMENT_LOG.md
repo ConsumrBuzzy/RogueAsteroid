@@ -391,6 +391,13 @@ Next: Test high score system end-to-end
 - Added debug logging for asteroid spawn positions and velocities
 Next: Test asteroid spawning behavior
 
+[2024-01-11 13:08PM] [IMPL] Enhanced gameplay features:
+- Added level display to HUD
+- Increased max bullets to 12
+- Decreased bullet lifetime to 0.5 seconds
+- Implemented asteroid-asteroid collisions with elastic bouncing and spin
+Next: Test asteroid collision physics and bullet balance
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
