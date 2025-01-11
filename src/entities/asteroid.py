@@ -55,7 +55,7 @@ class Asteroid(Entity):
         # Render component
         render = self.add_component(RenderComponent)
         render.color = WHITE
-        render.vertices = self._generate_shape()
+        render.vertices = self._generate_vertices()
         render.visible = True
 
         # Physics component
