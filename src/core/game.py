@@ -1,15 +1,18 @@
 """Main game class."""
 import pygame
+import random
+import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
+from src.core.sound import SoundManager
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
     WINDOW_WIDTH, 
     WINDOW_HEIGHT,
-    SHIP_INVULNERABLE_TIME
+    SHIP_INVULNERABLE_TIME,
+    MAX_ASTEROIDS
 )
-import random
 import math
 
 class Game:
