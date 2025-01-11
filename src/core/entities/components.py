@@ -183,10 +183,12 @@ class ParticleComponent(Component):
         self.color = color
         self.alpha = 255  # For fade out effect
         self.size = 2.0  # Particle size in pixels
-        self.velocity = pygame.Vector2(0, 0)
         
     def update(self, dt: float) -> None:
         """Update the particle state."""
+        if not self.entity:
+            return
+            
         self.time_remaining -= dt
         if self.time_remaining <= 0:
             # Remove from game entities list directly
@@ -196,11 +198,6 @@ class ParticleComponent(Component):
 
         # Update alpha for fade out
         self.alpha = int((self.time_remaining / self.lifetime) * 255)
-        
-        # Update position based on velocity
-        physics = self.entity.get_component('physics')
-        if physics:
-            physics.velocity = self.velocity  # Sync velocity with physics component
 
     def draw(self, screen: pygame.Surface):
         """Draw the particle."""
@@ -212,19 +209,19 @@ class ParticleComponent(Component):
             return
             
         # Create a surface with per-pixel alpha
-        particle_surface = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+        size_int = int(self.size * 2)
+        particle_surface = pygame.Surface((size_int, size_int), pygame.SRCALPHA)
         
         # Draw the particle with current alpha
         color_with_alpha = (*self.color, self.alpha)
         pygame.draw.circle(
             particle_surface,
             color_with_alpha,
-            (self.size, self.size),
-            self.size
+            (int(self.size), int(self.size)),
+            int(self.size)
         )
         
-        # Draw to screen
-        screen.blit(
-            particle_surface,
-            (transform.position.x - self.size, transform.position.y - self.size)
-        ) 
+        # Draw to screen at integer positions
+        pos_x = int(transform.position.x - self.size)
+        pos_y = int(transform.position.y - self.size)
+        screen.blit(particle_surface, (pos_x, pos_y)) 

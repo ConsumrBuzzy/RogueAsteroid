@@ -71,36 +71,25 @@ class Bullet(Entity):
         """Create particles for bullet impact effect"""
         num_particles = random.randint(4, 6)
         for _ in range(num_particles):
-            particle = Particle(self.game)
+            particle = Particle(self.game, lifetime=0.2, color=(255, 220, 50))
             
             # Position slightly randomized around impact point
             offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
-            particle_transform = particle.get_component('transform')
-            if particle_transform:
-                particle_transform.position = hit_pos + offset
-            
-            # Velocity in random direction
-            angle = random.uniform(0, 360)
-            speed = random.uniform(50, 100)
-            velocity = pygame.Vector2(
-                math.cos(math.radians(angle)) * speed,
-                math.sin(math.radians(angle)) * speed
-            )
+            transform = particle.get_component('transform')
+            if transform:
+                transform.position = hit_pos + offset
             
             # Set velocity through physics component
             physics = particle.get_component('physics')
             if physics:
-                physics.velocity = velocity
+                angle = random.uniform(0, 2 * math.pi)
+                speed = random.uniform(50, 100)
+                physics.velocity = pygame.Vector2(
+                    math.cos(angle) * speed,
+                    math.sin(angle) * speed
+                )
             
-            # Set color and lifetime through particle component
-            particle_comp = particle.get_component('particle')
-            if particle_comp:
-                # Yellow-white spark color
-                r = random.randint(220, 255)
-                g = random.randint(180, 220)
-                particle_comp.color = (r, g, 50)
-                particle_comp.lifetime = random.uniform(0.1, 0.2)
-            
+            # Add to game entities
             self.game.entities.append(particle)
     
     def update(self, dt: float) -> None:
