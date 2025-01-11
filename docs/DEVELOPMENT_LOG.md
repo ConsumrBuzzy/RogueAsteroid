@@ -49,7 +49,6 @@ None currently blocking - all core systems functioning as intended.
   - Enhanced high score entry validation
   - Improved state transition validation
   - Added debug logging for error conditions
-
 Next Steps:
 - Test error handling in various scenarios
 - Verify high score system with maximum score limit
@@ -236,6 +235,21 @@ Next Steps:
 - Verify particle effects visibility and behavior
 - Check high score tracking and persistence
 
+[2024-01-11 13:32PM] [FIX] Fixed scoring system implementation:
+- Removed redundant score property from Game class
+- Updated all score displays to use scoring.current_score
+- Removed unnecessary score syncing in update loop
+- Fixed high score and game over screens to use proper scoring
+Next: Test scoring system with asteroid destruction
+
+[2024-01-11 13:31PM] [FIX] Fixed scoring and particle systems:
+- Updated score display to use scoring system's current_score directly
+- Fixed particle component to handle both Vector2 and numpy array positions
+- Improved bullet impact particle creation with proper position handling
+- Enhanced asteroid destruction particles with better color and lifetime
+- Added proper position type conversion throughout particle system
+Next: Test particle effects and scoring in gameplay
+
 [2024-01-11 13:29PM] [FIX] Fixed particle system issues:
 - Fixed bullet collision handling to ensure proper cleanup order
 - Improved particle creation with proper component initialization
@@ -397,6 +411,144 @@ Next: Continue code review with PhysicsComponent and InputComponent
 - Improved type hints and documentation
 - Removed numpy dependency
 Next: Review code for SOLID principles and PEP8 compliance
+
+[2024-01-11 12:42PM] [FIX] Fixed screen wrap component initialization:
+- Updated ScreenWrapComponent initialization to pass window dimensions
+- Ensured proper screen wrapping for asteroids
+Next: Test asteroid spawning and movement
+
+[2024-01-11 12:41PM] [FIX] Fixed asteroid collision initialization:
+- Updated CollisionComponent initialization to properly pass radius parameter
+- Improved component initialization with size-based radius
+Next: Test asteroid spawning and collisions
+
+[2024-01-11 12:39PM] [FIX] Fixed asteroid initialization error:
+- Updated TransformComponent initialization to properly pass x,y coordinates
+- Improved component initialization order
+- Added proper velocity handling
+Next: Test asteroid spawning and movement
+
+[2024-01-11 12:38PM] [FIX] Fixed game initialization and state management:
+- Added proper debug logging throughout initialization
+- Fixed state transitions between menus
+- Ensured game starts at main menu
+- Added proper menu navigation with arrow keys
+- Fixed game reset when starting new game
+- Added clear visual feedback for selected options
+Next: Test ship controls and menu navigation
+
+[2024-01-11 12:37PM] [FIX] Fixed asteroid component initialization:
+- Updated component initialization to use proper component classes
+- Added missing component imports
+- Added debug logging for asteroid creation
+Next: Test asteroid spawning and movement
+
+[2024-01-11 12:36PM] [FIX] Fixed asteroid initialization:
+- Corrected Entity initialization in Asteroid class
+- Fixed game parameter passing to base class
+- Removed redundant game attribute assignment
+Next: Test asteroid spawning and movement
+
+[2024-01-11 12:35PM] [FIX] Fixed asteroid spawning:
+- Added spawn_random class method to Asteroid
+- Implemented safe distance spawning from ship
+- Added random velocity generation
+- Improved asteroid initialization
+Next: Test ship controls and asteroid spawning
+
+[2024-01-11 12:34PM] [IMPL] Enhanced menu system and game flow:
+- Implemented proper main menu with New Game/High Score/Options/Quit
+- Added arrow key navigation and Enter selection
+- Fixed state transitions between menus
+- Improved menu rendering with highlighting
+- Added proper game initialization from menu
+Next: Fix ship controls and movement
+
+[2024-01-11 12:33PM] [FIX] Fixed bullet movement:
+- Updated bullet physics to use force-based movement
+- Corrected bullet direction calculation
+- Improved bullet-asteroid collision cleanup
+- Added proper entity removal on collision
+Next: Implement asteroid-asteroid collisions
+
+[2024-01-11 12:31PM] [IMPL] Added dual logging system:
+- Created GameLogger class for error tracking
+- Added current_session.log for active debugging
+- Added timestamped historical logs (game_log_YYYYMMDD_HHMMSS.log)
+- Logs stored in /logs directory
+- Added logging levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+Note: Check current_session.log for active debugging and game_log_* files for historical error tracking
+Next: Fix main menu and controls
+
+[2024-01-11 12:30PM] [FIX] Fixed score display:
+- Added score property to Game class
+- Connected scoring system to HUD display
+- Improved score and multiplier rendering
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:29PM] [FIX] Fixed game rendering:
+- Added back missing _draw_game method
+- Added debug logging for entity rendering
+- Added effects component check
+- Improved HUD rendering
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:28PM] [FIX] Fixed scoring system initialization:
+- Added scoring system to Game class
+- Initialized lives counter
+- Added score reset on game restart
+- Fixed game state reset logic
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:27PM] [FIX] Fixed state manager error:
+- Added missing _handle_options method
+- Ensured proper state handling for options menu
+- Verified state transitions between menus
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:26PM] [FIX] Updated menu system and fixed asteroid splitting:
+- Fixed asteroid split method to properly handle new sizes
+- Updated main menu to include high scores option
+- Modified pause menu to include resume and options
+- Improved menu navigation with R/O/H/M keys
+- Enhanced state transitions between menus
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:25PM] [IMPL] Added options menu and pause functionality:
+- Added options menu with control scheme selection (Arrows/WASD)
+- Implemented pause menu with P/Esc keys
+- Added semi-transparent overlay for pause state
+- Added main menu navigation (O for options, M for menu from pause)
+- Improved state transitions and UI rendering
+Next: Fix bullet movement and implement asteroid collisions
+
+[2024-01-11 12:24PM] [FIX] Fixed bullet collision handling:
+- Updated bullet-asteroid collision detection
+- Implemented proper asteroid splitting
+- Added new asteroids to game entities list
+Next: Add options menu and pause functionality
+
+[2024-01-11 12:23PM] [IMPL] Added reverse thrust:
+- Implemented reverse movement with down arrow / S key
+- Applied same speed limit as forward thrust
+- Updated physics component to handle reverse thrust
+Next: Fix bullet collision handling
+
+[2024-01-11 12:22PM] [FIX] Fixed bullet initialization:
+- Corrected bullet direction calculation
+- Fixed bullet velocity initialization
+- Updated ship's shoot method
+Next: Add reverse thrust capability
+
+[2024-01-11 12:21PM] [FIX] Fixed ship movement direction:
+- Corrected thrust angle calculation
+- Added debug logging for movement
+- Improved ship orientation handling
+Next: Fix bullet initialization
+
+[2024-01-11 12:20PM] [NOTE] Standardized time format:
+Using [YYYY-MM-DD HH:MM(AM/PM)] for all timestamps
+Next: Fix ship movement direction
 
 ## Core Gameplay Objectives (MVP)
 1. Ship Control
