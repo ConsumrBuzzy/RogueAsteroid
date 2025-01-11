@@ -378,3 +378,16 @@ class Game:
         
         pygame.quit()
         print("Game loop ended")  # Debug info
+
+    def _handle_playing_input(self, event):
+        """Handle input in the playing state."""
+        if event.key in (pygame.K_ESCAPE, pygame.K_p):
+            self.change_state(GameState.PAUSED)
+        elif event.key == pygame.K_o:
+            self.change_state(GameState.OPTIONS)
+        elif event.key == pygame.K_h:
+            self.change_state(GameState.HIGH_SCORE)
+        elif event.key == pygame.K_t:  # Test sound
+            print("Testing sound system...")  # Debug info
+            if self.game.sound:
+                self.game.sound.play_test()
