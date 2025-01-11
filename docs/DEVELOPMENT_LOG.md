@@ -492,6 +492,25 @@ Next: Test full game loop from start to game over
   * Added debug logging for level completion
 Next: Final testing of complete gameplay loop
 
+[2024-01-11 13:08PM] [IMPL] Enhanced asteroid split behavior
+- Modified asteroid split mechanics for more dramatic separation:
+  - Increased base split angle from ±45° to ±120° (240° total separation)
+  - Added more randomness to split angles (±30° variation)
+  - Made split pieces 50% faster than normal speed range
+  - Split angles now relative to original asteroid's direction
+  - Added detailed debug logging of split angles and speeds
+Next: Test asteroid split behavior and adjust angles/speeds if needed
+
+[2024-01-11 13:19PM] [FIX] Refined asteroid split behavior
+- Improved split trajectories based on asteroid size:
+  - Small pieces: Exact opposite directions (0°/180°) with ±10° variation
+  - Medium pieces: Wide angles (-150°/150°) with ±20° variation
+- Adjusted speed scaling by size:
+  - Small pieces: 2x base speed for better separation
+  - Medium pieces: 1.5x base speed
+- Added more detailed debug logging for split angles and speeds
+Next: Test split behavior, particularly for small asteroids
+
 ---
 Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
 Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 

@@ -131,21 +131,29 @@ class Asteroid(Entity):
         # Determine new size
         new_size = 'medium' if self.size == 'large' else 'small'
         
-        # Create split pieces with distinct velocities
+        # Create split pieces with near-opposite velocities
         pieces = []
-        # Use much wider angle spread and significant randomness
-        base_angles = [-120, 120]  # Much wider base separation (240 degrees apart)
+        # For small pieces, use exact opposite directions with slight variation
+        if new_size == 'small':
+            base_angles = [0, 180]  # Opposite directions
+            speed_multiplier = 2.0  # Double speed for small pieces
+            angle_variation = 10  # Less variation for small pieces
+        else:
+            base_angles = [-150, 150]  # Wide but not exactly opposite for medium pieces
+            speed_multiplier = 1.5  # 50% faster for medium pieces
+            angle_variation = 20  # More variation for medium pieces
         
         # Get original velocity angle
         orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
         
         for base_angle in base_angles:
-            # Add significant randomness to the split angle
-            angle = orig_angle + base_angle + random.uniform(-30, 30)
+            # Add controlled randomness to the split angle
+            angle = orig_angle + base_angle + random.uniform(-angle_variation, angle_variation)
             
-            # Calculate new velocity for this piece with higher speed
+            # Calculate new velocity with size-based speed scaling
             min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
-            new_speed = random.uniform(min_speed * 1.5, max_speed * 1.5)  # 50% faster
+            base_speed = random.uniform(min_speed, max_speed)
+            new_speed = base_speed * speed_multiplier
             
             # Create velocity vector at the split angle
             new_velocity = pygame.Vector2(
