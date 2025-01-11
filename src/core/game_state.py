@@ -86,20 +86,38 @@ class StateManager:
                 elif self.current_state == GameState.PAUSED:
                     self.change_state(GameState.PLAYING)
                 elif self.current_state == GameState.OPTIONS:
-                    self.change_state(GameState.MAIN_MENU)
+                    if self.previous_state == GameState.PAUSED:
+                        self.change_state(GameState.PAUSED)
+                    else:
+                        self.change_state(GameState.MAIN_MENU)
                 elif self.current_state == GameState.MAIN_MENU:
                     return True
+                elif self.current_state == GameState.HIGH_SCORE:
+                    self.change_state(GameState.MAIN_MENU)
             
-            elif event.key == pygame.K_p and self.current_state == GameState.PLAYING:
-                self.change_state(GameState.PAUSED)
+            elif event.key == pygame.K_r and self.current_state == GameState.PAUSED:
+                self.change_state(GameState.PLAYING)
+            
+            elif event.key == pygame.K_o:
+                if self.current_state in [GameState.MAIN_MENU, GameState.PAUSED]:
+                    self.change_state(GameState.OPTIONS)
+            
+            elif event.key == pygame.K_h and self.current_state == GameState.MAIN_MENU:
+                self.change_state(GameState.HIGH_SCORE)
+            
+            elif event.key == pygame.K_m and self.current_state == GameState.PAUSED:
+                self.change_state(GameState.MAIN_MENU)
+                self.game.reset_game()
             
             elif event.key == pygame.K_RETURN:
                 if self.current_state == GameState.MAIN_MENU:
                     self.change_state(GameState.PLAYING)
                 elif self.current_state == GameState.OPTIONS:
                     if self.selected_option == len(self.options) - 1:  # Back option
-                        self.change_state(GameState.MAIN_MENU)
+                        self.change_state(self.previous_state or GameState.MAIN_MENU)
                 elif self.current_state == GameState.GAME_OVER:
+                    self.change_state(GameState.MAIN_MENU)
+                elif self.current_state == GameState.HIGH_SCORE:
                     self.change_state(GameState.MAIN_MENU)
             
             elif self.current_state == GameState.OPTIONS:
@@ -182,17 +200,17 @@ class StateManager:
         screen.blit(title, title_rect)
         
         # Menu items
-        start_text = self.fonts['medium'].render('Press ENTER to Start', True, (255, 255, 255))
-        start_rect = start_text.get_rect(center=(self.game.width/2, self.game.height*2/3))
-        screen.blit(start_text, start_rect)
+        menu_items = [
+            ('Press ENTER to Start', 'medium'),
+            ('H - High Scores', 'small'),
+            ('O - Options', 'small'),
+            ('ESC - Quit', 'small')
+        ]
         
-        options_text = self.fonts['small'].render('O - Options', True, (255, 255, 255))
-        options_rect = options_text.get_rect(center=(self.game.width/2, self.game.height*2/3 + 40))
-        screen.blit(options_text, options_rect)
-        
-        quit_text = self.fonts['small'].render('ESC - Quit', True, (255, 255, 255))
-        quit_rect = quit_text.get_rect(center=(self.game.width/2, self.game.height*2/3 + 80))
-        screen.blit(quit_text, quit_rect)
+        for i, (text, size) in enumerate(menu_items):
+            item = self.fonts[size].render(text, True, (255, 255, 255))
+            item_rect = item.get_rect(center=(self.game.width/2, self.game.height*2/3 + i * 40))
+            screen.blit(item, item_rect)
     
     def _draw_options(self, screen: pygame.Surface) -> None:
         """Draw options menu screen."""
@@ -227,17 +245,20 @@ class StateManager:
         
         # Pause text
         text = self.fonts['large'].render('PAUSED', True, (255, 255, 255))
-        text_rect = text.get_rect(center=(self.game.width/2, self.game.height/2))
+        text_rect = text.get_rect(center=(self.game.width/2, self.game.height/3))
         screen.blit(text, text_rect)
         
-        # Instructions
-        resume_text = self.fonts['small'].render('Press P or ESC to Resume', True, (255, 255, 255))
-        resume_rect = resume_text.get_rect(center=(self.game.width/2, self.game.height/2 + 50))
-        screen.blit(resume_text, resume_rect)
+        # Menu items
+        menu_items = [
+            ('R - Resume', 'medium'),
+            ('O - Options', 'small'),
+            ('M - Main Menu', 'small')
+        ]
         
-        menu_text = self.fonts['small'].render('Press M for Main Menu', True, (255, 255, 255))
-        menu_rect = menu_text.get_rect(center=(self.game.width/2, self.game.height/2 + 90))
-        screen.blit(menu_text, menu_rect)
+        for i, (text, size) in enumerate(menu_items):
+            item = self.fonts[size].render(text, True, (255, 255, 255))
+            item_rect = item.get_rect(center=(self.game.width/2, self.game.height/2 + i * 40))
+            screen.blit(item, item_rect)
     
     def _draw_game_over(self, screen: pygame.Surface) -> None:
         """Draw game over screen."""

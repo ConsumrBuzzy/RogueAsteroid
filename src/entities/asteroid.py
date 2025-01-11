@@ -114,42 +114,39 @@ class Asteroid(Entity):
         """Initialize screen wrapping component."""
         self.add_component(ScreenWrapComponent, WINDOW_WIDTH, WINDOW_HEIGHT)
     
-    def split(self) -> list['Asteroid']:
+    def split(self) -> List['Asteroid']:
         """Split asteroid into smaller pieces."""
         new_asteroids = []
+        new_size = None
         
-        # Only split if not already smallest
-        if self.size_category != 'small':
-            # Determine new size
-            new_size = 'medium' if self.size_category == 'large' else 'small'
+        if self.size_category == 'large':
+            new_size = 'medium'
+            num_pieces = 3
+        elif self.size_category == 'medium':
+            new_size = 'small'
+            num_pieces = 2
+        else:  # small asteroids are destroyed
+            return new_asteroids
+        
+        print(f"Split {self.size_category} asteroid into {num_pieces} {new_size} asteroids")  # Debug info
+        
+        # Get current position
+        transform = self.get_component('transform')
+        if not transform:
+            return new_asteroids
+        
+        # Create new asteroids
+        for _ in range(num_pieces):
+            # Random velocity direction
+            angle = np.random.uniform(0, 2 * np.pi)
+            speed = np.random.uniform(50, 100)
             
-            # Create new asteroids
-            for _ in range(self.config['splits']):
-                # Calculate random velocity direction
-                angle = np.random.uniform(0, 2 * np.pi)
-                direction = np.array([np.cos(angle), np.sin(angle)])
-                
-                # Get random speed in range for new size
-                speed = np.random.uniform(*AsteroidConfig.SIZES[new_size]['speed_range'])
-                velocity = direction * speed
-                
-                # Create new asteroid at current position
-                transform = self.get_component('transform')
-                if transform:
-                    new_asteroid = Asteroid(
-                        self.game,
-                        transform.position[0],
-                        transform.position[1],
-                        new_size,
-                        velocity
-                    )
-                    new_asteroids.append(new_asteroid)
+            new_asteroid = Asteroid(self.game, transform.position[0], transform.position[1], new_size)
+            new_physics = new_asteroid.get_component('physics')
+            
+            if new_physics:
+                new_physics.velocity = np.array([np.cos(angle) * speed, np.sin(angle) * speed])
+            
+            new_asteroids.append(new_asteroid)
         
-        # Remove self from game
-        if self in self.game.asteroids:
-            self.game.asteroids.remove(self)
-        if self in self.game.entities:
-            self.game.entities.remove(self)
-        
-        print(f"Split {self.size_category} asteroid into {len(new_asteroids)} {new_size} asteroids")  # Debug info
         return new_asteroids 
