@@ -18,20 +18,30 @@ class GameConfig:
 class MockGame:
     """Mock game class for testing."""
     def __init__(self):
+        # Window dimensions
         self.width = 800
         self.height = 600
-        self.dt = 0.016  # 60 FPS
+        self.dt = 1.0 / 60  # 60 FPS
+        
+        # Game settings
         self.settings = {
             'controls': {'scheme': 'arrows'},
-            'sound': {'enabled': False, 'volume': 0.5}
+            'sound': {'enabled': False, 'volume': 0.5},
+            'window': {'width': self.width, 'height': self.height}
         }
+        
+        # Entity lists
         self.entities = []
         self.bullets = []
         self.asteroids = []
         self.particles = []
-        self.state = 'PLAYING'
+        
+        # Game state
+        self.state = GameState.PLAYING
         self.score = 0
         self.high_scores = []
+        
+        # Systems
         self.sound = MockSound()
         self.scoring_system = MockScoringSystem()
 

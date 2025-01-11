@@ -5,7 +5,7 @@ import numpy as np
 from typing import List, Callable
 from dataclasses import dataclass
 from test_utils import MockGame, create_test_entity
-from src.core.entities.base import Entity
+from src.core.entities.base import Entity, TransformComponent, CollisionComponent
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
 from src.entities.ship import Ship
