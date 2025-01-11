@@ -17,7 +17,8 @@ from src.core.constants import (
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
     WHITE,
-    MAX_BULLETS
+    MAX_BULLETS,
+    SHIP_INVULNERABLE_TIME
 )
 from src.entities.bullet import Bullet
 
@@ -33,6 +34,7 @@ class Ship(Entity):
         super().__init__(game)
         print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
+        self.invulnerable_timer = SHIP_INVULNERABLE_TIME
         
         # Add components
         self._init_transform()
@@ -221,6 +223,19 @@ class Ship(Entity):
         
         # Update shoot cooldown
         self.shoot_timer = max(0.0, self.shoot_timer - dt)
+        
+        # Update invulnerability
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            # Flash the ship while invulnerable
+            render = self.get_component('render')
+            if render:
+                render.visible = int(self.invulnerable_timer * 10) % 2 == 0
+        else:
+            # Ensure ship is visible when not invulnerable
+            render = self.get_component('render')
+            if render:
+                render.visible = True
         
         # Deactivate thrust effect if not thrusting
         effects = self.get_component('effects')

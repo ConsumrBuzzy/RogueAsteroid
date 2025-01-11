@@ -21,6 +21,7 @@ class Game:
         self.level = 1
         self.lives = 3
         self.score = 0
+        self.respawn_timer = 0.0  # Timer for ship respawn
         
         # Settings
         self.settings = {
@@ -89,6 +90,24 @@ class Game:
         # Update scoring system and sync score
         self.scoring.update(self.dt)
         self.score = self.scoring.current_score
+        
+        # Handle ship respawning
+        if self.ship is None and self.lives > 0:
+            self.respawn_timer -= self.dt
+            if self.respawn_timer <= 0:
+                self.respawn_ship()
+        
+        # Check if we need to spawn more asteroids
+        if len(self.asteroids) == 0:
+            self.level += 1
+            self.spawn_asteroid_wave()
+    
+    def respawn_ship(self):
+        """Respawn the player ship with invulnerability."""
+        self.ship = Ship(self)
+        self.entities.append(self.ship)
+        self.respawn_timer = 0.0
+        print("Ship respawned")  # Debug info
     
     def handle_collisions(self):
         """Handle collisions between entities."""
@@ -110,10 +129,11 @@ class Game:
                 if self.lives <= 0:
                     self.state_manager.change_state(GameState.GAME_OVER)
                 else:
-                    # Respawn ship after delay
+                    # Remove ship and set respawn timer
                     if self.ship in self.entities:
                         self.entities.remove(self.ship)
                     self.ship = None
+                    self.respawn_timer = SHIP_INVULNERABLE_TIME  # Set respawn delay
     
     def run(self):
         """Main game loop."""
