@@ -39,6 +39,10 @@ class Game:
             }
         }
         
+        # Initialize scoring system
+        self.scoring = ScoringSystem()
+        self.lives = INITIAL_LIVES
+        
         # Initialize state manager
         self.state_manager = StateManager(self)
         
@@ -58,6 +62,11 @@ class Game:
         # Clear entities
         self.entities.clear()
         self.asteroids.clear()
+        
+        # Reset game state
+        self.scoring.reset()
+        self.lives = INITIAL_LIVES
+        self.level = 1
         
         # Create player ship
         self.ship = Ship(self)
@@ -81,8 +90,7 @@ class Game:
         # Add ship to entities
         self.entities.append(self.ship)
         
-        # Reset level and spawn asteroids
-        self.level = 1
+        # Spawn initial asteroids
         self.spawn_asteroid_wave()
         
         # Change state to PLAYING if state manager exists

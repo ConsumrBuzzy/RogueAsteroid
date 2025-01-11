@@ -60,6 +60,13 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
+[2024-01-11 12:28PM] [FIX] Fixed scoring system initialization:
+- Added scoring system to Game class
+- Initialized lives counter
+- Added score reset on game restart
+- Fixed game state reset logic
+Next: Fix bullet movement and implement asteroid collisions
+
 [2024-01-11 12:27PM] [FIX] Fixed state manager error:
 - Added missing _handle_options method
 - Ensured proper state handling for options menu
