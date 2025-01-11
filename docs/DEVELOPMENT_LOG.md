@@ -563,3 +563,14 @@ Next: Test particle effects in gameplay
 - Added safety check before entity removal
 - Fixed type hints and docstrings
 Next: Test particle effects with proper cleanup 
+
+[2024-01-11 13:28PM] [FIX] Fixed particle and scoring issues:
+- Fixed particle lifetime tracking:
+  * Separated lifetime and time_remaining variables
+  * Fixed alpha calculation for proper fade out
+  * Added physics component sync for proper movement
+- Fixed bullet collision handling:
+  * Moved particle creation after scoring
+  * Fixed transform component access for particles
+  * Ensured proper cleanup order
+Next: Test particle effects and scoring 

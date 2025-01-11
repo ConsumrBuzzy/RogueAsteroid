@@ -123,16 +123,16 @@ class Bullet(Entity):
                 if isinstance(entity, Asteroid):
                     other_collision = entity.get_component('collision')
                     if other_collision and collision.check_collision(other_collision):
-                        # Get transform for particle position
-                        transform = self.get_component('transform')
-                        if transform:
-                            # Create impact particles at collision point
-                            self._create_impact_particles(transform.position)
-                        
                         # Handle asteroid hit
                         points = ASTEROID_SIZES[entity.size]['points']
                         self.game.score += points
                         print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
+                        
+                        # Create destruction particles
+                        transform = entity.get_component('transform')
+                        if transform:
+                            # Create impact particles at collision point
+                            self._create_impact_particles(transform.position)
                         
                         # Split asteroid if not smallest size
                         if entity.size in ['large', 'medium']:

@@ -179,7 +179,7 @@ class ParticleComponent(Component):
         """
         super().__init__(entity)
         self.lifetime = lifetime
-        self.time_remaining = lifetime
+        self.time_remaining = lifetime  # Separate tracker for remaining time
         self.color = color
         self.alpha = 255  # For fade out effect
         self.size = 2.0  # Particle size in pixels
@@ -187,8 +187,8 @@ class ParticleComponent(Component):
         
     def update(self, dt: float) -> None:
         """Update the particle state."""
-        self.lifetime -= dt
-        if self.lifetime <= 0:
+        self.time_remaining -= dt
+        if self.time_remaining <= 0:
             # Remove from game entities list directly
             if self.entity in self.entity.game.entities:
                 self.entity.game.entities.remove(self.entity)
@@ -198,10 +198,10 @@ class ParticleComponent(Component):
         self.alpha = int((self.time_remaining / self.lifetime) * 255)
         
         # Update position based on velocity
-        transform = self.entity.get_component('transform')
-        if transform:
-            transform.position += self.velocity * dt
-            
+        physics = self.entity.get_component('physics')
+        if physics:
+            physics.velocity = self.velocity  # Sync velocity with physics component
+
     def draw(self, screen: pygame.Surface):
         """Draw the particle."""
         if not self.entity:
