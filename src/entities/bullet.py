@@ -70,7 +70,8 @@ class Bullet(Entity):
         # Update lifetime and despawn if expired
         self.lifetime -= dt
         if self.lifetime <= 0:
-            self.game.entities.remove(self)
+            if self in self.game.entities:
+                self.game.entities.remove(self)
             return
         
         # Check for collisions with asteroids
@@ -87,9 +88,17 @@ class Bullet(Entity):
                 continue
                 
             if collision.check_collision(asteroid_collision):
-                # Remove bullet
-                self.game.entities.remove(self)
+                print("Bullet hit asteroid!")  # Debug info
                 
-                # Split asteroid
-                entity.split()
+                # Remove bullet
+                if self in self.game.entities:
+                    self.game.entities.remove(self)
+                
+                # Split asteroid and add new ones to game
+                new_asteroids = entity.split()
+                for new_asteroid in new_asteroids:
+                    self.game.asteroids.append(new_asteroid)
+                    self.game.entities.append(new_asteroid)
+                
+                print(f"Created {len(new_asteroids)} new asteroids")  # Debug info
                 return 

@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2024-01-11 12:23PM]
+Last Session: [2024-01-11 12:24PM]
 Current Phase: Core Gameplay Implementation
 
 ## Core Gameplay Objectives (MVP)
@@ -59,6 +59,13 @@ Current Phase: Core Gameplay Implementation
 - [ ] Add high score system
 
 ## Log Entries
+
+[2024-01-11 12:24PM] [IMPL] Collision System
+- Improved asteroid splitting mechanics
+- Added proper bullet-asteroid collision handling
+- Implemented size-based asteroid properties
+- Added debug logging for collisions
+- Next: Add asteroid-asteroid collisions
 
 [2024-01-11 12:23PM] [IMPL] Movement Improvements
 - Fixed bullet velocity initialization
