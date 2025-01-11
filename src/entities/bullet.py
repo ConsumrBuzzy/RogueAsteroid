@@ -115,8 +115,11 @@ class Bullet(Entity):
                 if isinstance(entity, Asteroid):
                     other_collision = entity.get_component('collision')
                     if other_collision and collision.check_collision(other_collision):
-                        # Create impact particles at collision point
-                        self._create_impact_particles(self.transform.position)
+                        # Get transform for particle position
+                        transform = self.get_component('transform')
+                        if transform:
+                            # Create impact particles at collision point
+                            self._create_impact_particles(transform.position)
                         
                         # Handle asteroid hit
                         self.game.score += ASTEROID_SIZES[entity.size]['points']
