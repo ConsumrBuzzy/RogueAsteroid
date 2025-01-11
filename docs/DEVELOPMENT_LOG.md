@@ -11,14 +11,30 @@
 8. [X] Implement asteroid spawning
 9. [ ] Add shooting mechanics
 10. [ ] Refactor entities to use component system
+11. [ ] Add screen wrapping component
+12. [ ] Add input handling component
+13. [ ] Add physics component for movement
+14. [ ] Implement proper game state management
 
 ## Session State
-Last Session: [2024-01-11 11:25]
+Last Session: [2024-01-11 11:30]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 11:30] [DESIGN] Project Structure Review
+- Identified needed components:
+  * Screen wrapping behavior
+  * Input handling system
+  * Physics/movement system
+  * Game state management
+- Current issues:
+  * Mixing of concerns in entities
+  * Lack of proper state management
+  * Direct coupling in collision handling
+=> Next: Implement identified components
 
 [2024-01-11 11:25] [DESIGN] Entity Component System
 - Created base Component class
