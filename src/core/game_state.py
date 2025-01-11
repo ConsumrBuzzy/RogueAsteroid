@@ -40,8 +40,11 @@ class StateManager:
     
     def change_state(self, new_state: GameState) -> None:
         """Change to a new game state."""
+        print(f"\nChanging state from {self.current_state} to {new_state}")  # Debug info
+        
         # Don't change if already in this state
         if new_state == self.current_state:
+            print("Already in this state")  # Debug info
             return
             
         self.previous_state = self.current_state
@@ -49,13 +52,18 @@ class StateManager:
         
         # Handle state entry actions
         if new_state == GameState.PLAYING:
+            print("Entering PLAYING state")  # Debug info
             if self.previous_state == GameState.MAIN_MENU:
+                print("Resetting game from main menu")  # Debug info
                 self.game.reset_game()
             elif self.previous_state == GameState.PAUSED:
+                print("Unpausing game")  # Debug info
                 # Just unpause, don't reset
                 pass
         elif new_state == GameState.HIGH_SCORE_ENTRY:
             self.player_name = ""
+        
+        print(f"State change complete. Current state: {self.current_state}")  # Debug info
     
     def handle_input(self, event: pygame.event.Event) -> bool:
         """Handle input for current state. Returns True if game should quit."""
@@ -174,19 +182,34 @@ class StateManager:
     
     def _draw_game(self, screen: pygame.Surface) -> None:
         """Draw game screen."""
+        print("\nDrawing game screen...")  # Debug info
+        print(f"Number of entities: {len(self.game.entities)}")  # Debug info
+        
         # Draw all entities
         for entity in self.game.entities:
-            if entity:  # Ensure entity exists
-                render = entity.get_component('render')
-                effects = entity.get_component('effects')
-                
-                # Draw main entity
-                if render and render.visible:
-                    render.draw(screen)
-                
-                # Draw effects
-                if effects:
-                    effects.draw(screen)
+            if not entity:
+                print("Found null entity!")  # Debug info
+                continue
+            
+            print(f"Drawing entity: {entity.__class__.__name__}")  # Debug info
+            
+            render = entity.get_component('render')
+            effects = entity.get_component('effects')
+            
+            if not render:
+                print(f"No render component for {entity.__class__.__name__}")  # Debug info
+                continue
+            
+            print(f"Render visibility: {render.visible}")  # Debug info
+            print(f"Vertices count: {len(render.vertices)}")  # Debug info
+            
+            # Draw main entity
+            if render.visible:
+                render.draw(screen)
+            
+            # Draw effects
+            if effects:
+                effects.draw(screen)
         
         # Draw HUD
         self._draw_hud(screen)

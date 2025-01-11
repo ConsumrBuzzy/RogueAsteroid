@@ -54,6 +54,8 @@ class Game:
     
     def reset_game(self) -> None:
         """Reset game state for new game."""
+        print("Resetting game...")  # Debug info
+        
         # Clear all entities first
         self.entities.clear()
         self.asteroids.clear()
@@ -66,23 +68,39 @@ class Game:
         
         # Create player ship
         self.ship = Ship(self)
-        self.entities.append(self.ship)
+        if not self.ship:
+            print("Failed to create ship!")  # Debug info
+            return
         
         # Ensure ship is properly initialized
         ship_transform = self.ship.get_component('transform')
         ship_render = self.ship.get_component('render')
         
-        if ship_transform and ship_render:
-            ship_transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-            ship_transform.velocity = np.array([0.0, 0.0])
-            ship_render.visible = True
+        if not ship_transform or not ship_render:
+            print("Ship components missing!")  # Debug info
+            return
+        
+        # Initialize ship position and state
+        ship_transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+        ship_transform.velocity = np.array([0.0, 0.0])
+        ship_render.visible = True
+        
+        print(f"Ship position: {ship_transform.position}")  # Debug info
+        print(f"Ship visibility: {ship_render.visible}")  # Debug info
+        
+        # Add ship to entities list
+        self.entities.append(self.ship)
+        print(f"Entities count: {len(self.entities)}")  # Debug info
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
         
-        # Update state manager
+        # Ensure we're in PLAYING state
         if hasattr(self, 'state_manager'):
+            print("Changing state to PLAYING")  # Debug info
             self.state_manager.change_state(GameState.PLAYING)
+        else:
+            print("No state manager found!")  # Debug info
     
     def spawn_asteroid_wave(self) -> None:
         """Spawn a wave of asteroids based on current level."""
