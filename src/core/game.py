@@ -251,37 +251,53 @@ class Game:
     
     def run(self) -> None:
         """Main game loop."""
+        self.logger.info("Starting game loop")
         running = True
-        while running:
-            # Update timing
-            self.dt = self.clock.tick(60) / 1000.0
-            
-            # Handle events
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_o and self.state_manager.current_state == GameState.MAIN_MENU:
-                        self.state_manager.change_state(GameState.OPTIONS)
-                    elif event.key == pygame.K_m and self.state_manager.current_state == GameState.PAUSED:
-                        self.state_manager.change_state(GameState.MAIN_MENU)
-                        self.reset_game()
-                
-                if self.state_manager.handle_input(event):
-                    running = False
-                    break
-            
-            # Update game state
-            self.state_manager.update()
-            
-            # Clear screen
-            self.screen.fill((0, 0, 0))
-            
-            # Draw current state
-            self.state_manager.draw(self.screen)
-            
-            # Update display
-            pygame.display.flip()
         
-        pygame.quit() 
+        try:
+            while running:
+                # Update timing
+                self.dt = self.clock.tick(60) / 1000.0
+                
+                # Handle events
+                for event in pygame.event.get():
+                    try:
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_o and self.state_manager.current_state == GameState.MAIN_MENU:
+                                self.logger.debug("Opening options menu")
+                                self.state_manager.change_state(GameState.OPTIONS)
+                            elif event.key == pygame.K_m and self.state_manager.current_state == GameState.PAUSED:
+                                self.logger.debug("Returning to main menu")
+                                self.state_manager.change_state(GameState.MAIN_MENU)
+                                self.reset_game()
+                        
+                        if self.state_manager.handle_input(event):
+                            self.logger.info("Quitting game")
+                            running = False
+                            break
+                    except Exception as e:
+                        self.logger.error(f"Error handling event: {str(e)}")
+                
+                try:
+                    # Update game state
+                    self.state_manager.update()
+                    
+                    # Clear screen
+                    self.screen.fill((0, 0, 0))
+                    
+                    # Draw current state
+                    self.state_manager.draw(self.screen)
+                    
+                    # Update display
+                    pygame.display.flip()
+                except Exception as e:
+                    self.logger.error(f"Error in game loop: {str(e)}")
+        
+        except Exception as e:
+            self.logger.critical(f"Critical error in game loop: {str(e)}")
+        finally:
+            self.logger.info("Shutting down game")
+            pygame.quit()
 
     @property
     def score(self) -> int:
