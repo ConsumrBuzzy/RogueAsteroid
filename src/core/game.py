@@ -81,10 +81,35 @@ class Game:
             return
             
         num_asteroids = min(3 + self.level, 8)  # Cap at 8 asteroids
+        spawn_positions = []  # Track spawn positions
+        
         for _ in range(num_asteroids):
-            asteroid = Asteroid.spawn_random(self, ship_transform.position)
-            self.asteroids.append(asteroid)
-            self.entities.append(asteroid)
+            # Try to find a valid spawn position
+            for attempt in range(10):  # Limit attempts to prevent infinite loop
+                asteroid = Asteroid.spawn_random(self, ship_transform.position)
+                transform = asteroid.get_component('transform')
+                if not transform:
+                    continue
+                    
+                # Check distance from other asteroids
+                position = pygame.Vector2(transform.position)
+                min_distance = 100  # Minimum distance between asteroids
+                
+                # Check if too close to other asteroids
+                too_close = False
+                for pos in spawn_positions:
+                    if (position - pos).length() < min_distance:
+                        too_close = True
+                        break
+                
+                if not too_close:
+                    spawn_positions.append(position)
+                    self.asteroids.append(asteroid)
+                    self.entities.append(asteroid)
+                    break
+                else:
+                    # Remove invalid asteroid
+                    del asteroid
     
     def update_entities(self):
         """Update all game entities."""
@@ -156,34 +181,45 @@ class Game:
                     else:
                         direction = direction.normalize()
                     
-                    # Blend velocities instead of swapping
+                    # Get current speeds
+                    speed1 = transform1.velocity.length()
+                    speed2 = transform2.velocity.length()
+                    avg_speed = (speed1 + speed2) * 0.5  # Use average speed
+                    
+                    # Blend velocities with speed preservation
                     vel1 = pygame.Vector2(transform1.velocity)
                     vel2 = pygame.Vector2(transform2.velocity)
                     
-                    # Calculate new velocities (70% new, 30% old)
+                    # Calculate new velocities (80% new, 20% old)
                     new_vel1 = pygame.Vector2(
-                        vel1.x * 0.3 + vel2.x * 0.7,
-                        vel1.y * 0.3 + vel2.y * 0.7
+                        vel1.x * 0.2 + vel2.x * 0.8,
+                        vel1.y * 0.2 + vel2.y * 0.8
                     )
                     new_vel2 = pygame.Vector2(
-                        vel2.x * 0.3 + vel1.x * 0.7,
-                        vel2.y * 0.3 + vel1.y * 0.7
+                        vel2.x * 0.2 + vel1.x * 0.8,
+                        vel2.y * 0.2 + vel1.y * 0.8
                     )
                     
+                    # Normalize and scale to maintain speed
+                    if new_vel1.length() > 0:
+                        new_vel1 = new_vel1.normalize() * avg_speed
+                    if new_vel2.length() > 0:
+                        new_vel2 = new_vel2.normalize() * avg_speed
+                    
                     # Add subtle deflection
-                    deflection = random.uniform(-0.2, 0.2)  # Reduced deflection
+                    deflection = random.uniform(-0.15, 0.15)  # Even smoother deflection
                     transform1.velocity = new_vel1.rotate(deflection * 90)
                     transform2.velocity = new_vel2.rotate(deflection * 90)
                     
                     # Gentler spin
-                    spin = random.uniform(15, 45)  # Reduced spin range
+                    spin = random.uniform(10, 30)  # Reduced spin range further
                     transform1.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
                     transform2.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
                     
                     # Very minimal separation
-                    separation = (collision1.radius + collision2.radius) * 0.3  # Reduced separation
-                    transform1.position -= direction * separation * 0.5  # More gradual separation
-                    transform2.position += direction * separation * 0.5
+                    separation = (collision1.radius + collision2.radius) * 0.2  # Further reduced separation
+                    transform1.position -= direction * separation * 0.4
+                    transform2.position += direction * separation * 0.4
         
         # Then check ship-asteroid collisions
         for asteroid in self.asteroids[:]:  # Copy list to allow removal
