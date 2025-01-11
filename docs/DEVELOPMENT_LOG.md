@@ -874,3 +874,29 @@ Next Steps:
 [2024-01-07 21:50] [TUNE] Adjusted ship movement parameters
 - Increased ship acceleration for more responsive controls
 - Reduced friction coefficient for smoother movement 
+
+[2024-01-07 22:00] [FIX] Enhanced input handling and keyboard support
+- Added numpad key support for ship controls and menu navigation:
+  * Numpad 8/2/4/6 for movement in arrow mode
+  * Numpad Enter for shooting and menu selection
+- Fixed InputComponent to properly handle control scheme changes:
+  * Added clear_bindings() method
+  * Improved key binding management
+  * Changed active_keys to use a set for better performance
+- Improved state management for options menu:
+  * Added proper state tracking for menu returns
+  * Enhanced control scheme switching mid-game
+  * Fixed control update when switching schemes
+Next: Test input handling with various keyboard configurations
+
+[2024-01-07 22:05] [IMPL] Input system improvements
+- Refactored InputComponent for better maintainability:
+  * Simplified key binding logic
+  * Improved continuous action handling
+  * Added proper cleanup for key bindings
+  * Enhanced type safety and error handling
+- Updated ship control system:
+  * Added support for multiple key bindings per action
+  * Improved thrust particle effect triggers
+  * Fixed control scheme persistence
+Next: Monitor for any input-related issues 

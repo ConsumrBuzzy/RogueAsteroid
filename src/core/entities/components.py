@@ -44,36 +44,39 @@ class InputComponent(Component):
     
     def __init__(self, entity: Entity):
         super().__init__(entity)
-        self.bindings: Dict[int, Tuple[Callable[[], None], bool]] = {}
-        self.active_keys: List[int] = []
+        self.key_bindings = {}  # Key -> (callback, continuous) mapping
+        self.active_keys = set()  # Currently pressed keys
     
-    def bind_key(self, key: int, action: Callable[[], None], continuous: bool = False) -> None:
-        """Bind a key to an action.
-        
-        Args:
-            key: Pygame key constant
-            action: Function to call when key is pressed
-            continuous: If True, action will be called every frame while key is held
-        """
-        self.bindings[key] = (action, continuous)
+    def bind_key(self, key, callback, continuous=False):
+        """Bind a key to a callback function."""
+        self.key_bindings[key] = (callback, continuous)
     
-    def handle_keydown(self, key: int) -> None:
+    def clear_bindings(self):
+        """Clear all key bindings."""
+        self.key_bindings.clear()
+        self.active_keys.clear()
+    
+    def handle_keydown(self, key):
         """Handle key press event."""
-        if key not in self.active_keys:
-            self.active_keys.append(key)
-            if key in self.bindings and not self.bindings[key][1]:
-                self.bindings[key][0]()
+        if key in self.key_bindings:
+            callback, continuous = self.key_bindings[key]
+            if continuous:
+                self.active_keys.add(key)
+            else:
+                callback()
     
-    def handle_keyup(self, key: int) -> None:
+    def handle_keyup(self, key):
         """Handle key release event."""
         if key in self.active_keys:
             self.active_keys.remove(key)
     
-    def update(self, dt: float) -> None:
-        """Process continuous actions for held keys."""
+    def update(self, dt):
+        """Update continuous key actions."""
         for key in self.active_keys:
-            if key in self.bindings and self.bindings[key][1]:
-                self.bindings[key][0]()
+            if key in self.key_bindings:
+                callback, continuous = self.key_bindings[key]
+                if continuous:
+                    callback()
 
 class PhysicsComponent(Component):
     """Component for physics-based movement."""
