@@ -46,40 +46,28 @@ class Asteroid(Entity):
         
         return cls(game, 'large', position, velocity)
     
-    def _init_components(self, position=None, velocity=None):
-        """Initialize all components for the asteroid."""
-        # Default position if none provided
-        if position is None:
-            position = (random.uniform(0, WINDOW_WIDTH), random.uniform(0, WINDOW_HEIGHT))
-            
-        # Default velocity if none provided
-        if velocity is None:
-            speed = random.uniform(50, 100)
-            angle = random.uniform(0, 2 * math.pi)
-            velocity = (math.cos(angle) * speed, math.sin(angle) * speed)
-        
-        # Initialize transform
-        transform = self.add_component(TransformComponent)
-        transform.position = position
-        transform.rotation = random.uniform(0, 360)
-        
-        # Initialize physics
-        physics = self.add_component(PhysicsComponent)
-        physics.velocity = velocity
-        physics.max_speed = 200
-        physics.friction = 0
-        
-        # Initialize render with polygon shape
+    def _init_components(self, position, velocity):
+        """Initialize asteroid components."""
+        # Transform component
+        transform = self.add_component(TransformComponent, x=position[0], y=position[1])
+        transform.velocity = velocity
+
+        # Render component
         render = self.add_component(RenderComponent)
         render.color = WHITE
-        render.vertices = self._generate_vertices()
+        render.vertices = self._generate_shape()
         render.visible = True
-        
-        # Initialize collision
+
+        # Physics component
+        physics = self.add_component(PhysicsComponent)
+        physics.max_speed = 200.0  # Asteroids have no speed limit
+        physics.friction = 0.0     # No friction for asteroids
+
+        # Collision component
         collision = self.add_component(CollisionComponent)
         collision.radius = self.SIZES[self.size]['radius']
-        
-        # Initialize screen wrap
+
+        # Screen wrap component
         self.add_component(ScreenWrapComponent)
     
     def _generate_vertices(self) -> List[Tuple[float, float]]:
