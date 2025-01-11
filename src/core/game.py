@@ -142,66 +142,38 @@ class Game:
                     transform2 = asteroid2.get_component('transform')
                     if not transform1 or not transform2:
                         continue
-                        
-                    # Get physics components for mass
-                    physics1 = asteroid1.get_component('physics')
-                    physics2 = asteroid2.get_component('physics')
-                    if not physics1 or not physics2:
-                        continue
                     
-                    # Calculate collision normal
-                    normal = pygame.Vector2(
+                    # Simple direction calculation
+                    direction = pygame.Vector2(
                         transform2.position.x - transform1.position.x,
                         transform2.position.y - transform1.position.y
                     )
                     
                     # If asteroids are exactly overlapping, use a random direction
-                    if normal.length() == 0:
+                    if direction.length() == 0:
                         angle = random.uniform(0, 2 * math.pi)
-                        normal = pygame.Vector2(math.cos(angle), math.sin(angle))
+                        direction = pygame.Vector2(math.cos(angle), math.sin(angle))
                     else:
-                        normal = normal.normalize()
+                        direction = direction.normalize()
                     
-                    # Calculate relative velocity
-                    relative_velocity = pygame.Vector2(
-                        transform2.velocity.x - transform1.velocity.x,
-                        transform2.velocity.y - transform1.velocity.y
-                    )
+                    # Simple velocity swap with a bit of randomness
+                    vel1 = pygame.Vector2(transform1.velocity)
+                    vel2 = pygame.Vector2(transform2.velocity)
                     
-                    # Calculate impulse scalar
-                    velocity_along_normal = relative_velocity.dot(normal)
-                    restitution = 0.8  # Coefficient of restitution (bounciness)
+                    # Add some random deflection
+                    deflection = random.uniform(-0.3, 0.3)
+                    transform1.velocity = vel2.rotate(deflection * 90)
+                    transform2.velocity = vel1.rotate(deflection * 90)
                     
-                    # Skip collision if objects are moving apart
-                    if velocity_along_normal > 0:
-                        continue
+                    # Add some fun spin
+                    spin = random.uniform(20, 60)  # More consistent spin
+                    transform1.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
+                    transform2.rotation_speed = spin * (1 if random.random() > 0.5 else -1)
                     
-                    # Calculate impulse scalar
-                    j = -(1 + restitution) * velocity_along_normal
-                    j = j / (1/physics1.mass + 1/physics2.mass)
-                    
-                    # Apply impulse
-                    impulse = pygame.Vector2(
-                        normal.x * j,
-                        normal.y * j
-                    )
-                    
-                    # Update velocities
-                    transform1.velocity.x -= impulse.x / physics1.mass
-                    transform1.velocity.y -= impulse.y / physics1.mass
-                    transform2.velocity.x += impulse.x / physics2.mass
-                    transform2.velocity.y += impulse.y / physics2.mass
-                    
-                    # Add some gentle spin based on impact
-                    impact_force = abs(velocity_along_normal)
-                    spin_factor = 45.0  # Reduced from 90 for smoother rotation
-                    transform1.rotation_speed = random.uniform(-spin_factor, spin_factor) * (impact_force / 200)
-                    transform2.rotation_speed = random.uniform(-spin_factor, spin_factor) * (impact_force / 200)
-                    
-                    # Push asteroids apart to prevent sticking
-                    separation = max(collision1.radius + collision2.radius, 10.0)
-                    transform1.position -= normal * (separation/2)
-                    transform2.position += normal * (separation/2)
+                    # Bounce apart
+                    separation = (collision1.radius + collision2.radius) * 0.7  # Reduced separation
+                    transform1.position -= direction * separation
+                    transform2.position += direction * separation
         
         # Then check ship-asteroid collisions
         for asteroid in self.asteroids[:]:  # Copy list to allow removal
