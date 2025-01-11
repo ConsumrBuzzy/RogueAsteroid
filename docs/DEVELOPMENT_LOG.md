@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2024-01-11 12:21PM]
+Last Session: [2024-01-11 12:22PM]
 Current Phase: Core Gameplay Implementation
 
 ## Core Gameplay Objectives (MVP)
@@ -59,6 +59,13 @@ Current Phase: Core Gameplay Implementation
 - [ ] Add high score system
 
 ## Log Entries
+
+[2024-01-11 12:22PM] [FIX] Bullet Direction
+- Fixed bullet initialization
+- Corrected bullet direction calculation
+- Adjusted for ship's upward orientation
+- Fixed direction parameter handling
+- Next: Test shooting mechanics
 
 [2024-01-11 12:21PM] [FIX] Ship Movement
 - Fixed thrust direction calculation

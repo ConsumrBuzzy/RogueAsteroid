@@ -18,10 +18,11 @@ class Bullet(Entity):
     def __init__(self, game: 'Game', x: float, y: float, direction: np.ndarray):
         super().__init__(game)
         self.lifetime = self.LIFETIME
+        self.direction = direction  # Store direction for use in initialization
         
         # Add components
         self._init_transform(x, y)
-        self._init_physics(direction)
+        self._init_physics()
         self._init_render()
         self._init_collision()
         self._init_screen_wrap()
@@ -30,13 +31,13 @@ class Bullet(Entity):
         """Initialize transform component."""
         transform = self.add_component(TransformComponent, x, y)
         # Calculate rotation from direction
-        transform.rotation = np.degrees(np.arctan2(direction[1], direction[0]))
+        transform.rotation = np.degrees(np.arctan2(self.direction[1], self.direction[0]))
     
-    def _init_physics(self, direction: np.ndarray) -> None:
+    def _init_physics(self) -> None:
         """Initialize physics component."""
         physics = self.add_component(PhysicsComponent, mass=0.1)
         # Set initial velocity
-        physics.velocity = direction * self.SPEED
+        physics.velocity = self.direction * self.SPEED
         physics.friction = 0.0  # No friction for bullets
     
     def _init_render(self) -> None:

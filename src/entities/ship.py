@@ -176,8 +176,8 @@ class Ship(Entity):
         if not transform:
             return
             
-        # Calculate bullet direction
-        angle_rad = np.radians(transform.rotation)
+        # Calculate bullet direction (adjust for ship's upward orientation)
+        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's orientation
         direction = np.array([
             np.cos(angle_rad),
             np.sin(angle_rad)
