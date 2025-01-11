@@ -295,3 +295,39 @@ class StateManager:
         # Level
         level_text = self.fonts['small'].render(f'Level: {self.game.level}', True, (255, 255, 255))
         screen.blit(level_text, (self.game.width - 120, 10)) 
+    
+    def _draw_game(self, screen: pygame.Surface) -> None:
+        """Draw game screen."""
+        print("\nDrawing game screen...")  # Debug info
+        print(f"Number of entities: {len(self.game.entities)}")  # Debug info
+        
+        # Draw all entities
+        for entity in self.game.entities:
+            if not entity:
+                print("Found null entity!")  # Debug info
+                continue
+            
+            print(f"Drawing entity: {entity.__class__.__name__}")  # Debug info
+            
+            render = entity.get_component('render')
+            effects = entity.get_component('effects')
+            
+            if not render:
+                print(f"No render component for {entity.__class__.__name__}")  # Debug info
+                continue
+            
+            print(f"Render visibility: {render.visible}")  # Debug info
+            print(f"Vertices count: {len(render.vertices)}")  # Debug info
+            
+            # Draw main entity
+            if render.visible:
+                render.draw(screen)
+            
+            # Draw effects
+            if effects:
+                effects.draw(screen)
+            else:
+                print(f"Warning: effects component not found in {entity.__class__.__name__}")  # Debug info
+        
+        # Draw HUD
+        self._draw_hud(screen) 
