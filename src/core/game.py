@@ -9,16 +9,10 @@ from src.core.constants import (
     BLACK,
     INITIAL_LIVES
 )
+from src.core.game_state import StateManager
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
-
-class GameState:
-    """Game state management."""
-    MENU = "menu"
-    PLAYING = "playing"
-    PAUSED = "paused"
-    GAME_OVER = "game_over"
 
 class Game:
     """Main game class managing entities and game loop."""
@@ -29,9 +23,9 @@ class Game:
         pygame.display.set_caption("Rogue Asteroid")
         self.clock = pygame.time.Clock()
         
-        # Game state
-        self.state = GameState.MENU
-        self.running = True
+        # Game properties
+        self.width = WINDOW_WIDTH
+        self.height = WINDOW_HEIGHT
         self.dt = 0.0
         self.score = 0
         self.lives = INITIAL_LIVES
@@ -48,6 +42,9 @@ class Game:
         self.entities: List[Any] = []
         self.ship: Optional[Ship] = None
         self.asteroids: List[Asteroid] = []
+        
+        # State management
+        self.state_manager = StateManager(self)
     
     def reset_game(self) -> None:
         """Reset game state for new game."""
@@ -86,9 +83,29 @@ class Game:
             self.asteroids.append(asteroid)
             self.entities.append(asteroid)
     
+    def update_entities(self) -> None:
+        """Update all game entities."""
+        # Handle ship respawn
+        if self.ship and hasattr(self, 'respawn_timer'):
+            self.respawn_timer -= self.dt
+            if self.respawn_timer <= 0:
+                # Reset ship state
+                transform = self.ship.get_component('transform')
+                if transform:
+                    transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+                    transform.velocity = np.array([0.0, 0.0])
+                
+                self.ship.get_component('render').visible = True
+                self.ship.get_component('collision').active = True
+                delattr(self, 'respawn_timer')
+        
+        # Update all entities
+        for entity in self.entities[:]:  # Copy list for safe removal
+            entity.update(self.dt)
+    
     def handle_collisions(self) -> None:
         """Handle collisions between entities."""
-        if not self.ship or self.state != GameState.PLAYING:
+        if not self.ship:
             return
             
         ship_collision = self.ship.get_component('collision')
@@ -118,7 +135,7 @@ class Game:
                 if self.lives <= 0:
                     self.entities.remove(self.ship)
                     self.ship = None
-                    self.state = GameState.GAME_OVER
+                    self.state_manager.change_state(GameState.GAME_OVER)
                 else:
                     # Respawn ship after delay
                     self.ship.get_component('render').visible = False
@@ -160,98 +177,20 @@ class Game:
                         self.entities.append(new_asteroid)
                     break
     
-    def update(self) -> None:
-        """Update game state and entities."""
-        self.dt = self.clock.tick(FPS) / 1000.0
-        
-        if self.state == GameState.PLAYING:
-            # Handle ship respawn
-            if self.ship and hasattr(self, 'respawn_timer'):
-                self.respawn_timer -= self.dt
-                if self.respawn_timer <= 0:
-                    # Reset ship state
-                    transform = self.ship.get_component('transform')
-                    if transform:
-                        transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-                        transform.velocity = np.array([0.0, 0.0])
-                    
-                    self.ship.get_component('render').visible = True
-                    self.ship.get_component('collision').active = True
-                    delattr(self, 'respawn_timer')
-            
-            # Update all entities
-            for entity in self.entities[:]:  # Copy list for safe removal
-                entity.update(self.dt)
-            
-            # Handle collisions
-            self.handle_collisions()
-            
-            # Check for level completion
-            if not self.asteroids and self.ship:
-                self.level += 1
-                self.spawn_asteroid_wave()
-    
-    def draw(self) -> None:
-        """Draw current game state."""
-        self.screen.fill(BLACK)
-        
-        if self.state == GameState.PLAYING:
-            # Draw all entities
-            for entity in self.entities:
-                render = entity.get_component('render')
-                if render:
-                    render.draw(self.screen)
-            
-            # Draw HUD
-            self._draw_hud()
-        elif self.state == GameState.GAME_OVER:
-            self._draw_game_over()
-        
-        pygame.display.flip()
-    
-    def _draw_hud(self) -> None:
-        """Draw heads-up display."""
-        font = pygame.font.Font(None, 36)
-        
-        # Draw score
-        score_text = font.render(f"Score: {self.score}", True, (255, 255, 255))
-        self.screen.blit(score_text, (10, 10))
-        
-        # Draw lives
-        lives_text = font.render(f"Lives: {self.lives}", True, (255, 255, 255))
-        self.screen.blit(lives_text, (10, 50))
-        
-        # Draw level
-        level_text = font.render(f"Level: {self.level}", True, (255, 255, 255))
-        self.screen.blit(level_text, (WINDOW_WIDTH - 120, 10))
-    
-    def _draw_game_over(self) -> None:
-        """Draw game over screen."""
-        font = pygame.font.Font(None, 74)
-        text = font.render('Game Over', True, (255, 0, 0))
-        text_rect = text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
-        self.screen.blit(text, text_rect)
-        
-        font = pygame.font.Font(None, 36)
-        score_text = font.render(f'Final Score: {self.score}', True, (255, 255, 255))
-        score_rect = score_text.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 50))
-        self.screen.blit(score_text, score_rect)
-    
     def run(self) -> None:
         """Main game loop."""
-        while self.running:
-            # Event handling
+        while True:
+            # Update timing
+            self.dt = self.clock.tick(FPS) / 1000.0
+            
+            # Handle events
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        if self.state == GameState.PLAYING:
-                            self.state = GameState.PAUSED
-                        elif self.state == GameState.PAUSED:
-                            self.state = GameState.PLAYING
-                elif event.type in [pygame.KEYDOWN, pygame.KEYUP]:
-                    # Handle input for all entities
+                if self.state_manager.handle_input(event):
+                    pygame.quit()
+                    return
+                
+                # Handle entity input
+                if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
                     for entity in self.entities:
                         input_component = entity.get_component('input')
                         if input_component:
@@ -260,7 +199,10 @@ class Game:
                             else:
                                 input_component.handle_keyup(event.key)
             
-            self.update()
-            self.draw()
-        
-        pygame.quit() 
+            # Update game state
+            self.state_manager.update()
+            
+            # Draw
+            self.screen.fill(BLACK)
+            self.state_manager.draw(self.screen)
+            pygame.display.flip() 
