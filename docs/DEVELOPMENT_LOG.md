@@ -511,6 +511,10 @@ Next: Test asteroid split behavior and adjust angles/speeds if needed
 - Added more detailed debug logging for split angles and speeds
 Next: Test split behavior, particularly for small asteroids
 
----
-Note: Add new entries at the top. Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
-Time format: Use 1-minute intervals [YYYY-MM-DD HH:MM(AM/PM)] 
+[2024-01-11 13:20PM] [FIX] Improved asteroid split spawn positions
+- Added offset to split piece spawn positions:
+  - Medium pieces: 25 pixel offset in movement direction
+  - Small pieces: 15 pixel offset in movement direction
+- Prevents immediate collision between split pieces
+- Maintains existing trajectory and speed settings
+Next: Test split behavior with new spawn offsets 

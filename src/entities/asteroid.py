@@ -138,10 +138,12 @@ class Asteroid(Entity):
             base_angles = [0, 180]  # Opposite directions
             speed_multiplier = 2.0  # Double speed for small pieces
             angle_variation = 10  # Less variation for small pieces
+            offset_distance = 15  # Smaller offset for small pieces
         else:
             base_angles = [-150, 150]  # Wide but not exactly opposite for medium pieces
             speed_multiplier = 1.5  # 50% faster for medium pieces
             angle_variation = 20  # More variation for medium pieces
+            offset_distance = 25  # Larger offset for medium pieces
         
         # Get original velocity angle
         orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
@@ -149,6 +151,7 @@ class Asteroid(Entity):
         for base_angle in base_angles:
             # Add controlled randomness to the split angle
             angle = orig_angle + base_angle + random.uniform(-angle_variation, angle_variation)
+            angle_rad = math.radians(angle)
             
             # Calculate new velocity with size-based speed scaling
             min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
@@ -157,15 +160,22 @@ class Asteroid(Entity):
             
             # Create velocity vector at the split angle
             new_velocity = pygame.Vector2(
-                math.cos(math.radians(angle)) * new_speed,
-                math.sin(math.radians(angle)) * new_speed
+                math.cos(angle_rad) * new_speed,
+                math.sin(angle_rad) * new_speed
             )
             
-            # Create new asteroid with current position and calculated velocity
-            piece = Asteroid(self.game, new_size, transform.position, new_velocity)
+            # Offset the spawn position in the direction of travel
+            spawn_pos = pygame.Vector2(transform.position)
+            spawn_pos += pygame.Vector2(
+                math.cos(angle_rad) * offset_distance,
+                math.sin(angle_rad) * offset_distance
+            )
+            
+            # Create new asteroid with offset position and calculated velocity
+            piece = Asteroid(self.game, new_size, spawn_pos, new_velocity)
             pieces.append(piece)
             
-            print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}")  # Debug info
+            print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}, offset={offset_distance}")  # Debug info
         
         return pieces
 
