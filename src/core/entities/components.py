@@ -3,6 +3,7 @@ import pygame
 import numpy as np
 from typing import Dict, List, Tuple, Callable, Optional
 from src.core.entities.base import Component, Entity, TransformComponent
+from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
 class ScreenWrapComponent(Component):
     """Component for wrapping entities around screen edges."""

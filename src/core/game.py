@@ -33,6 +33,15 @@ class Game:
         self.level = 1
         self.lives = 3
         
+        # Settings - Initialize before state manager
+        self.settings = {
+            'window': {
+                'width': self.width,
+                'height': self.height
+            },
+            'controls': 'arrows'  # or 'wasd'
+        }
+        
         # Initialize systems
         self.state_manager = StateManager(self)
         self.state = GameState.MAIN_MENU
@@ -44,24 +53,6 @@ class Game:
         self.asteroids = []
         self.particles = []
         self.ship = None
-        
-        # Settings
-        self.settings = {
-            'controls': 'arrows'  # or 'wasd'
-        }
-        
-        # Systems
-        self.state_manager = StateManager(self)
-        self.scoring_system = ScoringSystem()  # Renamed for clarity
-        
-        # Entities
-        self.ship = None
-        self.entities = []
-        self.asteroids = []
-        self.bullets = []  # Track active bullets
-        
-        # State
-        self.state = GameState.MAIN_MENU
         
         print("Game initialized")  # Debug info
     
