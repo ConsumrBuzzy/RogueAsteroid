@@ -1,7 +1,14 @@
+"""Player ship entity using component system."""
 import pygame
 import numpy as np
-from typing import List, Tuple, TYPE_CHECKING
-from src.core.entity import Entity
+from typing import TYPE_CHECKING
+from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
+from src.core.entities.components import (
+    ScreenWrapComponent,
+    InputComponent,
+    PhysicsComponent,
+    EffectComponent
+)
 from src.core.constants import (
     SHIP_ACCELERATION,
     SHIP_MAX_SPEED,
@@ -18,102 +25,131 @@ if TYPE_CHECKING:
 class Ship(Entity):
     """Player controlled ship entity."""
     
-    def __init__(self):
-        # Start at center of screen
-        super().__init__(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+    def __init__(self, game: 'Game'):
+        super().__init__(game)
         
-        # Ship properties
-        self.radius = 12.0
-        self.color = WHITE
+        # Add components
+        self._init_transform()
+        self._init_physics()
+        self._init_render()
+        self._init_input()
+        self._init_effects()
+        self._init_collision()
+        self._init_screen_wrap()
+    
+    def _init_transform(self) -> None:
+        """Initialize transform component."""
+        self.add_component(
+            TransformComponent,
+            WINDOW_WIDTH / 2,  # Start at center
+            WINDOW_HEIGHT / 2
+        )
+    
+    def _init_physics(self) -> None:
+        """Initialize physics component."""
+        physics = self.add_component(PhysicsComponent, mass=1.0, max_speed=SHIP_MAX_SPEED)
+        physics.friction = SHIP_FRICTION
+    
+    def _init_render(self) -> None:
+        """Initialize render component."""
+        render = self.add_component(RenderComponent)
+        render.color = WHITE
         
         # Define ship shape (triangle)
         size = 20.0
-        self.vertices = [
+        render.vertices = [
             (0, -size),           # nose
             (-size/2, size/2),    # left wing
             (size/2, size/2)      # right wing
         ]
-        
-        # Movement flags
-        self.thrusting = False
-        self.turning_left = False
-        self.turning_right = False
     
-    def handle_input(self, keys: List[bool]) -> None:
-        """Process keyboard input based on control scheme."""
+    def _init_input(self) -> None:
+        """Initialize input component with control bindings."""
+        input_component = self.add_component(InputComponent)
+        
+        # Bind controls based on scheme
         if self.game.settings.get('controls', 'scheme') == 'arrows':
-            self.thrusting = keys[pygame.K_UP]
-            self.turning_left = keys[pygame.K_LEFT]
-            self.turning_right = keys[pygame.K_RIGHT]
+            thrust_key = pygame.K_UP
+            left_key = pygame.K_LEFT
+            right_key = pygame.K_RIGHT
         else:  # wasd
-            self.thrusting = keys[pygame.K_w]
-            self.turning_left = keys[pygame.K_a]
-            self.turning_right = keys[pygame.K_d]
+            thrust_key = pygame.K_w
+            left_key = pygame.K_a
+            right_key = pygame.K_d
+        
+        # Bind continuous actions
+        input_component.bind_key(thrust_key, self._apply_thrust, continuous=True)
+        input_component.bind_key(left_key, self._rotate_left, continuous=True)
+        input_component.bind_key(right_key, self._rotate_right, continuous=True)
+    
+    def _init_effects(self) -> None:
+        """Initialize visual effects component."""
+        effects = self.add_component(EffectComponent)
+        
+        # Add thrust flame effect
+        flame_size = 10.0
+        rear_offset = (0, 15)  # Offset from center
+        effects.add_effect(
+            'thrust',
+            vertices=[
+                (0, 0),
+                (-flame_size/2, flame_size),
+                (flame_size/2, flame_size)
+            ],
+            color=(255, 165, 0),  # Orange
+            offset=rear_offset
+        )
+    
+    def _init_collision(self) -> None:
+        """Initialize collision component."""
+        self.add_component(CollisionComponent, radius=12.0)
+    
+    def _init_screen_wrap(self) -> None:
+        """Initialize screen wrapping component."""
+        self.add_component(ScreenWrapComponent, WINDOW_WIDTH, WINDOW_HEIGHT)
+    
+    def _apply_thrust(self) -> None:
+        """Apply thrust force in current direction."""
+        transform = self.get_component(TransformComponent)
+        physics = self.get_component(PhysicsComponent)
+        effects = self.get_component(EffectComponent)
+        
+        if transform and physics:
+            # Calculate thrust direction
+            angle_rad = np.radians(transform.rotation)
+            direction = np.array([
+                np.cos(angle_rad),
+                np.sin(angle_rad)
+            ])
+            
+            # Apply force
+            force = direction * SHIP_ACCELERATION
+            physics.apply_force(force)
+            
+            # Activate thrust effect
+            if effects:
+                effects.set_effect_active('thrust', True)
+    
+    def _rotate_left(self) -> None:
+        """Rotate ship counter-clockwise."""
+        transform = self.get_component(TransformComponent)
+        if transform:
+            transform.rotation -= SHIP_ROTATION_SPEED * self.game.dt * 60
+    
+    def _rotate_right(self) -> None:
+        """Rotate ship clockwise."""
+        transform = self.get_component(TransformComponent)
+        if transform:
+            transform.rotation += SHIP_ROTATION_SPEED * self.game.dt * 60
     
     def update(self, dt: float) -> None:
-        """Update ship state based on input."""
-        # Rotation
-        if self.turning_left:
-            self.rotation -= SHIP_ROTATION_SPEED * dt * 60
-        if self.turning_right:
-            self.rotation += SHIP_ROTATION_SPEED * dt * 60
-        
-        # Thrust
-        if self.thrusting:
-            # Get direction vector
-            direction = self.get_direction()
-            
-            # Apply acceleration in that direction
-            acceleration = direction * SHIP_ACCELERATION
-            self.velocity += acceleration * dt * 60
-            
-            # Limit speed
-            speed = np.linalg.norm(self.velocity)
-            if speed > SHIP_MAX_SPEED:
-                self.velocity = (self.velocity / speed) * SHIP_MAX_SPEED
-        
-        # Apply friction
-        self.velocity *= SHIP_FRICTION
-        
-        # Update position
+        """Update ship state."""
         super().update(dt)
-    
-    def draw(self, surface) -> None:
-        """Draw the ship and its thrust if active."""
-        # Draw ship
-        super().draw(surface)
         
-        # Draw thrust flame when thrusting
-        if self.thrusting:
-            self._draw_thrust(surface)
-    
-    def _draw_thrust(self, surface) -> None:
-        """Draw a simple thrust flame behind the ship."""
-        # Get ship's rear center point
-        rear_center = np.array([0, self.radius * 0.7])
+        # Deactivate thrust effect if not thrusting
+        effects = self.get_component(EffectComponent)
+        input_component = self.get_component(InputComponent)
         
-        # Define flame shape
-        flame_size = self.radius * 0.8
-        flame_vertices = [
-            (rear_center[0], rear_center[1]),
-            (rear_center[0] - flame_size/2, rear_center[1] + flame_size),
-            (rear_center[0] + flame_size/2, rear_center[1] + flame_size)
-        ]
-        
-        # Transform flame vertices
-        angle_rad = np.radians(self.rotation)
-        cos_rot = np.cos(angle_rad)
-        sin_rot = np.sin(angle_rad)
-        
-        transformed = []
-        for x, y in flame_vertices:
-            # Rotate
-            rx = x * cos_rot - y * sin_rot
-            ry = x * sin_rot + y * cos_rot
-            # Translate
-            rx += self.position[0]
-            ry += self.position[1]
-            transformed.append((rx, ry))
-        
-        # Draw flame
-        pygame.draw.polygon(surface, (255, 165, 0), transformed)  # Orange flame 
+        if effects and input_component:
+            thrust_key = pygame.K_UP if self.game.settings.get('controls', 'scheme') == 'arrows' else pygame.K_w
+            effects.set_effect_active('thrust', thrust_key in input_component.active_keys) 

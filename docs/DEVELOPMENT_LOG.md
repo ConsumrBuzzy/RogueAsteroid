@@ -10,19 +10,30 @@
 7. [X] Add options menu with control schemes
 8. [X] Implement asteroid spawning
 9. [ ] Add shooting mechanics
-10. [ ] Refactor entities to use component system
-11. [ ] Add screen wrapping component
-12. [ ] Add input handling component
-13. [ ] Add physics component for movement
+10. [P] Refactor entities to use component system
+11. [X] Add screen wrapping component
+12. [X] Add input handling component
+13. [X] Add physics component for movement
 14. [ ] Implement proper game state management
 
 ## Session State
-Last Session: [2024-01-11 11:30]
+Last Session: [2024-01-11 11:35]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 11:35] [IMPL] Ship Class Refactor
+- Converted Ship to use component system
+- Separated concerns into individual components:
+  * Transform for position/rotation
+  * Physics for movement
+  * Input for controls
+  * Effects for thrust flame
+  * Collision for hit detection
+  * Screen wrap for boundaries
+=> Next: Refactor Asteroid class
 
 [2024-01-11 11:30] [DESIGN] Project Structure Review
 - Identified needed components:
