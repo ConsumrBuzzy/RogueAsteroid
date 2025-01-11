@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2024-01-11 12:20PM]
+Last Session: [2024-01-11 12:21PM]
 Current Phase: Core Gameplay Implementation
 
 ## Core Gameplay Objectives (MVP)
@@ -59,6 +59,13 @@ Current Phase: Core Gameplay Implementation
 - [ ] Add high score system
 
 ## Log Entries
+
+[2024-01-11 12:21PM] [FIX] Ship Movement
+- Fixed thrust direction calculation
+- Adjusted for ship's upward orientation
+- Added debug logging for movement
+- Verified ship shape vertices
+- Next: Test ship movement and rotation
 
 [2024-01-11 12:20PM] [NOTE] Time Format Standard
 - Standardized time format to use 1-minute intervals

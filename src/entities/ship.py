@@ -70,12 +70,12 @@ class Ship(Entity):
         render = self.add_component(RenderComponent)
         print(f"Render component added: {render}")  # Debug info
         
-        # Define ship shape (triangle)
+        # Define ship shape (triangle pointing up)
         size = 20.0
         render.vertices = [
-            (0, -size),           # nose
-            (-size/2, size/2),    # left wing
-            (size/2, size/2)      # right wing
+            (0, -size),           # nose (top)
+            (-size/2, size/2),    # left wing (bottom)
+            (size/2, size/2)      # right wing (bottom)
         ]
         render.color = WHITE
         render.visible = True
@@ -137,11 +137,15 @@ class Ship(Entity):
         
         if transform and physics:
             # Calculate thrust direction
-            angle_rad = np.radians(transform.rotation)
+            # Adjust angle by -90 degrees because ship points up at 0 degrees
+            angle_rad = np.radians(transform.rotation - 90)
             direction = np.array([
                 np.cos(angle_rad),
                 np.sin(angle_rad)
             ])
+            
+            # Debug thrust direction
+            print(f"Rotation: {transform.rotation}, Thrust direction: {direction}")  # Debug info
             
             # Apply force
             force = direction * SHIP_ACCELERATION
