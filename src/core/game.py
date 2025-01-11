@@ -44,8 +44,8 @@ class Game:
         self.asteroids: List[Asteroid] = []
         
         # Systems
+        self.scoring = ScoringSystem()  # Initialize scoring before state manager
         self.state_manager = StateManager(self)
-        self.scoring = ScoringSystem()
     
     @property
     def score(self) -> int:
@@ -54,28 +54,32 @@ class Game:
     
     def reset_game(self) -> None:
         """Reset game state for new game."""
+        # Clear all entities first
+        self.entities.clear()
+        self.asteroids.clear()
+        self.ship = None
+        
+        # Reset game state
         self.scoring.reset()
         self.lives = INITIAL_LIVES
         self.level = 1
-        self.entities.clear()
-        self.asteroids.clear()
         
-        # Create player ship first
+        # Create player ship
         self.ship = Ship(self)
         self.entities.append(self.ship)
-        
-        # Ensure ship is fully initialized before spawning asteroids
-        transform = self.ship.get_component('transform')
-        if not transform:
-            return
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
     
     def spawn_asteroid_wave(self) -> None:
         """Spawn a wave of asteroids based on current level."""
+        if not self.ship:
+            return
+            
         num_asteroids = 2 + self.level
-        ship_transform = self.ship.get_component('transform') if self.ship else None
+        ship_transform = self.ship.get_component('transform')
+        if not ship_transform:
+            return
         
         for _ in range(num_asteroids):
             # Spawn asteroids away from player
@@ -83,12 +87,9 @@ class Game:
                 x = np.random.uniform(0, WINDOW_WIDTH)
                 y = np.random.uniform(0, WINDOW_HEIGHT)
                 
-                if ship_transform:
-                    dist = np.hypot(x - ship_transform.position[0],
-                                  y - ship_transform.position[1])
-                    if dist > 200:  # Minimum safe distance
-                        break
-                else:
+                dist = np.hypot(x - ship_transform.position[0],
+                              y - ship_transform.position[1])
+                if dist > 200:  # Minimum safe distance
                     break
             
             asteroid = Asteroid(self, x, y, 'large')
@@ -110,13 +111,20 @@ class Game:
                     transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
                     transform.velocity = np.array([0.0, 0.0])
                 
-                self.ship.get_component('render').visible = True
-                self.ship.get_component('collision').active = True
+                render = self.ship.get_component('render')
+                if render:
+                    render.visible = True
+                
+                collision = self.ship.get_component('collision')
+                if collision:
+                    collision.active = True
+                
                 delattr(self, 'respawn_timer')
         
         # Update all entities
         for entity in self.entities[:]:  # Copy list for safe removal
-            entity.update(self.dt)
+            if entity:  # Ensure entity exists
+                entity.update(self.dt)
     
     def handle_collisions(self) -> None:
         """Handle collisions between entities."""
@@ -124,11 +132,14 @@ class Game:
             return
             
         ship_collision = self.ship.get_component('collision')
-        if not ship_collision:
+        if not ship_collision or not ship_collision.active:
             return
             
         # Check ship collision with asteroids
         for asteroid in self.asteroids[:]:  # Copy list for safe removal
+            if not asteroid:  # Skip if asteroid was removed
+                continue
+                
             asteroid_collision = asteroid.get_component('collision')
             if not asteroid_collision:
                 continue
@@ -148,17 +159,20 @@ class Game:
                 ship_collision.active = False  # Disable collisions temporarily
                 
                 if self.lives <= 0:
-                    self.entities.remove(self.ship)
+                    if self.ship in self.entities:
+                        self.entities.remove(self.ship)
                     self.ship = None
                     
                     # Check for high score
                     if self.scoring.check_high_score():
-                        self.state_manager.change_state(GameState.HIGH_SCORE)
+                        self.state_manager.change_state(GameState.HIGH_SCORE_ENTRY)
                     else:
                         self.state_manager.change_state(GameState.GAME_OVER)
                 else:
                     # Respawn ship after delay
-                    self.ship.get_component('render').visible = False
+                    render = self.ship.get_component('render')
+                    if render:
+                        render.visible = False
                     self.respawn_timer = 2.0  # Seconds until respawn
                 break
         
@@ -172,6 +186,9 @@ class Game:
                 continue
                 
             for asteroid in self.asteroids[:]:  # Copy list for safe removal
+                if not asteroid:  # Skip if asteroid was removed
+                    continue
+                    
                 asteroid_collision = asteroid.get_component('collision')
                 if not asteroid_collision:
                     continue
@@ -212,12 +229,13 @@ class Game:
                 # Handle entity input
                 if event.type in [pygame.KEYDOWN, pygame.KEYUP]:
                     for entity in self.entities:
-                        input_component = entity.get_component('input')
-                        if input_component:
-                            if event.type == pygame.KEYDOWN:
-                                input_component.handle_keydown(event.key)
-                            else:
-                                input_component.handle_keyup(event.key)
+                        if entity:  # Ensure entity exists
+                            input_component = entity.get_component('input')
+                            if input_component:
+                                if event.type == pygame.KEYDOWN:
+                                    input_component.handle_keydown(event.key)
+                                else:
+                                    input_component.handle_keyup(event.key)
             
             # Update game state
             self.state_manager.update()

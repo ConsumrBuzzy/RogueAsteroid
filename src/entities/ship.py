@@ -58,6 +58,7 @@ class Ship(Entity):
         """Initialize render component."""
         render = self.add_component(RenderComponent)
         render.color = WHITE
+        render.visible = True  # Ensure visibility is set
         
         # Define ship shape (triangle)
         size = 20.0

@@ -58,7 +58,7 @@ class RenderComponent(Component):
         super().__init__(entity)
         self.vertices = []  # List of (x, y) tuples
         self.color = (255, 255, 255)  # White default
-        self.visible = True
+        self.visible = True  # Default to visible
     
     def draw(self, surface: Any) -> None:
         """Draw the entity on the surface."""

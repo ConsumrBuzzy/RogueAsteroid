@@ -40,12 +40,20 @@ class StateManager:
     
     def change_state(self, new_state: GameState) -> None:
         """Change to a new game state."""
+        # Don't change if already in this state
+        if new_state == self.current_state:
+            return
+            
         self.previous_state = self.current_state
         self.current_state = new_state
         
         # Handle state entry actions
-        if new_state == GameState.PLAYING and self.previous_state == GameState.MAIN_MENU:
-            self.game.reset_game()
+        if new_state == GameState.PLAYING:
+            if self.previous_state == GameState.MAIN_MENU:
+                self.game.reset_game()
+            elif self.previous_state == GameState.PAUSED:
+                # Just unpause, don't reset
+                pass
         elif new_state == GameState.HIGH_SCORE_ENTRY:
             self.player_name = ""
     
