@@ -17,12 +17,20 @@
 14. [ ] Implement proper game state management
 
 ## Session State
-Last Session: [2024-01-11 11:45]
+Last Session: [2024-01-11 11:50]
 Current Phase: Core Implementation
 Environment: Python
 Blocking Issues: None
 
 ## Log Entries
+
+[2024-01-11 11:50] [IMPL] Shooting Mechanics
+- Added Bullet entity using component system
+- Implemented bullet-asteroid collision and splitting
+- Added shooting controls to Ship class
+- Added shoot cooldown and bullet lifetime
+- Integrated scoring system with asteroid destruction
+=> Next: Add sound effects and particle systems
 
 [2024-01-11 11:45] [IMPL] Game Class Refactor
 - Converted Game class to use component system
