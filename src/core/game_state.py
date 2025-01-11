@@ -79,11 +79,11 @@ class StateManager:
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
         print(f"Main menu input: {event.key}")  # Debug info
-        if event.key in (pygame.K_UP, pygame.K_w):
+        if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
-        elif event.key in (pygame.K_DOWN, pygame.K_s):
+        elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
-        elif event.key == pygame.K_RETURN:
+        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # New Game
                 self.change_state(GameState.PLAYING)
             elif self.selected_option == 1:  # High Scores
@@ -104,11 +104,11 @@ class StateManager:
     
     def _handle_pause_input(self, event):
         """Handle input in the pause state."""
-        if event.key in (pygame.K_UP, pygame.K_w):
+        if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.PAUSED])
-        elif event.key in (pygame.K_DOWN, pygame.K_s):
+        elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.PAUSED])
-        elif event.key == pygame.K_RETURN:
+        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # Resume
                 self.change_state(GameState.PLAYING)
             elif self.selected_option == 1:  # Options
@@ -126,11 +126,11 @@ class StateManager:
     
     def _handle_options_input(self, event):
         """Handle input in the options state."""
-        if event.key in (pygame.K_UP, pygame.K_w):
+        if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
-        elif event.key in (pygame.K_DOWN, pygame.K_s):
+        elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.OPTIONS])
-        elif event.key == pygame.K_RETURN:
+        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # Control scheme toggle
                 # Toggle between arrows and wasd
                 new_scheme = 'wasd' if self.game.settings['controls'] == 'arrows' else 'arrows'
@@ -156,12 +156,12 @@ class StateManager:
     
     def _handle_high_score_input(self, event):
         """Handle input in the high score state."""
-        if event.key in (pygame.K_ESCAPE, pygame.K_RETURN):
+        if event.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER):
             self.change_state(GameState.MAIN_MENU)
     
     def _handle_new_high_score_input(self, event):
         """Handle input in new high score state."""
-        if event.key == pygame.K_RETURN and self.high_score_name.strip():
+        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER) and self.high_score_name.strip():
             # Save high score and return to main menu
             self.game.scoring.add_high_score(self.high_score_name.strip(), self.game.level)
             self.change_state(GameState.MAIN_MENU)
@@ -172,7 +172,7 @@ class StateManager:
     
     def _handle_game_over_input(self, event):
         """Handle input in game over state."""
-        if event.key in (pygame.K_RETURN, pygame.K_ESCAPE):
+        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             if self.game.scoring.check_high_score():
                 print("New high score achieved!")  # Debug info
                 self.high_score_name = ""  # Reset name input

@@ -100,22 +100,30 @@ class Ship(Entity):
         
         # Set up keys based on control scheme
         if controls == 'arrows':
-            thrust_key = pygame.K_UP
-            reverse_key = pygame.K_DOWN
-            left_key = pygame.K_LEFT
-            right_key = pygame.K_RIGHT
+            # Regular arrow keys and numpad
+            thrust_keys = [pygame.K_UP, pygame.K_KP8]
+            reverse_keys = [pygame.K_DOWN, pygame.K_KP2]
+            left_keys = [pygame.K_LEFT, pygame.K_KP4]
+            right_keys = [pygame.K_RIGHT, pygame.K_KP6]
         else:  # wasd
-            thrust_key = pygame.K_w
-            reverse_key = pygame.K_s
-            left_key = pygame.K_a
-            right_key = pygame.K_d
+            thrust_keys = [pygame.K_w]
+            reverse_keys = [pygame.K_s]
+            left_keys = [pygame.K_a]
+            right_keys = [pygame.K_d]
         
-        # Bind controls
-        self.input_component.bind_key(thrust_key, self._apply_thrust, True)
-        self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
-        self.input_component.bind_key(left_key, self._rotate_left, True)
-        self.input_component.bind_key(right_key, self._rotate_right, True)
+        # Bind controls - each key in the key groups
+        for thrust_key in thrust_keys:
+            self.input_component.bind_key(thrust_key, self._apply_thrust, True)
+        for reverse_key in reverse_keys:
+            self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
+        for left_key in left_keys:
+            self.input_component.bind_key(left_key, self._rotate_left, True)
+        for right_key in right_keys:
+            self.input_component.bind_key(right_key, self._rotate_right, True)
+            
+        # Bind shoot to both regular space and numpad enter
         self.input_component.bind_key(pygame.K_SPACE, self._shoot)
+        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot)
         
         print(f"Controls updated to scheme: {controls}")  # Debug info
     
