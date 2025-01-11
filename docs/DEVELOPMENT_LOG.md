@@ -1,25 +1,70 @@
 # Development Log
 
-Last Session: [2024-01-11 12:45]
-Current Phase: Testing
+Last Session: [2024-01-11 13:00]
+Current Phase: Core Gameplay Implementation
+
+## Core Gameplay Objectives (MVP)
+1. Ship Control
+   - [x] Basic movement (thrust and rotation)
+   - [x] Screen wrapping
+   - [x] Maximum speed limit
+   - [ ] Visual feedback for movement
+
+2. Asteroid Mechanics
+   - [x] Basic spawning
+   - [x] Screen wrapping
+   - [x] Breaking into smaller pieces
+   - [ ] Random movement paths
+   - [ ] Asteroid-asteroid collisions
+   - [ ] Maximum on-screen limit
+   - [ ] Size-based properties
+
+3. Shooting Mechanics
+   - [x] Basic bullet firing
+   - [x] Bullet-asteroid collision
+   - [ ] Score tracking for hits
+   - [ ] Bullet lifetime/range limit
+
+4. Game Flow
+   - [ ] Wave progression
+   - [ ] Score system
+   - [ ] Life system
+   - [ ] Game over conditions
+   - [ ] Restart capability
 
 ## Tasks
-- [x] Implement asteroid spawning
-- [x] Add screen wrapping, input handling, physics, and effects components
-- [x] Refactor Ship class to use component system
-- [x] Refactor Asteroid class to use component system
-- [x] Implement shooting mechanics with component system
-- [x] Add collision detection and response
-- [x] Add game state management
-- [x] Add scoring system
-- [x] Add high score system
-- [ ] Implement unit tests for core systems
-- [ ] Add integration tests for game flow
+### High Priority
+- [ ] Fix ship rendering and controls
+- [ ] Implement asteroid-asteroid collisions
+- [ ] Add maximum asteroid limit
+- [ ] Implement proper scoring system
+- [ ] Add wave progression
+
+### Testing
+- [x] Set up testing framework
+- [ ] Test core gameplay mechanics
+- [ ] Test collision system
+- [ ] Test scoring system
+
+### Documentation
+- [ ] Update README with gameplay instructions
+- [ ] Document game mechanics
+- [ ] Add development setup guide
+- [ ] Create contribution guidelines
+
+### Future Enhancements
 - [ ] Add sound effects
 - [ ] Add particle effects
 - [ ] Add menus and UI
+- [ ] Add high score system
 
 ## Log Entries
+
+[2024-01-11 13:00] [TASK] Core Gameplay Objectives
+- Identified essential gameplay mechanics for MVP
+- Prioritized remaining implementation tasks
+- Organized testing and documentation needs
+- Next: Fix ship rendering and implement asteroid-asteroid collisions
 
 [2024-01-11 12:45] [FIX] Debug Session
 - Fixed ship rendering and initialization issues
