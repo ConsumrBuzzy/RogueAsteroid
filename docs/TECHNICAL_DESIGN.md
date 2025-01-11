@@ -4,7 +4,7 @@
 - **Pygame** (2.5.x)
   - Primary game engine and renderer
   - Handles input, collision, and basic physics
-  - Provides sound system
+  - Provides window and event management
 - **NumPy** (1.24.x)
   - Vector operations for movement and physics
   - Efficient collision calculations
@@ -14,9 +14,10 @@
 
 ### 1. Game Loop System
 ```
-GameLoop
+Game
 ├── Clock management (fixed timestep)
-├── State management
+├── State management (via StateManager)
+├── Entity management
 ├── Input processing
 └── Scene rendering
 ```
@@ -24,122 +25,132 @@ GameLoop
 ### 2. Entity Component System
 ```
 Entity
-├── Transform (position, rotation, velocity)
-├── Collider (hitbox)
-├── Renderer (sprite/shape)
-└── Controller (behavior)
+├── TransformComponent (position, rotation)
+├── PhysicsComponent (velocity, forces)
+├── CollisionComponent (radius, active state)
+├── RenderComponent (vertices, color)
+├── InputComponent (key bindings)
+├── EffectsComponent (visual effects)
+├── ParticleComponent (lifetime, color)
+└── ScreenWrapComponent (bounds)
 ```
 
 ### 3. Physics System
 ```
-PhysicsManager
-├── Vector operations
-├── Velocity calculations
-├── Wrap-around logic
-└── Collision detection
+PhysicsComponent
+├── Force application
+├── Velocity updates
+├── Position integration
+└── Speed limiting
 ```
 
 ### 4. Input System
 ```
-InputManager
-├── Key mappings
+InputComponent
+├── Key bindings (WASD/Arrows)
 ├── Event handling
 └── Action dispatching
 ```
 
 ### 5. Rendering System
 ```
-RenderManager
-├── Shape rendering
-├── Screen management
-├── Camera (future expansion)
-└── Particle effects (future expansion)
+RenderComponent
+├── Vector shape rendering
+├── Debug visualization
+├── Particle effects
+└── UI elements
 ```
 
-### 6. Audio System
+### 6. Particle System
 ```
-AudioManager
-├── Sound effects
-└── Background music (future expansion)
+ParticleSystem
+├── Thrust effects
+├── Explosion effects
+├── Impact effects
+└── Lifetime management
 ```
 
 ## Data Flow
 ```
-Input → GameLoop → Physics → Entities → Renderer → Display
-                └→ Audio
+Input → StateManager → Game → Physics → Entities → Renderer → Display
+                            └→ Particles
 ```
 
 ## State Management
 ```
 GameState
-├── MENU
+├── MAIN_MENU
 ├── PLAYING
 ├── PAUSED
-└── GAME_OVER
+├── GAME_OVER
+├── NEW_HIGH_SCORE
+└── OPTIONS
 ```
 
 ## Extension Points
 1. **Entity System**
    - New entity types via composition
-   - Custom behaviors through Controller components
+   - Custom behaviors through components
+   - Particle effect variations
 
 2. **Physics**
-   - Advanced collision response
-   - Gravity fields
+   - Enhanced collision response
    - Custom movement patterns
+   - Advanced particle physics
 
 3. **Rendering**
-   - Sprite-based graphics
-   - Particle systems
+   - Additional particle effects
    - Screen effects
+   - Enhanced UI elements
 
 4. **Audio**
-   - Music system
-   - Dynamic sound effects
-   - Sound mixing
+   - Sound system (currently removed)
+   - Background music
+   - Dynamic effects
 
 ## Performance Considerations
 1. **Collision Optimization**
-   - Spatial partitioning for large asteroid fields
-   - Simple circle colliders for basic detection
+   - Simple circle colliders
+   - Entity type filtering
+   - Efficient cleanup
 
 2. **Memory Management**
-   - Object pooling for projectiles and particles
-   - Efficient entity cleanup
+   - Proper entity cleanup
+   - Particle lifetime management
+   - Component reference cleanup
 
 3. **Render Optimization**
-   - Basic shape rendering for minimal overhead
-   - View frustum culling for off-screen entities
+   - Vector-based rendering
+   - Particle batching
+   - UI caching
 
 ## File Structure
 ```
 src/
 ├── core/
 │   ├── game.py
-│   ├── entity.py
-│   └── constants.py
-├── systems/
-│   ├── physics.py
-│   ├── input.py
-│   ├── render.py
-│   └── audio.py
+│   ├── game_state.py
+│   ├── scoring.py
+│   ├── particles.py
+│   ├── constants.py
+│   └── entities/
+│       └── components.py
 ├── entities/
 │   ├── ship.py
 │   ├── asteroid.py
-│   └── projectile.py
-└── utils/
-    ├── vector.py
-    └── collision.py
+│   └── bullet.py
+└── ui/
+    └── menus.py
 ```
 
-## Initial Implementation Priority
-1. Basic game loop with ship movement
-2. Simple shape rendering
-3. Collision detection
-4. Asteroid spawning and movement
-5. Shooting mechanics
-6. Basic sound effects
-7. Score tracking
+## Implementation Status
+1. ✓ Core game loop with state management
+2. ✓ Entity component system
+3. ✓ Physics and collision system
+4. ✓ Particle effects system
+5. ✓ Scoring and high score system
+6. ✓ Menu system and UI
+7. ✓ Wave progression
+8. - Sound system (removed for now)
 
----
-Note: This design prioritizes simplicity and modularity, allowing for future expansion while maintaining a minimal initial implementation. 
+Note: This design document reflects the current implementation, emphasizing modularity and extensibility while maintaining arcade-style gameplay mechanics. 

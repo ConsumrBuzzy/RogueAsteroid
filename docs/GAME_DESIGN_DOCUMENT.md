@@ -1,84 +1,100 @@
 # RogueAsteroid - Game Design Document
 
 ## Game Overview
-[Designer to provide a high-level description of the game, its core mechanics, and what makes it unique]
+RogueAsteroid is a classic arcade-style space shooter where players pilot a ship through waves of asteroids. The game features precise controls, physics-based movement, and particle effects for visual feedback. The focus is on skill-based gameplay with increasing difficulty as players progress through levels.
 
 ## Core Gameplay Elements
 
 ### Player Ship
 - Movement Mechanics:
-  * [Specify ship movement characteristics]
-  * [Define acceleration/deceleration]
-  * [Rotation mechanics]
+  * Thrust-based movement with gradual acceleration/deceleration
+  * Maximum speed of 400 pixels/second
+  * Rotation speed of 180 degrees/second
+  * Screen wrapping for continuous play space
 - Weapons:
-  * [Define weapon types]
-  * [Shooting mechanics]
-  * [Power-ups if any]
+  * Single forward-firing bullet type
+  * Maximum of 12 bullets on screen
+  * 0.5 second bullet lifetime
+  * Visual feedback with particle effects
 
 ### Asteroids
 - Types:
-  * [Define different asteroid sizes]
-  * [Specify behavior for each type]
+  * Large: 50 points, splits into 2 medium
+  * Medium: 75 points, splits into 2 small
+  * Small: 100 points, destroyed completely
 - Mechanics:
-  * [Movement patterns]
-  * [Split behavior]
-  * [Scoring system]
-
-### Enemies
-- Types:
-  * [List enemy types if any]
-  * [Behavior patterns]
-- Mechanics:
-  * [Movement patterns]
-  * [Attack patterns]
-  * [Scoring]
+  * Random movement paths with consistent velocity
+  * Screen wrapping
+  * Arcade-style collisions with deflection
+  * Size-based collision radius
+  * Particle effects on destruction
 
 ### Scoring System
 - Point Values:
-  * [Define points for different targets]
-  * [Bonus scoring mechanisms]
+  * Small Asteroids: 100 points
+  * Medium Asteroids: 75 points
+  * Large Asteroids: 50 points
 - High Score:
-  * [High score system specifications]
+  * Top 5 scores saved
+  * Player name entry for high scores
+  * Scores saved between sessions
 
 ## Visual Design
 
 ### Art Style
-- [Define the visual aesthetic]
-- [Color palette]
-- [Visual effects]
+- Vector-based graphics
+- Particle effects for:
+  * Ship thrust
+  * Bullet impacts
+  * Asteroid destruction
+  * Asteroid splitting
+- Color scheme:
+  * Ship: White
+  * Bullets: White
+  * Asteroids: White
+  * Thrust particles: Blue-white
+  * Explosion particles: Orange/yellow
+  * UI text: White
 
 ### UI Elements
 - HUD:
-  * [Define HUD elements]
-  * [Placement]
-  * [Style]
+  * Score display (top left)
+  * Lives counter (below score)
+  * Level indicator (top right)
 - Menus:
-  * [Menu structure]
-  * [Navigation]
-
-## Audio Design
-- Sound Effects:
-  * [List required sound effects]
-  * [Style guidelines]
-- Music:
-  * [Music style]
-  * [When music should play]
+  * Main Menu: New Game, High Scores, Options, Quit
+  * Pause Menu: Resume, Options, Main Menu
+  * Options: Control scheme toggle (Arrows/WASD)
+  * Game Over: Score, Level, High Score status
 
 ## Game Flow
 - States:
-  * [Define game states (menu, playing, paused, etc.)]
-  * [State transitions]
+  * MAIN_MENU: Starting state
+  * PLAYING: Active gameplay
+  * PAUSED: Game paused
+  * GAME_OVER: End state
+  * NEW_HIGH_SCORE: Score entry
+  * OPTIONS: Settings menu
 - Levels:
-  * [Level progression]
-  * [Difficulty scaling]
+  * Progressive difficulty
+  * Extra life every two levels (max 5)
+  * Increasing number of asteroids
+  * Faster asteroid velocities
 
 ## Technical Requirements
-[Designer to specify any technical requirements that affect gameplay]
+- Python with Pygame
+- 60 FPS target
+- Smooth particle effects
+- Responsive controls
+- Efficient collision detection
+- State-based game management
 
 ## Success Metrics
-- [Define what makes the game "fun"]
-- [Specify target performance]
-- [Define polish level]
+- Smooth, responsive controls
+- Clear visual feedback
+- Progressive difficulty
+- Engaging score system
+- Polished particle effects
+- Clean state transitions
 
----
-Note: This is a living document. The Designer should fill in the sections in brackets with specific details and requirements. Additional sections can be added as needed. 
+Note: This document reflects the current implementation. Future updates may include sound effects and additional gameplay features. 
