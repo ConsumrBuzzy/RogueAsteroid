@@ -1,126 +1,113 @@
-"""Base entity system using component-based architecture."""
-from typing import List, Set, Type, Dict, Any, TYPE_CHECKING
+"""Base classes for entity component system."""
+from typing import Dict, Type, TypeVar, Optional, Any
 import numpy as np
 
-if TYPE_CHECKING:
-    from src.core.game import Game
+T = TypeVar('T', bound='Component')
 
 class Component:
-    """Base class for all entity components."""
+    """Base class for all components."""
     
     def __init__(self, entity: 'Entity'):
         self.entity = entity
-        self.active = True
     
     def update(self, dt: float) -> None:
         """Update component state."""
         pass
+
+class Entity:
+    """Base class for all game entities."""
     
-    def draw(self, surface: Any) -> None:
-        """Draw component if it has visual elements."""
-        pass
+    def __init__(self, game: Any):
+        self.game = game
+        self.components: Dict[str, Component] = {}
+    
+    def add_component(self, component_type: Type[T], *args, **kwargs) -> T:
+        """Add a component to the entity."""
+        component = component_type(self, *args, **kwargs)
+        self.components[component_type.__name__.lower()] = component
+        return component
+    
+    def get_component(self, component_name: str) -> Optional[Component]:
+        """Get a component by name."""
+        return self.components.get(component_name.lower())
+    
+    def update(self, dt: float) -> None:
+        """Update all components."""
+        for component in self.components.values():
+            component.update(dt)
 
 class TransformComponent(Component):
-    """Handles position, rotation, and movement."""
+    """Component for position and movement."""
     
-    def __init__(self, entity: 'Entity', x: float = 0, y: float = 0):
+    def __init__(self, entity: Entity, x: float, y: float):
         super().__init__(entity)
-        self.position = np.array([x, y], dtype=float)
-        self.velocity = np.array([0.0, 0.0], dtype=float)
+        self.position = np.array([float(x), float(y)])
+        self.velocity = np.array([0.0, 0.0])
         self.rotation = 0.0  # degrees
+        self.rotation_speed = 0.0  # degrees per second
     
     def update(self, dt: float) -> None:
         """Update position based on velocity."""
         self.position += self.velocity * dt
+        self.rotation += self.rotation_speed * dt
 
 class RenderComponent(Component):
-    """Handles entity rendering."""
+    """Component for rendering."""
     
-    def __init__(self, entity: 'Entity'):
+    def __init__(self, entity: Entity):
         super().__init__(entity)
-        self.color = (255, 255, 255)  # default white
-        self.vertices: List[tuple[float, float]] = []
+        self.vertices = []  # List of (x, y) tuples
+        self.color = (255, 255, 255)  # White default
         self.visible = True
     
     def draw(self, surface: Any) -> None:
-        """Draw the entity using its vertices."""
+        """Draw the entity on the surface."""
         if not self.visible or not self.vertices:
             return
             
-        import pygame
-        transformed = self._get_transformed_vertices()
-        pygame.draw.lines(surface, self.color, True, transformed)
-    
-    def _get_transformed_vertices(self) -> List[tuple[float, float]]:
-        """Get vertices transformed by entity's position and rotation."""
-        transform = self.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('transform')
         if not transform:
-            return self.vertices
+            return
             
-        angle_rad = np.radians(transform.rotation)
-        cos_rot = np.cos(angle_rad)
-        sin_rot = np.sin(angle_rad)
-        
-        transformed = []
+        # Convert vertices to screen space
+        screen_vertices = []
         for x, y in self.vertices:
-            # Rotate
-            rx = x * cos_rot - y * sin_rot
-            ry = x * sin_rot + y * cos_rot
-            # Translate
-            rx += transform.position[0]
-            ry += transform.position[1]
-            transformed.append((rx, ry))
+            # Rotate point
+            angle = np.radians(transform.rotation)
+            cos_a = np.cos(angle)
+            sin_a = np.sin(angle)
+            rx = x * cos_a - y * sin_a
+            ry = x * sin_a + y * cos_a
             
-        return transformed
+            # Translate to position
+            screen_x = transform.position[0] + rx
+            screen_y = transform.position[1] + ry
+            screen_vertices.append((int(screen_x), int(screen_y)))
+        
+        # Draw polygon
+        if len(screen_vertices) >= 3:
+            import pygame  # Import here to avoid circular import
+            pygame.draw.polygon(surface, self.color, screen_vertices)
 
 class CollisionComponent(Component):
-    """Handles collision detection."""
+    """Component for collision detection."""
     
-    def __init__(self, entity: 'Entity', radius: float = 1.0):
+    def __init__(self, entity: Entity, radius: float):
         super().__init__(entity)
         self.radius = radius
     
     def collides_with(self, other: 'CollisionComponent') -> bool:
         """Check for collision with another entity."""
-        transform = self.entity.get_component(TransformComponent)
-        other_transform = other.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('transform')
+        other_transform = other.entity.get_component('transform')
         
         if not transform or not other_transform:
             return False
-            
-        distance = np.linalg.norm(transform.position - other_transform.position)
-        return distance < (self.radius + other.radius)
-
-class Entity:
-    """Base class for all game entities using component system."""
-    
-    def __init__(self, game: 'Game'):
-        self.game = game
-        self.active = True
-        self._components: Dict[Type[Component], Component] = {}
-    
-    def add_component(self, component_class: Type[Component], *args, **kwargs) -> Component:
-        """Add a component to the entity."""
-        component = component_class(self, *args, **kwargs)
-        self._components[component_class] = component
-        return component
-    
-    def get_component(self, component_class: Type[Component]) -> Component:
-        """Get a component by its class."""
-        return self._components.get(component_class)
-    
-    def has_component(self, component_class: Type[Component]) -> bool:
-        """Check if entity has a specific component."""
-        return component_class in self._components
-    
-    def update(self, dt: float) -> None:
-        """Update all components."""
-        for component in self._components.values():
-            if component.active:
-                component.update(dt)
-    
-    def draw(self, surface: Any) -> None:
-        """Draw all components."""
-        render = self.get_component(RenderComponent)
-        if render and render.active:
-            render.draw(surface) 
+        
+        # Calculate distance between centers
+        distance = np.linalg.norm(
+            transform.position - other_transform.position
+        )
+        
+        # Check if circles overlap
+        return distance < (self.radius + other.radius) 
