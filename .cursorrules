@@ -1,0 +1,21 @@
+# RogueAsteroid Project Rules
+
+## Project Type
+- Python-based Asteroids Clone
+- Designer (User) / Engineer (AI) Collaboration
+
+## Core Rules
+1. Check DEVELOPMENT_LOG.md first when resuming
+2. Follow design-first approach
+3. Engineer implements only approved designs
+4. All changes documented in real-time
+
+## Documentation
+- PROJECT_CHARTER.md: Roles and methodology
+- GAME_DESIGN_DOCUMENT.md: Game specifications
+- DEVELOPMENT_LOG.md: Progress and tasks
+=> All documentation in docs/
+
+## Version Control
+- Use [YYYY-MM-DD HH:MM] format
+- Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW] 
