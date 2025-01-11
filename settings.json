@@ -1,0 +1,18 @@
+{
+    "controls": {
+        "scheme": "arrows",
+        "shoot_key": "space",
+        "thrust_key": "up",
+        "left_key": "left",
+        "right_key": "right"
+    },
+    "video": {
+        "fullscreen": false,
+        "show_fps": true
+    },
+    "audio": {
+        "sound_enabled": true,
+        "music_enabled": true,
+        "volume": 0.7
+    }
+}
