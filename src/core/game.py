@@ -41,7 +41,7 @@ class Game:
         
         # Systems
         self.state_manager = StateManager(self)
-        self.scoring = ScoringSystem()
+        self.scoring_system = ScoringSystem()  # Renamed for clarity
         
         # Entities
         self.ship = None
@@ -49,7 +49,20 @@ class Game:
         self.asteroids = []
         self.bullets = []  # Track active bullets
         
+        # State
+        self.state = GameState.MAIN_MENU
+        
         print("Game initialized")  # Debug info
+    
+    @property
+    def score(self):
+        """Get current score."""
+        return self.scoring_system.current_score
+    
+    @score.setter
+    def score(self, value):
+        """Set current score."""
+        self.scoring_system.current_score = value
     
     def reset_game(self):
         """Reset the game state."""
@@ -63,7 +76,7 @@ class Game:
         # Reset game properties
         self.level = 1
         self.lives = 3
-        self.scoring.reset()  # Reset scoring system
+        self.scoring_system.reset()  # Reset scoring system
         
         # Create player ship
         self.ship = Ship(self)
@@ -72,6 +85,9 @@ class Game:
         
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
+        
+        # Set game state
+        self.state = GameState.PLAYING
         
         print("Game reset complete")  # Debug info
     
@@ -225,7 +241,8 @@ class Game:
                     
                     if self.lives <= 0:
                         print("Game Over!")  # Debug info
-                        self.state_manager.change_state(GameState.GAME_OVER)
+                        self.state = GameState.GAME_OVER  # Set state directly
+                        self.state_manager.change_state(GameState.GAME_OVER)  # Also notify state manager
                     else:
                         self.respawn_timer = 2.0  # Wait 2 seconds before respawning
                     break

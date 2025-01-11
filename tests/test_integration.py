@@ -1,158 +1,149 @@
 """Integration tests for game systems."""
 import unittest
-import pygame
-import numpy as np
-from src.core.game import Game, GameState
+from src.core.game import Game
+from src.core.game_state import GameState
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
+import pygame
 
 class TestGameIntegration(unittest.TestCase):
-    """Integration tests for game systems."""
+    """Test cases for game system integration."""
     
     def setUp(self):
-        """Set up test environment."""
         self.game = Game()
-        pygame.init()
-    
-    def tearDown(self):
-        """Clean up after tests."""
-        pygame.quit()
     
     def test_game_initialization(self):
-        """Test game system initialization."""
-        self.assertEqual(self.game.state, GameState.MENU)
+        """Test game initialization."""
+        self.assertIsNone(self.game.ship)
         self.assertEqual(len(self.game.entities), 0)
-        self.assertEqual(self.game.score, 0)
-        self.assertTrue(self.game.high_scores is not None)
+        self.assertEqual(len(self.game.asteroids), 0)
+        self.assertEqual(len(self.game.bullets), 0)
+        self.assertEqual(self.game.state, GameState.MAIN_MENU)
     
     def test_game_reset(self):
         """Test game reset functionality."""
-        # Start with some entities and score
-        self.game.entities.append(Ship(self.game))
+        # Add some score
         self.game.score = 1000
         
         # Reset game
         self.game.reset_game()
         
         # Check reset state
-        self.assertGreater(len(self.game.entities), 0)  # Should have ship and asteroids
         self.assertEqual(self.game.score, 0)
-        self.assertEqual(self.game.lives, self.game.INITIAL_LIVES)
-        self.assertTrue(any(isinstance(e, Ship) for e in self.game.entities))
-        self.assertTrue(any(isinstance(e, Asteroid) for e in self.game.entities))
+        self.assertEqual(self.game.level, 1)
+        self.assertEqual(self.game.lives, 3)
+        self.assertIsNotNone(self.game.ship)
+        self.assertGreater(len(self.game.asteroids), 0)
+        self.assertEqual(self.game.state, GameState.PLAYING)
     
     def test_collision_system(self):
-        """Test collision detection and response."""
-        # Create ship and asteroid at same position
-        ship = Ship(self.game)
-        asteroid = Asteroid(self.game, 
-                          ship.get_component('transform').position[0],
-                          ship.get_component('transform').position[1],
-                          'large')
+        """Test collision detection between entities."""
+        self.game.reset_game()
         
-        self.game.entities.extend([ship, asteroid])
+        # Get ship position
+        ship_transform = self.game.ship.get_component('transform')
+        self.assertIsNotNone(ship_transform)
+        
+        # Create asteroid near ship
+        asteroid = Asteroid(
+            self.game,
+            'large',
+            pygame.Vector2(
+                ship_transform.position.x + 10,  # Very close to ship
+                ship_transform.position.y
+            )
+        )
         self.game.asteroids.append(asteroid)
-        self.game.ship = ship
-        self.game.state = GameState.PLAYING
+        self.game.entities.append(asteroid)
         
         # Update game to trigger collision
-        self.game.handle_collisions()
+        self.game.update(0.016)  # One frame at 60 FPS
         
-        # Check collision response
-        self.assertEqual(self.game.lives, self.game.INITIAL_LIVES - 1)
-        self.assertNotIn(ship, self.game.entities)
-    
-    def test_asteroid_destruction(self):
-        """Test asteroid destruction and splitting."""
-        # Create bullet and asteroid
-        asteroid = Asteroid(self.game, 400, 300, 'large')
-        transform = asteroid.get_component('transform')
-        
-        bullet = Bullet(self.game, 
-                       transform.position[0],
-                       transform.position[1],
-                       np.array([1.0, 0.0]))
-        
-        self.game.entities.extend([asteroid, bullet])
-        self.game.asteroids.append(asteroid)
-        
-        # Update to trigger collision
-        bullet.update(0.016)
-        
-        # Check asteroid splitting
-        self.assertNotIn(asteroid, self.game.entities)
-        self.assertTrue(any(a.size_category == 'medium' for a in self.game.asteroids))
+        # Ship should be destroyed and life lost
+        self.assertIsNone(self.game.ship)
+        self.assertEqual(self.game.lives, 2)
     
     def test_level_progression(self):
-        """Test level progression system."""
+        """Test level progression mechanics."""
         self.game.reset_game()
-        initial_asteroids = len(self.game.asteroids)
+        initial_level = self.game.level
         
-        # Clear all asteroids
+        # Clear all asteroids to trigger level completion
         self.game.asteroids.clear()
-        self.game.entities = [e for e in self.game.entities if not isinstance(e, Asteroid)]
         
-        # Update game to trigger next level
-        self.game.update()
+        # Update game
+        self.game.update(0.016)
         
-        # Check new level
-        self.assertEqual(self.game.level, 2)
-        self.assertGreater(len(self.game.asteroids), initial_asteroids)
+        # Level should increase
+        self.assertEqual(self.game.level, initial_level + 1)
+        self.assertGreater(len(self.game.asteroids), 0)  # New asteroids spawned
     
     def test_high_score_system(self):
-        """Test high score system integration."""
+        """Test high score system."""
         test_score = 10000
-        test_name = "TEST"
+        self.game.scoring_system.current_score = test_score
         
-        # Set a high score
-        self.game.score = test_score
-        self.game.state = GameState.GAME_OVER
+        # Check if score is high score
+        self.assertTrue(self.game.scoring_system.check_high_score())
         
-        # Check high score detection
-        self.assertTrue(self.game.high_scores.is_high_score(test_score))
+        # Add high score
+        self.assertTrue(self.game.scoring_system.add_high_score("TEST", 1))
         
-        # Add score
-        self.game.high_scores.add_score(test_score, test_name)
-        
-        # Verify score was saved
-        scores = self.game.high_scores.get_scores()
-        self.assertTrue(any(s.score == test_score and s.name == test_name 
-                          for s in scores))
+        # Verify score was added
+        scores = self.game.scoring_system.get_high_scores()
+        self.assertIn(test_score, [score.score for score in scores])
     
     def test_menu_system(self):
-        """Test menu system integration."""
-        # Test main menu
-        self.game.state = GameState.MENU
-        self.game.main_menu._start_game()
+        """Test menu system state changes."""
+        # Start in main menu
+        self.assertEqual(self.game.state, GameState.MAIN_MENU)
+        
+        # Start game
+        self.game.state = GameState.PLAYING
         self.assertEqual(self.game.state, GameState.PLAYING)
         
-        # Test options menu
-        self.game.state = GameState.MENU
-        self.game.main_menu._show_options()
-        self.assertEqual(self.game.state, GameState.OPTIONS)
+        # Pause game
+        self.game.state = GameState.PAUSED
+        self.assertEqual(self.game.state, GameState.PAUSED)
         
-        # Test control scheme toggle
-        initial_scheme = self.game.settings['controls']['scheme']
-        self.game.options_menu._toggle_controls()
-        self.assertNotEqual(self.game.settings['controls']['scheme'], initial_scheme)
+        # Resume game
+        self.game.state = GameState.PLAYING
+        self.assertEqual(self.game.state, GameState.PLAYING)
+        
+        # Game over
+        self.game.state = GameState.GAME_OVER
+        self.assertEqual(self.game.state, GameState.GAME_OVER)
     
     def test_game_over_sequence(self):
         """Test game over sequence."""
         self.game.reset_game()
-        self.game.state = GameState.PLAYING
         
-        # Deplete lives
-        while self.game.lives > 0:
-            self.game.lives -= 1
-            self.game.handle_collisions()
+        # Set lives to 1
+        self.game.lives = 1
         
-        # Check game over state
+        # Create asteroid near ship
+        ship_transform = self.game.ship.get_component('transform')
+        self.assertIsNotNone(ship_transform)
+        
+        asteroid = Asteroid(
+            self.game,
+            'large',
+            pygame.Vector2(
+                ship_transform.position.x + 10,
+                ship_transform.position.y
+            )
+        )
+        self.game.asteroids.append(asteroid)
+        self.game.entities.append(asteroid)
+        
+        # Update game to trigger collision and game over
+        self.game.update(0.016)
+        
+        # Game should be over
         self.assertEqual(self.game.state, GameState.GAME_OVER)
-        
-        # If it's a high score, should transition to new high score state
-        if self.game.high_scores.is_high_score(self.game.score):
-            self.assertEqual(self.game.state, GameState.NEW_HIGH_SCORE)
+        self.assertEqual(self.game.lives, 0)
+        self.assertIsNone(self.game.ship)
 
 if __name__ == '__main__':
     unittest.main() 

@@ -2,7 +2,7 @@
 import json
 import os
 from typing import List, Dict, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime
 
 @dataclass
@@ -12,6 +12,10 @@ class ScoreEntry:
     score: int
     level: int
     date: str
+    
+    def to_dict(self):
+        """Convert entry to dictionary for serialization."""
+        return asdict(self)
 
 class ScoringSystem:
     """Manages game scoring and high scores."""
@@ -202,7 +206,7 @@ class ScoringSystem:
             # Create a temporary file
             temp_file = self.save_file + '.tmp'
             with open(temp_file, 'w') as f:
-                json.dump([score._asdict() for score in self.high_scores], f)
+                json.dump([score.to_dict() for score in self.high_scores], f)
             
             # Rename temp file to actual file
             os.replace(temp_file, self.save_file)
