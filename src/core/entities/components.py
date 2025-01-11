@@ -169,14 +169,15 @@ class EffectComponent(Component):
 class ParticleComponent(Component):
     """Component for managing particle effects."""
     
-    def __init__(self, lifetime: float = 1.0, color: tuple = (255, 255, 255)):
+    def __init__(self, entity: Entity = None, lifetime: float = 1.0, color: tuple = (255, 255, 255)):
         """Initialize the particle component.
         
         Args:
+            entity: The entity this component belongs to
             lifetime: How long the particle lives in seconds
             color: RGB color tuple for the particle
         """
-        super().__init__()
+        super().__init__(entity)
         self.lifetime = lifetime
         self.time_remaining = lifetime
         self.color = color
