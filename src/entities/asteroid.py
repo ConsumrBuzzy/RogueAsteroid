@@ -106,35 +106,46 @@ class Asteroid(Entity):
         
         return vertices
     
-    def split(self) -> List['Asteroid']:
-        """Split the asteroid into smaller pieces."""
+    def split(self):
+        """Split asteroid into smaller pieces."""
         if self.size == 'small':
             return []
             
-        new_size = 'medium' if self.size == 'large' else 'small'
-        num_pieces = ASTEROID_SIZES[self.size]['splits']
-        new_asteroids = []
-        
+        # Get current properties
         transform = self.get_component('transform')
         if not transform:
             return []
             
-        for _ in range(num_pieces):
-            # Random velocity for new pieces
-            min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
-            speed = random.uniform(min_speed, max_speed)
-            angle = random.uniform(0, 2 * math.pi)
-            velocity = pygame.Vector2(
-                math.cos(angle) * speed,
-                math.sin(angle) * speed
-            )
-            
-            # Create new asteroid
-            new_asteroid = Asteroid(self.game, new_size, transform.position, velocity)
-            new_asteroids.append(new_asteroid)
+        # Determine new size
+        new_size = 'medium' if self.size == 'large' else 'small'
         
-        print(f"Split asteroid into {len(new_asteroids)} pieces")  # Debug info
-        return new_asteroids
+        # Create split pieces with angled velocities
+        pieces = []
+        split_angles = [-30, 30]  # Angles in degrees to split apart
+        
+        for angle in split_angles:
+            # Create new asteroid
+            piece = Asteroid(self.game, transform.position.x, transform.position.y, new_size)
+            
+            # Get piece's transform
+            piece_transform = piece.get_component('transform')
+            if not piece_transform:
+                continue
+                
+            # Calculate new velocity at an angle from original
+            current_speed = transform.velocity.length()
+            new_speed = current_speed * 1.2  # Slightly faster
+            
+            # Rotate the original velocity vector
+            new_velocity = pygame.Vector2(transform.velocity)
+            new_velocity = new_velocity.rotate(angle)
+            if new_velocity.length() > 0:
+                new_velocity = new_velocity.normalize() * new_speed
+            
+            piece_transform.velocity = new_velocity
+            pieces.append(piece)
+        
+        return pieces
 
     def update(self, dt: float):
         """Update the asteroid's state."""

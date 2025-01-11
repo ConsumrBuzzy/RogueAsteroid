@@ -71,22 +71,17 @@ class ScoringSystem:
         )
     
     def add_high_score(self, name: str, level: int) -> None:
-        """Add current score to high scores."""
-        entry = ScoreEntry(
-            name=name,
-            score=self.current_score,
-            level=level,
-            date=datetime.now().strftime('%Y-%m-%d')
-        )
+        """Add a new high score entry."""
+        new_entry = ScoreEntry(name=name, score=self.current_score, level=level)
+        self.high_scores.append(new_entry)
         
-        self.high_scores.append(entry)
+        # Sort by score (highest first) and keep only top 5
         self.high_scores.sort(key=lambda x: x.score, reverse=True)
+        self.high_scores = self.high_scores[:5]
         
-        # Keep only top 10 scores
-        if len(self.high_scores) > 10:
-            self.high_scores = self.high_scores[:10]
-            
+        # Save to file
         self.save_high_scores()
+        print(f"Added high score: {name} - {self.current_score} (Level {level})")  # Debug info
     
     def reset(self) -> None:
         """Reset current score and multiplier."""

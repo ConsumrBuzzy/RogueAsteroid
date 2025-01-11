@@ -138,6 +138,8 @@ class Game:
         # Check if we need to spawn more asteroids
         if len(self.asteroids) == 0:
             self.level += 1
+            print(f"Level {self.level} completed! Awarding extra life.")  # Debug info
+            self.lives = min(self.lives + 1, 5)  # Award life, cap at 5
             self.spawn_asteroid_wave()
     
     def respawn_ship(self):
