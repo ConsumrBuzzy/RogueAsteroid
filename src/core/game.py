@@ -39,10 +39,14 @@ class Game:
         # Systems
         self.state_manager = StateManager(self)
         self.scoring = ScoringSystem()
+        
+        # Initialize sound system
         try:
-            pygame.mixer.init()
-            self.sound = SoundManager()  # Initialize sound manager
-        except pygame.error as e:
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+            self.sound = SoundManager()
+            print("Sound system initialized successfully")  # Debug info
+        except Exception as e:
             print(f"Warning: Sound system initialization failed: {e}")
             self.sound = None
         
