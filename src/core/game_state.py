@@ -49,11 +49,7 @@ class StateManager:
     
     def change_state(self, new_state: GameState) -> None:
         """Change to a new game state."""
-        print(f"\nChanging state from {self.current_state} to {new_state}")  # Debug info
-        
-        # Don't change if already in this state
         if new_state == self.current_state:
-            print("Already in this state")  # Debug info
             return
             
         self.previous_state = self.current_state
@@ -61,18 +57,13 @@ class StateManager:
         
         # Handle state entry actions
         if new_state == GameState.PLAYING:
-            print("Entering PLAYING state")  # Debug info
             if self.previous_state == GameState.MAIN_MENU:
-                print("Resetting game from main menu")  # Debug info
                 self.game.reset_game()
             elif self.previous_state == GameState.PAUSED:
-                print("Unpausing game")  # Debug info
-                # Just unpause, don't reset
+                # Just unpause
                 pass
         elif new_state == GameState.HIGH_SCORE_ENTRY:
             self.player_name = ""
-        
-        print(f"State change complete. Current state: {self.current_state}")  # Debug info
     
     def handle_input(self, event: pygame.event.Event) -> bool:
         """Handle input for current state. Returns True if game should quit."""
@@ -94,6 +85,9 @@ class StateManager:
                     return True
                 elif self.current_state == GameState.HIGH_SCORE:
                     self.change_state(GameState.MAIN_MENU)
+            
+            elif event.key == pygame.K_p and self.current_state == GameState.PLAYING:
+                self.change_state(GameState.PAUSED)
             
             elif event.key == pygame.K_r and self.current_state == GameState.PAUSED:
                 self.change_state(GameState.PLAYING)
@@ -134,7 +128,7 @@ class StateManager:
         elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
             option, values = self.options[self.selected_option]
             if values:  # If this option has multiple values
-                current_value = self.game.settings.get('controls', 'scheme').lower()
+                current_value = self.game.settings['controls']['scheme'].lower()
                 new_value = values[1].lower() if current_value == values[0].lower() else values[0].lower()
                 self.game.settings['controls']['scheme'] = new_value
     
@@ -158,7 +152,6 @@ class StateManager:
         
         # Check for level completion
         if len(self.game.asteroids) == 0:  # Only progress if all asteroids are destroyed
-            print(f"Level {self.game.level} completed")  # Debug info
             self.game.level += 1
             self.game.spawn_asteroid_wave()
     
@@ -195,6 +188,10 @@ class StateManager:
             self._draw_options(screen)
         elif self.current_state == GameState.GAME_OVER:
             self._draw_game_over(screen)
+        elif self.current_state == GameState.HIGH_SCORE:
+            self._draw_high_scores(screen)
+        elif self.current_state == GameState.HIGH_SCORE_ENTRY:
+            self._draw_high_score_entry(screen)
     
     def _draw_main_menu(self, screen: pygame.Surface) -> None:
         """Draw main menu screen."""
@@ -228,7 +225,7 @@ class StateManager:
             color = (255, 255, 0) if i == self.selected_option else (255, 255, 255)
             
             if values:  # Option with multiple values
-                current_value = self.game.settings.get('controls', 'scheme')
+                current_value = self.game.settings['controls']['scheme']
                 text = f"{option}: < {current_value} >"
             else:  # Simple option (like Back)
                 text = option
@@ -278,6 +275,68 @@ class StateManager:
         continue_rect = continue_text.get_rect(center=(self.game.width/2, self.game.height/2 + 100))
         screen.blit(continue_text, continue_rect)
     
+    def _draw_high_scores(self, screen: pygame.Surface) -> None:
+        """Draw high scores screen."""
+        # Title
+        title = self.fonts['large'].render('HIGH SCORES', True, (255, 255, 255))
+        title_rect = title.get_rect(center=(self.game.width/2, self.game.height/4))
+        screen.blit(title, title_rect)
+        
+        # High scores
+        scores = self.game.scoring.get_high_scores()
+        start_y = self.game.height/2 - len(scores) * 20
+        
+        for i, score in enumerate(scores):
+            text = self.fonts['medium'].render(f"{score['name']}: {score['score']}", True, (255, 255, 255))
+            rect = text.get_rect(center=(self.game.width/2, start_y + i * 40))
+            screen.blit(text, rect)
+        
+        # Back instruction
+        back_text = self.fonts['small'].render('Press ESC to return', True, (255, 255, 255))
+        back_rect = back_text.get_rect(center=(self.game.width/2, self.game.height - 50))
+        screen.blit(back_text, back_rect)
+
+    def _draw_high_score_entry(self, screen: pygame.Surface) -> None:
+        """Draw high score entry screen."""
+        # Title
+        title = self.fonts['large'].render('NEW HIGH SCORE!', True, (255, 255, 0))
+        title_rect = title.get_rect(center=(self.game.width/2, self.game.height/3))
+        screen.blit(title, title_rect)
+        
+        # Score
+        score_text = self.fonts['medium'].render(f'Score: {self.game.score}', True, (255, 255, 255))
+        score_rect = score_text.get_rect(center=(self.game.width/2, self.game.height/2))
+        screen.blit(score_text, score_rect)
+        
+        # Name entry
+        name_text = self.fonts['medium'].render(f'Name: {self.player_name}_', True, (255, 255, 255))
+        name_rect = name_text.get_rect(center=(self.game.width/2, self.game.height/2 + 50))
+        screen.blit(name_text, name_rect)
+        
+        # Instructions
+        instr_text = self.fonts['small'].render('Press ENTER when done', True, (255, 255, 255))
+        instr_rect = instr_text.get_rect(center=(self.game.width/2, self.game.height/2 + 100))
+        screen.blit(instr_text, instr_rect)
+
+    def _draw_game(self, screen: pygame.Surface) -> None:
+        """Draw game screen."""
+        # Draw all entities
+        for entity in self.game.entities:
+            if not entity:
+                continue
+            
+            render = entity.get_component('render')
+            effects = entity.get_component('effects')
+            
+            if render and render.visible:
+                render.draw(screen)
+            
+            if effects:
+                effects.draw(screen)
+        
+        # Draw HUD
+        self._draw_hud(screen)
+
     def _draw_hud(self, screen: pygame.Surface) -> None:
         """Draw heads-up display."""
         # Score and multiplier
@@ -295,39 +354,3 @@ class StateManager:
         # Level
         level_text = self.fonts['small'].render(f'Level: {self.game.level}', True, (255, 255, 255))
         screen.blit(level_text, (self.game.width - 120, 10)) 
-    
-    def _draw_game(self, screen: pygame.Surface) -> None:
-        """Draw game screen."""
-        print("\nDrawing game screen...")  # Debug info
-        print(f"Number of entities: {len(self.game.entities)}")  # Debug info
-        
-        # Draw all entities
-        for entity in self.game.entities:
-            if not entity:
-                print("Found null entity!")  # Debug info
-                continue
-            
-            print(f"Drawing entity: {entity.__class__.__name__}")  # Debug info
-            
-            render = entity.get_component('render')
-            effects = entity.get_component('effects')
-            
-            if not render:
-                print(f"No render component for {entity.__class__.__name__}")  # Debug info
-                continue
-            
-            print(f"Render visibility: {render.visible}")  # Debug info
-            print(f"Vertices count: {len(render.vertices)}")  # Debug info
-            
-            # Draw main entity
-            if render.visible:
-                render.draw(screen)
-            
-            # Draw effects
-            if effects:
-                effects.draw(screen)
-            else:
-                print(f"Warning: effects component not found in {entity.__class__.__name__}")  # Debug info
-        
-        # Draw HUD
-        self._draw_hud(screen) 
