@@ -4,7 +4,11 @@ from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
-from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.constants import (
+    WINDOW_WIDTH, 
+    WINDOW_HEIGHT,
+    SHIP_INVULNERABLE_TIME
+)
 
 class Game:
     def __init__(self):
@@ -107,7 +111,7 @@ class Game:
         self.ship = Ship(self)
         self.entities.append(self.ship)
         self.respawn_timer = 0.0
-        print("Ship respawned")  # Debug info
+        print(f"Ship respawned with {SHIP_INVULNERABLE_TIME} seconds invulnerability")  # Debug info
     
     def handle_collisions(self):
         """Handle collisions between entities."""
