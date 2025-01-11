@@ -135,6 +135,7 @@ See `docs/PROJECT_CHARTER.md` for development guidelines.
 - Original Asteroids game by Atari
 - Pygame community
 - All contributors
+- Robert F Dugger
 
 ---
 Note: For detailed technical information, see the docs/ directory. 
