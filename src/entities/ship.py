@@ -152,10 +152,9 @@ class Ship(Entity):
             force = direction * SHIP_ACCELERATION * power
             physics.apply_force(force)
             
-            # Activate thrust effect and sound only for forward thrust
+            # Activate thrust effect
             if effects and power > 0:
                 effects.set_effect_active('thrust', True)
-                self.game.sound.play_sound('thrust')
     
     def _rotate_left(self) -> None:
         """Rotate ship counter-clockwise."""
@@ -202,9 +201,6 @@ class Ship(Entity):
         # Add to tracking lists
         self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
-        
-        # Play sound effect
-        self.game.sound.play_sound('shoot')
         
         print("Bullet fired")  # Debug info
     

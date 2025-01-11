@@ -34,15 +34,16 @@ class Game:
             'controls': 'arrows'  # Default to arrow keys
         }
         
+        # Initialize scoring system first
+        self.scoring = ScoringSystem()  # This is the attribute HUD looks for
+        self.scoring_system = self.scoring  # Keep this for compatibility
+        print("Scoring system initialized")
+        
         # Initialize state management
         self.state_manager = StateManager(self)
         print("Initializing StateManager")
         self.state = GameState.MAIN_MENU
         print(f"Initial state: {self.state}")
-        
-        # Initialize scoring system
-        self.scoring_system = ScoringSystem()
-        print("Scoring system initialized")
         
         # Initialize game properties
         self.dt = 0
@@ -62,12 +63,12 @@ class Game:
     @property
     def score(self):
         """Get current score."""
-        return self.scoring_system.current_score
+        return self.scoring.current_score
     
     @score.setter
     def score(self, value):
         """Set current score."""
-        self.scoring_system.current_score = value
+        self.scoring.current_score = value
     
     def reset_game(self):
         """Reset the game state."""
