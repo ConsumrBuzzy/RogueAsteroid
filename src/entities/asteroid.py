@@ -18,8 +18,7 @@ class Asteroid(Entity):
     
     def __init__(self, game, size='large', position=None, velocity=None):
         """Initialize the asteroid with the given size and optional position/velocity."""
-        super().__init__()
-        self.game = game
+        super().__init__(game)
         self.size = size
         self._init_components(position, velocity)
     

@@ -60,6 +60,12 @@ Current Phase: Core Gameplay Implementation
 
 ## Log Entries
 
+[2024-01-11 12:36PM] [FIX] Fixed asteroid initialization:
+- Corrected Entity initialization in Asteroid class
+- Fixed game parameter passing to base class
+- Removed redundant game attribute assignment
+Next: Test asteroid spawning and movement
+
 [2024-01-11 12:35PM] [FIX] Fixed asteroid spawning:
 - Added spawn_random class method to Asteroid
 - Implemented safe distance spawning from ship
