@@ -5,7 +5,9 @@ from .constants import *
 from .entity import Entity
 from .settings import Settings
 from .menu import MainMenu, OptionsMenu
+from .spawner import Spawner
 from entities.ship import Ship
+from entities.asteroid import Asteroid
 
 class Game:
     """Main game class handling the game loop and state management."""
@@ -36,6 +38,12 @@ class Game:
         
         # Create player ship
         self.player = None
+        
+        # Create spawner
+        self.spawner = Spawner(self)
+        self.wave_transition = False
+        self.wave_transition_timer = 0.0
+        self.WAVE_TRANSITION_DELAY = 2.0  # seconds
     
     def run(self) -> None:
         """Main game loop."""
@@ -83,6 +91,21 @@ class Game:
     
     def _update(self) -> None:
         """Update game state."""
+        # Update spawner
+        if not self.wave_transition:
+            self.spawner.update(self.dt)
+            
+            # Check for wave completion
+            if self.spawner.check_wave_complete():
+                self.wave_transition = True
+                self.wave_transition_timer = 0.0
+        else:
+            # Handle wave transition
+            self.wave_transition_timer += self.dt
+            if self.wave_transition_timer >= self.WAVE_TRANSITION_DELAY:
+                self.wave_transition = False
+                self.spawner.advance_wave()
+        
         # Update all entities
         for entity in self.entities:
             if entity.active:
@@ -103,9 +126,26 @@ class Game:
             for j in range(i + 1, n):
                 if not self.entities[j].active:
                     continue
-                if self.entities[i].collides_with(self.entities[j]):
-                    # Handle collision (to be implemented in derived classes)
-                    pass
+                    
+                entity1 = self.entities[i]
+                entity2 = self.entities[j]
+                
+                if entity1.collides_with(entity2):
+                    # Handle ship-asteroid collisions
+                    if isinstance(entity1, Ship) and isinstance(entity2, Asteroid):
+                        self._handle_ship_collision(entity1, entity2)
+                    elif isinstance(entity1, Asteroid) and isinstance(entity2, Ship):
+                        self._handle_ship_collision(entity2, entity1)
+    
+    def _handle_ship_collision(self, ship: Ship, asteroid: Asteroid) -> None:
+        """Handle collision between ship and asteroid."""
+        if self.lives > 0:
+            self.lives -= 1
+            ship.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+            ship.velocity = np.array([0.0, 0.0])
+            ship.rotation = 0.0
+        else:
+            self.show_main_menu()
     
     def _render(self) -> None:
         """Render the game state."""
@@ -119,12 +159,46 @@ class Game:
             for entity in self.entities:
                 if entity.active:
                     entity.draw(self.screen)
+            
+            # Draw wave transition
+            if self.wave_transition:
+                font = pygame.font.Font(None, 64)
+                text = f"Wave {self.spawner.wave + 1}"
+                text_surface = font.render(text, True, WHITE)
+                text_rect = text_surface.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
+                self.screen.blit(text_surface, text_rect)
+            
+            # Draw HUD
+            self._draw_hud()
         
         # Update display
         pygame.display.flip()
     
+    def _draw_hud(self) -> None:
+        """Draw heads-up display."""
+        font = pygame.font.Font(None, 36)
+        
+        # Draw score
+        score_text = f"Score: {self.score}"
+        score_surface = font.render(score_text, True, WHITE)
+        self.screen.blit(score_surface, (10, 10))
+        
+        # Draw lives
+        lives_text = f"Lives: {self.lives}"
+        lives_surface = font.render(lives_text, True, WHITE)
+        self.screen.blit(lives_surface, (10, 50))
+        
+        # Draw wave
+        wave_text = f"Wave: {self.spawner.wave}"
+        wave_surface = font.render(wave_text, True, WHITE)
+        wave_rect = wave_surface.get_rect()
+        wave_rect.right = WINDOW_WIDTH - 10
+        wave_rect.top = 10
+        self.screen.blit(wave_surface, wave_rect)
+    
     def add_entity(self, entity: Entity) -> None:
         """Add an entity to the game."""
+        entity.game = self  # Set reference to game
         self.entities.append(entity)
     
     def remove_entity(self, entity: Entity) -> None:
@@ -150,6 +224,14 @@ class Game:
         self.score = 0
         self.lives = INITIAL_LIVES
         
+        # Reset wave system
+        self.spawner = Spawner(self)
+        self.wave_transition = False
+        self.wave_transition_timer = 0.0
+        
         # Create player
         self.player = Ship()
-        self.add_entity(self.player) 
+        self.add_entity(self.player)
+        
+        # Start first wave
+        self.spawner.start_wave() 
