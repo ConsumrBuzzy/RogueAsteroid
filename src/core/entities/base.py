@@ -85,9 +85,13 @@ class RenderComponent(Component):
             screen_vertices.append((int(screen_x), int(screen_y)))
         
         # Draw polygon
-        if len(screen_vertices) >= 3:
-            import pygame  # Import here to avoid circular import
-            pygame.draw.polygon(surface, self.color, screen_vertices)
+        if len(screen_vertices) >= 2:  # Allow lines (2 vertices) and polygons (3+ vertices)
+            if len(screen_vertices) == 2:
+                # Draw line for bullets
+                pygame.draw.line(surface, self.color, screen_vertices[0], screen_vertices[1])
+            else:
+                # Draw polygon for ship and asteroids
+                pygame.draw.polygon(surface, self.color, screen_vertices)
 
 class CollisionComponent(Component):
     """Component for collision detection."""

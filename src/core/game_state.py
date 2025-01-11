@@ -172,9 +172,17 @@ class StateManager:
         """Draw game screen."""
         # Draw all entities
         for entity in self.game.entities:
-            render = entity.get_component('render')
-            if render:
-                render.draw(screen)
+            if entity:  # Ensure entity exists
+                render = entity.get_component('render')
+                effects = entity.get_component('effects')
+                
+                # Draw main entity
+                if render and render.visible:
+                    render.draw(screen)
+                
+                # Draw effects
+                if effects:
+                    effects.draw(screen)
         
         # Draw HUD
         self._draw_hud(screen)

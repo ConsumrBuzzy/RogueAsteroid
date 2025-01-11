@@ -68,8 +68,21 @@ class Game:
         self.ship = Ship(self)
         self.entities.append(self.ship)
         
+        # Ensure ship is properly initialized
+        ship_transform = self.ship.get_component('transform')
+        ship_render = self.ship.get_component('render')
+        
+        if ship_transform and ship_render:
+            ship_transform.position = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
+            ship_transform.velocity = np.array([0.0, 0.0])
+            ship_render.visible = True
+        
         # Spawn initial asteroids
         self.spawn_asteroid_wave()
+        
+        # Update state manager
+        if hasattr(self, 'state_manager'):
+            self.state_manager.change_state(GameState.PLAYING)
     
     def spawn_asteroid_wave(self) -> None:
         """Spawn a wave of asteroids based on current level."""
