@@ -10,9 +10,9 @@ from src.core.components.base import (
     RenderComponent,
     CollisionComponent,
     InputComponent,
-    ScreenWrapComponent,
-    ComponentRegistry
+    ScreenWrapComponent
 )
+from src.core.components import ComponentRegistry
 from src.core.components.physics import PhysicsComponent
 from src.core.game import Game
 from src.entities.ship import Ship
