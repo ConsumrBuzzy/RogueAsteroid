@@ -1,6 +1,13 @@
 """Unit tests for additional game components."""
+import os
+import sys
 import unittest
 import pygame
+
+# Add project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+
 from src.core.entities.base import Entity, TransformComponent
 from src.core.entities.components import (
     ScreenWrapComponent,
