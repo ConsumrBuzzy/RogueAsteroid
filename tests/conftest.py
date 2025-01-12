@@ -1,58 +1,67 @@
-"""Shared test fixtures and configuration."""
+"""Common test fixtures and configuration."""
+import os
 import pytest
 import pygame
-from src.core.entities.base import Entity, TransformComponent
+import tempfile
+from typing import Generator
+from pathlib import Path
 
-@pytest.fixture(scope="session", autouse=True)
-def pygame_setup():
-    """Initialize pygame for all tests."""
-    pygame.init()
-    if not pygame.font.get_init():
-        pygame.font.init()
-    if not pygame.display.get_init():
-        pygame.display.init()
-    yield
-    pygame.quit()
+# Initialize pygame for tests that need it
+pygame.init()
 
-@pytest.fixture
-def mock_game():
-    """Fixture providing a mock game instance."""
-    class MockGame:
-        def __init__(self):
-            self.width = 800
-            self.height = 600
-            self.dt = 0.016  # 60 FPS
-            self.settings = {
-                'controls': {'scheme': 'arrows'},
-                'graphics': {'fullscreen': False, 'vsync': True},
-                'audio': {'music_volume': 0.7, 'sfx_volume': 1.0}
-            }
-            self.running = True
-            self.paused = False
-    return MockGame()
-
-@pytest.fixture
-def base_entity(mock_game):
-    """Fixture providing a base entity with transform component."""
-    entity = Entity(mock_game)
-    transform = entity.add_component(TransformComponent)
-    transform.position = pygame.Vector2(0.0, 0.0)
-    transform.velocity = pygame.Vector2(0.0, 0.0)
-    transform.rotation = 0.0
-    return entity, transform
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def screen():
-    """Fixture providing a pygame screen surface."""
-    return pygame.Surface((800, 600))
+    """Create a pygame screen for tests."""
+    return pygame.display.set_mode((800, 600))
 
 @pytest.fixture
-def clock():
-    """Fixture providing a pygame clock."""
-    return pygame.time.Clock()
+def temp_data_dir() -> Generator[Path, None, None]:
+    """Create a temporary directory for test data files."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        yield Path(temp_dir)
 
 @pytest.fixture
-def event_queue():
-    """Fixture providing an empty event queue."""
-    pygame.event.clear()
-    return [] 
+def mock_game(screen):
+    """Create a mock game instance for testing."""
+    from src.core.game import Game
+    game = Game()
+    game.screen = screen
+    return game
+
+@pytest.fixture
+def mock_audio():
+    """Create a mock audio manager for testing."""
+    from src.core.services import AudioManager
+    audio = AudioManager()
+    # Disable actual sound playing in tests
+    audio.play_sound = lambda *args, **kwargs: None
+    return audio
+
+@pytest.fixture
+def mock_scoring(temp_data_dir):
+    """Create a mock scoring system for testing."""
+    from src.core.services import ScoringSystem
+    save_file = temp_data_dir / "test_scores.json"
+    return ScoringSystem(str(save_file))
+
+@pytest.fixture
+def mock_particle_system(mock_game):
+    """Create a mock particle system for testing."""
+    from src.core.systems import ParticleSystem
+    return ParticleSystem(mock_game)
+
+@pytest.fixture
+def mock_spawner(mock_game):
+    """Create a mock spawner system for testing."""
+    from src.core.systems import Spawner
+    return Spawner(mock_game)
+
+def pytest_configure(config):
+    """Configure test environment."""
+    # Add custom markers
+    config.addinivalue_line("markers", "services: Tests for core game services")
+    config.addinivalue_line("markers", "systems: Tests for game systems")
+    config.addinivalue_line("markers", "entities: Tests for game entities")
+    config.addinivalue_line("markers", "ui: Tests for user interface components")
+    config.addinivalue_line("markers", "integration: Tests for component integration")
+    config.addinivalue_line("markers", "performance: Tests for performance benchmarks") 
