@@ -34,6 +34,7 @@ class StateService:
         self._valid_transitions: Dict[GameState, Set[GameState]] = {}
         self._subscribers: Dict[str, List[Callable]] = {}
         self._logger = LoggingService()
+        self._ready = False  # New flag to track full initialization
         
         # Initialize valid transitions
         self._setup_valid_transitions()
@@ -42,6 +43,7 @@ class StateService:
         self._current_state = GameState.MAIN_MENU
         self._logger.log("StateService initialized", "INFO")
         self._initialized = True
+        self._ready = True  # Mark as ready after full initialization
         
     def _setup_valid_transitions(self) -> None:
         """Setup valid state transitions."""
@@ -156,9 +158,12 @@ class StateService:
             new_state: State to change to
             
         Raises:
-            ValueError: If new_state is invalid
+            ValueError: If new_state is invalid or service not ready
             RuntimeError: If state transition fails
         """
+        if not self._ready:
+            raise ValueError("StateService not ready for state changes")
+            
         if not isinstance(new_state, GameState):
             raise ValueError(f"Invalid state type: {type(new_state)}")
             
@@ -278,6 +283,10 @@ class StateService:
             
     def cleanup(self) -> None:
         """Clean up the state service."""
+        if not self._ready:
+            self._logger.log("Cleanup called before service was ready", "WARNING")
+            return
+            
         # Clear subscribers
         self._subscribers.clear()
         
@@ -288,6 +297,7 @@ class StateService:
         self._current_state = None
         self._previous_state = None
         
+        self._ready = False  # Mark as not ready after cleanup
         self._logger.log("StateService cleaned up", "INFO")
         print("StateService cleaned up")
 
@@ -328,4 +338,12 @@ class StateService:
         """
         # This method is now deprecated in favor of direct notification
         # Kept for backward compatibility
-        pass 
+        pass
+
+    def is_ready(self) -> bool:
+        """Check if service is fully initialized and ready.
+        
+        Returns:
+            True if service is ready for use
+        """
+        return self._ready
