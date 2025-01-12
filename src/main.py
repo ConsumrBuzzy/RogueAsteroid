@@ -7,9 +7,9 @@ import pygame
 # Add src directory to Python path for proper imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.core.game import Game
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 from src.core.components import ComponentRegistry
+from src.core.services import ServiceManager
 
 def init_pygame() -> bool:
     """Initialize pygame and its subsystems.
@@ -85,6 +85,37 @@ def init_component_system() -> bool:
         traceback.print_exc()
         return False
 
+def init_services(screen: pygame.Surface) -> bool:
+    """Initialize game services.
+    
+    Args:
+        screen: Pygame surface to render to
+        
+    Returns:
+        bool: True if initialization successful, False otherwise
+    """
+    try:
+        # Initialize service manager
+        service_manager = ServiceManager()
+        
+        # Default settings
+        settings = {
+            'window': {
+                'width': WINDOW_WIDTH,
+                'height': WINDOW_HEIGHT
+            },
+            'controls': 'arrows'  # Default to arrow keys
+        }
+        
+        # Initialize all services
+        service_manager.init_services(screen, settings)
+        return True
+        
+    except Exception as e:
+        print(f"Error initializing services: {e}", file=sys.stderr)
+        traceback.print_exc()
+        return False
+
 def main():
     """Entry point for the game."""
     try:
@@ -96,11 +127,46 @@ def main():
         if not init_component_system():
             print("Failed to initialize component system. Exiting.", file=sys.stderr)
             return
+            
+        # Get screen surface
+        screen = pygame.display.get_surface()
         
-        # Create and run game
-        game = Game()
+        # Initialize services
+        if not init_services(screen):
+            print("Failed to initialize services. Exiting.", file=sys.stderr)
+            return
+            
+        # Get game service and start game loop
+        service_manager = ServiceManager()
+        game_service = service_manager.get_service('game')
+        if not game_service:
+            print("Failed to get game service. Exiting.", file=sys.stderr)
+            return
+            
         print("Starting game loop")
-        game.run()
+        game_service.start()
+        
+        # Main game loop
+        clock = pygame.time.Clock()
+        while game_service.is_running():
+            # Time
+            dt = clock.tick(60) / 1000.0
+            
+            # Process events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_service.stop()
+                else:
+                    input_service = service_manager.get_service('input')
+                    if input_service:
+                        input_service.handle_event(event)
+            
+            # Update and render
+            if not game_service.is_paused():
+                game_service.update(dt)
+            game_service.draw()
+            
+        print("Game loop ended")
         
     except KeyboardInterrupt:
         print("\nGame terminated by user")
@@ -111,6 +177,11 @@ def main():
     finally:
         print("Cleaning up...")
         try:
+            # Clean up services
+            service_manager = ServiceManager()
+            service_manager.cleanup()
+            
+            # Quit pygame
             pygame.quit()
         except Exception as e:
             print(f"Error during cleanup: {e}", file=sys.stderr)
