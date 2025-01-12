@@ -4,36 +4,35 @@ import pygame
 from src.core.game_state import GameState
 from src.core.game import Game
 
-@pytest.fixture(scope="session", autouse=True)
-def pygame_init():
-    """Initialize pygame for all tests."""
-    pygame.init()
-    if not pygame.font.get_init():
-        pygame.font.init()
-    if not pygame.display.get_init():
-        pygame.display.init()
-    yield
-    pygame.quit()
-
 @pytest.fixture
-def game():
+def game(mock_game, screen):
     """Create a game instance for testing."""
     game = Game()
+    game.screen = screen
     yield game
-    # Clean up game resources
-    if hasattr(game, 'screen'):
-        pygame.display.quit()
 
+@pytest.mark.game
 class TestGameState:
+    """Test cases for game state management."""
+    
     def test_state_transitions(self, game):
-        """Test game state transitions"""
+        """Test game state transitions."""
+        # Test initial state
         assert game.state_manager.current_state == GameState.MAIN_MENU
+        
+        # Test playing state
         game.state_manager.change_state(GameState.PLAYING)
         assert game.state_manager.current_state == GameState.PLAYING
+        
+        # Test pause state
         game.state_manager.change_state(GameState.PAUSED)
         assert game.state_manager.current_state == GameState.PAUSED
+        
+        # Test resume state
         game.state_manager.change_state(GameState.PLAYING)
         assert game.state_manager.current_state == GameState.PLAYING
+        
+        # Test game over state
         game.state_manager.change_state(GameState.GAME_OVER)
         assert game.state_manager.current_state == GameState.GAME_OVER
     
@@ -43,10 +42,25 @@ class TestGameState:
         # Try to change to same state
         game.state_manager.change_state(initial_state)
         assert game.state_manager.current_state == initial_state
+        
+        # Try to transition to invalid state
+        with pytest.raises(ValueError):
+            game.state_manager.change_state("INVALID_STATE")
     
     def test_state_history(self, game):
         """Test that state history is maintained."""
-        game.state_manager.change_state(GameState.PLAYING)
-        game.state_manager.change_state(GameState.PAUSED)
-        game.state_manager.change_state(GameState.PLAYING)
-        assert game.state_manager.previous_state == GameState.PAUSED 
+        # Record state transitions
+        transitions = [
+            GameState.PLAYING,
+            GameState.PAUSED,
+            GameState.PLAYING,
+            GameState.GAME_OVER
+        ]
+        
+        # Execute transitions
+        for state in transitions:
+            game.state_manager.change_state(state)
+            
+        # Verify history
+        assert game.state_manager.current_state == GameState.GAME_OVER
+        assert game.state_manager.previous_state == GameState.PLAYING 

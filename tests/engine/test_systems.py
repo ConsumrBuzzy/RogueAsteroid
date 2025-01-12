@@ -7,218 +7,152 @@ from src.core.scoring import ScoringSystem
 from src.core.game import Game
 from src.core.constants import *
 
-@pytest.fixture(scope="session", autouse=True)
-def pygame_init():
-    """Initialize pygame for all tests."""
-    pygame.init()
-    if not pygame.font.get_init():
-        pygame.font.init()
-    if not pygame.display.get_init():
-        pygame.display.init()
-    yield
-    pygame.quit()
-
 @pytest.fixture
-def game():
+def game(mock_game, screen):
     """Create a game instance for testing."""
     game = Game()
+    game.screen = screen
     yield game
-    # Clean up game resources
-    if hasattr(game, 'screen'):
-        pygame.display.quit()
 
-class TestGameState:
-    def test_state_transitions(self, game):
-        """Test game state transitions"""
-        assert game.state_manager.current_state == GameState.MAIN_MENU
-        game.state_manager.change_state(GameState.PLAYING)
-        assert game.state_manager.current_state == GameState.PLAYING
-        game.state_manager.change_state(GameState.PAUSED)
-        assert game.state_manager.current_state == GameState.PAUSED
-        game.state_manager.change_state(GameState.PLAYING)
-        assert game.state_manager.current_state == GameState.PLAYING
-        game.state_manager.change_state(GameState.GAME_OVER)
-        assert game.state_manager.current_state == GameState.GAME_OVER
+@pytest.fixture
+def system_setup(game):
+    """Setup a fresh game state for system testing."""
+    game.new_game()
+    return game
 
-class TestScoreSystem:
-    def test_score_tracking(self, game):
-        """Test basic score functionality"""
-        initial_score = game.scoring.current_score
-        game.scoring.add_points(100)
-        assert game.scoring.current_score > initial_score
+@pytest.mark.engine
+class TestGameSystems:
+    """Test cases for core game systems."""
     
-    def test_high_score_tracking(self, game):
-        """Test that adding points correctly updates high score."""
-        # Start new game and reset scoring
-        game.new_game()
-        game.scoring.reset()
+    def test_game_initialization(self, game, system_setup):
+        """Test game initialization."""
+        # Test screen setup
+        assert game.screen is not None, "Game screen should be initialized"
+        assert game.width == WINDOW_WIDTH, "Game width should match window width"
+        assert game.height == WINDOW_HEIGHT, "Game height should match window height"
         
-        # Clear existing high scores
-        game.scoring.high_scores = []
+        # Test system initialization
+        assert game.state_manager is not None, "State manager should be initialized"
+        assert game.scoring is not None, "Scoring system should be initialized"
+        assert game.entities is not None, "Entity system should be initialized"
         
-        # Add points and verify score
-        game.scoring.add_points(10000)
-        assert game.scoring.current_score == 10000
-        
-        # Should be a high score since we cleared the list
-        assert game.scoring.check_high_score()
-        
-        # Add high score and verify
-        assert game.scoring.add_high_score("TEST", 1)
-        assert len(game.scoring.high_scores) == 1
-        assert game.scoring.high_scores[0].score == 10000
-        assert game.scoring.high_scores[0].name == "TEST"
-        
-    def test_score_reset(self, game):
-        """Test score reset functionality"""
-        game.scoring.add_points(500)
-        game.scoring.reset()
-        assert game.scoring.current_score == 0
-        
-    def test_high_score_persistence(self, game):
-        """Test high score saving and loading"""
-        game.scoring.add_points(10000)
-        name = "TEST"
-        level = 1
-        game.scoring.add_high_score(name, level)
-        high_scores = game.scoring.get_high_scores()
-        assert len(high_scores) > 0
-        assert high_scores[0].score >= 10000
-        assert high_scores[0].name == name
-
-class TestGame:
-    def test_game_initialization(self, game):
-        """Test game initialization"""
-        assert game.screen is not None
-        assert game.width == WINDOW_WIDTH
-        assert game.height == WINDOW_HEIGHT
+        # Test initial game state
+        assert game.level == 1, "Game should start at level 1"
+        assert game.lives == STARTING_LIVES, "Game should start with correct lives"
+        assert len(game.entities) > 0, "Game should have initial entities"
     
-    def test_game_reset(self, game):
-        """Test game reset functionality"""
-        game.new_game()  # First start a game
-        game.scoring.add_points(1000)  # Add some score
-        game.reset_game()  # Then reset
-        assert game.scoring.current_score == 0
-        assert game.level == 1
-        assert game.lives == STARTING_LIVES
+    def test_game_reset(self, game, system_setup):
+        """Test game reset functionality."""
+        # Setup game state
+        game.scoring.add_points(1000)
+        game.level = 5
+        game.lives = 1
         
-    def test_asteroid_spawning(self, game):
-        """Test asteroid spawning"""
-        game.new_game()
-        initial_asteroids = len(game.asteroids)
-        game.spawn_asteroid_wave()
-        assert len(game.asteroids) > initial_asteroids
-
-class TestParticleEffects:
-    def test_thrust_particle_creation(self, game):
-        """Test that thrust particles are created."""
-        game.new_game()
-        assert game.ship is not None
-        initial_particles = len(game.particles)
-        game.ship.create_thrust_particles()
-        assert len(game.particles) > initial_particles
-
-    def test_thrust_particle_input(self, game):
-        """Test that thrust particles are created when UP key is pressed."""
-        game.new_game()
-        input_comp = game.ship.get_component('input')
-        assert input_comp is not None
+        # Reset game
+        game.reset_game()
         
-        # Simulate thrust key press
-        input_comp.handle_keydown(pygame.K_UP)
-        assert pygame.K_UP in input_comp.active_keys
+        # Verify reset state
+        assert game.scoring.current_score == 0, "Score should be reset to 0"
+        assert game.level == 1, "Level should be reset to 1"
+        assert game.lives == STARTING_LIVES, "Lives should be reset to starting value"
+        assert len(game.asteroids) > 0, "New asteroid wave should be spawned"
         
-        # Update a few frames
-        initial_particles = len(game.particles)
-        for _ in range(5):
-            game.update(1/60)
-        assert len(game.particles) > initial_particles
-
-    def test_thrust_particle_cleanup(self, game):
-        """Test that thrust particles are removed after lifetime expires."""
-        game.new_game()
-        game.ship.create_thrust_particles()
-        initial_particles = len(game.particles)
-        assert initial_particles > 0
+    def test_entity_management(self, game, system_setup):
+        """Test entity management system."""
+        initial_count = len(game.entities)
         
-        # Update long enough for particles to expire
-        total_time = 0.5  # Most thrust particles live 0.1-0.3 seconds
-        for _ in range(int(total_time * 60)):  # 60 FPS
-            game.update(1/60)
-        assert len(game.particles) < initial_particles
+        # Test entity addition
+        test_entity = game.create_entity()
+        assert len(game.entities) == initial_count + 1, "Entity should be added to game"
+        assert test_entity in game.entities, "Entity should be in entity list"
         
-    def test_explosion_particle_creation(self, game):
-        """Test that explosion creates correct number of particles."""
-        game.new_game()
-        initial_particles = len(game.particles)
-        game.create_explosion(400, 300)
-        new_particles = len(game.particles) - initial_particles
-        assert 8 <= new_particles <= 12  # From create_explosion method
+        # Test entity removal
+        game.remove_entity(test_entity)
+        assert len(game.entities) == initial_count, "Entity should be removed from game"
+        assert test_entity not in game.entities, "Entity should not be in entity list"
+    
+    def test_update_cycle(self, game, system_setup):
+        """Test game update cycle."""
+        # Track initial state
+        initial_positions = {
+            entity: entity.get_component('transform').position.copy()
+            for entity in game.entities
+            if entity.has_component('transform')
+        }
         
-    def test_explosion_particle_cleanup(self, game):
-        """Test that explosion particles are removed after lifetime expires."""
-        game.new_game()
-        game.create_explosion(400, 300)
-        initial_particles = len(game.particles)
-        assert initial_particles > 0
+        # Update game
+        dt = 1/60  # One frame at 60 FPS
+        game.update(dt)
         
-        # Update long enough for particles to expire
-        total_time = 1.5  # Most explosion particles live 0.5-1.0 seconds
-        for _ in range(int(total_time * 60)):  # 60 FPS
-            game.update(1/60)
-        assert len(game.particles) == 0
-
-    def test_particle_velocity(self, game):
-        """Test that particles move according to their velocity."""
-        game.new_game()
-        test_pos = pygame.Vector2(400, 300)
-        game.create_explosion(test_pos.x, test_pos.y)
+        # Verify entities were updated
+        for entity, initial_pos in initial_positions.items():
+            if entity in game.entities:  # Entity might have been destroyed
+                current_pos = entity.get_component('transform').position
+                if entity.has_component('physics'):
+                    assert current_pos != initial_pos, f"Entity {entity} should move if it has physics"
+    
+    def test_system_order(self, game, system_setup):
+        """Test that systems are updated in correct order."""
+        update_order = []
         
-        # Get initial positions
-        initial_positions = [pygame.Vector2(p['position']) for p in game.particles]
+        class TestSystem:
+            def __init__(self, name):
+                self.name = name
+            
+            def update(self, dt):
+                update_order.append(self.name)
         
-        # Update one frame
+        # Add test systems
+        game.systems = [
+            TestSystem("Physics"),
+            TestSystem("Collision"),
+            TestSystem("Render")
+        ]
+        
+        # Update game
         game.update(1/60)
         
-        # Verify particles have moved
-        for i, particle in enumerate(game.particles):
-            current_pos = pygame.Vector2(particle['position'])
-            assert current_pos != initial_positions[i]
-
-    def test_particle_color(self, game):
-        """Test that particles maintain their color."""
-        game.new_game()
-        game.create_explosion(400, 300)
-        for particle in game.particles:
-            assert 'color' in particle
-            assert len(particle['color']) == 3  # RGB tuple
-            assert all(0 <= c <= 255 for c in particle['color'])
-
-class TestMenu:
-    def test_menu_navigation(self, game):
-        """Test menu navigation"""
-        # Should start in main menu
-        assert game.state_manager.current_state == GameState.MAIN_MENU
-        
-        # Start game
-        game.new_game()
-        assert game.state_manager.current_state == GameState.PLAYING
-        
-        # Pause game
-        game.pause()
-        assert game.state_manager.current_state == GameState.PAUSED
-        
-        # Resume game
-        game.resume()
-        assert game.state_manager.current_state == GameState.PLAYING
-        
-        # Return to menu
-        game.return_to_menu()
-        assert game.state_manager.current_state == GameState.MAIN_MENU
+        # Verify order
+        assert update_order == ["Physics", "Collision", "Render"], "Systems should update in correct order"
     
-    def test_settings(self, game):
-        """Test settings functionality"""
-        # Test control scheme setting
-        initial_scheme = game.settings['controls']
-        game.toggle_control_scheme()
-        assert game.settings['controls'] != initial_scheme 
+    def test_delta_time(self, game, system_setup):
+        """Test that delta time is handled correctly."""
+        test_dts = [1/60, 1/30, 1/120]  # Various frame rates
+        
+        for dt in test_dts:
+            # Track initial state
+            initial_positions = {
+                entity: entity.get_component('transform').position.copy()
+                for entity in game.entities
+                if entity.has_component('transform') and entity.has_component('physics')
+            }
+            
+            # Update with specific dt
+            game.update(dt)
+            
+            # Verify movement scales with dt
+            for entity, initial_pos in initial_positions.items():
+                if entity in game.entities:
+                    current_pos = entity.get_component('transform').position
+                    velocity = entity.get_component('physics').velocity
+                    expected_pos = initial_pos + velocity * dt
+                    assert (current_pos - expected_pos).length() < 0.1, f"Movement should scale with dt={dt}"
+    
+    def test_system_pause(self, game, system_setup):
+        """Test system behavior when game is paused."""
+        # Get initial state
+        initial_positions = {
+            entity: entity.get_component('transform').position.copy()
+            for entity in game.entities
+            if entity.has_component('transform')
+        }
+        
+        # Pause and update
+        game.pause()
+        game.update(1/60)
+        
+        # Verify no movement during pause
+        for entity, initial_pos in initial_positions.items():
+            if entity in game.entities:
+                current_pos = entity.get_component('transform').position
+                assert current_pos == initial_pos, "Entities should not move while paused" 

@@ -7,31 +7,25 @@ from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
-@pytest.fixture(scope="session", autouse=True)
-def pygame_init():
-    """Initialize pygame for all tests."""
-    pygame.init()
-    if not pygame.font.get_init():
-        pygame.font.init()
-    if not pygame.display.get_init():
-        pygame.display.init()
-    yield
-    pygame.quit()
-
 @pytest.fixture
-def game():
+def game(mock_game, screen):
     """Create a game instance for testing."""
     game = Game()
+    game.screen = screen
     yield game
-    # Clean up game resources
-    if hasattr(game, 'screen'):
-        pygame.display.quit()
 
+@pytest.fixture
+def collision_setup(game):
+    """Setup a fresh game state for collision testing."""
+    game.new_game()
+    return game
+
+@pytest.mark.game
 class TestCollisionSystem:
-    def test_bullet_asteroid_collision(self, game):
+    """Test cases for the collision detection system."""
+    
+    def test_bullet_asteroid_collision(self, game, collision_setup):
         """Test collision between bullet and asteroid."""
-        game.new_game()
-        
         # Create a test bullet
         bullet_pos = pygame.Vector2(400, 300)
         bullet_dir = pygame.Vector2(1, 0)  # Shooting right
@@ -48,13 +42,15 @@ class TestCollisionSystem:
         game.update(1/60)  # One frame at 60 FPS
         
         # Verify collision handling
-        assert bullet not in game.entities  # Bullet should be destroyed
-        assert asteroid not in game.entities  # Asteroid should be destroyed
-        assert len(game.particles) > 0  # Explosion particles should be created
+        assert bullet not in game.entities, "Bullet should be destroyed on collision"
+        assert asteroid not in game.entities, "Asteroid should be destroyed on collision"
+        assert len(game.particles) > 0, "Collision should create explosion particles"
+        
+        # Verify score increase
+        assert game.scoring.current_score > 0, "Destroying asteroid should award points"
     
-    def test_ship_asteroid_collision(self, game):
+    def test_ship_asteroid_collision(self, game, collision_setup):
         """Test collision between ship and asteroid."""
-        game.new_game()
         initial_lives = game.lives
         
         # Get ship position
@@ -70,14 +66,13 @@ class TestCollisionSystem:
         game.update(1/60)
         
         # Verify collision handling
-        assert game.lives < initial_lives  # Should lose a life
-        assert asteroid not in game.entities  # Asteroid should be destroyed
-        assert len(game.particles) > 0  # Explosion particles should be created
+        assert game.lives == initial_lives - 1, "Ship collision should reduce lives"
+        assert asteroid not in game.entities, "Asteroid should be destroyed on collision"
+        assert len(game.particles) > 0, "Collision should create explosion particles"
+        assert game.ship.invulnerable_timer > 0, "Ship should become invulnerable after collision"
     
-    def test_asteroid_splitting(self, game):
+    def test_asteroid_splitting(self, game, collision_setup):
         """Test that large asteroids split into smaller ones."""
-        game.new_game()
-        
         # Create a large asteroid
         asteroid = Asteroid(game, 'large', (400, 300))
         game.add_entity(asteroid)
@@ -95,14 +90,14 @@ class TestCollisionSystem:
         # Update to trigger collision
         game.update(1/60)
         
-        # Large asteroid should split into medium asteroids
-        assert len(game.asteroids) > initial_asteroids
+        # Verify asteroid splitting
+        assert len(game.asteroids) > initial_asteroids, "Large asteroid should split into smaller ones"
         for new_asteroid in game.asteroids:
-            assert new_asteroid.size == 'medium'
+            assert new_asteroid.size == 'medium', "Split asteroids should be medium sized"
+            assert new_asteroid in game.entities, "Split asteroids should be added to game entities"
     
-    def test_invulnerability_frames(self, game):
+    def test_invulnerability_frames(self, game, collision_setup):
         """Test ship invulnerability after respawn."""
-        game.new_game()
         initial_lives = game.lives
         
         # Force ship to be invulnerable
@@ -117,14 +112,17 @@ class TestCollisionSystem:
         # Update to check collision
         game.update(1/60)
         
-        # Verify no collision while invulnerable
-        assert game.lives == initial_lives  # Should not lose a life
-        assert asteroid in game.entities  # Asteroid should not be destroyed
-    
-    def test_screen_wrapping_collision(self, game):
-        """Test collisions work correctly with screen wrapping."""
-        game.new_game()
+        # Verify invulnerability
+        assert game.lives == initial_lives, "Ship should not lose lives while invulnerable"
+        assert asteroid in game.entities, "Asteroid should not be destroyed during invulnerability"
+        assert game.ship.invulnerable_timer > 0, "Invulnerability timer should still be active"
         
+        # Test invulnerability expiration
+        game.update(3.0)  # Update past invulnerability time
+        assert game.ship.invulnerable_timer <= 0, "Invulnerability should expire after timer"
+    
+    def test_screen_wrapping_collision(self, game, collision_setup):
+        """Test collisions work correctly with screen wrapping."""
         # Create asteroid near screen edge
         asteroid = Asteroid(game, 'large', (WINDOW_WIDTH - 10, WINDOW_HEIGHT - 10))
         game.add_entity(asteroid)
@@ -137,9 +135,44 @@ class TestCollisionSystem:
         game.add_entity(bullet)
         game.bullets.append(bullet)
         
+        # Track initial positions
+        asteroid_pos = asteroid.get_component('transform').position.copy()
+        bullet_pos = bullet.get_component('transform').position.copy()
+        
         # Update several frames to allow for wrapping
         for _ in range(10):
             game.update(1/60)
             
-        # Verify entities are properly wrapped and can still collide
-        assert len(game.entities) > 0  # Some entities should still exist 
+        # Verify wrapping behavior
+        new_asteroid_pos = asteroid.get_component('transform').position
+        assert (new_asteroid_pos != asteroid_pos), "Asteroid should move from original position"
+        
+        # Verify collision still works after wrapping
+        assert len(game.entities) > 0, "Entities should persist through screen wrapping"
+        
+    def test_multiple_collisions(self, game, collision_setup):
+        """Test handling of multiple simultaneous collisions."""
+        # Create multiple asteroids around ship
+        ship_pos = game.ship.get_component('transform').position
+        asteroid_positions = [
+            (ship_pos.x + 5, ship_pos.y),
+            (ship_pos.x - 5, ship_pos.y),
+            (ship_pos.x, ship_pos.y + 5)
+        ]
+        
+        asteroids = []
+        for pos in asteroid_positions:
+            asteroid = Asteroid(game, 'small', pos)
+            game.add_entity(asteroid)
+            game.asteroids.append(asteroid)
+            asteroids.append(asteroid)
+            
+        initial_lives = game.lives
+        
+        # Update to trigger multiple collisions
+        game.update(1/60)
+        
+        # Verify multiple collision handling
+        assert game.lives == initial_lives - 1, "Multiple collisions should only subtract one life"
+        assert len(game.particles) > len(asteroids), "Each collision should create particles"
+        assert game.ship.invulnerable_timer > 0, "Ship should become invulnerable after collision" 

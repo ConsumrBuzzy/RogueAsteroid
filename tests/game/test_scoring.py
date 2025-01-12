@@ -4,90 +4,124 @@ import pygame
 from src.core.game import Game
 from src.core.scoring import ScoringSystem
 
-@pytest.fixture(scope="session", autouse=True)
-def pygame_init():
-    """Initialize pygame for all tests."""
-    pygame.init()
-    if not pygame.font.get_init():
-        pygame.font.init()
-    if not pygame.display.get_init():
-        pygame.display.init()
-    yield
-    pygame.quit()
-
 @pytest.fixture
-def game():
+def game(mock_game, screen):
     """Create a game instance for testing."""
     game = Game()
+    game.screen = screen
     yield game
-    # Clean up game resources
-    if hasattr(game, 'screen'):
-        pygame.display.quit()
 
+@pytest.mark.game
 class TestScoreSystem:
+    """Test cases for the scoring system."""
+    
+    @pytest.fixture(autouse=True)
+    def setup_scoring(self, game):
+        """Setup fresh scoring system for each test."""
+        game.new_game()
+        game.scoring.reset()
+        game.scoring.high_scores = []  # Clear existing high scores
+        return game.scoring
+    
     def test_score_tracking(self, game):
-        """Test basic score functionality"""
+        """Test basic score functionality."""
         initial_score = game.scoring.current_score
-        game.scoring.add_points(100)
-        assert game.scoring.current_score == initial_score + 100
+        points = [100, 200, 300]
+        
+        # Add points incrementally
+        for points_to_add in points:
+            game.scoring.add_points(points_to_add)
+            assert game.scoring.current_score == initial_score + sum(points[:points.index(points_to_add) + 1])
     
     def test_high_score_tracking(self, game):
         """Test that adding points correctly updates high score."""
-        # Start new game and reset scoring
-        game.new_game()
-        game.scoring.reset()
-        
-        # Clear existing high scores
-        game.scoring.high_scores = []
-        
         # Add points and verify score
-        game.scoring.add_points(10000)
-        assert game.scoring.current_score == 10000
+        test_score = 10000
+        game.scoring.add_points(test_score)
+        assert game.scoring.current_score == test_score
         
         # Should be a high score since we cleared the list
         assert game.scoring.check_high_score()
         
         # Add high score and verify
-        assert game.scoring.add_high_score("TEST", 1)
+        player_name = "TEST"
+        player_level = 1
+        assert game.scoring.add_high_score(player_name, player_level)
+        
+        # Verify high score entry
         assert len(game.scoring.high_scores) == 1
-        assert game.scoring.high_scores[0].score == 10000
-        assert game.scoring.high_scores[0].name == "TEST"
+        high_score = game.scoring.high_scores[0]
+        assert high_score.score == test_score
+        assert high_score.name == player_name
+        assert high_score.level == player_level
         
     def test_score_reset(self, game):
-        """Test score reset functionality"""
+        """Test score reset functionality."""
+        # Setup test state
         game.scoring.add_points(500)
+        game.scoring.score_multiplier = 2.0
+        
+        # Reset and verify
         game.scoring.reset()
         assert game.scoring.current_score == 0
         assert game.scoring.score_multiplier == 1.0
         
     def test_high_score_persistence(self, game):
-        """Test high score saving and loading"""
-        game.scoring.add_points(10000)
-        name = "TEST"
-        level = 1
-        game.scoring.add_high_score(name, level)
+        """Test high score saving and loading."""
+        # Setup test data
+        test_score = 10000
+        player_name = "TEST"
+        player_level = 1
+        
+        # Add and save high score
+        game.scoring.add_points(test_score)
+        game.scoring.add_high_score(player_name, player_level)
+        
+        # Verify persistence
         high_scores = game.scoring.get_high_scores()
         assert len(high_scores) > 0
-        assert high_scores[0].score >= 10000
-        assert high_scores[0].name == name
+        
+        top_score = high_scores[0]
+        assert top_score.score >= test_score
+        assert top_score.name == player_name
+        assert top_score.level == player_level
         
     def test_score_multiplier(self, game):
         """Test score multiplier functionality."""
-        game.scoring.reset()
-        game.scoring.score_multiplier = 2.0
-        game.scoring.add_points(100)
-        assert game.scoring.current_score == 200
+        # Setup test multiplier
+        test_multiplier = 2.0
+        base_points = 100
+        
+        game.scoring.score_multiplier = test_multiplier
+        game.scoring.add_points(base_points)
+        
+        assert game.scoring.current_score == base_points * test_multiplier
         
     def test_combo_system(self, game):
         """Test combo system functionality."""
-        game.scoring.reset()
         initial_multiplier = game.scoring.score_multiplier
         
-        # Add points quickly to build combo
-        game.scoring.add_points(100)
-        game.scoring.add_points(100)
+        # Build combo
+        for _ in range(3):
+            game.scoring.add_points(100)
+            game.update(0.1)  # Short update to keep combo alive
+        
+        # Verify combo multiplier increased
         assert game.scoring.score_multiplier > initial_multiplier
         
-        # Wait for combo to expire
+        # Let combo expire
         game.update(2.0)  # Update longer than combo timer
-        assert game.scoring.score_multiplier == initial_multiplier 
+        assert game.scoring.score_multiplier == initial_multiplier
+        
+    def test_score_formatting(self, game):
+        """Test score formatting for display."""
+        test_scores = [
+            (0, "000000"),
+            (100, "000100"),
+            (999999, "999999"),
+            (1000000, "999999")  # Test max score capping
+        ]
+        
+        for score, expected in test_scores:
+            game.scoring.current_score = score
+            assert game.scoring.format_score() == expected 
