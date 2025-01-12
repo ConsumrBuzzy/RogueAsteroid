@@ -1,246 +1,152 @@
-"""Additional components for game entities."""
+"""Core game components module."""
 import pygame
-import numpy as np
-from typing import Dict, List, Tuple, Callable, Optional
-from src.core.entities.base import Component, Entity, TransformComponent
-from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from typing import Optional, Callable, List, Set, Dict, Any
 
-class ScreenWrapComponent(Component):
-    """Component for wrapping entities around screen edges."""
-    
-    def __init__(self, entity, width=WINDOW_WIDTH, height=WINDOW_HEIGHT):
-        """Initialize the screen wrap component.
-        
-        Args:
-            entity: The entity this component belongs to
-            width: Screen width to wrap at
-            height: Screen height to wrap at
-        """
-        super().__init__(entity)
-        self.width = width
-        self.height = height
-        self.wrap_offset = 2  # 2 pixel offset for minimal edge overlap
-        print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
+class Component:
+    """Base class for all components."""
+    def __init__(self, entity):
+        self.entity = entity
+        self.enabled = True
     
     def update(self, dt: float) -> None:
-        """Update entity position to wrap around screen."""
-        transform = self.entity.get_component('transform')
-        if not transform:
-            return
-        
-        # Wrap x position with minimal offset
-        if transform.position[0] <= -self.wrap_offset:
-            transform.position[0] = self.width - self.wrap_offset
-        elif transform.position[0] >= self.width + self.wrap_offset:
-            transform.position[0] = self.wrap_offset
-        
-        # Wrap y position with minimal offset
-        if transform.position[1] <= -self.wrap_offset:
-            transform.position[1] = self.height - self.wrap_offset
-        elif transform.position[1] >= self.height + self.wrap_offset:
-            transform.position[1] = self.wrap_offset
+        """Update component state."""
+        pass
 
-class InputComponent(Component):
-    """Component for handling input."""
-    
-    def __init__(self, entity: Entity):
+class TransformComponent(Component):
+    """Component for position, rotation, and scale."""
+    def __init__(self, entity):
         super().__init__(entity)
-        self.key_bindings = {}  # Key -> (callback, continuous) mapping
-        self.active_keys = set()  # Currently pressed keys
-    
-    def bind_key(self, key, callback, continuous=False):
-        """Bind a key to a callback function."""
-        self.key_bindings[key] = (callback, continuous)
-    
-    def clear_bindings(self):
-        """Clear all key bindings."""
-        self.key_bindings.clear()
-        self.active_keys.clear()
-    
-    def handle_keydown(self, key):
-        """Handle key press event."""
-        if key in self.key_bindings:
-            callback, continuous = self.key_bindings[key]
-            if continuous:
-                self.active_keys.add(key)
-            else:
-                callback()
-    
-    def handle_keyup(self, key):
-        """Handle key release event."""
-        if key in self.active_keys:
-            self.active_keys.remove(key)
-    
-    def update(self, dt):
-        """Update continuous key actions."""
-        for key in self.active_keys:
-            if key in self.key_bindings:
-                callback, continuous = self.key_bindings[key]
-                if continuous:
-                    callback()
+        self.position = pygame.Vector2(0, 0)
+        self.rotation = 0.0
+        self.scale = pygame.Vector2(1, 1)
+        self.velocity = pygame.Vector2(0, 0)
 
 class PhysicsComponent(Component):
-    """Component for physics-based movement."""
-    
-    def __init__(self, entity: Entity, mass: float = 1.0, max_speed: Optional[float] = None):
+    """Component for physics simulation."""
+    def __init__(self, entity, mass: float = 1.0, max_speed: float = 100.0):
         super().__init__(entity)
         self.mass = mass
         self.max_speed = max_speed
-        self.force = np.array([0.0, 0.0])
-        self.friction = 0.0  # 0 to 1, applied each frame
+        self.velocity = pygame.Vector2(0, 0)
+        self.acceleration = pygame.Vector2(0, 0)
+        self.angular_velocity = 0.0
+        self.friction = 0.0
+        self.gravity = pygame.Vector2(0, 0)
     
-    def apply_force(self, force: np.ndarray) -> None:
+    def apply_force(self, force: pygame.Vector2) -> None:
         """Apply a force to the entity."""
-        self.force += force
+        self.acceleration += force / self.mass
+    
+    def apply_impulse(self, impulse: pygame.Vector2) -> None:
+        """Apply an instantaneous force."""
+        self.velocity += impulse / self.mass
     
     def update(self, dt: float) -> None:
         """Update physics state."""
-        transform = self.entity.get_component('transform')
-        if not transform:
-            return
-        
-        # Apply forces
-        if self.mass > 0:
-            acceleration = self.force / self.mass
-            transform.velocity += acceleration * dt
+        # Update velocity
+        self.velocity += self.acceleration * dt
+        self.velocity += self.gravity * dt
         
         # Apply friction
         if self.friction > 0:
-            transform.velocity *= (1.0 - self.friction)
+            self.velocity *= (1 - self.friction)
         
-        # Limit speed
-        if self.max_speed is not None:
-            speed = np.linalg.norm(transform.velocity)
-            if speed > self.max_speed:
-                transform.velocity = (transform.velocity / speed) * self.max_speed
+        # Enforce speed limit
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
         
-        # Reset forces
-        self.force = np.array([0.0, 0.0])
+        # Update transform
+        transform = self.entity.get_component(TransformComponent)
+        if transform:
+            transform.position += self.velocity * dt
+            transform.rotation += self.angular_velocity * dt
+        
+        # Reset acceleration
+        self.acceleration = pygame.Vector2(0, 0)
 
-class EffectComponent(Component):
-    """Component for visual effects."""
-    
-    class Effect:
-        """Visual effect definition."""
-        def __init__(self, vertices: List[Tuple[float, float]], 
-                     color: Tuple[int, int, int],
-                     offset: Tuple[float, float] = (0, 0)):
-            self.vertices = vertices
-            self.color = color
-            self.offset = offset
-            self.active = False
-    
-    def __init__(self, entity: Entity):
+class CollisionComponent(Component):
+    """Component for collision detection."""
+    def __init__(self, entity):
         super().__init__(entity)
-        self.effects: Dict[str, EffectComponent.Effect] = {}
+        self.radius = 10.0
+        self.tag = "default"
+        self.layer = 0
+        self.group = 0
+        self.is_static = False
+        self.on_collision: Optional[Callable[[Any], None]] = None
     
-    def add_effect(self, name: str, vertices: List[Tuple[float, float]], 
-                  color: Tuple[int, int, int],
-                  offset: Tuple[float, float] = (0, 0)) -> None:
-        """Add a new visual effect."""
-        self.effects[name] = EffectComponent.Effect(vertices, color, offset)
-    
-    def set_effect_active(self, name: str, active: bool) -> None:
-        """Set whether an effect is active."""
-        if name in self.effects:
-            self.effects[name].active = active
-    
-    def draw(self, surface: pygame.Surface) -> None:
-        """Draw active effects."""
-        transform = self.entity.get_component('transform')
-        if not transform:
-            return
+    def is_colliding_with(self, other: 'CollisionComponent') -> bool:
+        """Check if colliding with another entity."""
+        if not self.enabled or not other.enabled:
+            return False
         
-        for effect in self.effects.values():
-            if not effect.active:
-                continue
-            
-            # Transform vertices
-            screen_vertices = []
-            angle = np.radians(transform.rotation)
-            cos_a = np.cos(angle)
-            sin_a = np.sin(angle)
-            
-            for x, y in effect.vertices:
-                # Apply offset
-                x += effect.offset[0]
-                y += effect.offset[1]
-                
-                # Rotate
-                rx = x * cos_a - y * sin_a
-                ry = x * sin_a + y * cos_a
-                
-                # Translate to position
-                screen_x = transform.position[0] + rx
-                screen_y = transform.position[1] + ry
-                screen_vertices.append((int(screen_x), int(screen_y)))
-            
-            # Draw effect
-            if len(screen_vertices) >= 3:
-                pygame.draw.polygon(surface, effect.color, screen_vertices) 
+        transform = self.entity.get_component(TransformComponent)
+        other_transform = other.entity.get_component(TransformComponent)
+        
+        if not transform or not other_transform:
+            return False
+        
+        distance = (transform.position - other_transform.position).length()
+        return distance < (self.radius + other.radius)
 
-class ParticleComponent(Component):
-    """Component for managing particle effects."""
-    
-    def __init__(self, entity: Entity = None, lifetime: float = 1.0, color: tuple = (255, 255, 255)):
-        """Initialize the particle component.
-        
-        Args:
-            entity: The entity this component belongs to
-            lifetime: How long the particle lives in seconds
-            color: RGB color tuple for the particle
-        """
+class InputComponent(Component):
+    """Component for handling input."""
+    def __init__(self, entity):
         super().__init__(entity)
-        self.lifetime = lifetime
-        self.time_remaining = lifetime  # Separate tracker for remaining time
-        self.color = color
-        self.alpha = 255  # For fade out effect
-        self.size = 2.0  # Particle size in pixels
+        self.key_bindings: Dict[int, List[tuple[Callable[[], Any], int, bool]]] = {}
+        self.key_combinations: Dict[tuple[int, ...], Callable[[], Any]] = {}
+        self.pressed_keys: Set[int] = set()
+        self.event_handlers: List[Callable[[pygame.event.Event], None]] = []
+    
+    def bind_key(self, key: int, action: Callable[[], Any], priority: int = 0, continuous: bool = False) -> None:
+        """Bind a key to an action."""
+        if key not in self.key_bindings:
+            self.key_bindings[key] = []
+        self.key_bindings[key].append((action, priority, continuous))
+        self.key_bindings[key].sort(key=lambda x: x[1], reverse=True)
+    
+    def bind_key_combination(self, keys: List[int], action: Callable[[], Any]) -> None:
+        """Bind a key combination to an action."""
+        self.key_combinations[tuple(sorted(keys))] = action
+    
+    def handle_keydown(self, key: int) -> None:
+        """Handle key press event."""
+        self.pressed_keys.add(key)
         
+        # Check key combinations
+        for combo_keys, action in self.key_combinations.items():
+            if all(k in self.pressed_keys for k in combo_keys):
+                action()
+        
+        # Handle individual key bindings
+        if key in self.key_bindings:
+            for action, _, _ in self.key_bindings[key]:
+                if action() is True:  # Action returns True to block further processing
+                    break
+    
+    def handle_keyup(self, key: int) -> None:
+        """Handle key release event."""
+        self.pressed_keys.discard(key)
+    
+    def handle_event(self, event: pygame.event.Event) -> None:
+        """Handle pygame event."""
+        for handler in self.event_handlers:
+            handler(event)
+    
+    def add_event_handler(self, handler: Callable[[pygame.event.Event], None]) -> None:
+        """Add event handler."""
+        self.event_handlers.append(handler)
+    
+    def is_key_pressed(self, key: int) -> bool:
+        """Check if a key is currently pressed."""
+        return key in self.pressed_keys
+    
     def update(self, dt: float) -> None:
-        """Update the particle state."""
-        if not self.entity or not self.entity.game:
-            return
-            
-        self.time_remaining -= dt
-        if self.time_remaining <= 0:
-            # Remove from game entities list if it exists
-            if self.entity in self.entity.game.entities:
-                self.entity.game.entities.remove(self.entity)
-            return
-
-        # Update alpha for fade out (ensure it stays between 0 and 255)
-        self.alpha = max(0, min(255, int((self.time_remaining / self.lifetime) * 255)))
-
-    def draw(self, screen: pygame.Surface):
-        """Draw the particle."""
-        if not self.entity:
-            return
-            
-        transform = self.entity.get_component('transform')
-        if not transform:
-            return
-            
-        # Get position as integers for drawing
-        if hasattr(transform.position, 'x'):
-            pos_x = int(transform.position.x)
-            pos_y = int(transform.position.y)
-        else:
-            pos_x = int(transform.position[0])
-            pos_y = int(transform.position[1])
-            
-        # Create a surface with per-pixel alpha
-        size_int = max(1, int(self.size * 2))  # Ensure minimum size of 1
-        particle_surface = pygame.Surface((size_int, size_int), pygame.SRCALPHA)
-        
-        # Draw the particle with current alpha
-        color_with_alpha = (*self.color, self.alpha)
-        pygame.draw.circle(
-            particle_surface,
-            color_with_alpha,
-            (int(self.size), int(self.size)),
-            max(1, int(self.size))  # Ensure minimum radius of 1
-        )
-        
-        # Draw to screen at integer positions
-        screen.blit(particle_surface, (pos_x - int(self.size), pos_y - int(self.size))) 
+        """Update input state."""
+        # Handle continuous actions for held keys
+        for key in self.pressed_keys:
+            if key in self.key_bindings:
+                for action, _, continuous in self.key_bindings[key]:
+                    if continuous:
+                        if action() is True:  # Action returns True to block further processing
+                            break 
