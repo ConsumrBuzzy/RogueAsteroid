@@ -64,6 +64,21 @@ class UIService:
                 self._fonts[size] = pygame.font.SysFont(None, size)
         return self._fonts[size]
         
+    def draw(self) -> None:
+        """Draw all UI elements.
+        
+        This method is called each frame to render UI elements.
+        Individual UI elements should use draw_text() for rendering.
+        """
+        pass  # UI elements are drawn directly through draw_text()
+        
+    def clear(self) -> None:
+        """Clear all UI elements.
+        
+        This method is called to clear any cached UI elements.
+        """
+        pass  # No cached elements to clear
+        
     def cleanup(self) -> None:
         """Clean up the service."""
         self._fonts.clear()
