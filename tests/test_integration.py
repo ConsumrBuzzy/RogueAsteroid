@@ -20,12 +20,12 @@ class TestGameplayFlow:
         """Test complete game initialization sequence."""
         # Check initial state
         assert game.state_manager.current_state == GameState.MAIN_MENU
-        assert game.score_system.current_score == 0
+        assert game.scoring.current_score == 0
         assert len(game.asteroids) == 0
         assert game.ship is None
         
-        # Start game
-        game.start_game()
+        # Start new game
+        game.new_game()
         assert game.state_manager.current_state == GameState.PLAYING
         assert game.ship is not None
         assert isinstance(game.ship, Ship)
@@ -34,36 +34,36 @@ class TestGameplayFlow:
         # Verify ship properties
         assert hasattr(game.ship, 'position')
         assert hasattr(game.ship, 'velocity')
-        assert game.ship.lives == STARTING_LIVES
+        assert game.lives == STARTING_LIVES
     
     def test_wave_progression(self, game):
         """Test wave system and asteroid spawning."""
-        game.start_game()
-        initial_wave = game.spawner.wave
+        game.new_game()
+        initial_wave = game.level
         initial_asteroids = len(game.asteroids)
         
         # Clear asteroids to trigger next wave
         game.asteroids.clear()
         game.update(1.0)  # Update to check wave completion
         
-        assert game.spawner.wave > initial_wave
+        assert game.level > initial_wave
         assert len(game.asteroids) >= initial_asteroids
     
     def test_scoring_integration(self, game):
         """Test scoring system integration with gameplay."""
-        game.start_game()
-        initial_score = game.score_system.current_score
+        game.new_game()
+        initial_score = game.scoring.current_score
         
         # Simulate destroying an asteroid
         if len(game.asteroids) > 0:
             asteroid = game.asteroids[0]
-            game.handle_asteroid_destroyed(asteroid)
+            game.handle_collision(asteroid, None)  # None represents bullet
             
-            assert game.score_system.current_score > initial_score
+            assert game.scoring.current_score > initial_score
     
     def test_collision_system(self, game):
         """Test collision detection and response."""
-        game.start_game()
+        game.new_game()
         
         # Create a test bullet
         bullet_pos = np.array([400, 300])
@@ -83,27 +83,27 @@ class TestGameplayFlow:
     
     def test_game_over_sequence(self, game):
         """Test game over sequence and state transitions."""
-        game.start_game()
-        initial_lives = game.ship.lives
+        game.new_game()
+        initial_lives = game.lives
         
         # Simulate losing all lives
         for _ in range(initial_lives):
-            game.ship.lose_life()
+            game.lose_life()
             game.update(0.016)  # Update to process life loss
         
         assert game.state_manager.current_state == GameState.GAME_OVER
-        assert game.score_system.check_high_score()  # Should check for high score
+        assert game.scoring.check_high_score()  # Should check for high score
     
     def test_pause_resume_flow(self, game):
         """Test pause and resume functionality."""
-        game.start_game()
+        game.new_game()
         
         # Record initial state
         initial_asteroids = [a.position.copy() for a in game.asteroids]
         initial_ship_pos = game.ship.position.copy()
         
         # Pause game
-        game.pause_game()
+        game.pause()
         assert game.state_manager.current_state == GameState.PAUSED
         
         # Update while paused
@@ -115,7 +115,7 @@ class TestGameplayFlow:
         assert np.array_equal(game.ship.position, initial_ship_pos)
         
         # Resume game
-        game.resume_game()
+        game.resume()
         assert game.state_manager.current_state == GameState.PLAYING
         
         # Update and verify movement resumes
@@ -125,34 +125,34 @@ class TestGameplayFlow:
     
     def test_particle_effects_integration(self, game):
         """Test particle system integration."""
-        game.start_game()
-        initial_particles = len(game.particle_system.particles)
+        game.new_game()
+        initial_particles = len(game.particles)
         
         # Trigger ship thrust
         game.ship.thrust(1.0)
-        assert len(game.particle_system.particles) > initial_particles
+        assert len(game.particles) > initial_particles
         
         # Simulate asteroid destruction
         if len(game.asteroids) > 0:
             asteroid = game.asteroids[0]
-            game.handle_asteroid_destroyed(asteroid)
-            assert len(game.particle_system.particles) > initial_particles
+            game.handle_collision(asteroid, None)
+            assert len(game.particles) > initial_particles
     
     def test_complete_game_cycle(self, game):
         """Test a complete game cycle from start to finish."""
         # Start game
-        game.start_game()
+        game.new_game()
         assert game.state_manager.current_state == GameState.PLAYING
         
         # Play through one wave
-        initial_wave = game.spawner.wave
+        initial_wave = game.level
         game.asteroids.clear()  # Clear wave
         game.update(1.0)
-        assert game.spawner.wave > initial_wave
+        assert game.level > initial_wave
         
         # Trigger game over
-        while game.ship.lives > 0:
-            game.ship.lose_life()
+        while game.lives > 0:
+            game.lose_life()
         game.update(0.016)
         
         assert game.state_manager.current_state == GameState.GAME_OVER
