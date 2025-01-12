@@ -1,13 +1,13 @@
-"""Component system initialization and registry."""
+"""Component system initialization and management."""
 from typing import Dict, Type, Optional
 from .component import Component
 
 class ComponentRegistry:
-    """Central registry for managing game components.
+    """Registry for managing game components.
     
     Provides:
     - Component type registration
-    - Component creation
+    - Component instance creation
     - Type validation
     - Error handling
     """
@@ -22,85 +22,79 @@ class ComponentRegistry:
         return cls._instance
     
     def __init__(self):
-        """Initialize component registry."""
+        """Initialize the component registry."""
         if self._initialized:
             return
             
         self._components: Dict[str, Type[Component]] = {}
         self._initialized = True
         print("ComponentRegistry initialized")
-    
-    def register_component(self, name: str, component_class: Type[Component]) -> None:
+        
+    def register_component(self, type_name: str, component_class: Type[Component]) -> None:
         """Register a component type.
         
         Args:
-            name: Unique name for the component type
+            type_name: Name to register the type under
             component_class: Component class to register
-        
+            
         Raises:
-            ValueError: If component_class doesn't inherit from Component
-            Warning: If overwriting existing component type
+            ValueError: If type_name is already registered
         """
-        # Validate component class
-        if not issubclass(component_class, Component):
-            raise ValueError(f"Component class {component_class.__name__} must inherit from Component")
-            
-        # Warn if overwriting
-        if name in self._components:
-            print(f"Warning: Overwriting existing component type '{name}'")
-            
-        self._components[name] = component_class
-        print(f"Registered component type '{name}'")
-    
-    def create_component(self, name: str, entity, **kwargs) -> Optional[Component]:
+        if type_name in self._components:
+            print(f"Warning: Overwriting existing component type {type_name}")
+        self._components[type_name] = component_class
+        print(f"Registered component type '{type_name}'")
+        
+    def create_component(self, type_name: str, **kwargs) -> Optional[Component]:
         """Create a component instance.
         
         Args:
-            name: Name of component type to create
-            entity: Entity to attach component to
-            **kwargs: Additional arguments for component initialization
+            type_name: Type of component to create
+            **kwargs: Arguments to pass to component constructor
             
         Returns:
             Created component instance or None if type not found
             
         Raises:
-            Exception: If component creation fails
+            KeyError: If type_name is not registered
         """
-        if name not in self._components:
-            print(f"Warning: Unknown component type '{name}'")
-            return None
+        if type_name not in self._components:
+            raise KeyError(f"Unknown component type: {type_name}")
             
-        try:
-            component = self._components[name](entity, **kwargs)
-            print(f"Created component '{name}' for entity {entity.id}")
-            return component
-        except Exception as e:
-            print(f"Error creating component '{name}': {e}")
-            raise
-    
-    def get_component_type(self, name: str) -> Optional[Type[Component]]:
-        """Get a registered component type.
+        component_class = self._components[type_name]
+        return component_class(**kwargs)
+        
+    def get_component_type(self, type_name: str) -> Optional[Type[Component]]:
+        """Get a component type by name.
         
         Args:
-            name: Name of component type
+            type_name: Name of component type
             
         Returns:
             Component class or None if not found
         """
-        return self._components.get(name)
-    
-    def has_component_type(self, name: str) -> bool:
+        return self._components.get(type_name)
+        
+    def has_component_type(self, type_name: str) -> bool:
         """Check if a component type is registered.
         
         Args:
-            name: Name of component type
+            type_name: Name of component type
             
         Returns:
-            True if component type exists
+            True if type is registered
         """
-        return name in self._components
-    
-    def clear_registry(self) -> None:
+        return type_name in self._components
+        
+    def get_registered_types(self) -> list[str]:
+        """Get list of registered component types.
+        
+        Returns:
+            List of registered type names
+        """
+        return list(self._components.keys())
+        
+    def clear(self) -> None:
         """Clear all registered component types."""
         self._components.clear()
         print("Component registry cleared") 

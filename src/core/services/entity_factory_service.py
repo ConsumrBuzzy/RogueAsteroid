@@ -1,6 +1,6 @@
-"""Service for creating and managing game entities."""
+"""Entity factory service for creating and managing game entities."""
 from typing import Dict, Type, Optional, List
-from ..entity import Entity
+from ..entity.entity import Entity
 
 class EntityFactoryService:
     """Service for creating and managing game entities.
@@ -19,7 +19,7 @@ class EntityFactoryService:
         self._active_entities: List[Entity] = []
         self._entity_pools: Dict[str, List[Entity]] = {}
         print("EntityFactoryService initialized")
-    
+        
     def register_entity_type(self, type_name: str, entity_class: Type[Entity]) -> None:
         """Register a new entity type.
         
@@ -35,14 +35,12 @@ class EntityFactoryService:
         self._entity_types[type_name] = entity_class
         self._entity_pools[type_name] = []
         print(f"Registered entity type: {type_name}")
-    
-    def create_entity(self, type_name: str, x: float = 0, y: float = 0, **kwargs) -> Optional[Entity]:
+        
+    def create_entity(self, type_name: str, **kwargs) -> Optional[Entity]:
         """Create a new entity or reuse a pooled one.
         
         Args:
             type_name: Type of entity to create
-            x: Initial x position
-            y: Initial y position
             **kwargs: Additional initialization arguments
             
         Returns:
@@ -57,73 +55,63 @@ class EntityFactoryService:
         # Try to reuse a pooled entity
         if self._entity_pools[type_name]:
             entity = self._entity_pools[type_name].pop()
+            entity.enable()
             print(f"Reusing pooled entity of type {type_name}")
         else:
             # Create new entity
             entity_class = self._entity_types[type_name]
-            entity = entity_class(x=x, y=y, **kwargs)
+            entity = entity_class()
             print(f"Created new entity of type {type_name}")
             
+        # Initialize entity
+        entity.initialize()
         self._active_entities.append(entity)
         return entity
-    
-    def remove_entity(self, entity: Entity, pool: bool = True) -> None:
-        """Remove an entity from the game.
+        
+    def remove_entity(self, entity: Entity) -> None:
+        """Remove an entity and return it to the pool.
         
         Args:
             entity: Entity to remove
-            pool: Whether to pool the entity for reuse
         """
         if entity in self._active_entities:
+            entity.disable()
             self._active_entities.remove(entity)
             
-            if pool:
-                # Find entity type name
-                type_name = None
-                for name, cls in self._entity_types.items():
-                    if isinstance(entity, cls):
-                        type_name = name
-                        break
-                
-                if type_name:
+            # Add to pool if entity type is registered
+            for type_name, entity_class in self._entity_types.items():
+                if isinstance(entity, entity_class):
                     self._entity_pools[type_name].append(entity)
-                    print(f"Pooled entity of type {type_name}")
-                else:
-                    entity.destroy()
-                    print("Entity destroyed (type not found for pooling)")
-            else:
-                entity.destroy()
-                print("Entity destroyed (pooling disabled)")
-    
-    def update(self, dt: float) -> None:
-        """Update all active entities.
-        
-        Args:
-            dt: Delta time in seconds
-        """
-        # Update in reverse to safely handle removals
-        for i in range(len(self._active_entities) - 1, -1, -1):
-            entity = self._active_entities[i]
-            if entity.is_destroyed:
-                self._active_entities.pop(i)
-            else:
-                entity.update(dt)
-    
+                    print(f"Entity returned to pool: {type_name}")
+                    break
+                    
     def clear_all(self) -> None:
-        """Remove all entities and clear pools."""
-        for entity in self._active_entities:
+        """Clear all entities and pools."""
+        # Destroy all active entities
+        for entity in list(self._active_entities):
             entity.destroy()
         self._active_entities.clear()
         
+        # Clear all pools
         for pool in self._entity_pools.values():
             for entity in pool:
                 entity.destroy()
             pool.clear()
             
         print("Cleared all entities and pools")
-    
+        
+    def update(self, dt: float) -> None:
+        """Update all active entities.
+        
+        Args:
+            dt: Delta time in seconds
+        """
+        for entity in list(self._active_entities):
+            entity.update(dt)
+            
     def cleanup(self) -> None:
         """Clean up the service."""
         self.clear_all()
         self._entity_types.clear()
+        self._entity_pools.clear()
         print("EntityFactoryService cleaned up") 

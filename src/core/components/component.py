@@ -1,66 +1,106 @@
-"""Base component class for the entity component system."""
-from typing import Optional, Any
-from uuid import uuid4
+"""Base component class for game objects."""
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..entity.entity import Entity
 
 class Component:
-    """Base class for all entity components.
+    """Base class for all game components.
     
     Provides:
     - Entity attachment
     - Lifecycle hooks
-    - Unique identification
+    - Component enable/disable
     - Debug support
     """
     
-    def __init__(self, entity: Any):
-        """Initialize component.
+    def __init__(self, entity: 'Entity'):
+        """Initialize the component.
         
         Args:
             entity: Entity this component belongs to
         """
-        self.entity = entity
-        self.id = str(uuid4())  # Unique component identifier
-        self.enabled = True
+        self._entity = entity
+        self._enabled = True
+        self._initialized = False
         
-        # Debug info
-        print(f"Component {self.__class__.__name__} ({self.id}) initialized")
-    
+    @property
+    def entity(self) -> 'Entity':
+        """Get the entity this component belongs to.
+        
+        Returns:
+            Parent entity
+        """
+        return self._entity
+        
+    @property
+    def enabled(self) -> bool:
+        """Check if component is enabled.
+        
+        Returns:
+            True if component is enabled
+        """
+        return self._enabled
+        
+    def enable(self) -> None:
+        """Enable the component."""
+        if not self._enabled:
+            self._enabled = True
+            self.on_enable()
+            
+    def disable(self) -> None:
+        """Disable the component."""
+        if self._enabled:
+            self._enabled = False
+            self.on_disable()
+            
+    def initialize(self) -> None:
+        """Initialize the component.
+        
+        Called when component is first added to an entity.
+        """
+        if not self._initialized:
+            self.on_initialize()
+            self._initialized = True
+            
+    def destroy(self) -> None:
+        """Destroy the component.
+        
+        Called when component is removed from an entity.
+        """
+        self.on_destroy()
+        self._enabled = False
+        self._initialized = False
+        
     def update(self, dt: float) -> None:
-        """Update component logic.
+        """Update the component.
         
         Args:
             dt: Delta time in seconds
         """
-        if not self.enabled:
-            return
-    
-    def cleanup(self) -> None:
-        """Clean up component resources."""
-        self.enabled = False
-        self.entity = None
-        print(f"Component {self.__class__.__name__} ({self.id}) cleaned up")
-    
-    def enable(self) -> None:
-        """Enable the component."""
-        self.enabled = True
-        print(f"Component {self.__class__.__name__} ({self.id}) enabled")
-    
-    def disable(self) -> None:
-        """Disable the component."""
-        self.enabled = False
-        print(f"Component {self.__class__.__name__} ({self.id}) disabled")
-    
-    def get_sibling_component(self, component_type: type) -> Optional[Any]:
-        """Get another component from the same entity.
+        if self._enabled:
+            self.on_update(dt)
+            
+    def on_initialize(self) -> None:
+        """Called when component is initialized."""
+        pass
+        
+    def on_destroy(self) -> None:
+        """Called when component is destroyed."""
+        pass
+        
+    def on_enable(self) -> None:
+        """Called when component is enabled."""
+        pass
+        
+    def on_disable(self) -> None:
+        """Called when component is disabled."""
+        pass
+        
+    def on_update(self, dt: float) -> None:
+        """Called when component is updated.
         
         Args:
-            component_type: Type of component to get
-            
-        Returns:
-            Component instance if found, None otherwise
+            dt: Delta time in seconds
         """
-        return self.entity.get_component(component_type) if self.entity else None
-    
-    def __str__(self) -> str:
-        """String representation of component."""
-        return f"{self.__class__.__name__}(id={self.id}, enabled={self.enabled})" 
+        pass 
