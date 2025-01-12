@@ -4,13 +4,16 @@ import pygame
 from pygame import Vector2
 
 from src.core.entity.entity import Entity
-from src.core.components.transform import TransformComponent
-from src.core.components.render import RenderComponent
-from src.core.components.physics import PhysicsComponent
-from src.core.components.collision import CollisionComponent
-from src.core.components.input import InputComponent
-from src.core.components.effect import EffectComponent
-from src.core.components.screen_wrap import ScreenWrapComponent
+from src.core.components import (
+    ComponentRegistry,
+    TransformComponent,
+    RenderComponent,
+    PhysicsComponent,
+    CollisionComponent,
+    InputComponent,
+    EffectComponent,
+    ScreenWrapComponent
+)
 from src.core.constants import SHIP_MAX_SPEED, SHIP_FRICTION, INVULNERABILITY_TIME
 
 class Ship(Entity):
@@ -48,6 +51,8 @@ class Ship(Entity):
         self._invulnerable_timer = 0
         self._thrust_timer = 0
         self._initialized_components = set()
+        self._registry = ComponentRegistry()
+        
         try:
             self._init_components()
             self._validate_components()
@@ -64,43 +69,44 @@ class Ship(Entity):
         """
         try:
             # Transform component for position and movement
-            transform = TransformComponent(self)
+            transform = self._registry.create_component('TransformComponent', self)
             self.add_component(transform)
             transform.position = Vector2(self.game.width / 2, self.game.height / 2)
             self._initialized_components.add(TransformComponent)
             
             # Render component for drawing
-            render = RenderComponent(self)
+            render = self._registry.create_component('RenderComponent', self)
             self.add_component(render)
             render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]
             render.color = (255, 255, 255)
             self._initialized_components.add(RenderComponent)
             
             # Physics component for thrust and momentum
-            physics = PhysicsComponent(self)
+            physics = self._registry.create_component('PhysicsComponent', self)
             self.add_component(physics)
             physics.max_speed = SHIP_MAX_SPEED
             physics.friction = SHIP_FRICTION
             self._initialized_components.add(PhysicsComponent)
             
             # Collision component for hit detection
-            collision = CollisionComponent(self, radius=15)
+            collision = self._registry.create_component('CollisionComponent', self, radius=15)
             self.add_component(collision)
             self._initialized_components.add(CollisionComponent)
             
             # Screen wrap component
-            screen_wrap = ScreenWrapComponent(self, screen_size=(self.game.width, self.game.height))
+            screen_wrap = self._registry.create_component('ScreenWrapComponent', self, 
+                screen_size=(self.game.width, self.game.height))
             self.add_component(screen_wrap)
             self._initialized_components.add(ScreenWrapComponent)
             
             # Effects component for visual effects
-            effects = EffectComponent(self)
+            effects = self._registry.create_component('EffectComponent', self)
             self.add_component(effects)
             self._init_thrust_effect(effects)
             self._initialized_components.add(EffectComponent)
             
             # Input component for controls
-            input_component = InputComponent(self)
+            input_component = self._registry.create_component('InputComponent', self)
             self.add_component(input_component)
             self.update_controls()
             self._initialized_components.add(InputComponent)
