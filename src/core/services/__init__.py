@@ -37,6 +37,7 @@ from .render_service import RenderService
 from .collision_service import CollisionService
 from .particle_service import ParticleService
 from .high_score_service import HighScoreService
+from .audio_service import AudioService
 
 T = TypeVar('T')
 
@@ -157,34 +158,34 @@ class ServiceManager:
             events = EventManagerService()
             self.register_service(SERVICE_EVENTS, events)
             
-            # Level 2: State service (needed by many services)
-            print("Initializing state management...")
             state = StateService()
             self.register_service(SERVICE_STATE, state)
             
-            # Connect event manager to state service
-            if hasattr(state, 'set_event_manager'):
-                state.set_event_manager(events)
-                print("Connected event manager to state service")
+            # Connect event manager to state service immediately
+            state.set_event_manager(events)
+            print("Connected event manager to state service")
             
-            # Level 3: Resource and Input services
-            print("Initializing resource and input services...")
+            # Level 2: Resource services
+            print("Initializing resource services...")
             resources = ResourceManagerService()
             self.register_service(SERVICE_RESOURCES, resources)
             
+            audio = AudioService()
+            self.register_service("audio", audio)
+            
+            # Level 3: Input and UI base
+            print("Initializing input and UI services...")
             input_service = InputService()
             self.register_service(SERVICE_INPUT, input_service)
             
-            # Level 4: Rendering stack
-            print("Initializing rendering services...")
             render = RenderService(screen)
             self.register_service(SERVICE_RENDER, render)
             
             ui = UIService(screen)
             self.register_service(SERVICE_UI, ui)
             
-            # Level 5: Physics stack
-            print("Initializing physics services...")
+            # Level 4: Game systems
+            print("Initializing game systems...")
             physics = PhysicsService(screen.get_width(), screen.get_height())
             self.register_service(SERVICE_PHYSICS, physics)
             
@@ -194,12 +195,12 @@ class ServiceManager:
             particle = ParticleService(screen)
             self.register_service(SERVICE_PARTICLE, particle)
             
-            # Level 6: Entity system
-            print("Initializing entity services...")
+            # Level 5: Entity system
+            print("Initializing entity system...")
             entity_factory = EntityFactoryService(service_manager=self)
             self.register_service(SERVICE_ENTITY_FACTORY, entity_factory)
             
-            # Level 7: Data services
+            # Level 6: Game data services
             print("Initializing data services...")
             high_score = HighScoreService(settings, events)
             self.register_service(SERVICE_HIGH_SCORE, high_score)
@@ -210,15 +211,19 @@ class ServiceManager:
             statistics = StatisticsService(settings, events)
             self.register_service(SERVICE_STATISTICS, statistics)
             
-            # Level 8: Menu service (depends on UI and State)
-            print("Initializing menu service...")
+            # Level 7: Menu system (depends on UI and State)
+            print("Initializing menu system...")
             menu = MenuService(ui_service=ui, state_service=state, input_service=input_service)
             self.register_service(SERVICE_MENU, menu)
             
-            # Level 9: Game service (depends on everything)
+            # Level 8: Game service (depends on everything)
             print("Initializing game service...")
             game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
             self.register_service(SERVICE_GAME, game)
+            
+            # Verify core services are ready
+            if not state.is_ready():
+                raise RuntimeError("State service not ready after initialization")
             
             print("All services initialized successfully")
             return True
