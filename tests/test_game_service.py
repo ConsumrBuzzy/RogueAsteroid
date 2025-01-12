@@ -7,6 +7,37 @@ from unittest.mock import MagicMock
 from src.core.services.game_service import GameService
 from src.core.services.service_manager import ServiceManager
 from src.core.state.game_states import GameState
+from src.core.entities.base import Entity
+
+# Mock components
+class MockTransformComponent:
+    def __init__(self, entity):
+        self.entity = entity
+        self.position = pygame.Vector2(400, 300)
+        self.velocity = pygame.Vector2(0, 0)
+        self.rotation = 0
+
+class MockRenderComponent:
+    def __init__(self, entity):
+        self.entity = entity
+        self.radius = 20
+        self.points = 100
+
+class MockPhysicsComponent:
+    def __init__(self, entity):
+        self.entity = entity
+        self.rotation_speed = 0
+
+class MockCollisionComponent:
+    def __init__(self, entity):
+        self.entity = entity
+        self.radius = 20
+
+class MockScreenWrapComponent:
+    def __init__(self, entity):
+        self.entity = entity
+        self.width = 800
+        self.height = 600
 
 # Mock services
 class MockStateService:
@@ -216,34 +247,24 @@ class TestGameService:
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
-        class MockAsteroid:
+        class MockAsteroid(Entity):
             def __init__(self, size="large", position=None, ship_pos=None):
+                super().__init__()
                 self.size = size
                 self.position = position
                 self.ship_pos = ship_pos
                 
                 # Initialize transform component
-                self.transform = MagicMock()
-                self.transform.position = ship_pos or pygame.Vector2(400, 300)
-                self.transform.velocity = pygame.Vector2(0, 0)
-                self.transform.rotation = 0
+                transform = self.add_component(MockTransformComponent)
+                transform.position = ship_pos or pygame.Vector2(400, 300)
+                transform.velocity = pygame.Vector2(0, 0)
+                transform.rotation = 0
                 
-                # Initialize components
-                self._components = {
-                    'TransformComponent': self.transform,
-                    'RenderComponent': MagicMock(),
-                    'PhysicsComponent': MagicMock(),
-                    'CollisionComponent': MagicMock(),
-                    'ScreenWrapComponent': MagicMock()
-                }
-                
-            def get_component(self, component_type):
-                return self._components.get(component_type, MagicMock())
-                
-            def add_component(self, component_type):
-                component = MagicMock()
-                self._components[component_type] = component
-                return component
+                # Initialize other components
+                render = self.add_component(MockRenderComponent)
+                physics = self.add_component(MockPhysicsComponent)
+                collision = self.add_component(MockCollisionComponent)
+                screen_wrap = self.add_component(MockScreenWrapComponent)
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
@@ -281,34 +302,24 @@ class TestGameService:
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
-        class MockAsteroid:
+        class MockAsteroid(Entity):
             def __init__(self, size="large", position=None, ship_pos=None):
+                super().__init__()
                 self.size = size
                 self.position = position
                 self.ship_pos = ship_pos
                 
                 # Initialize transform component
-                self.transform = MagicMock()
-                self.transform.position = ship_pos or pygame.Vector2(400, 300)
-                self.transform.velocity = pygame.Vector2(0, 0)
-                self.transform.rotation = 0
+                transform = self.add_component(MockTransformComponent)
+                transform.position = ship_pos or pygame.Vector2(400, 300)
+                transform.velocity = pygame.Vector2(0, 0)
+                transform.rotation = 0
                 
-                # Initialize components
-                self._components = {
-                    'TransformComponent': self.transform,
-                    'RenderComponent': MagicMock(),
-                    'PhysicsComponent': MagicMock(),
-                    'CollisionComponent': MagicMock(),
-                    'ScreenWrapComponent': MagicMock()
-                }
-                
-            def get_component(self, component_type):
-                return self._components.get(component_type, MagicMock())
-                
-            def add_component(self, component_type):
-                component = MagicMock()
-                self._components[component_type] = component
-                return component
+                # Initialize other components
+                render = self.add_component(MockRenderComponent)
+                physics = self.add_component(MockPhysicsComponent)
+                collision = self.add_component(MockCollisionComponent)
+                screen_wrap = self.add_component(MockScreenWrapComponent)
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
