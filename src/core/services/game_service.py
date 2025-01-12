@@ -159,14 +159,14 @@ class GameService:
         if not self.player_ship:
             raise ValueError("Cannot spawn asteroids: Player ship not initialized")
             
-        transform = self.player_ship.get_component('transform')
+        transform = self.player_ship.get_component('TransformComponent')
         if not transform:
             raise ValueError("Cannot spawn asteroids: Player ship missing transform component")
             
         for _ in range(count):
             try:
                 # Create asteroid away from player
-                asteroid = Asteroid.spawn_random(self, transform.position)
+                asteroid = Asteroid(size="large", ship_pos=transform.position)
                 
                 # Add to tracking lists
                 self.asteroids.append(asteroid)
