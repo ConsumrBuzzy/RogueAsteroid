@@ -38,12 +38,24 @@ Responsibilities:
 6. Engineer addresses feedback
 7. Designer approves final version
 
+### Task Management
+- Active tasklist maintained in DEVELOPMENT_LOG.md
+- Tasks categorized by priority (High, Medium, Low)
+- Tasks tracked from creation to completion
+- Completed tasks moved to timestamped log entries
+- All changes linked to specific task completion
+
 ### Documentation Requirements
 1. All changes must be logged in real-time
 2. Documentation must be updated with changes
 3. Technical decisions must be documented
 4. Issues must be tracked and categorized
 5. Test coverage must be documented
+6. All changes documented in real-time
+7. Timestamps use [YYYY-MM-DD HH:MM] format (24-hour time)
+8. Changes categorized with standard tags
+9. Documentation kept in appropriate subdirectories
+10. Task status reflected in development log
 
 ### Code Standards
 1. Follow Python best practices

@@ -1,10 +1,32 @@
 # Development Log
 
+## Active Tasklist
+[Tasks are moved to timed entries upon completion]
+
+### High Priority
+- [ ] Move existing logs to appropriate directories (runtime/debug)
+- [ ] Update remaining documentation with new tasklist format
+- [ ] Test ship initialization with error cases
+- [ ] Verify entity rendering with color constants
+
+### Medium Priority
+- [ ] Test service retrieval functionality
+- [ ] Test state transitions and notifications
+- [ ] Test logging system output
+- [ ] Test ship movement and combat
+
+### Low Priority
+- [ ] Complete API documentation
+- [ ] Create system interaction diagrams
+- [ ] Implement performance monitoring
+- [ ] Add tutorial system
+
 ## Current Session [2025-01-12]
-Time Range: 8:00 AM - Present
+Time Range: 8:00 - Present
 Focus Areas: System Architecture, Service Management, Error Handling
 
 ### Major Updates
+[Updates are linked to their detailed log entries below]
 1. Core System Architecture Improvements
 2. Service System Enhancements
 3. Error Handling and Recovery
@@ -14,6 +36,19 @@ Focus Areas: System Architecture, Service Management, Error Handling
 7. Dependency Management
 8. State Service Enhancement
 9. Service Initialization Order
+
+### Completed Tasks
+[Tasks moved from Active Tasklist upon completion]
+
+[2025-01-12 09:38] [DOC] Active Tasklist Implementation
+- Added Active Tasklist section to development log
+- Organized tasks by priority levels
+- Added task completion tracking
+- Updated documentation format for task management
+
+Focus Areas: Project Management, Documentation
+Major Changes: Development Log Structure
+Next Steps: Begin addressing high priority tasks
 
 ### Detailed Log Entries
 [Note: All timestamps use 1-minute intervals for precise tracking]

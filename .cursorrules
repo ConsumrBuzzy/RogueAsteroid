@@ -17,6 +17,11 @@
    - It causes compatibility issues
    - It has been explicitly marked for replacement
    - It has been superseded by new functionality
+9. Maintain active tasklist in DEVELOPMENT_LOG.md:
+   - Tasks must be categorized by priority
+   - Tasks must be tracked from creation to completion
+   - Completed tasks must be moved to timestamped entries
+   - All changes must be linked to specific tasks
 
 ## Documentation
 - PROJECT_CHARTER.md: Roles and methodology
