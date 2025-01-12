@@ -16,6 +16,7 @@ from src.core.entities.base import (
     CollisionComponent
 )
 from src.core.components.effect import EffectComponent
+from src.core.components import ComponentRegistry
 
 class MockGame:
     """Mock game class for testing."""
@@ -33,6 +34,7 @@ class TestShip(unittest.TestCase):
         """Set up test environment."""
         self.game = MockGame()
         self.ship = None
+        self.registry = ComponentRegistry()
     
     def tearDown(self):
         """Clean up test environment."""
@@ -52,43 +54,59 @@ class TestShip(unittest.TestCase):
     
     def test_ship_missing_transform(self):
         """Test ship initialization with missing transform component."""
-        self.ship = Ship(self.game)
-        transform = self.ship.get_component(TransformComponent)
-        self.ship.remove_component(transform)
+        # Temporarily unregister TransformComponent
+        transform_creator = self.registry._components.pop('TransformComponent', None)
         
         with self.assertRaises(RuntimeError) as context:
-            self.ship.initialize()
+            self.ship = Ship(self.game)
+            
         self.assertIn("Missing required component", str(context.exception))
+        
+        # Restore component
+        if transform_creator:
+            self.registry._components['TransformComponent'] = transform_creator
     
     def test_ship_missing_render(self):
         """Test ship initialization with missing render component."""
-        self.ship = Ship(self.game)
-        render = self.ship.get_component(RenderComponent)
-        self.ship.remove_component(render)
+        # Temporarily unregister RenderComponent
+        render_creator = self.registry._components.pop('RenderComponent', None)
         
         with self.assertRaises(RuntimeError) as context:
-            self.ship.initialize()
+            self.ship = Ship(self.game)
+            
         self.assertIn("Missing required component", str(context.exception))
+        
+        # Restore component
+        if render_creator:
+            self.registry._components['RenderComponent'] = render_creator
     
     def test_ship_missing_collision(self):
         """Test ship initialization with missing collision component."""
-        self.ship = Ship(self.game)
-        collision = self.ship.get_component(CollisionComponent)
-        self.ship.remove_component(collision)
+        # Temporarily unregister CollisionComponent
+        collision_creator = self.registry._components.pop('CollisionComponent', None)
         
         with self.assertRaises(RuntimeError) as context:
-            self.ship.initialize()
+            self.ship = Ship(self.game)
+            
         self.assertIn("Missing required component", str(context.exception))
+        
+        # Restore component
+        if collision_creator:
+            self.registry._components['CollisionComponent'] = collision_creator
     
     def test_ship_missing_effect(self):
         """Test ship initialization with missing effect component."""
-        self.ship = Ship(self.game)
-        effect = self.ship.get_component(EffectComponent)
-        self.ship.remove_component(effect)
+        # Temporarily unregister EffectComponent
+        effect_creator = self.registry._components.pop('EffectComponent', None)
         
         with self.assertRaises(RuntimeError) as context:
-            self.ship.initialize()
+            self.ship = Ship(self.game)
+            
         self.assertIn("Missing required component", str(context.exception))
+        
+        # Restore component
+        if effect_creator:
+            self.registry._components['EffectComponent'] = effect_creator
     
     def test_ship_component_order(self):
         """Test ship component initialization order."""

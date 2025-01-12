@@ -32,8 +32,8 @@ class Component:
         """
         pass
         
-    def cleanup(self) -> None:
-        """Clean up the component."""
+    def destroy(self) -> None:
+        """Clean up and destroy the component."""
         self.active = False
         self._initialized = False
         
