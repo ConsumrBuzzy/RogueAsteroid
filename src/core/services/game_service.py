@@ -2,7 +2,7 @@
 from typing import Dict, Optional, List
 import pygame
 
-from ..entity import Entity, EntityFactory
+from ..entity import Entity
 from . import ServiceManager
 
 class GameService:
@@ -43,33 +43,41 @@ class GameService:
         self._achievement_service = service_manager.get_service('achievement')
         self._statistics_service = service_manager.get_service('statistics')
         
-        # Initialize entity factory
-        self._entity_factory = EntityFactory()
+        # Get system services
+        self._event_manager = service_manager.get_service('events')
+        self._resource_manager = service_manager.get_service('resources')
+        self._entity_factory = service_manager.get_service('entity_factory')
         
-        # Entity tracking
-        self._entities: List[Entity] = []
+        # Subscribe to events
+        self._event_manager.subscribe('game_start', self._on_game_start)
+        self._event_manager.subscribe('game_over', self._on_game_over)
+        self._event_manager.subscribe('level_complete', self._on_level_complete)
         
         print("GameService initialized")
     
     def start(self) -> None:
         """Start the game loop."""
         self._running = True
+        self._event_manager.publish('game_start')
         self._state_service.change_state('MAIN_MENU')
         print("Game loop started")
     
     def stop(self) -> None:
         """Stop the game loop."""
         self._running = False
+        self._event_manager.publish('game_stop')
         print("Game loop stopped")
     
     def pause(self) -> None:
         """Pause the game."""
         self._paused = True
+        self._event_manager.publish('game_pause')
         print("Game paused")
     
     def resume(self) -> None:
         """Resume the game."""
         self._paused = False
+        self._event_manager.publish('game_resume')
         print("Game resumed")
     
     def is_running(self) -> bool:
@@ -107,9 +115,11 @@ class GameService:
             self._achievement_service.update(dt)
             self._statistics_service.update(dt)
             
-            # Update all entities
-            for entity in self._entities[:]:  # Copy list to allow removal
-                entity.update(dt)
+            # Update entity factory
+            self._entity_factory.update(dt)
+            
+            # Process events
+            self._event_manager.process_events()
     
     def draw(self) -> None:
         """Draw the current game state."""
@@ -124,23 +134,23 @@ class GameService:
         # Update display
         pygame.display.flip()
     
-    def add_entity(self, entity: Entity) -> None:
+    def add_entity(self, entity_type: str, x: float = 0, y: float = 0, **kwargs) -> Optional[Entity]:
         """Add an entity to the game.
         
         Args:
-            entity: Entity to add
+            entity_type: Type of entity to create
+            x: Initial x position
+            y: Initial y position
+            **kwargs: Additional entity parameters
+            
+        Returns:
+            Created entity or None if creation failed
         """
-        self._entities.append(entity)
-        
-        # Register with services as needed
-        if entity.get_component('RenderComponent'):
-            self._render_service.register_entity(entity)
-        if entity.get_component('PhysicsComponent'):
-            self._physics_service.register_entity(entity)
-        if entity.get_component('CollisionComponent'):
-            self._collision_service.register_entity(entity)
-        
-        print(f"Added entity {entity.id} to game")
+        entity = self._entity_factory.create_entity(entity_type, x, y, **kwargs)
+        if entity:
+            self._event_manager.publish('entity_created', entity=entity)
+            print(f"Created entity of type {entity_type}")
+        return entity
     
     def remove_entity(self, entity: Entity) -> None:
         """Remove an entity from the game.
@@ -148,20 +158,14 @@ class GameService:
         Args:
             entity: Entity to remove
         """
-        if entity in self._entities:
-            self._entities.remove(entity)
-            
-            # Unregister from services
-            self._render_service.unregister_entity(entity)
-            self._physics_service.unregister_entity(entity)
-            self._collision_service.unregister_entity(entity)
-            
-            print(f"Removed entity {entity.id} from game")
+        self._entity_factory.remove_entity(entity)
+        self._event_manager.publish('entity_destroyed', entity=entity)
+        print(f"Removed entity {entity.id}")
     
     def clear(self) -> None:
         """Clear all game state."""
         # Clear all entities
-        self._entities.clear()
+        self._entity_factory.clear_all()
         
         # Clear all services
         self._render_service.clear()
@@ -170,4 +174,23 @@ class GameService:
         self._particle_service.clear()
         self._ui_service.clear()
         
-        print("Game state cleared") 
+        # Publish clear event
+        self._event_manager.publish('game_clear')
+        print("Game state cleared")
+        
+    def _on_game_start(self, **kwargs) -> None:
+        """Handle game start event."""
+        self._resource_manager.preload_resources()
+        print("Game started - resources loaded")
+        
+    def _on_game_over(self, **kwargs) -> None:
+        """Handle game over event."""
+        score = kwargs.get('score', 0)
+        self._high_score_service.add_score(score)
+        print(f"Game over - score: {score}")
+        
+    def _on_level_complete(self, **kwargs) -> None:
+        """Handle level complete event."""
+        level = kwargs.get('level', 1)
+        self._statistics_service.record_level_complete(level)
+        print(f"Level {level} completed") 
