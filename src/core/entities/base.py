@@ -4,7 +4,7 @@ This module provides the foundational classes for the entity component system (E
 The system is designed to be flexible, extensible, and maintainable, following SOLID principles.
 """
 
-from typing import Dict, Type, TypeVar, Optional, List, Tuple, Any
+from typing import Dict, Type, TypeVar, Optional, List, Tuple, Any, Union
 import pygame
 import math
 from pygame import Vector2
@@ -55,16 +55,20 @@ class Entity:
         self._components[name] = component
         return component
     
-    def get_component(self, name: str) -> Optional['Component']:
-        """Get a component by name.
+    def get_component(self, component_type_or_name: Union[Type[T], str]) -> Optional[T]:
+        """Get a component by type or name.
         
         Args:
-            name: The name of the component to retrieve.
+            component_type_or_name: The component type class or name string.
             
         Returns:
             The component if found, None otherwise.
         """
-        return self._components.get(name.lower().replace('component', ''))
+        if isinstance(component_type_or_name, str):
+            name = component_type_or_name.lower().replace('component', '')
+        else:
+            name = component_type_or_name.__name__.lower().replace('component', '')
+        return self._components.get(name)
     
     def update(self, dt: float) -> None:
         """Update all components of the entity.
