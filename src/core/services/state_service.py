@@ -20,6 +20,7 @@ class StateService:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
+            cls._instance._ready = False  # Add ready flag
         return cls._instance
         
     def __init__(self):
@@ -34,16 +35,20 @@ class StateService:
         self._valid_transitions: Dict[GameState, Set[GameState]] = {}
         self._subscribers: Dict[str, List[Callable]] = {}
         self._logger = LoggingService()
-        self._ready = False  # New flag to track full initialization
+        self._ready = False  # Ensure not ready during initialization
         
-        # Initialize valid transitions
-        self._setup_valid_transitions()
-        
-        # Set initial state without triggering handlers
-        self._current_state = GameState.MAIN_MENU
-        self._logger.log("StateService initialized", "INFO")
-        self._initialized = True
-        self._ready = True  # Mark as ready after full initialization
+        try:
+            # Initialize valid transitions
+            self._setup_valid_transitions()
+            
+            # Set initial state without triggering handlers
+            self._current_state = GameState.MAIN_MENU
+            self._logger.log("StateService initialized", "INFO")
+            self._initialized = True
+            self._ready = True  # Mark as ready after successful initialization
+        except Exception as e:
+            self._logger.log(f"Failed to initialize StateService: {e}", "ERROR")
+            raise
         
     def _setup_valid_transitions(self) -> None:
         """Setup valid state transitions."""
@@ -283,22 +288,26 @@ class StateService:
             
     def cleanup(self) -> None:
         """Clean up the state service."""
-        if not self._ready:
-            self._logger.log("Cleanup called before service was ready", "WARNING")
+        if not getattr(self, '_ready', False):
+            if hasattr(self, '_logger'):
+                self._logger.log("Cleanup called before service was ready", "WARNING")
             return
             
         # Clear subscribers
-        self._subscribers.clear()
+        if hasattr(self, '_subscribers'):
+            self._subscribers.clear()
         
         # Clear handlers
-        self._state_handlers.clear()
+        if hasattr(self, '_state_handlers'):
+            self._state_handlers.clear()
         
         # Clear state
         self._current_state = None
         self._previous_state = None
         
         self._ready = False  # Mark as not ready after cleanup
-        self._logger.log("StateService cleaned up", "INFO")
+        if hasattr(self, '_logger'):
+            self._logger.log("StateService cleaned up", "INFO")
         print("StateService cleaned up")
 
     def subscribe(self, subscriber_id: str, callback: Callable) -> None:
