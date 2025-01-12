@@ -242,8 +242,10 @@ class TestGameService:
     def test_spawn_asteroids(self, game_service, monkeypatch):
         """Test asteroid spawning."""
         # Mock the ship and asteroid creation
+        mock_transform = MagicMock()
+        mock_transform.position = pygame.Vector2(400, 300)
         mock_ship = MagicMock()
-        mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
+        mock_ship.get_component.return_value = mock_transform
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
@@ -297,8 +299,10 @@ class TestGameService:
         initial_level = game_service._level
         
         # Mock player ship for asteroid spawning
+        mock_transform = MagicMock()
+        mock_transform.position = pygame.Vector2(400, 300)
         mock_ship = MagicMock()
-        mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
+        mock_ship.get_component.return_value = mock_transform
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
