@@ -2,7 +2,7 @@
 from typing import Dict, Optional, List
 import pygame
 
-from ..entity import Entity
+from ..entity.entity import Entity
 
 class GameService:
     """Service for core game management.
