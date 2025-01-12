@@ -15,6 +15,9 @@ from .high_score_service import HighScoreService
 from .settings_service import SettingsService
 from .achievement_service import AchievementService
 from .statistics_service import StatisticsService
+from .entity_factory_service import EntityFactoryService
+from .event_manager_service import EventManagerService
+from .resource_manager_service import ResourceManagerService
 
 class ServiceManager:
     """Manages all game services."""
@@ -44,10 +47,15 @@ class ServiceManager:
             screen: Pygame surface to render to
             settings: Game settings
         """
-        # Initialize core services first
+        # Initialize system services first
         self._services['settings'] = SettingsService()
+        self._services['events'] = EventManagerService()
+        self._services['resources'] = ResourceManagerService()
+        
+        # Initialize core services
         self._services['state'] = StateService()
         self._services['input'] = InputService()
+        self._services['entity_factory'] = EntityFactoryService()
         
         # Initialize rendering and graphics services
         self._services['render'] = RenderService(screen)
@@ -81,8 +89,21 @@ class ServiceManager:
     
     def cleanup(self) -> None:
         """Clean up all services."""
-        for service in self._services.values():
-            if hasattr(service, 'cleanup'):
+        # Clean up in reverse dependency order
+        cleanup_order = [
+            'game',
+            'statistics', 'achievement', 'high_score',
+            'menu', 'collision', 'physics',
+            'ui', 'particle', 'render',
+            'entity_factory', 'input', 'state',
+            'resources', 'events', 'settings'
+        ]
+        
+        for service_name in cleanup_order:
+            service = self._services.get(service_name)
+            if service and hasattr(service, 'cleanup'):
                 service.cleanup()
+                print(f"Cleaned up {service_name} service")
+                
         self._services.clear()
         print("All services cleaned up") 
