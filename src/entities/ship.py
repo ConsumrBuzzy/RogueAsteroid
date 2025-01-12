@@ -125,18 +125,14 @@ class Ship(Entity):
             left_keys = [pygame.K_a]
             right_keys = [pygame.K_d]
             
-        # Bind movement keys
-        for key in thrust_keys:
-            self.input_component.bind_key(key, self._apply_thrust, True)
-        for key in reverse_keys:
-            self.input_component.bind_key(key, self._apply_reverse_thrust, True)
-        for key in left_keys:
-            self.input_component.bind_key(key, self._rotate_left, True)
-        for key in right_keys:
-            self.input_component.bind_key(key, self._rotate_right, True)
+        # Bind movement actions
+        self.input_component.bind_action("thrust", thrust_keys, self._apply_thrust)
+        self.input_component.bind_action("reverse", reverse_keys, self._apply_reverse_thrust)
+        self.input_component.bind_action("rotate_left", left_keys, self._rotate_left)
+        self.input_component.bind_action("rotate_right", right_keys, self._rotate_right)
             
-        # Bind shoot to space only
-        self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
+        # Bind shoot to space
+        self.input_component.bind_action("shoot", [pygame.K_SPACE], self._shoot)
         
         print(f"Controls updated to scheme: {controls}")  # Debug info
     
