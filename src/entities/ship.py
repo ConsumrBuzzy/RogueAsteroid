@@ -72,46 +72,50 @@ class Ship(Entity):
         try:
             # Transform component for position and movement
             transform = self._registry.create_component('TransformComponent', self)
-            self.add_component(transform)
             transform.position = Vector2(self.game.width / 2, self.game.height / 2)
             self._initialized_components.add(TransformComponent)
             
             # Render component for drawing
             render = self._registry.create_component('RenderComponent', self)
-            self.add_component(render)
             render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]
             render.color = (255, 255, 255)
             self._initialized_components.add(RenderComponent)
             
             # Physics component for thrust and momentum
             physics = self._registry.create_component('PhysicsComponent', self)
-            self.add_component(physics)
             physics.max_speed = SHIP_MAX_SPEED
             physics.friction = SHIP_FRICTION
             self._initialized_components.add(PhysicsComponent)
             
             # Collision component for hit detection
             collision = self._registry.create_component('CollisionComponent', self, radius=15)
-            self.add_component(collision)
             self._initialized_components.add(CollisionComponent)
             
             # Screen wrap component
             screen_wrap = self._registry.create_component('ScreenWrapComponent', self, 
                 screen_size=(self.game.width, self.game.height))
-            self.add_component(screen_wrap)
             self._initialized_components.add(ScreenWrapComponent)
             
             # Effects component for visual effects
             effects = self._registry.create_component('EffectComponent', self)
-            self.add_component(effects)
             self._init_thrust_effect(effects)
             self._initialized_components.add(EffectComponent)
             
             # Input component for controls
             input_component = self._registry.create_component('InputComponent', self)
-            self.add_component(input_component)
             self.update_controls()
             self._initialized_components.add(InputComponent)
+            
+            # Add all components to entity
+            self.components.extend([
+                transform,
+                render,
+                physics,
+                collision,
+                screen_wrap,
+                effects,
+                input_component
+            ])
             
             # Initialize the entity after all components are added
             self.initialize()
