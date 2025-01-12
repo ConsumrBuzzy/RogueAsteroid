@@ -1,5 +1,5 @@
 """Ship entity class."""
-from typing import Optional
+from typing import Optional, Dict, Type
 import pygame
 from pygame import Vector2
 
@@ -24,62 +24,109 @@ class Ship(Entity):
     - Screen wrapping
     """
     
+    # Required components for ship functionality
+    REQUIRED_COMPONENTS: Dict[Type, str] = {
+        TransformComponent: "Position and movement",
+        RenderComponent: "Visual representation",
+        PhysicsComponent: "Movement physics",
+        CollisionComponent: "Collision detection",
+        InputComponent: "Control handling",
+        EffectComponent: "Visual effects",
+        ScreenWrapComponent: "Screen wrapping"
+    }
+    
     def __init__(self, game):
         """Initialize the ship.
         
         Args:
             game: The game instance this ship belongs to
+            
+        Raises:
+            RuntimeError: If required components fail to initialize
         """
         super().__init__(game)
         self._invulnerable_timer = 0
         self._thrust_timer = 0
-        self._init_components()
+        self._initialized_components = set()
+        try:
+            self._init_components()
+            self._validate_components()
+        except Exception as e:
+            print(f"Error initializing ship: {e}")
+            self.destroy()
+            raise RuntimeError(f"Ship initialization failed: {e}")
         
     def _init_components(self) -> None:
-        """Initialize ship components."""
-        print("Initializing ship...")
+        """Initialize ship components.
         
-        # Transform component for position and movement
-        transform = TransformComponent(self)
-        self.add_component(transform)
-        transform.position = Vector2(self.game.width / 2, self.game.height / 2)
-        print(f"Transform component added: {transform}")  # Debug info
+        Raises:
+            ValueError: If component initialization fails
+        """
+        try:
+            # Transform component for position and movement
+            transform = TransformComponent(self)
+            self.add_component(transform)
+            transform.position = Vector2(self.game.width / 2, self.game.height / 2)
+            self._initialized_components.add(TransformComponent)
+            
+            # Render component for drawing
+            render = RenderComponent(self)
+            self.add_component(render)
+            render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]
+            render.color = (255, 255, 255)
+            self._initialized_components.add(RenderComponent)
+            
+            # Physics component for thrust and momentum
+            physics = PhysicsComponent(self)
+            self.add_component(physics)
+            physics.max_speed = SHIP_MAX_SPEED
+            physics.friction = SHIP_FRICTION
+            self._initialized_components.add(PhysicsComponent)
+            
+            # Collision component for hit detection
+            collision = CollisionComponent(self, radius=15)
+            self.add_component(collision)
+            self._initialized_components.add(CollisionComponent)
+            
+            # Screen wrap component
+            screen_wrap = ScreenWrapComponent(self, screen_size=(self.game.width, self.game.height))
+            self.add_component(screen_wrap)
+            self._initialized_components.add(ScreenWrapComponent)
+            
+            # Effects component for visual effects
+            effects = EffectComponent(self)
+            self.add_component(effects)
+            self._init_thrust_effect(effects)
+            self._initialized_components.add(EffectComponent)
+            
+            # Input component for controls
+            input_component = InputComponent(self)
+            self.add_component(input_component)
+            self.update_controls()
+            self._initialized_components.add(InputComponent)
+            
+            # Initialize the entity after all components are added
+            self.initialize()
+            
+        except Exception as e:
+            print(f"Component initialization failed: {e}")
+            raise ValueError(f"Failed to initialize components: {e}")
+            
+    def _validate_components(self) -> None:
+        """Validate that all required components are initialized.
         
-        # Render component for drawing
-        render = RenderComponent(self)
-        self.add_component(render)
-        render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]  # Triangle shape
-        render.color = (255, 255, 255)  # White
-        print(f"Render component added: {render}")  # Debug info
-        print(f"Render vertices: {render.vertices}")  # Debug info
-        
-        # Physics component for thrust and momentum
-        physics = PhysicsComponent(self)
-        self.add_component(physics)
-        physics.max_speed = SHIP_MAX_SPEED
-        physics.friction = SHIP_FRICTION
-        
-        # Collision component for hit detection
-        collision = CollisionComponent(self, radius=15)
-        self.add_component(collision)
-        print(f"Collision component added: {collision}")  # Debug info
-        
-        # Screen wrap component to wrap around screen edges
-        screen_wrap = ScreenWrapComponent(self, screen_size=(self.game.width, self.game.height))
-        self.add_component(screen_wrap)
-        
-        # Effects component for visual effects
-        effects = EffectComponent(self)
-        self.add_component(effects)
-        self._init_thrust_effect(effects)  # Initialize thrust effect
-        
-        # Input component for controls
-        input_component = InputComponent(self)
-        self.add_component(input_component)
-        self.update_controls()  # Initialize controls
-        
-        # Initialize the entity after all components are added
-        self.initialize()
+        Raises:
+            RuntimeError: If any required components are missing
+        """
+        missing_components = []
+        for component_type, purpose in self.REQUIRED_COMPONENTS.items():
+            if component_type not in self._initialized_components:
+                missing_components.append(f"{component_type.__name__} ({purpose})")
+                
+        if missing_components:
+            raise RuntimeError(f"Missing required components: {', '.join(missing_components)}")
+            
+        print("All required ship components initialized successfully")
         
     def get_transform(self) -> Optional[TransformComponent]:
         """Get the transform component.
