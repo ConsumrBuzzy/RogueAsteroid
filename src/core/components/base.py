@@ -51,6 +51,7 @@ class TransformComponent(Component):
         self.x = x
         self.y = y
         self.rotation = rotation
+        self.velocity = pygame.Vector2(0.0, 0.0)
     
     def get_position(self) -> Tuple[float, float]:
         """Get the current position.
@@ -69,6 +70,16 @@ class TransformComponent(Component):
         """
         self.x = x
         self.y = y
+        
+    def update(self, dt: float) -> None:
+        """Update position based on velocity.
+        
+        Args:
+            dt: Time elapsed since last update in seconds
+        """
+        if self.velocity.length() > 0:
+            self.x += self.velocity.x * dt
+            self.y += self.velocity.y * dt
 
 class RenderComponent(Component):
     """Component for rendering entities."""

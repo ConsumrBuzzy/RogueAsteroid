@@ -1,26 +1,23 @@
 """Physics component for entity movement."""
 import pygame
-from src.core.entities.base import Component, Entity, TransformComponent
+from src.core.components.base import Component
+from typing import Any
 
 class PhysicsComponent(Component):
     """Component for physics-based movement."""
     
-    def __init__(self, entity: Entity):
+    def __init__(self, entity: Any, max_speed: float = 0.0, friction: float = 0.0):
         """Initialize the physics component.
         
         Args:
             entity: The entity this component belongs to
+            max_speed: Maximum speed limit (0 for no limit)
+            friction: Friction coefficient
         """
         super().__init__(entity)
-        self.max_speed = 0.0
-        self.friction = 0.0
+        self.max_speed = max_speed
+        self.friction = friction
         self.acceleration = pygame.Vector2(0.0, 0.0)
-    
-    def initialize(self) -> None:
-        """Initialize the component."""
-        # Verify we have a transform component
-        if not self.entity.get_component(TransformComponent):
-            raise RuntimeError("PhysicsComponent requires TransformComponent")
     
     def update(self, dt: float) -> None:
         """Update physics state.
@@ -31,7 +28,7 @@ class PhysicsComponent(Component):
         if not self.active:
             return
             
-        transform = self.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('TransformComponent')
         if not transform:
             return
             

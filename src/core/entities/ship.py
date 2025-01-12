@@ -4,115 +4,75 @@ from typing import Tuple
 import math
 
 from .base import Entity
-from ..components import (
-    TransformComponent,
-    PhysicsComponent,
-    RenderComponent,
-    CollisionComponent,
-    InputComponent,
-    ScreenWrapComponent
-)
 from ..constants import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     SHIP_ACCELERATION,
     SHIP_MAX_SPEED,
     SHIP_ROTATION_SPEED,
-    SHIP_FRICTION
+    SHIP_FRICTION,
+    SHIP_RADIUS
 )
 
 class Ship(Entity):
     """Player-controlled ship entity."""
     
-    def __init__(self, position: Tuple[float, float], rotation: float = 0):
+    def __init__(self, x: float = SCREEN_WIDTH/2, y: float = SCREEN_HEIGHT/2, rotation: float = 0):
         """Initialize the ship.
         
         Args:
-            position: Initial (x, y) position
+            x: Initial x position
+            y: Initial y position
             rotation: Initial rotation in degrees
         """
         super().__init__()
         
-        # Add required components
-        self.add_component(TransformComponent(
-            position=position,
-            rotation=rotation,
-            scale=(1, 1)
-        ))
+        # Add transform component
+        self.add_component('TransformComponent', x=x, y=y, rotation=rotation)
         
-        self.add_component(PhysicsComponent(
-            velocity=(0, 0),
-            acceleration=0,
-            max_speed=SHIP_MAX_SPEED,
-            friction=SHIP_FRICTION
-        ))
+        # Add physics component
+        self.add_component('PhysicsComponent', max_speed=SHIP_MAX_SPEED, friction=SHIP_FRICTION)
         
-        self.add_component(RenderComponent(
-            color=(255, 255, 255),  # White
-            points=[
-                (0, -20),   # Nose
-                (-10, 10),  # Left wing
-                (0, 5),     # Tail
-                (10, 10)    # Right wing
-            ]
-        ))
+        # Add render component with ship shape
+        points = [
+            (0, -15),   # Nose
+            (-10, 15),  # Left corner
+            (0, 10),    # Back center
+            (10, 15)    # Right corner
+        ]
+        self.add_component('RenderComponent', color=(255, 255, 255), points=points)
         
-        self.add_component(CollisionComponent(
-            radius=15,
-            layer="ship"
-        ))
+        # Add collision component
+        self.add_component('CollisionComponent', radius=SHIP_RADIUS)
         
-        self.add_component(InputComponent(
-            controls={
-                pygame.K_w: self._thrust,
-                pygame.K_a: self._rotate_left,
-                pygame.K_d: self._rotate_right,
-                pygame.K_SPACE: self._fire
-            }
-        ))
+        # Add input component
+        self.add_component('InputComponent')
         
-        self.add_component(ScreenWrapComponent(
-            width=SCREEN_WIDTH,
-            height=SCREEN_HEIGHT
-        ))
+        # Add screen wrap component
+        self.add_component('ScreenWrapComponent')
+    
+    def thrust(self) -> None:
+        """Apply forward thrust to the ship."""
+        transform = self.get_component('TransformComponent')
+        physics = self.get_component('PhysicsComponent')
         
-    def _thrust(self, dt: float):
-        """Apply forward thrust."""
-        transform = self.get_component(TransformComponent)
-        physics = self.get_component(PhysicsComponent)
-        
-        # Convert rotation to radians
-        angle = math.radians(transform.rotation - 90)  # -90 because ship points up at 0
-        
-        # Calculate thrust vector
-        thrust_x = math.cos(angle) * SHIP_ACCELERATION
-        thrust_y = math.sin(angle) * SHIP_ACCELERATION
-        
-        # Apply thrust
-        current_vx, current_vy = physics.velocity
-        new_vx = current_vx + thrust_x * dt
-        new_vy = current_vy + thrust_y * dt
-        
-        # Limit speed
-        speed = math.sqrt(new_vx * new_vx + new_vy * new_vy)
-        if speed > SHIP_MAX_SPEED:
-            scale = SHIP_MAX_SPEED / speed
-            new_vx *= scale
-            new_vy *= scale
-            
-        physics.velocity = (new_vx, new_vy)
-        
-    def _rotate_left(self, dt: float):
-        """Rotate ship counter-clockwise."""
-        transform = self.get_component(TransformComponent)
-        transform.rotation = (transform.rotation - SHIP_ROTATION_SPEED * dt) % 360
-        
-    def _rotate_right(self, dt: float):
-        """Rotate ship clockwise."""
-        transform = self.get_component(TransformComponent)
-        transform.rotation = (transform.rotation + SHIP_ROTATION_SPEED * dt) % 360
-        
-    def _fire(self, dt: float):
-        """Fire the ship's weapon."""
-        # TODO: Implement weapon firing
-        pass 
+        if transform and physics:
+            # Calculate thrust vector based on rotation
+            angle = math.radians(transform.rotation)
+            thrust = pygame.Vector2(
+                math.sin(angle) * SHIP_ACCELERATION,
+                -math.cos(angle) * SHIP_ACCELERATION
+            )
+            physics.apply_force(thrust)
+    
+    def rotate_left(self) -> None:
+        """Rotate the ship counter-clockwise."""
+        transform = self.get_component('TransformComponent')
+        if transform:
+            transform.rotation = (transform.rotation - SHIP_ROTATION_SPEED) % 360
+    
+    def rotate_right(self) -> None:
+        """Rotate the ship clockwise."""
+        transform = self.get_component('TransformComponent')
+        if transform:
+            transform.rotation = (transform.rotation + SHIP_ROTATION_SPEED) % 360 
