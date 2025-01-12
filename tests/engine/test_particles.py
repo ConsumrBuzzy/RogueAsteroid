@@ -1,7 +1,9 @@
-"""Test suite for particle effects system."""
+"""Test suite for particle system."""
 import pytest
 import pygame
+import random
 from src.core.game import Game
+from src.core.systems.particle import ParticleSystem, Particle
 from src.core.constants import *
 
 @pytest.fixture
@@ -12,151 +14,199 @@ def game(mock_game, screen):
     yield game
 
 @pytest.fixture
-def particle_setup(game):
-    """Setup a fresh game state for particle testing."""
-    game.new_game()
-    return game
+def particle_system(game):
+    """Create a particle system instance."""
+    return ParticleSystem(game)
 
 @pytest.mark.engine
 class TestParticleSystem:
-    """Test cases for the particle effects system."""
+    """Test cases for the particle system."""
     
-    def test_particle_creation(self, game, particle_setup):
-        """Test basic particle creation."""
-        initial_count = len(game.particles)
-        
+    def test_particle_creation(self, game, particle_system):
+        """Test creating particles with different properties."""
         # Create test particles
-        position = pygame.Vector2(400, 300)
-        velocity = pygame.Vector2(1, 0)
-        color = (255, 0, 0)
-        lifetime = 1.0
+        test_particles = [
+            particle_system.create_particle(
+                pos=(100, 100),
+                velocity=(random.uniform(-1, 1), random.uniform(-1, 1)),
+                color=(255, 0, 0),
+                size=5,
+                lifetime=1.0
+            ) for _ in range(10)
+        ]
         
-        game.create_particle(position, velocity, color, lifetime)
-        
-        assert len(game.particles) == initial_count + 1, "Particle should be added to system"
-        particle = game.particles[-1]
-        assert pygame.Vector2(particle['position']) == position, "Particle should have correct position"
-        assert pygame.Vector2(particle['velocity']) == velocity, "Particle should have correct velocity"
-        assert particle['color'] == color, "Particle should have correct color"
-        assert particle['lifetime'] == lifetime, "Particle should have correct lifetime"
+        assert len(particle_system.particles) == 10, "All particles should be added to system"
+        for particle in test_particles:
+            assert isinstance(particle, Particle), "Created object should be a Particle"
+            assert particle.lifetime > 0, "Particle should have positive lifetime"
     
-    def test_particle_update(self, game, particle_setup):
-        """Test particle movement and lifetime."""
-        # Create test particle
-        position = pygame.Vector2(400, 300)
-        velocity = pygame.Vector2(100, 0)  # 100 pixels per second
-        game.create_particle(position, velocity, (255, 0, 0), 1.0)
-        
-        # Update for one frame
-        dt = 1/60
-        game.update(dt)
-        
-        # Verify position update
-        particle = game.particles[0]
-        expected_pos = position + velocity * dt
-        actual_pos = pygame.Vector2(particle['position'])
-        assert (actual_pos - expected_pos).length() < 0.1, "Particle should move according to velocity"
-        
-        # Verify lifetime update
-        assert particle['lifetime'] < 1.0, "Particle lifetime should decrease"
-    
-    def test_particle_cleanup(self, game, particle_setup):
-        """Test particle removal after lifetime expires."""
-        # Create particles with different lifetimes
-        lifetimes = [0.1, 0.2, 0.3]
-        for lifetime in lifetimes:
-            game.create_particle(
-                pygame.Vector2(400, 300),
-                pygame.Vector2(0, 0),
-                (255, 0, 0),
-                lifetime
-            )
-        
-        initial_count = len(game.particles)
-        
-        # Update until first particle should be removed
-        for _ in range(int(0.15 * 60)):  # 0.15 seconds at 60 FPS
-            game.update(1/60)
-        
-        assert len(game.particles) < initial_count, "Expired particles should be removed"
-        
-        # Update until all particles should be removed
-        for _ in range(int(0.3 * 60)):  # Another 0.3 seconds
-            game.update(1/60)
-        
-        assert len(game.particles) == 0, "All particles should be removed after expiration"
-    
-    def test_explosion_effect(self, game, particle_setup):
-        """Test explosion particle effect."""
-        position = pygame.Vector2(400, 300)
-        initial_count = len(game.particles)
-        
-        # Create explosion
-        game.create_explosion(position.x, position.y)
-        
-        # Verify particle creation
-        assert len(game.particles) > initial_count, "Explosion should create multiple particles"
-        
-        # Verify particle properties
-        for particle in game.particles:
-            pos = pygame.Vector2(particle['position'])
-            assert (pos - position).length() < 1.0, "Particles should start at explosion center"
-            assert 'velocity' in particle, "Particles should have velocity"
-            assert 'color' in particle, "Particles should have color"
-            assert particle['lifetime'] > 0, "Particles should have positive lifetime"
-    
-    def test_thrust_effect(self, game, particle_setup):
-        """Test ship thrust particle effect."""
-        # Verify ship exists
-        assert game.ship is not None, "Ship should exist for thrust test"
-        
-        initial_count = len(game.particles)
-        
-        # Create thrust effect
-        game.ship.create_thrust_particles()
-        
-        # Verify particle creation
-        assert len(game.particles) > initial_count, "Thrust should create particles"
-        
-        # Get ship position and rotation
-        ship_transform = game.ship.get_component('transform')
-        ship_pos = ship_transform.position
-        ship_rot = ship_transform.rotation
-        
-        # Verify particle properties
-        for particle in game.particles[initial_count:]:  # Only check new particles
-            pos = pygame.Vector2(particle['position'])
-            # Particles should start near ship's rear
-            distance = (pos - ship_pos).length()
-            assert distance < 20, "Thrust particles should start near ship"
-            
-            # Verify particle color is appropriate for thrust
-            assert all(0 <= c <= 255 for c in particle['color']), "Color values should be valid"
-    
-    def test_particle_color_interpolation(self, game, particle_setup):
-        """Test particle color changes over lifetime."""
-        # Create particle with color transition
-        start_color = (255, 0, 0)
-        end_color = (0, 0, 255)
-        lifetime = 1.0
-        
-        game.create_particle_with_color_transition(
-            pygame.Vector2(400, 300),
-            pygame.Vector2(0, 0),
-            start_color,
-            end_color,
-            lifetime
+    def test_particle_update(self, game, particle_system):
+        """Test particle position updates."""
+        # Create test particle with known velocity
+        particle = particle_system.create_particle(
+            pos=(100, 100),
+            velocity=(10, 5),
+            color=(255, 0, 0),
+            size=5,
+            lifetime=1.0
         )
         
-        # Get initial color
-        initial_color = game.particles[0]['color']
-        assert initial_color == start_color, "Particle should start with initial color"
+        # Update one frame
+        dt = 1/60
+        initial_pos = particle.pos.copy()
+        particle_system.update(dt)
+        
+        # Check position update
+        expected_x = initial_pos[0] + particle.velocity[0] * dt
+        expected_y = initial_pos[1] + particle.velocity[1] * dt
+        assert abs(particle.pos[0] - expected_x) < 0.001, "X position should update correctly"
+        assert abs(particle.pos[1] - expected_y) < 0.001, "Y position should update correctly"
+    
+    def test_particle_lifetime(self, game, particle_system):
+        """Test particle lifetime and removal."""
+        # Create particles with different lifetimes
+        lifetimes = [0.5, 1.0, 1.5]
+        for lifetime in lifetimes:
+            particle_system.create_particle(
+                pos=(100, 100),
+                velocity=(0, 0),
+                color=(255, 0, 0),
+                size=5,
+                lifetime=lifetime
+            )
+        
+        assert len(particle_system.particles) == 3, "All particles should be created"
+        
+        # Update past shortest lifetime
+        particle_system.update(0.6)
+        assert len(particle_system.particles) == 2, "Shortest lifetime particle should be removed"
+        
+        # Update past medium lifetime
+        particle_system.update(0.5)
+        assert len(particle_system.particles) == 1, "Medium lifetime particle should be removed"
+        
+        # Update past longest lifetime
+        particle_system.update(0.5)
+        assert len(particle_system.particles) == 0, "All particles should be removed"
+    
+    def test_particle_color_fade(self, game, particle_system):
+        """Test particle color fading over lifetime."""
+        # Create particle with color fade
+        initial_color = (255, 0, 0)
+        particle = particle_system.create_particle(
+            pos=(100, 100),
+            velocity=(0, 0),
+            color=initial_color,
+            size=5,
+            lifetime=1.0,
+            fade=True
+        )
         
         # Update halfway through lifetime
-        for _ in range(int(lifetime * 0.5 * 60)):  # Half lifetime at 60 FPS
-            game.update(1/60)
+        particle_system.update(0.5)
         
-        # Check intermediate color
-        mid_color = game.particles[0]['color']
-        assert all(s <= m <= e for s, m, e in zip(start_color, mid_color, end_color)), \
-            "Color should interpolate between start and end colors" 
+        # Check color components have faded
+        for i in range(3):
+            assert particle.color[i] < initial_color[i], f"Color component {i} should fade"
+    
+    def test_particle_size_change(self, game, particle_system):
+        """Test particle size changes over lifetime."""
+        # Create particle with size change
+        initial_size = 10
+        particle = particle_system.create_particle(
+            pos=(100, 100),
+            velocity=(0, 0),
+            color=(255, 0, 0),
+            size=initial_size,
+            lifetime=1.0,
+            size_change=-5  # Shrink by 5 over lifetime
+        )
+        
+        # Update halfway through lifetime
+        particle_system.update(0.5)
+        
+        # Check size has changed
+        expected_size = initial_size + (particle.size_change * 0.5)
+        assert abs(particle.size - expected_size) < 0.001, "Size should change linearly"
+    
+    def test_particle_acceleration(self, game, particle_system):
+        """Test particle acceleration."""
+        # Create particle with acceleration
+        particle = particle_system.create_particle(
+            pos=(100, 100),
+            velocity=(0, 0),
+            acceleration=(0, 10),  # Accelerate downward
+            color=(255, 0, 0),
+            size=5,
+            lifetime=1.0
+        )
+        
+        # Update and check velocity changes
+        dt = 1/60
+        initial_velocity = particle.velocity[1]
+        particle_system.update(dt)
+        
+        assert particle.velocity[1] > initial_velocity, "Velocity should increase with acceleration"
+    
+    def test_particle_emission(self, game, particle_system):
+        """Test particle emission patterns."""
+        # Test circular emission
+        num_particles = 8
+        particle_system.emit_circular(
+            center=(100, 100),
+            speed=10,
+            color=(255, 0, 0),
+            size=5,
+            lifetime=1.0,
+            count=num_particles
+        )
+        
+        assert len(particle_system.particles) == num_particles, "All particles should be emitted"
+        
+        # Check particles are distributed in a circle
+        angles = set()
+        for particle in particle_system.particles:
+            angle = pygame.math.Vector2(particle.velocity).angle_to((1, 0))
+            angles.add(round(angle, 2))
+        
+        assert len(angles) == num_particles, "Particles should have unique angles"
+    
+    def test_particle_system_clear(self, game, particle_system):
+        """Test clearing all particles from the system."""
+        # Create some particles
+        for _ in range(5):
+            particle_system.create_particle(
+                pos=(100, 100),
+                velocity=(0, 0),
+                color=(255, 0, 0),
+                size=5,
+                lifetime=1.0
+            )
+        
+        assert len(particle_system.particles) > 0, "Particles should be created"
+        
+        # Clear system
+        particle_system.clear()
+        assert len(particle_system.particles) == 0, "All particles should be removed"
+    
+    def test_particle_system_pause(self, game, particle_system):
+        """Test pausing particle system updates."""
+        # Create test particle
+        particle = particle_system.create_particle(
+            pos=(100, 100),
+            velocity=(10, 0),
+            color=(255, 0, 0),
+            size=5,
+            lifetime=1.0
+        )
+        
+        # Pause system and update
+        particle_system.paused = True
+        initial_pos = particle.pos.copy()
+        initial_lifetime = particle.lifetime
+        
+        particle_system.update(1/60)
+        
+        # Check nothing changed while paused
+        assert particle.pos == initial_pos, "Position should not change while paused"
+        assert particle.lifetime == initial_lifetime, "Lifetime should not change while paused" 
