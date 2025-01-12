@@ -1,5 +1,5 @@
 """Service management for game systems."""
-from typing import Dict, Optional, Type, TypeVar
+from typing import Dict, Optional, Type, TypeVar, Set
 import pygame
 
 # Service name constants
@@ -64,24 +64,64 @@ class ServiceManager:
             return
             
         self._services: Dict[str, object] = {}
+        self._dependencies: Dict[str, Set[str]] = {
+            SERVICE_MENU: {SERVICE_UI, SERVICE_STATE, SERVICE_INPUT},
+            SERVICE_GAME: {SERVICE_INPUT, SERVICE_PHYSICS, SERVICE_RENDER, SERVICE_COLLISION,
+                          SERVICE_PARTICLE, SERVICE_UI, SERVICE_STATE, SERVICE_MENU,
+                          SERVICE_HIGH_SCORE, SERVICE_ACHIEVEMENT, SERVICE_STATISTICS,
+                          SERVICE_EVENTS, SERVICE_RESOURCES, SERVICE_ENTITY_FACTORY},
+            SERVICE_HIGH_SCORE: {SERVICE_SETTINGS, SERVICE_EVENTS},
+            SERVICE_ACHIEVEMENT: {SERVICE_SETTINGS, SERVICE_EVENTS},
+            SERVICE_STATISTICS: {SERVICE_SETTINGS, SERVICE_EVENTS},
+            SERVICE_ENTITY_FACTORY: {SERVICE_PHYSICS, SERVICE_COLLISION, SERVICE_PARTICLE}
+        }
         self._initialized = True
         print("ServiceManager initialized")
         
+    def _validate_dependencies(self, service_name: str) -> None:
+        """Validate service dependencies are registered.
+        
+        Args:
+            service_name: Service to validate
+            
+        Raises:
+            ValueError: If dependencies are missing
+        """
+        if service_name not in self._dependencies:
+            return
+            
+        missing = [dep for dep in self._dependencies[service_name] 
+                  if dep not in self._services]
+        if missing:
+            raise ValueError(f"Missing dependencies for {service_name}: {missing}")
+
     def register_service(self, name: str, service: object) -> None:
         """Register a service.
         
         Args:
             name: Service name
             service: Service instance
+            
+        Raises:
+            ValueError: If service name is empty or instance is None
         """
         if not name:
             raise ValueError("Service name cannot be empty")
         if service is None:
             raise ValueError("Service instance cannot be None")
             
+        # Validate dependencies before registration
+        self._validate_dependencies(name)
+            
         self._services[name] = service
         print(f"Registered service: {name}")
         
+        # Special handling for StateService and EventManager
+        if name == SERVICE_STATE and hasattr(service, 'set_event_manager'):
+            event_manager = self.get_service(SERVICE_EVENTS)
+            if event_manager:
+                service.set_event_manager(event_manager)
+
     def get_service(self, name: str, service_type: Optional[Type[T]] = None) -> Optional[T]:
         """Get a service by name.
         

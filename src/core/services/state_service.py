@@ -1,5 +1,5 @@
 """State service for game state management."""
-from typing import Optional, Dict, Callable
+from typing import Optional, Dict, Callable, Set
 import pygame
 from ..state.game_states import GameState
 
@@ -29,6 +29,8 @@ class StateService:
         self._current_state: Optional[GameState] = None
         self._previous_state: Optional[GameState] = None
         self._state_handlers: Dict[GameState, Callable] = {}
+        self._event_manager = None  # Will be set by set_event_manager
+        self._valid_transitions: Dict[GameState, Set[GameState]] = {}
         
         # Set initial state
         self.change_state(GameState.MAIN_MENU)
@@ -69,6 +71,46 @@ class StateService:
             print(f"Error registering handler for state {state.name}: {e}")
             raise
         
+    def set_event_manager(self, event_manager) -> None:
+        """Set the event manager for state change notifications.
+        
+        Args:
+            event_manager: EventManagerService instance
+        """
+        self._event_manager = event_manager
+
+    def add_valid_transition(self, from_state: GameState, to_state: GameState) -> None:
+        """Add a valid state transition.
+        
+        Args:
+            from_state: Starting state
+            to_state: Target state
+        """
+        if from_state not in self._valid_transitions:
+            self._valid_transitions[from_state] = set()
+        self._valid_transitions[from_state].add(to_state)
+
+    def is_valid_transition(self, from_state: GameState, to_state: GameState) -> bool:
+        """Check if a state transition is valid.
+        
+        Args:
+            from_state: Starting state
+            to_state: Target state
+            
+        Returns:
+            True if transition is valid
+        """
+        # Allow any transition if no valid transitions defined
+        if not self._valid_transitions:
+            return True
+        
+        # Allow transition to same state
+        if from_state == to_state:
+            return True
+        
+        # Check if transition is explicitly allowed
+        return to_state in self._valid_transitions.get(from_state, set())
+
     def change_state(self, new_state: GameState) -> None:
         """Change to a new game state.
         
@@ -84,6 +126,10 @@ class StateService:
             
         if new_state == self._current_state:
             return
+            
+        # Validate transition
+        if not self.is_valid_transition(self._current_state, new_state):
+            raise ValueError(f"Invalid state transition from {self._current_state} to {new_state}")
             
         try:
             # Store states for potential rollback
@@ -102,6 +148,13 @@ class StateService:
                     
             self._previous_state = self._current_state
             self._current_state = new_state
+            
+            # Notify state change
+            if self._event_manager:
+                self._event_manager.publish('state_changed', 
+                    old_state=self._previous_state,
+                    new_state=self._current_state)
+            
             print(f"Changed state from {self._previous_state} to {new_state}")
             
             # Call enter handler for new state if it exists

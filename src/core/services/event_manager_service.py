@@ -17,6 +17,8 @@ class EventManagerService:
         """Initialize the event manager service."""
         self._subscribers: Dict[str, List[Callable]] = defaultdict(list)
         self._event_queue: List[tuple[str, Dict[str, Any]]] = []
+        self._max_queue_size = 1000  # Maximum events in queue
+        self._processing = False  # Guard against recursive processing
         print("EventManagerService initialized")
     
     def subscribe(self, event_type: str, handler: Callable) -> None:
@@ -45,28 +47,41 @@ class EventManagerService:
                 print(f"Warning: Handler not found for event: {event_type}")
     
     def publish(self, event_type: str, **kwargs) -> None:
-        """Publish an event to be processed.
+        """Publish an event.
         
         Args:
             event_type: Type of event to publish
             **kwargs: Event data
         """
+        if len(self._event_queue) >= self._max_queue_size:
+            print(f"Warning: Event queue full, dropping event: {event_type}")
+            return
+        
         self._event_queue.append((event_type, kwargs))
-        print(f"Published event: {event_type}")
-    
+        
     def process_events(self) -> None:
         """Process all queued events."""
-        # Process copy of queue to allow new events during processing
-        current_events = self._event_queue[:]
-        self._event_queue.clear()
+        if self._processing:
+            return  # Prevent recursive processing
         
-        for event_type, kwargs in current_events:
-            if event_type in self._subscribers:
-                for handler in self._subscribers[event_type]:
-                    try:
-                        handler(**kwargs)
-                    except Exception as e:
-                        print(f"Error in event handler for {event_type}: {e}")
+        self._processing = True
+        try:
+            # Process up to max_queue_size events to prevent infinite loops
+            for _ in range(min(len(self._event_queue), self._max_queue_size)):
+                if not self._event_queue:
+                    break
+                
+                event_type, kwargs = self._event_queue.pop(0)
+                if event_type in self._subscribers:
+                    for handler in self._subscribers[event_type][:]:  # Copy list to allow modification during iteration
+                        try:
+                            handler(**kwargs)
+                        except Exception as e:
+                            print(f"Error in event handler for {event_type}: {e}")
+                            # Continue processing other handlers
+                        
+        finally:
+            self._processing = False
     
     def clear(self) -> None:
         """Clear all events and subscribers."""
@@ -75,6 +90,7 @@ class EventManagerService:
         print("Event manager cleared")
     
     def cleanup(self) -> None:
-        """Clean up the service."""
-        self.clear()
+        """Clean up the event manager."""
+        self._subscribers.clear()
+        self._event_queue.clear()
         print("EventManagerService cleaned up") 
