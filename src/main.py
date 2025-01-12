@@ -98,17 +98,8 @@ def init_services(screen: pygame.Surface) -> bool:
         # Initialize service manager
         service_manager = ServiceManager()
         
-        # Default settings
-        settings = {
-            'window': {
-                'width': WINDOW_WIDTH,
-                'height': WINDOW_HEIGHT
-            },
-            'controls': 'arrows'  # Default to arrow keys
-        }
-        
         # Initialize all services
-        service_manager.init_services(screen, settings)
+        service_manager.init_services(screen)
         return True
         
     except Exception as e:
