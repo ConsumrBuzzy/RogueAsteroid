@@ -11,7 +11,7 @@ from .services import (
     InputService,
     RenderService,
     PhysicsService,
-    EntityService,
+    EntityManagerService,
     ParticleService
 )
 from .constants import TARGET_FPS, SCREEN_WIDTH, SCREEN_HEIGHT
@@ -89,20 +89,20 @@ class Game:
         try:
             # Core services (no dependencies)
             logger.debug("Registering core services...")
-            self.services.register_service("events", EventManagerService)
-            self.services.register_service("state", StateService)
-            self.services.register_service("resources", ResourceManagerService)
+            self.services.register_service(EventManagerService.__name__, EventManagerService)
+            self.services.register_service(StateService.__name__, StateService)
+            self.services.register_service(ResourceManagerService.__name__, ResourceManagerService)
             
             # Input and rendering services
             logger.debug("Registering input and rendering services...")
-            self.services.register_service("input", InputService)
-            self.services.register_service("render", lambda: RenderService(self.screen))
+            self.services.register_service(InputService.__name__, InputService)
+            self.services.register_service(RenderService.__name__, lambda: RenderService(self.screen))
             
             # Game systems
             logger.debug("Registering game systems...")
-            self.services.register_service("physics", lambda: PhysicsService(SCREEN_WIDTH, SCREEN_HEIGHT))
-            self.services.register_service("entities", lambda: EntityService(self.services))
-            self.services.register_service("particles", lambda: ParticleService(self.screen))
+            self.services.register_service(PhysicsService.__name__, lambda: PhysicsService(SCREEN_WIDTH, SCREEN_HEIGHT))
+            self.services.register_service(EntityManagerService.__name__, lambda: EntityManagerService(self.services))
+            self.services.register_service(ParticleService.__name__, lambda: ParticleService(self.screen))
             logger.info("All services registered successfully")
             
         except Exception as e:
@@ -147,7 +147,7 @@ class Game:
             state_service = self.services.get_service(StateService)
             input_service = self.services.get_service(InputService)
             physics = self.services.get_service(PhysicsService)
-            entities = self.services.get_service(EntityService)
+            entities = self.services.get_service(EntityManagerService)
             particles = self.services.get_service(ParticleService)
             render = self.services.get_service(RenderService)
             
