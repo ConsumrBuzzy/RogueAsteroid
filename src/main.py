@@ -29,8 +29,11 @@ def init_pygame() -> bool:
             if not pygame.display.get_init():
                 pygame.display.init()
                 
-            # Set up display
-            pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+            # Set up display with flags
+            flags = pygame.HWSURFACE | pygame.DOUBLEBUF
+            screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), flags)
+            screen.fill((0, 0, 0))  # Clear to black
+            pygame.display.flip()  # Show the cleared screen
             return True
             
         return False

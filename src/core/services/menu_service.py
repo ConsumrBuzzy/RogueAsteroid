@@ -5,91 +5,59 @@ from .ui_service import UIService
 from .state_service import GameState, StateService
 
 class MenuItem:
-    """Individual menu item with text and callback."""
-    def __init__(self, 
-                 text: str,
-                 callback: Callable,
-                 position: Tuple[int, int],
-                 selected: bool = False):
-        """Initialize a menu item.
-        
-        Args:
-            text: Display text
-            callback: Function to call when selected
-            position: (x, y) position on screen
-            selected: Whether item is initially selected
-        """
+    """A menu item with text and callback."""
+    def __init__(self, text: str, callback: Callable[[], None], position: Tuple[int, int]):
         self.text = text
         self.callback = callback
-        self.position = position
-        self.selected = selected
-        self._original_text = text
-        
-    def select(self) -> None:
-        """Select this menu item."""
-        self.selected = True
-        self.text = f"> {self._original_text} <"
-        
-    def deselect(self) -> None:
-        """Deselect this menu item."""
         self.selected = False
-        self.text = self._original_text
-        
-    def execute(self) -> None:
-        """Execute the menu item callback."""
-        if self.callback:
-            self.callback()
+        self.position = position
 
 class Menu:
-    """Base class for game menus."""
+    """A menu with title and items."""
     def __init__(self, title: str):
-        """Initialize a menu.
-        
-        Args:
-            title: Menu title
-        """
         self.title = title
         self.items: List[MenuItem] = []
         self._selected_index = 0
+        self._base_y = 200  # Starting Y position for first item
+        self._y_spacing = 50  # Spacing between items
         
-    def add_item(self, text: str, callback: Callable, position: Tuple[int, int]) -> None:
+    def add_item(self, text: str, callback: Callable[[], None]) -> None:
         """Add an item to the menu.
         
         Args:
-            text: Display text
+            text: Text to display
             callback: Function to call when selected
-            position: (x, y) position on screen
         """
+        position = (400, self._base_y + len(self.items) * self._y_spacing)
         item = MenuItem(text, callback, position)
+        if not self.items:  # First item is selected by default
+            item.selected = True
         self.items.append(item)
-        if len(self.items) == 1:
-            item.select()
-            
+        
     def select_next(self) -> None:
-        """Select the next menu item."""
+        """Select the next item in the menu."""
         if not self.items:
             return
-            
-        self.items[self._selected_index].deselect()
+        self.items[self._selected_index].selected = False
         self._selected_index = (self._selected_index + 1) % len(self.items)
-        self.items[self._selected_index].select()
+        self.items[self._selected_index].selected = True
         
     def select_previous(self) -> None:
-        """Select the previous menu item."""
+        """Select the previous item in the menu."""
         if not self.items:
             return
-            
-        self.items[self._selected_index].deselect()
+        self.items[self._selected_index].selected = False
         self._selected_index = (self._selected_index - 1) % len(self.items)
-        self.items[self._selected_index].select()
+        self.items[self._selected_index].selected = True
         
     def execute_selected(self) -> None:
-        """Execute the currently selected item."""
-        if self.items:
-            self.items[self._selected_index].execute()
-            
+        """Execute the callback of the selected item."""
+        if not self.items:
+            return
+        self.items[self._selected_index].callback()
+        
     def clear(self) -> None:
-        """Clear all menu items."""
+        """Clear all items from the menu."""
         self.items.clear()
         self._selected_index = 0
 
@@ -129,32 +97,37 @@ class MenuService:
         input_service.add_handler(InputAction.MENU_SELECT, self.select)
         input_service.add_handler(InputAction.MENU_BACK, lambda: self._change_state(GameState.MAIN_MENU))
         
+        # Get render service and add menu to UI layer
+        from .render_service import RenderService
+        render_service = RenderService()  # Get singleton instance
+        render_service.add_to_layer("ui", self)
+        
         print("MenuService initialized")
         
     def _create_menus(self) -> None:
         """Create default game menus."""
         # Main menu
         main_menu = Menu("Main Menu")
-        main_menu.add_item("Start Game", lambda: self._change_state(GameState.PLAYING), (400, 200))
-        main_menu.add_item("High Scores", lambda: self._change_state(GameState.HIGH_SCORE), (400, 250))
-        main_menu.add_item("Options", lambda: self._change_state(GameState.OPTIONS), (400, 300))
-        main_menu.add_item("Quit", self._quit_game, (400, 350))
+        main_menu.add_item("Start Game", lambda: self._change_state(GameState.PLAYING))
+        main_menu.add_item("High Scores", lambda: self._change_state(GameState.HIGH_SCORE))
+        main_menu.add_item("Options", lambda: self._change_state(GameState.OPTIONS))
+        main_menu.add_item("Quit", self._quit_game)
         self._menus[GameState.MAIN_MENU] = main_menu
         
         # Options menu
         options_menu = Menu("Options")
-        options_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU), (400, 300))
+        options_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU))
         self._menus[GameState.OPTIONS] = options_menu
         
         # High score menu
         high_score_menu = Menu("High Scores")
-        high_score_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU), (400, 400))
+        high_score_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU))
         self._menus[GameState.HIGH_SCORE] = high_score_menu
         
         # Game over menu
         game_over_menu = Menu("Game Over")
-        game_over_menu.add_item("Retry", lambda: self._change_state(GameState.PLAYING), (400, 300))
-        game_over_menu.add_item("Main Menu", lambda: self._change_state(GameState.MAIN_MENU), (400, 350))
+        game_over_menu.add_item("Retry", lambda: self._change_state(GameState.PLAYING))
+        game_over_menu.add_item("Main Menu", lambda: self._change_state(GameState.MAIN_MENU))
         self._menus[GameState.GAME_OVER] = game_over_menu
         
     def set_current_menu(self, state: GameState) -> None:
@@ -230,3 +203,30 @@ class MenuService:
         self.clear()
         self._menus.clear()
         print("MenuService cleaned up") 
+        
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the menu on screen.
+        
+        Args:
+            screen: Pygame surface to render to
+        """
+        if self._current_menu:
+            # Draw menu title
+            self._ui_service.draw_text(
+                self._current_menu.title,
+                (400, 100),
+                font_size=48,
+                color=(255, 255, 255),
+                centered=True
+            )
+            
+            # Draw menu items
+            for item in self._current_menu.items:
+                color = (255, 165, 0) if item.selected else (255, 255, 255)
+                self._ui_service.draw_text(
+                    item.text,
+                    item.position,
+                    font_size=36,
+                    color=color,
+                    centered=True
+                ) 
