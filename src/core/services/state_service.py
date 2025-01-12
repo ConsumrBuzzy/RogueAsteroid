@@ -156,7 +156,7 @@ class StateService:
                     old_state=self._previous_state,
                     new_state=self._current_state)
                     
-            self._notify_subscribers('state_changed',
+            self._notify_subscribers(event_type='state_changed', 
                 old_state=self._previous_state,
                 new_state=self._current_state)
             
@@ -272,17 +272,19 @@ class StateService:
         if subscriber_id in self._subscribers:
             del self._subscribers[subscriber_id]
             
-    def _notify_subscribers(self, old_state: Optional[GameState], new_state: GameState) -> None:
+    def _notify_subscribers(self, event_type: str, **kwargs) -> None:
         """Notify subscribers of state changes.
         
         Args:
-            old_state: Previous game state
-            new_state: New game state
+            event_type: Type of event that occurred
+            **kwargs: Event data including old_state and new_state
         """
-        for callbacks in self._subscribers.values():
-            for callback in callbacks:
-                try:
-                    callback(old_state, new_state)
-                except Exception as e:
-                    print(f"Error in state change callback: {e}")
-                    continue 
+        if event_type not in self._subscribers:
+            return
+            
+        for callback in self._subscribers[event_type]:
+            try:
+                callback(**kwargs)
+            except Exception as e:
+                print(f"Error in state change callback: {e}")
+                continue 

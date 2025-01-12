@@ -10,6 +10,9 @@
 3. Engineer implements only approved designs
 4. All changes documented in real-time
 5. Use DRY, SOLID, and KISS principles
+6. Use PEP8 for Python code
+7. Use PEP257 for docstrings
+8. Preserve existing code unless it's outdated, check first, then delete.
 
 ## Documentation
 - PROJECT_CHARTER.md: Roles and methodology
