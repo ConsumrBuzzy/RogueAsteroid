@@ -1,7 +1,7 @@
 import pytest
 import pygame
 from src.core.game_state import GameState
-from src.core.scoring import ScoreManager
+from src.core.scoring import ScoringSystem
 from src.core.spawner import SpawnSystem
 from src.core.particles import ParticleSystem
 from src.core.menu import MenuSystem
@@ -40,34 +40,38 @@ class TestGameState:
         game_state.add_life()
         assert game_state.lives == initial_lives
 
-class TestScoreManager:
+class TestScoreSystem:
     @pytest.fixture
-    def score_manager(self):
-        return ScoreManager()
+    def score_system(self):
+        return ScoringSystem()
     
-    def test_score_tracking(self, score_manager):
+    def test_score_tracking(self, score_system):
         """Test basic score functionality"""
-        initial_score = score_manager.current_score
-        score_manager.add_points(100)
-        assert score_manager.current_score == initial_score + 100
+        initial_score = score_system.current_score
+        score_system.add_points(100)
+        assert score_system.current_score == initial_score + 100
     
-    def test_high_score_tracking(self, score_manager):
+    def test_high_score_tracking(self, score_system):
         """Test high score tracking"""
-        score_manager.add_points(1000)
-        assert score_manager.is_high_score(score_manager.current_score)
+        score_system.add_points(1000)
+        assert score_system.check_high_score()
         
-    def test_score_multiplier(self, score_manager):
-        """Test score multiplier functionality"""
-        initial_score = score_manager.current_score
-        score_manager.set_multiplier(2)
-        score_manager.add_points(100)
-        assert score_manager.current_score == initial_score + 200
-        
-    def test_score_reset(self, score_manager):
+    def test_score_reset(self, score_system):
         """Test score reset functionality"""
-        score_manager.add_points(500)
-        score_manager.reset_score()
-        assert score_manager.current_score == 0
+        score_system.add_points(500)
+        score_system.reset()
+        assert score_system.current_score == 0
+        
+    def test_high_score_persistence(self, score_system):
+        """Test high score saving and loading"""
+        score_system.add_points(2000)
+        name = "TEST"
+        level = 1
+        score_system.add_high_score(name, level)
+        high_scores = score_system.get_high_scores()
+        assert len(high_scores) > 0
+        assert high_scores[0].score == 2000
+        assert high_scores[0].name == name
 
 class TestSpawnSystem:
     @pytest.fixture
