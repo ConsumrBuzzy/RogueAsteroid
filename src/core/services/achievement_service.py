@@ -98,17 +98,28 @@ class AchievementService:
     - Status notifications
     """
     
-    def __init__(self, save_path: str = "data/achievements.json"):
+    def __init__(self, settings_service, event_manager):
         """Initialize the achievement service.
         
         Args:
-            save_path: Path to save achievements file
+            settings_service: Settings service for configuration
+            event_manager: Event manager for notifications
         """
-        self._save_path = save_path
+        self._settings = settings_service
+        self._event_manager = event_manager
+        self._save_path = self._settings.get('achievements.save_path', "data/achievements.json")
         self._achievements: Dict[str, Achievement] = {}
+        
         self._ensure_save_directory()
         self._register_achievements()
         self.load_achievements()
+        
+        # Subscribe to events
+        self._event_manager.subscribe('game_over', self._on_game_over)
+        self._event_manager.subscribe('asteroid_destroyed', self._on_asteroid_destroyed)
+        self._event_manager.subscribe('wave_completed', self._on_wave_completed)
+        self._event_manager.subscribe('player_died', self._on_player_died)
+        
         print("AchievementService initialized")
         
     def _ensure_save_directory(self) -> None:
@@ -160,7 +171,9 @@ class AchievementService:
             hidden: Whether achievement is hidden until unlocked
         """
         if id not in self._achievements:
-            self._achievements[id] = Achievement(id, name, description, target, hidden)
+            achievement = Achievement(id, name, description, target, hidden)
+            achievement.add_callback(self._on_achievement_updated)
+            self._achievements[id] = achievement
             print(f"Registered achievement: {name}")
         
     def load_achievements(self) -> None:
@@ -242,4 +255,39 @@ class AchievementService:
             achievement.current_value = 0
             achievement.status = AchievementStatus.LOCKED
         self.save_achievements()
-        print("All achievements reset") 
+        self._event_manager.publish('achievements_reset')
+        print("All achievements reset")
+        
+    def _on_achievement_updated(self, achievement: Achievement) -> None:
+        """Handle achievement status change."""
+        self._event_manager.publish('achievement_updated', 
+                                  id=achievement.id,
+                                  status=achievement.status.name,
+                                  progress=achievement.current_value)
+        
+    def _on_game_over(self, **kwargs) -> None:
+        """Handle game over event."""
+        score = kwargs.get('score', 0)
+        self.update_achievement('high_scorer', score)
+        
+    def _on_asteroid_destroyed(self, **kwargs) -> None:
+        """Handle asteroid destroyed event."""
+        self.update_achievement('first_kill', 1)
+        count = kwargs.get('total_destroyed', 0)
+        self.update_achievement('asteroid_master', count)
+        
+    def _on_wave_completed(self, **kwargs) -> None:
+        """Handle wave completed event."""
+        wave = kwargs.get('wave', 1)
+        if wave >= 10:
+            self.update_achievement('wave_master', wave)
+            
+    def _on_player_died(self, **kwargs) -> None:
+        """Handle player death event."""
+        survival_time = kwargs.get('survival_time', 0)
+        self.update_achievement('survivor', survival_time)
+        
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.save_achievements()
+        print("AchievementService cleaned up") 

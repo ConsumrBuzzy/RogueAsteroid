@@ -80,17 +80,30 @@ class StatisticsService:
     - Aggregate statistics
     """
     
-    def __init__(self, save_path: str = "data/statistics.json"):
+    def __init__(self, settings_service, event_manager):
         """Initialize the statistics service.
         
         Args:
-            save_path: Path to save statistics file
+            settings_service: Settings service for configuration
+            event_manager: Event manager for notifications
         """
-        self._save_path = save_path
+        self._settings = settings_service
+        self._event_manager = event_manager
+        self._save_path = self._settings.get('statistics.save_path', "data/statistics.json")
         self._sessions: List[GameSession] = []
         self._current_session: Optional[GameSession] = None
+        
         self._ensure_save_directory()
         self.load_statistics()
+        
+        # Subscribe to events
+        self._event_manager.subscribe('game_start', self._on_game_start)
+        self._event_manager.subscribe('game_over', self._on_game_over)
+        self._event_manager.subscribe('asteroid_destroyed', self._on_asteroid_destroyed)
+        self._event_manager.subscribe('player_shot', self._on_player_shot)
+        self._event_manager.subscribe('player_died', self._on_player_died)
+        self._event_manager.subscribe('wave_completed', self._on_wave_completed)
+        
         print("StatisticsService initialized")
         
     def _ensure_save_directory(self) -> None:
@@ -101,6 +114,7 @@ class StatisticsService:
         """Start a new game session."""
         session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self._current_session = GameSession(session_id)
+        self._event_manager.publish('session_started', session_id=session_id)
         print(f"Started new session: {session_id}")
         
     def end_session(self) -> None:
@@ -108,6 +122,9 @@ class StatisticsService:
         if self._current_session:
             self._current_session.end_session()
             self._sessions.append(self._current_session)
+            self._event_manager.publish('session_ended', 
+                                      session_id=self._current_session.session_id,
+                                      stats=self._current_session.to_dict())
             self.save_statistics()
             print(f"Ended session: {self._current_session.session_id}")
             self._current_session = None
@@ -197,4 +214,45 @@ class StatisticsService:
         """Clear all statistics."""
         self._sessions.clear()
         self.save_statistics()
-        print("Statistics cleared") 
+        self._event_manager.publish('statistics_cleared')
+        print("Statistics cleared")
+        
+    def _on_game_start(self, **kwargs) -> None:
+        """Handle game start event."""
+        self.start_session()
+        
+    def _on_game_over(self, **kwargs) -> None:
+        """Handle game over event."""
+        if self._current_session:
+            self._current_session.score = kwargs.get('score', 0)
+            self.end_session()
+            
+    def _on_asteroid_destroyed(self, **kwargs) -> None:
+        """Handle asteroid destroyed event."""
+        if self._current_session:
+            self._current_session.asteroids_destroyed += 1
+            self._current_session.shots_hit += 1
+            
+    def _on_player_shot(self, **kwargs) -> None:
+        """Handle player shot event."""
+        if self._current_session:
+            self._current_session.shots_fired += 1
+            
+    def _on_player_died(self, **kwargs) -> None:
+        """Handle player death event."""
+        if self._current_session:
+            self._current_session.deaths += 1
+            
+    def _on_wave_completed(self, **kwargs) -> None:
+        """Handle wave completed event."""
+        if self._current_session:
+            wave = kwargs.get('wave', 1)
+            self._current_session.waves_completed += 1
+            self._current_session.highest_wave = max(wave, self._current_session.highest_wave)
+            
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        if self._current_session:
+            self.end_session()
+        self.save_statistics()
+        print("StatisticsService cleaned up") 
