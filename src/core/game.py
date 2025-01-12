@@ -1,12 +1,15 @@
 """Main game class."""
 import pygame
 import random
-import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.services import AudioManager, HighScoreManager, ScoringSystem
 from src.core.systems import ParticleSystem, Spawner
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
+from src.core.entities.components import (
+    TransformComponent,
+    CollisionComponent
+)
 from src.core.constants import (
     WINDOW_WIDTH, 
     WINDOW_HEIGHT,
@@ -123,11 +126,11 @@ class Game:
         """Spawn the player's ship."""
         if self.ship is None:
             self.ship = Ship(self)
-            self.add_entity(self.ship)
+            self.entities.append(self.ship)
             # Set initial position
-            transform = self.ship.get_component('transform')
+            transform = self.ship.get_component(TransformComponent)
             if transform:
-                transform.position = np.array([self.width // 2, self.height // 2])
+                transform.position = pygame.Vector2(self.width // 2, self.height // 2)
                 transform.rotation = 0.0
     
     def spawn_asteroid_wave(self):
@@ -169,12 +172,12 @@ class Game:
         self.audio.play_explosion(size)
         
         # Create particles
-        position = np.array([x, y])
+        position = pygame.Vector2(x, y)
         color = (255, 165, 0)  # Orange
         
         if size == 'large':
             self.particle_system.emit_circular(
-                center=(x, y),
+                center=position,
                 speed=150.0,
                 color=color,
                 size=3.0,
@@ -183,7 +186,7 @@ class Game:
             )
         elif size == 'medium':
             self.particle_system.emit_circular(
-                center=(x, y),
+                center=position,
                 speed=100.0,
                 color=color,
                 size=2.0,
@@ -192,7 +195,7 @@ class Game:
             )
         else:  # small
             self.particle_system.emit_circular(
-                center=(x, y),
+                center=position,
                 speed=50.0,
                 color=color,
                 size=1.0,
@@ -236,7 +239,7 @@ class Game:
         self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
         
         # Make sure ship spawns in a safe location
-        ship_transform = self.ship.get_component('transform')
+        ship_transform = self.ship.get_component(TransformComponent)
         if ship_transform:
             # Try to find a safe spawn position
             for attempt in range(10):  # Limit attempts
@@ -246,26 +249,21 @@ class Game:
                 )
                 
                 # Check if position is safe from asteroids
-                ship_collision = self.ship.get_component('collision')
+                ship_collision = self.ship.get_component(CollisionComponent)
                 if not ship_collision:
-                    break
+                    continue
                     
+                # Check distance to all asteroids
                 safe_position = True
                 for asteroid in self.asteroids:
-                    asteroid_collision = asteroid.get_component('collision')
-                    if not asteroid_collision:
-                        continue
-                        
-                    distance = (pygame.Vector2(ship_transform.position) - 
-                              pygame.Vector2(asteroid.get_component('transform').position)).length()
-                    min_distance = (ship_collision.radius + asteroid_collision.radius) * 2.0
-                    
-                    if distance < min_distance:
-                        safe_position = False
-                        break
+                    asteroid_transform = asteroid.get_component(TransformComponent)
+                    if asteroid_transform:
+                        distance = (asteroid_transform.position - ship_transform.position).length()
+                        if distance < 100:  # Minimum safe distance
+                            safe_position = False
+                            break
                 
                 if safe_position:
-                    print(f"Ship respawned at safe position: {ship_transform.position}")  # Debug info
                     break
             
             # If no safe position found, just use center
@@ -280,12 +278,12 @@ class Game:
             
         # Check ship collision with asteroids
         if self.ship and not self.ship.invulnerable:
-            ship_collision = self.ship.get_component('collision')
+            ship_collision = self.ship.get_component(CollisionComponent)
             if not ship_collision:
                 return
                 
             for asteroid in self.asteroids[:]:  # Use copy of list for safe iteration
-                asteroid_collision = asteroid.get_component('collision')
+                asteroid_collision = asteroid.get_component(CollisionComponent)
                 if not asteroid_collision:
                     continue
                     
@@ -302,12 +300,12 @@ class Game:
         
         # Check bullet collisions with asteroids
         for bullet in self.bullets[:]:  # Copy list to allow removal
-            bullet_collision = bullet.get_component('collision')
+            bullet_collision = bullet.get_component(CollisionComponent)
             if not bullet_collision:
                 continue
                 
             for asteroid in self.asteroids[:]:  # Copy list to allow removal
-                asteroid_collision = asteroid.get_component('collision')
+                asteroid_collision = asteroid.get_component(CollisionComponent)
                 if not asteroid_collision:
                     continue
                     
@@ -336,14 +334,14 @@ class Game:
         
         # Check asteroid-asteroid collisions
         for i, asteroid1 in enumerate(self.asteroids[:-1]):
-            collision1 = asteroid1.get_component('collision')
-            transform1 = asteroid1.get_component('transform')
+            collision1 = asteroid1.get_component(CollisionComponent)
+            transform1 = asteroid1.get_component(TransformComponent)
             if not collision1 or not transform1:
                 continue
                 
             for asteroid2 in self.asteroids[i+1:]:
-                collision2 = asteroid2.get_component('collision')
-                transform2 = asteroid2.get_component('transform')
+                collision2 = asteroid2.get_component(CollisionComponent)
+                transform2 = asteroid2.get_component(TransformComponent)
                 if not collision2 or not transform2:
                     continue
                     
