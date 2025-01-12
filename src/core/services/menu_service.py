@@ -142,8 +142,12 @@ class MenuService:
         Args:
             dt: Delta time in seconds
         """
-        # Menu state updates will go here
-        pass
+        # Update current menu based on state
+        current_state = self._state_service.get_current_state()
+        if current_state in self._menus:
+            self._current_menu = self._menus[current_state]
+            if self._current_menu.items and not any(item.selected for item in self._current_menu.items):
+                self._current_menu.items[0].selected = True
         
     def draw(self, dt: float = 0.0) -> None:
         """Draw the current menu.
