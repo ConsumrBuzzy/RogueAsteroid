@@ -245,7 +245,7 @@ class TestGameService:
         mock_transform = MagicMock()
         mock_transform.position = pygame.Vector2(400, 300)
         mock_ship = MagicMock()
-        mock_ship.get_component.return_value = mock_transform
+        mock_ship.get_component = MagicMock(return_value=mock_transform)
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
@@ -302,7 +302,7 @@ class TestGameService:
         mock_transform = MagicMock()
         mock_transform.position = pygame.Vector2(400, 300)
         mock_ship = MagicMock()
-        mock_ship.get_component.return_value = mock_transform
+        mock_ship.get_component = MagicMock(return_value=mock_transform)
         game_service.player_ship = mock_ship
         
         # Mock the Asteroid class
