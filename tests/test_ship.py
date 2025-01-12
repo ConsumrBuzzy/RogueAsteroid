@@ -1,22 +1,20 @@
-"""Unit tests for ship entity and components."""
-import os
-import sys
-import unittest
+"""Tests for ship entity."""
+import pytest
 import pygame
+from pygame import Surface
+from typing import Tuple
 
-# Add project root to Python path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, project_root)
-
-from src.entities.ship import Ship
-from src.core.entities.base import (
-    Entity,
+from src.core.entities.base import Entity
+from src.core.components import (
     TransformComponent,
+    PhysicsComponent,
     RenderComponent,
-    CollisionComponent
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
 )
-from src.core.components.effect import EffectComponent
-from src.core.components import ComponentRegistry
+from src.core.game import Game
+from src.entities.ship import Ship
 
 class MockGame:
     """Mock game class for testing."""

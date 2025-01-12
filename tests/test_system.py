@@ -1,18 +1,20 @@
-"""System-level integration tests for RogueAsteroid."""
+"""Tests for game systems."""
 import pytest
 import pygame
-from src.core.game import Game
-from src.core.services import (
-    ServiceManager,
-    StateService,
-    EventManagerService,
-    ResourceManagerService,
-    InputService,
-    RenderService,
-    PhysicsService,
-    EntityService,
-    ParticleService
+from pygame import Surface
+from typing import Tuple
+
+from src.core.entities.base import Entity
+from src.core.components import (
+    TransformComponent,
+    PhysicsComponent,
+    RenderComponent,
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
 )
+from src.core.game import Game
+from src.core.services import ServiceManager
 from src.core.constants import TARGET_FPS
 
 @pytest.mark.system

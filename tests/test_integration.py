@@ -1,11 +1,23 @@
 """Integration tests for game systems."""
-import unittest
+import pytest
+import pygame
+from pygame import Surface
+from typing import Tuple
+
+from src.core.entities.base import Entity
+from src.core.components import (
+    TransformComponent,
+    PhysicsComponent,
+    RenderComponent,
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
+)
 from src.core.game import Game
 from src.core.game_state import GameState
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
-import pygame
 
 class TestGameIntegration(unittest.TestCase):
     """Test cases for game system integration."""

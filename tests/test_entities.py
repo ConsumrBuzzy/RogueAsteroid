@@ -1,12 +1,23 @@
-"""Unit tests for game entities."""
-import unittest
-import numpy as np
+"""Tests for game entities."""
+import pytest
+import pygame
+from pygame import Surface
+from typing import Tuple
+
+from src.core.entities.base import Entity
+from src.core.components import (
+    TransformComponent,
+    PhysicsComponent,
+    RenderComponent,
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
+)
+
 from src.core.game import Game
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
-from src.core.entities.base import TransformComponent
-import pygame
 
 class TestShip(unittest.TestCase):
     """Test cases for Ship entity."""

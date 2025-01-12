@@ -1,11 +1,21 @@
-"""Test utilities and fixtures for RogueAsteroid tests."""
-import pygame
+"""Tests for utility functions."""
 import pytest
-import numpy as np
-from typing import Optional, Dict, Any
-from dataclasses import dataclass
-from src.core.game_state import GameState
-from src.core.entities.base import Entity, Component
+import pygame
+from pygame import Surface
+from typing import Tuple
+
+from src.core.entities.base import Entity
+from src.core.components import (
+    TransformComponent,
+    PhysicsComponent,
+    RenderComponent,
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
+)
+from src.core.game import Game
+from src.core.services import ServiceManager
+from src.core.services.state_service import GameState
 
 @dataclass
 class GameConfig:

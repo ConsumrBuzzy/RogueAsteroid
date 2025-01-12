@@ -1,19 +1,21 @@
-"""Unit tests for additional game components."""
-import os
-import sys
-import unittest
+"""Tests for additional components."""
+import pytest
 import pygame
+from pygame import Surface
+from typing import Tuple
 
-# Add project root to Python path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, project_root)
-
-from src.core.entities.base import Entity, TransformComponent
-from src.core.entities.components import (
-    ScreenWrapComponent,
-    InputComponent,
+from src.core.entities.base import Entity
+from src.core.components import (
+    TransformComponent,
     PhysicsComponent,
-    EffectComponent
+    EffectComponent,
+    WaveComponent,
+    UIComponent,
+    TimerComponent,
+    ScoreComponent,
+    HealthComponent,
+    DebugComponent,
+    AudioComponent
 )
 
 class MockGame:
