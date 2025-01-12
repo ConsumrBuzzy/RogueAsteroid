@@ -136,6 +136,11 @@ class GameService:
             
         self._dt = dt
         
+        # Check for quit state
+        if self._state_service.get_current_state() == GameState.QUIT:
+            self.stop()
+            return
+        
         if not self._paused:
             try:
                 # Update all services

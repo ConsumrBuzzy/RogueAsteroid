@@ -4,6 +4,7 @@ import pygame
 from ..state.game_states import GameState
 from .ui_service import UIService
 from .state_service import StateService
+from .input_service import InputAction
 
 class MenuItem:
     """A menu item with text and callback."""
@@ -65,15 +66,17 @@ class MenuService:
     - Menu rendering
     """
     
-    def __init__(self, ui_service: UIService, state_service: StateService):
+    def __init__(self, ui_service: UIService, state_service: StateService, input_service = None):
         """Initialize the menu service.
         
         Args:
             ui_service: UI service for rendering
             state_service: State service for managing game state
+            input_service: Optional input service for handling menu input
         """
         self._ui_service = ui_service
         self._state_service = state_service
+        self._input_service = input_service
         self._menus: Dict[GameState, Menu] = {}
         self._current_menu: Optional[Menu] = None
         
@@ -90,6 +93,13 @@ class MenuService:
         self._state_service.register_handler(GameState.GAME_OVER, self.draw)
         self._state_service.register_handler(GameState.OPTIONS, self.draw)
         self._state_service.register_handler(GameState.HIGH_SCORES, self.draw)
+        
+        # Register input handlers if input service is provided
+        if self._input_service:
+            self._input_service.add_handler(InputAction.MENU_UP, lambda: self.handle_input("MENU_UP"))
+            self._input_service.add_handler(InputAction.MENU_DOWN, lambda: self.handle_input("MENU_DOWN"))
+            self._input_service.add_handler(InputAction.MENU_SELECT, lambda: self.handle_input("MENU_SELECT"))
+            self._input_service.add_handler(InputAction.MENU_BACK, lambda: self.handle_input("MENU_BACK"))
         
         # Set initial menu based on current state
         current_state = self._state_service.get_current_state()
@@ -193,6 +203,10 @@ class MenuService:
             self._current_menu.select_next()
         elif action == "MENU_SELECT":
             self._current_menu.execute_selected()
+        elif action == "MENU_BACK":
+            # If we're not in the main menu, go back to it
+            if self._state_service.get_current_state() != GameState.MAIN_MENU:
+                self._state_service.change_state(GameState.MAIN_MENU)
             
     def cleanup(self) -> None:
         """Clean up the service."""

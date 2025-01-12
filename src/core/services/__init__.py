@@ -122,7 +122,7 @@ class ServiceManager:
             ui = UIService(screen)
             self.register_service("ui", ui)
             
-            menu = MenuService(ui_service=ui, state_service=state)
+            menu = MenuService(ui_service=ui, state_service=state, input_service=input_service)
             self.register_service("menu", menu)
             
             # Physics stack

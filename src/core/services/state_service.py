@@ -11,6 +11,7 @@ class GameState(Enum):
     GAME_OVER = auto()
     HIGH_SCORE = auto()
     OPTIONS = auto()
+    QUIT = auto()
 
 class StateService:
     """Service for managing game states.
