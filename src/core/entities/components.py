@@ -24,21 +24,24 @@ class ScreenWrapComponent(Component):
     
     def update(self, dt: float) -> None:
         """Update entity position to wrap around screen."""
-        transform = self.entity.get_component('transform')
+        if not self.active:
+            return
+            
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
         
-        # Wrap x position with minimal offset
-        if transform.position[0] <= -self.wrap_offset:
-            transform.position[0] = self.width - self.wrap_offset
-        elif transform.position[0] >= self.width + self.wrap_offset:
-            transform.position[0] = self.wrap_offset
+        # Wrap x position
+        if transform.position.x < 0:
+            transform.position.x = self.width
+        elif transform.position.x > self.width:
+            transform.position.x = 0
         
-        # Wrap y position with minimal offset
-        if transform.position[1] <= -self.wrap_offset:
-            transform.position[1] = self.height - self.wrap_offset
-        elif transform.position[1] >= self.height + self.wrap_offset:
-            transform.position[1] = self.wrap_offset
+        # Wrap y position
+        if transform.position.y < 0:
+            transform.position.y = self.height
+        elif transform.position.y > self.height:
+            transform.position.y = 0
 
 class InputComponent(Component):
     """Component for handling input."""
@@ -52,6 +55,13 @@ class InputComponent(Component):
         """Bind a key to a callback function."""
         self.key_bindings[key] = (callback, continuous)
     
+    def unbind_key(self, key):
+        """Unbind a key."""
+        if key in self.key_bindings:
+            del self.key_bindings[key]
+        if key in self.active_keys:
+            self.active_keys.remove(key)
+    
     def clear_bindings(self):
         """Clear all key bindings."""
         self.key_bindings.clear()
@@ -59,6 +69,8 @@ class InputComponent(Component):
     
     def handle_keydown(self, key):
         """Handle key press event."""
+        if not self.active:
+            return
         if key in self.key_bindings:
             callback, continuous = self.key_bindings[key]
             if continuous:
@@ -68,11 +80,15 @@ class InputComponent(Component):
     
     def handle_keyup(self, key):
         """Handle key release event."""
+        if not self.active:
+            return
         if key in self.active_keys:
             self.active_keys.remove(key)
     
     def update(self, dt):
         """Update continuous key actions."""
+        if not self.active:
+            return
         for key in self.active_keys:
             if key in self.key_bindings:
                 callback, continuous = self.key_bindings[key]
@@ -95,7 +111,7 @@ class PhysicsComponent(Component):
     
     def update(self, dt: float) -> None:
         """Update physics state."""
-        transform = self.entity.get_component('transform')
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
         
@@ -138,16 +154,19 @@ class EffectComponent(Component):
                   color: Tuple[int, int, int],
                   offset: Tuple[float, float] = (0, 0)) -> None:
         """Add a new visual effect."""
+        if name in self.effects:
+            raise KeyError(f"Effect '{name}' already exists")
         self.effects[name] = EffectComponent.Effect(vertices, color, offset)
     
     def set_effect_active(self, name: str, active: bool) -> None:
         """Set whether an effect is active."""
-        if name in self.effects:
-            self.effects[name].active = active
+        if name not in self.effects:
+            raise KeyError(f"Effect '{name}' does not exist")
+        self.effects[name].active = active
     
     def draw(self, surface: pygame.Surface) -> None:
         """Draw active effects."""
-        transform = self.entity.get_component('transform')
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
         
@@ -177,7 +196,12 @@ class EffectComponent(Component):
             
             # Draw effect
             if len(screen_vertices) >= 3:
-                pygame.draw.polygon(surface, effect.color, screen_vertices) 
+                pygame.draw.polygon(surface, effect.color, screen_vertices)
+    
+    def destroy(self) -> None:
+        """Clean up component resources."""
+        self.effects.clear()
+        super().destroy()
 
 class ParticleComponent(Component):
     """Component for managing particle effects."""
