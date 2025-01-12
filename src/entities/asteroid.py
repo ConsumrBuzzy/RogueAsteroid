@@ -1,18 +1,18 @@
-"""Asteroid entity class."""
-from typing import Optional, Dict, Type
+"""Asteroid entity module."""
 import random
 import math
-import pygame
-from pygame import Vector2
+from typing import Optional, Dict, Any, List, Tuple
 
-from src.core.entity.entity import Entity
+from src.core.entities.base import Entity
 from src.core.components import (
-    ComponentRegistry,
     TransformComponent,
-    RenderComponent,
     PhysicsComponent,
+    RenderComponent,
     CollisionComponent,
-    ScreenWrapComponent
+    ScreenWrapComponent,
+    ScoreComponent,
+    AudioComponent,
+    EffectComponent
 )
 from src.core.constants import (
     SCREEN_WIDTH,

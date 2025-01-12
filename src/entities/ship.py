@@ -1,20 +1,21 @@
-"""Ship entity class."""
-from typing import Optional, Dict, Type
+"""Ship entity module."""
+import math
+from typing import Optional, Dict, Any, List, Tuple
 import pygame
 from pygame import Vector2
 
-from src.core.entities.base import (
-    Entity,
-    TransformComponent,
-    RenderComponent,
-    CollisionComponent
-)
-from src.core.components.effect import EffectComponent
+from src.core.entities.base import Entity
 from src.core.components import (
-    ComponentRegistry,
+    TransformComponent,
     PhysicsComponent,
+    RenderComponent,
+    CollisionComponent,
     InputComponent,
-    ScreenWrapComponent
+    ScreenWrapComponent,
+    HealthComponent,
+    ScoreComponent,
+    AudioComponent,
+    EffectComponent
 )
 from src.core.constants import SHIP_MAX_SPEED, SHIP_FRICTION, SHIP_INVULNERABILITY_TIME
 
