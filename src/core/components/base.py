@@ -2,6 +2,7 @@
 from typing import Any, Optional, Tuple, Dict, List, Callable
 import pygame
 from pygame import Surface, Rect, Vector2
+import math
 
 class Component:
     """Base class for all components."""
@@ -71,6 +72,25 @@ class TransformComponent(Component):
         self.y = y
         self.rotation = rotation
         self.velocity = Vector2(0.0, 0.0)
+        
+    @property
+    def position(self) -> Vector2:
+        """Get the current position as a Vector2.
+        
+        Returns:
+            Vector2 of current position
+        """
+        return Vector2(self.x, self.y)
+        
+    @position.setter
+    def position(self, value: Vector2) -> None:
+        """Set the position from a Vector2.
+        
+        Args:
+            value: New position as Vector2
+        """
+        self.x = value.x
+        self.y = value.y
     
     def get_position(self) -> Tuple[float, float]:
         """Get the current position.
@@ -89,6 +109,23 @@ class TransformComponent(Component):
         """
         self.x = x
         self.y = y
+        
+    def get_direction(self) -> Vector2:
+        """Get the direction vector based on rotation.
+        
+        Returns:
+            Normalized direction vector
+        """
+        angle = math.radians(self.rotation)
+        return Vector2(math.cos(angle), math.sin(angle))
+        
+    def rotate(self, degrees: float) -> None:
+        """Rotate by the specified angle.
+        
+        Args:
+            degrees: Angle to rotate by in degrees
+        """
+        self.rotation = (self.rotation + degrees) % 360
         
     def update(self, dt: float) -> None:
         """Update position based on velocity.

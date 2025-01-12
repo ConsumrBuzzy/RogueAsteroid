@@ -54,9 +54,10 @@ class TestShip:
         transform = ship.get_transform()
         physics = ship.get_physics()
         
-        initial_pos = Vector2(transform.position)
+        initial_pos = transform.position
         ship._thrust_forward()
         physics.update(0.016)
+        transform.update(0.016)
         assert transform.position != initial_pos
     
     def test_ship_rotation(self, ship):
@@ -64,9 +65,9 @@ class TestShip:
         transform = ship.get_transform()
         initial_rotation = transform.rotation
         
-        ship._rotate_left()
-        assert transform.rotation < initial_rotation
+        ship._rotate_right()
+        assert transform.rotation > initial_rotation
         
         initial_rotation = transform.rotation
-        ship._rotate_right()
-        assert transform.rotation > initial_rotation 
+        ship._rotate_left()
+        assert transform.rotation < initial_rotation 
