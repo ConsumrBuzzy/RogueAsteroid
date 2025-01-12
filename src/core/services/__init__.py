@@ -12,6 +12,7 @@ from .entity_factory_service import EntityFactoryService
 from .game_service import GameService
 from .achievement_service import AchievementService
 from .statistics_service import StatisticsService
+from .input_service import InputService
 
 T = TypeVar('T')
 
@@ -82,6 +83,10 @@ class ServiceManager:
             
             resources = ResourceManagerService()
             self.register_service("resources", resources)
+            
+            # Input service
+            input_service = InputService()
+            self.register_service("input", input_service)
             
             # UI services
             ui = UIService(screen)
