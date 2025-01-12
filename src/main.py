@@ -37,7 +37,7 @@ def init_pygame() -> bool:
     except Exception as e:
         print(f"Error initializing pygame: {e}", file=sys.stderr)
         return False
-
+        
 def init_component_system() -> bool:
     """Initialize the component system.
     
@@ -45,10 +45,10 @@ def init_component_system() -> bool:
         bool: True if initialization successful, False otherwise
     """
     try:
-        # Initialize component registry
+        # Get component registry instance
         registry = ComponentRegistry()
         
-        # Register all core components
+        # Register all component types
         from src.core.components.transform import TransformComponent
         from src.core.components.physics import PhysicsComponent
         from src.core.components.render import RenderComponent
@@ -84,7 +84,7 @@ def init_component_system() -> bool:
         print(f"Error initializing component system: {e}", file=sys.stderr)
         traceback.print_exc()
         return False
-
+        
 def init_services(screen: pygame.Surface) -> bool:
     """Initialize game services.
     
@@ -115,7 +115,7 @@ def init_services(screen: pygame.Surface) -> bool:
         print(f"Error initializing services: {e}", file=sys.stderr)
         traceback.print_exc()
         return False
-
+        
 def main():
     """Entry point for the game."""
     try:
@@ -186,6 +186,6 @@ def main():
         except Exception as e:
             print(f"Error during cleanup: {e}", file=sys.stderr)
         sys.exit()
-
+        
 if __name__ == "__main__":
     main() 
