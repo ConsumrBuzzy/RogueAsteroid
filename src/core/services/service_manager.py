@@ -1,6 +1,6 @@
 """Service manager for handling game services."""
 import logging
-from typing import Dict, Type, Optional, List, Set
+from typing import Dict, Type, Optional, List, Set, Union
 import inspect
 
 logger = logging.getLogger(__name__)
@@ -73,17 +73,22 @@ class ServiceManager:
             logger.error(f"Failed to initialize service {name}: {str(e)}", exc_info=True)
             raise RuntimeError(f"Failed to initialize service {name}: {str(e)}")
             
-    def get_service(self, service_type: Type) -> Optional[object]:
-        """Get a service instance by type.
+    def get_service(self, service_type_or_name: Union[Type, str]) -> Optional[object]:
+        """Get a service instance by type or name.
         
         Args:
-            service_type: The type of service to retrieve.
+            service_type_or_name: The type or name of service to retrieve.
             
         Returns:
             The service instance if found, None otherwise.
         """
+        # If service_type_or_name is a string, look up by name
+        if isinstance(service_type_or_name, str):
+            return self._services.get(service_type_or_name)
+            
+        # Otherwise, look up by type
         for service in self._services.values():
-            if isinstance(service, service_type):
+            if isinstance(service, service_type_or_name):
                 return service
         return None
         
