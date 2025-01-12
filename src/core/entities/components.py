@@ -19,7 +19,7 @@ class ScreenWrapComponent(Component):
         super().__init__(entity)
         self.width = width
         self.height = height
-        self.wrap_offset = 5  # 5 pixel offset for smoother wrapping
+        self.wrap_offset = 2  # 2 pixel offset for minimal edge overlap
         print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
     
     def update(self, dt: float) -> None:
@@ -28,17 +28,17 @@ class ScreenWrapComponent(Component):
         if not transform:
             return
         
-        # Wrap x position with offset
-        if transform.position[0] < -self.wrap_offset:
-            transform.position[0] = self.width + self.wrap_offset
-        elif transform.position[0] > self.width + self.wrap_offset:
-            transform.position[0] = -self.wrap_offset
+        # Wrap x position with minimal offset
+        if transform.position[0] <= -self.wrap_offset:
+            transform.position[0] = self.width - self.wrap_offset
+        elif transform.position[0] >= self.width + self.wrap_offset:
+            transform.position[0] = self.wrap_offset
         
-        # Wrap y position with offset
-        if transform.position[1] < -self.wrap_offset:
-            transform.position[1] = self.height + self.wrap_offset
-        elif transform.position[1] > self.height + self.wrap_offset:
-            transform.position[1] = -self.wrap_offset
+        # Wrap y position with minimal offset
+        if transform.position[1] <= -self.wrap_offset:
+            transform.position[1] = self.height - self.wrap_offset
+        elif transform.position[1] >= self.height + self.wrap_offset:
+            transform.position[1] = self.wrap_offset
 
 class InputComponent(Component):
     """Component for handling input."""

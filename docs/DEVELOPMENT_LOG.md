@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2025-01-11 19:00PM]
+Last Session: [2025-01-11 19:05PM]
 Current Phase: Core Gameplay Complete
 
 ## Critical Updates
@@ -16,10 +16,14 @@ Current Phase: Core Gameplay Complete
 
 ## Recent Log Entries
 
+[2025-01-11 19:05PM] [FIX] Refined Screen Wrapping:
+- Reduced wrap offset to 2 pixels for minimal edge overlap
+- Made wrapping more immediate at screen boundaries
+- Improved position calculations for wrapped entities
+- Enhanced visual continuity during screen transitions
+
 [2025-01-11 19:00PM] [FIX] Enhanced Ship Respawn and Screen Wrapping:
 - Fixed ship cleanup on respawn to prevent ghost ships
-- Added 5-pixel offset to screen wrapping for smoother transitions
-- Improved entity visibility during screen transitions
 - Added proper cleanup of old ship from entities list
 
 [2025-01-11 18:55PM] [FIX] Fixed Collision Handling:
