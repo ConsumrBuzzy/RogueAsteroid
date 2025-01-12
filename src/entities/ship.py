@@ -62,35 +62,42 @@ class Ship(Entity):
         print("Initializing ship...")
         
         # Transform component for position and movement
-        transform = self.add_component(TransformComponent)
+        transform = TransformComponent(self)
+        self.add_component(transform)
         transform.position = pygame.Vector2(self.game.width / 2, self.game.height / 2)
         print(f"Transform component added: {transform}")  # Debug info
         
         # Render component for drawing
-        render = self.add_component(RenderComponent)
+        render = RenderComponent(self)
+        self.add_component(render)
         render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]  # Triangle shape
         render.color = (255, 255, 255)  # White
         print(f"Render component added: {render}")  # Debug info
         print(f"Render vertices: {render.vertices}")  # Debug info
         
         # Physics component for thrust and momentum
-        physics = self.add_component(PhysicsComponent)
+        physics = PhysicsComponent(self)
+        self.add_component(physics)
         physics.max_speed = SHIP_MAX_SPEED
         physics.friction = SHIP_FRICTION
         
         # Collision component for hit detection
-        collision = self.add_component(CollisionComponent, radius=15)  # Pass radius in constructor
+        collision = CollisionComponent(self, radius=15)  # Pass radius in constructor
+        self.add_component(collision)
         print(f"Collision component added: {collision}")  # Debug info
         
         # Screen wrap component to wrap around screen edges
-        screen_wrap = self.add_component(ScreenWrapComponent)
+        screen_wrap = ScreenWrapComponent(self)
+        self.add_component(screen_wrap)
         
         # Effects component for visual effects
-        effects = self.add_component(EffectComponent)
+        effects = EffectComponent(self)
+        self.add_component(effects)
         self._init_thrust_effect(effects)  # Initialize thrust effect
         
         # Input component for controls
-        self.input_component = self.add_component(InputComponent)
+        self.input_component = InputComponent(self)
+        self.add_component(self.input_component)
         self.update_controls()  # Initialize controls
     
     def update_controls(self) -> None:
