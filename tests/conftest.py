@@ -99,6 +99,7 @@ class PerformanceEnv:
         self.screen = pygame.Surface((800, 600))
         self.dt = 1/60
         self.running = True
+        self.position = (400, 300)  # Center position for testing
 
 @pytest.fixture
 def performance_env() -> PerformanceEnv:

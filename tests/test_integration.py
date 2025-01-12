@@ -6,14 +6,15 @@ from typing import Tuple
 
 from src.core.services import ServiceManager
 from src.core.services.state_service import GameState
-from src.core.components import (
+from src.core.components.base import (
     TransformComponent,
-    PhysicsComponent,
     RenderComponent,
     CollisionComponent,
     InputComponent,
     ScreenWrapComponent
 )
+from src.core.components.physics import PhysicsComponent
+from src.core.components import ComponentRegistry
 from src.core.game import Game
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
@@ -43,7 +44,8 @@ def mock_game():
         def __init__(self):
             self.screen = Surface((800, 600))
             self.dt = 0.016
-            self.services = ServiceManager()
+            self.services = ServiceManager(self)
+            self.component_registry = ComponentRegistry()
     return MockGame()
 
 @pytest.fixture

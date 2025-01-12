@@ -14,7 +14,7 @@ from src.core.components.base import (
 )
 from src.core.components import ComponentRegistry
 from src.core.components.physics import PhysicsComponent
-from src.core.game import Game
+from src.core.services import ServiceManager
 from src.entities.ship import Ship
 
 @pytest.fixture
@@ -24,6 +24,8 @@ def mock_game():
         def __init__(self):
             self.screen = Surface((800, 600))
             self.dt = 0.016
+            self.services = ServiceManager(self)
+            self.component_registry = ComponentRegistry()
     return MockGame()
 
 @pytest.fixture

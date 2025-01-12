@@ -34,7 +34,7 @@ def mock_game():
         def __init__(self):
             self.screen = Surface((800, 600))
             self.dt = 1.0 / TARGET_FPS
-            self.services = ServiceManager()
+            self.services = ServiceManager(self)
     return MockGame()
 
 @pytest.fixture
@@ -48,7 +48,7 @@ class TestGameSystems:
     
     def test_service_manager(self, mock_game):
         """Test service manager initialization and registration."""
-        services = ServiceManager()
+        services = ServiceManager(mock_game)
         assert services is not None
         
         # Register a test service
