@@ -1,4 +1,4 @@
-"""High score system for tracking and saving scores."""
+"""High score service for tracking and saving scores."""
 import os
 import json
 from typing import List, Dict, Optional

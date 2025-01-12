@@ -1,4 +1,4 @@
-"""Audio system for managing sound effects."""
+"""Audio service for managing sound effects."""
 import os
 import pygame
 from typing import Dict, Optional
