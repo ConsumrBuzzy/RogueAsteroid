@@ -7,13 +7,13 @@ from typing import Tuple
 from src.core.entities.base import Entity
 from src.core.components.base import (
     TransformComponent,
-    PhysicsComponent,
     RenderComponent,
     CollisionComponent,
     InputComponent,
-    ScreenWrapComponent
+    ScreenWrapComponent,
+    ComponentRegistry
 )
-from src.core.game import Game
+from src.core.components.physics import PhysicsComponent
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
