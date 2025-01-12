@@ -1,3 +1,20 @@
+[2025-01-11 21:48PM] [FIX] Component Addition Method
+
+- Fixed component addition in Ship class
+  - Changed to pass component type instead of instance
+  - Properly uses Entity.add_component factory method
+  - Ensures correct component name resolution
+  - Fixes __name__ attribute error
+
+Changes Made:
+1. Updated all component additions to use type
+2. Fixed component initialization order
+3. Improved component creation clarity
+
+Focus Areas: Entity System, Component Architecture
+Major Changes: Component Creation
+Next Steps: Test ship component creation and initialization
+
 [2025-01-11 21:47PM] [FIX] Entity Game Reference
 
 - Fixed entity initialization in Ship class
