@@ -1,11 +1,11 @@
 """Game constants."""
 
 # Window dimensions
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+SCREEN_WIDTH = WINDOW_WIDTH = 800
+SCREEN_HEIGHT = WINDOW_HEIGHT = 600
+TARGET_FPS = FPS = 60
 
 # Game settings
-FPS = 60
 BACKGROUND_COLOR = (0, 0, 0)
 
 # Ship settings
