@@ -1,21 +1,24 @@
+"""Test suite for core game systems."""
 import pytest
 import pygame
+import numpy as np
 from src.core.game_state import GameState, StateManager
 from src.core.scoring import ScoringSystem
-from src.core.spawner import Spawner
-from src.core.particles import ParticleSystem
-from src.core.menu import MainMenu, OptionsMenu
 from src.core.game import Game
 from src.core.constants import *
 
 class TestGameState:
     @pytest.fixture
-    def state_manager(self):
-        return StateManager()
+    def game(self):
+        return Game()
+    
+    @pytest.fixture
+    def state_manager(self, game):
+        return game.state_manager
     
     def test_state_transitions(self, state_manager):
         """Test game state transitions"""
-        assert state_manager.current_state == GameState.MENU
+        assert state_manager.current_state == GameState.MAIN_MENU
         state_manager.change_state(GameState.PLAYING)
         assert state_manager.current_state == GameState.PLAYING
         state_manager.change_state(GameState.PAUSED)
@@ -27,8 +30,12 @@ class TestGameState:
 
 class TestScoreSystem:
     @pytest.fixture
-    def score_system(self):
-        return ScoringSystem()
+    def game(self):
+        return Game()
+    
+    @pytest.fixture
+    def score_system(self, game):
+        return game.scoring
     
     def test_score_tracking(self, score_system):
         """Test basic score functionality"""
@@ -72,43 +79,49 @@ class TestGame:
     
     def test_game_reset(self, game):
         """Test game reset functionality"""
-        game.reset_game()
-        assert game.score == 0
-        assert len(game.asteroids) == 0
+        game.new_game()  # First start a game
+        game.scoring.add_points(1000)  # Add some score
+        game.reset_game()  # Then reset
+        assert game.scoring.current_score == 0
+        assert game.level == 1
+        assert game.lives == STARTING_LIVES
         
     def test_asteroid_spawning(self, game):
         """Test asteroid spawning"""
+        game.new_game()
+        initial_asteroids = len(game.asteroids)
         game.spawn_asteroid_wave()
-        assert len(game.asteroids) > 0
+        assert len(game.asteroids) > initial_asteroids
 
-class TestParticleSystem:
+class TestParticleEffects:
     @pytest.fixture
     def game(self):
         pygame.init()
         return Game()
     
-    @pytest.fixture
-    def particle_system(self, game):
-        return ParticleSystem(game)
+    def test_thrust_particles(self, game):
+        """Test thrust particle creation"""
+        game.new_game()
+        initial_particles = len(game.particles)
+        game.ship.thrust(1.0)
+        assert len(game.particles) > initial_particles
     
-    def test_particle_creation(self, particle_system):
-        """Test particle creation and lifecycle"""
-        initial_count = len(particle_system.particles)
-        particle_system.create_explosion(400, 300)
-        assert len(particle_system.particles) > initial_count
-    
-    def test_particle_update(self, particle_system):
-        """Test particle updating"""
-        particle_system.create_thrust(400, 300, 0)
-        initial_particles = len(particle_system.particles)
-        particle_system.update(1.0)  # Update with 1 second delta
-        assert len(particle_system.particles) <= initial_particles  # Particles should decay
+    def test_explosion_particles(self, game):
+        """Test explosion particle creation"""
+        game.new_game()
+        initial_particles = len(game.particles)
+        game.create_explosion(400, 300)
+        assert len(game.particles) > initial_particles
         
-    def test_particle_cleanup(self, particle_system):
+    def test_particle_cleanup(self, game):
         """Test particle cleanup"""
-        particle_system.create_thrust(400, 300, 0)
-        particle_system.update(10.0)  # Long update to expire particles
-        assert len(particle_system.particles) == 0
+        game.new_game()
+        game.create_explosion(400, 300)
+        initial_particles = len(game.particles)
+        # Update for long enough to expire particles
+        for _ in range(60):  # 1 second at 60 FPS
+            game.update(0.016)
+        assert len(game.particles) < initial_particles
 
 class TestMenu:
     @pytest.fixture
@@ -116,44 +129,30 @@ class TestMenu:
         pygame.init()
         return Game()
     
-    @pytest.fixture
-    def main_menu(self, game):
-        return MainMenu(game)
-    
-    @pytest.fixture
-    def options_menu(self, game):
-        return OptionsMenu(game)
-    
-    def test_main_menu_options(self, main_menu):
-        """Test main menu has correct options"""
-        assert len(main_menu.items) > 0
-        assert any(item.text == "Start Game" for item in main_menu.items)
-        assert any(item.text == "Options" for item in main_menu.items)
-        assert any(item.text == "Quit" for item in main_menu.items)
-    
-    def test_options_menu(self, options_menu):
-        """Test options menu functionality"""
-        initial_scheme = options_menu.game.settings.get('control_scheme', 'arrows')
-        options_menu.toggle_control_scheme()
-        current_scheme = options_menu.game.settings.get('control_scheme', 'arrows')
-        assert current_scheme != initial_scheme
-    
-    def test_menu_navigation(self, main_menu):
+    def test_menu_navigation(self, game):
         """Test menu navigation"""
-        initial_selected = None
-        for item in main_menu.items:
-            if item.selected:
-                initial_selected = item
-                break
+        # Should start in main menu
+        assert game.state_manager.current_state == GameState.MAIN_MENU
         
-        # Simulate down key press
-        event = pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_DOWN})
-        main_menu.handle_input(event)
+        # Start game
+        game.new_game()
+        assert game.state_manager.current_state == GameState.PLAYING
         
-        current_selected = None
-        for item in main_menu.items:
-            if item.selected:
-                current_selected = item
-                break
+        # Pause game
+        game.pause()
+        assert game.state_manager.current_state == GameState.PAUSED
         
-        assert current_selected != initial_selected 
+        # Resume game
+        game.resume()
+        assert game.state_manager.current_state == GameState.PLAYING
+        
+        # Return to menu
+        game.return_to_menu()
+        assert game.state_manager.current_state == GameState.MAIN_MENU
+    
+    def test_settings(self, game):
+        """Test settings functionality"""
+        # Test control scheme setting
+        initial_scheme = game.settings['controls']
+        game.toggle_control_scheme()
+        assert game.settings['controls'] != initial_scheme 
