@@ -60,10 +60,10 @@ class InputService:
         self._key_map[pygame.K_ESCAPE] = InputAction.PAUSE
         
         # Menu controls (separate from movement)
-        self._key_map[pygame.K_KP8] = InputAction.MENU_UP  # Numpad 8
-        self._key_map[pygame.K_KP2] = InputAction.MENU_DOWN  # Numpad 2
-        self._key_map[pygame.K_KP_ENTER] = InputAction.MENU_SELECT  # Numpad Enter
-        self._key_map[pygame.K_BACKSPACE] = InputAction.MENU_BACK  # Backspace
+        self._key_map[pygame.K_UP] = InputAction.MENU_UP  # Up arrow
+        self._key_map[pygame.K_DOWN] = InputAction.MENU_DOWN  # Down arrow
+        self._key_map[pygame.K_RETURN] = InputAction.MENU_SELECT  # Enter
+        self._key_map[pygame.K_ESCAPE] = InputAction.MENU_BACK  # Escape
         
     def add_handler(self, action: InputAction, handler: Callable) -> None:
         """Add a handler for an input action.
