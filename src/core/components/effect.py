@@ -1,9 +1,9 @@
-"""Effect component for handling particle systems and visual effects."""
-from typing import List, Tuple, Optional, Dict
-import random
-import math
+"""Effect component for visual effects."""
 import pygame
-from .component import Component
+from typing import List, Tuple, Optional
+from enum import Enum, auto
+
+from .base import Component
 from ..config.effects import EFFECT_TEMPLATES, validate_template
 
 class Particle:
