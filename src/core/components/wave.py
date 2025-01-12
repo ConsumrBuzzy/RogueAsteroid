@@ -1,6 +1,6 @@
 """Wave component for managing game waves."""
 import random
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Callable
 from .base import Component
 
 class WaveComponent(Component):
