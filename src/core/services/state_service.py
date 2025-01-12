@@ -169,6 +169,7 @@ class StateService:
             if self._current_state in self._state_handlers:
                 handler = self._state_handlers[self._current_state]
                 try:
+                    # Call the handler with delta time
                     handler(dt)
                 except Exception as e:
                     print(f"Error updating state {self._current_state.name}: {e}")

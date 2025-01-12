@@ -84,6 +84,13 @@ class MenuService:
         self._create_options_menu()
         self._create_high_scores_menu()
         
+        # Register menu states
+        self._state_service.register_handler(GameState.MAIN_MENU, self.draw)
+        self._state_service.register_handler(GameState.PAUSED, self.draw)
+        self._state_service.register_handler(GameState.GAME_OVER, self.draw)
+        self._state_service.register_handler(GameState.OPTIONS, self.draw)
+        self._state_service.register_handler(GameState.HIGH_SCORES, self.draw)
+        
         # Set initial menu based on current state
         current_state = self._state_service.get_current_state()
         if current_state in self._menus:
@@ -138,8 +145,12 @@ class MenuService:
         # Menu state updates will go here
         pass
         
-    def draw(self) -> None:
-        """Draw the current menu."""
+    def draw(self, dt: float = 0.0) -> None:
+        """Draw the current menu.
+        
+        Args:
+            dt: Delta time in seconds (unused but required for state handler interface)
+        """
         if not self._current_menu:
             return
             
@@ -149,7 +160,7 @@ class MenuService:
             (400, 100),  # Centered horizontally
             font_size=48,
             color=(255, 255, 255),
-            center=True
+            centered=True
         )
         
         # Draw menu items
@@ -160,7 +171,7 @@ class MenuService:
                 item.position,
                 font_size=36,
                 color=color,
-                center=True
+                centered=True
             )
             
     def handle_input(self, action: str) -> None:
