@@ -1,6 +1,6 @@
 """Debug component for development and testing."""
 import pygame
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Callable, Any
 from .base import Component
 
 class DebugComponent(Component):
