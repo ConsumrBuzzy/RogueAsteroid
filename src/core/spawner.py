@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING, List
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
     WINDOW_WIDTH,
-    WINDOW_HEIGHT,
-    ASTEROID_SPAWN_DISTANCE
+    WINDOW_HEIGHT
 )
+
+# Spawning constants
+ASTEROID_SPAWN_DISTANCE = 100  # Distance from screen edges to spawn asteroids
 
 if TYPE_CHECKING:
     from src.core.game import Game
