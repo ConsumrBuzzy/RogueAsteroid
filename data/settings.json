@@ -1,0 +1,21 @@
+{
+  "display": {
+    "width": 800,
+    "height": 600,
+    "fullscreen": false,
+    "vsync": true
+  },
+  "controls": {
+    "scheme": "arrows",
+    "shoot_key": "space"
+  },
+  "gameplay": {
+    "difficulty": "normal",
+    "starting_lives": 3,
+    "max_asteroids": 12
+  },
+  "graphics": {
+    "particles_enabled": true,
+    "debug_visuals": false
+  }
+}
