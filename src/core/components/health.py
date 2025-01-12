@@ -1,4 +1,4 @@
-"""Health component for managing entity health and damage."""
+"""Health component for managing entity health."""
 from typing import Optional, Callable
 from .base import Component
 
