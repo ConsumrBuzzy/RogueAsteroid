@@ -123,6 +123,22 @@ class ServiceManager:
                 service.set_event_manager(event_manager)
                 print("Set event manager for state service")
 
+    def get_service(self, name: str) -> Optional[object]:
+        """Get a registered service by name.
+        
+        Args:
+            name: Name of the service to get
+            
+        Returns:
+            The service instance if found, None otherwise
+            
+        Raises:
+            ValueError: If service name is empty
+        """
+        if not name:
+            raise ValueError("Service name cannot be empty")
+        return self._services.get(name)
+
     def init_services(self, screen: pygame.Surface) -> bool:
         """Initialize all game services.
         
@@ -133,33 +149,42 @@ class ServiceManager:
             True if initialization successful, False otherwise
         """
         try:
-            # Core services (no dependencies)
+            # Level 1: Core services (no dependencies)
+            print("Initializing core services...")
             settings = SettingsService()
             self.register_service(SERVICE_SETTINGS, settings)
             
             events = EventManagerService()
             self.register_service(SERVICE_EVENTS, events)
             
-            # State service (needed by many services)
+            # Level 2: State service (needed by many services)
+            print("Initializing state management...")
             state = StateService()
             self.register_service(SERVICE_STATE, state)
             
-            # Resource service
+            # Connect event manager to state service
+            if hasattr(state, 'set_event_manager'):
+                state.set_event_manager(events)
+                print("Connected event manager to state service")
+            
+            # Level 3: Resource and Input services
+            print("Initializing resource and input services...")
             resources = ResourceManagerService()
             self.register_service(SERVICE_RESOURCES, resources)
             
-            # Input service
             input_service = InputService()
             self.register_service(SERVICE_INPUT, input_service)
             
-            # Rendering stack
+            # Level 4: Rendering stack
+            print("Initializing rendering services...")
             render = RenderService(screen)
             self.register_service(SERVICE_RENDER, render)
             
             ui = UIService(screen)
             self.register_service(SERVICE_UI, ui)
             
-            # Physics stack
+            # Level 5: Physics stack
+            print("Initializing physics services...")
             physics = PhysicsService(screen.get_width(), screen.get_height())
             self.register_service(SERVICE_PHYSICS, physics)
             
@@ -169,11 +194,13 @@ class ServiceManager:
             particle = ParticleService(screen)
             self.register_service(SERVICE_PARTICLE, particle)
             
-            # Entity system
+            # Level 6: Entity system
+            print("Initializing entity services...")
             entity_factory = EntityFactoryService(service_manager=self)
             self.register_service(SERVICE_ENTITY_FACTORY, entity_factory)
             
-            # Data services
+            # Level 7: Data services
+            print("Initializing data services...")
             high_score = HighScoreService(settings, events)
             self.register_service(SERVICE_HIGH_SCORE, high_score)
             
@@ -183,15 +210,17 @@ class ServiceManager:
             statistics = StatisticsService(settings, events)
             self.register_service(SERVICE_STATISTICS, statistics)
             
-            # Menu service (depends on UI and State)
+            # Level 8: Menu service (depends on UI and State)
+            print("Initializing menu service...")
             menu = MenuService(ui_service=ui, state_service=state, input_service=input_service)
             self.register_service(SERVICE_MENU, menu)
             
-            # Game service (depends on everything)
+            # Level 9: Game service (depends on everything)
+            print("Initializing game service...")
             game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
             self.register_service(SERVICE_GAME, game)
             
-            print("All services initialized")
+            print("All services initialized successfully")
             return True
             
         except Exception as e:
@@ -231,14 +260,3 @@ class ServiceManager:
                 print(f"- {error}")
         else:
             print("All services cleaned up successfully") 
-
-    def get_service(self, name: str) -> Optional[object]:
-        """Get a registered service by name.
-        
-        Args:
-            name: Name of the service to get
-            
-        Returns:
-            The service instance if found, None otherwise
-        """
-        return self._services.get(name) 
