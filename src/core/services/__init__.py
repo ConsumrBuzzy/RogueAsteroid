@@ -13,6 +13,8 @@ from .game_service import GameService
 from .achievement_service import AchievementService
 from .statistics_service import StatisticsService
 from .input_service import InputService
+from .physics_service import PhysicsService
+from .render_service import RenderService
 
 T = TypeVar('T')
 
@@ -83,6 +85,14 @@ class ServiceManager:
             
             resources = ResourceManagerService()
             self.register_service("resources", resources)
+            
+            # Physics service
+            physics = PhysicsService(screen.get_width(), screen.get_height())
+            self.register_service("physics", physics)
+            
+            # Render service
+            render = RenderService(screen)
+            self.register_service("render", render)
             
             # Input service
             input_service = InputService()
