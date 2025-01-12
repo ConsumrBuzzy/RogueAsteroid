@@ -1,6 +1,6 @@
 """Ship entity module."""
 import math
-from typing import Dict, List, Tuple, Type, Any
+from typing import Dict, List, Tuple, Type, Any, Optional
 import pygame
 from pygame import Vector2
 
