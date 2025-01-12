@@ -97,7 +97,7 @@ class ServiceManager:
             entity_factory = EntityFactoryService()
             self.register_service("entity_factory", entity_factory)
             
-            game = GameService()
+            game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
             self.register_service("game", game)
             
             # Data services
