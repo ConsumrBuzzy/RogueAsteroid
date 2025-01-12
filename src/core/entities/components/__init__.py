@@ -6,6 +6,7 @@ from .collision import CollisionComponent
 from .input import InputComponent
 from .screen_wrap import ScreenWrapComponent
 from .particle import ParticleComponent
+from .effect import EffectComponent
 
 __all__ = [
     'Component',
@@ -15,4 +16,5 @@ __all__ = [
     'InputComponent',
     'ScreenWrapComponent',
     'ParticleComponent',
+    'EffectComponent',
 ] 

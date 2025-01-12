@@ -2,6 +2,7 @@
 import numpy as np
 from random import uniform
 from typing import TYPE_CHECKING, List
+import pygame
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
     WINDOW_WIDTH,
@@ -56,24 +57,22 @@ class Spawner:
             x = uniform(0, WINDOW_WIDTH)
             y = 0 if uniform(0, 1) < 0.5 else WINDOW_HEIGHT
         
-        # Create asteroid
-        asteroid = Asteroid(x, y)
+        # Create position vector
+        position = pygame.Vector2(x, y)
         
-        # Ensure asteroid is moving towards the center
-        center = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2])
-        to_center = center - asteroid.position
-        angle = np.arctan2(to_center[1], to_center[0])
+        # Calculate velocity towards center with randomness
+        center = pygame.Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
+        to_center = center - position
+        angle = to_center.angle_to(pygame.Vector2(1, 0))
+        angle += uniform(-45, 45)  # Add up to 45 degrees of randomness
         
-        # Add some randomness to the angle
-        angle += uniform(-np.pi/4, np.pi/4)
-        
-        # Set velocity
+        # Create velocity vector
         speed = uniform(50.0, 100.0)
-        asteroid.velocity = np.array([
-            speed * np.cos(angle),
-            speed * np.sin(angle)
-        ])
+        velocity = pygame.Vector2()
+        velocity.from_polar((speed, angle))
         
+        # Create asteroid
+        asteroid = Asteroid(self.game, 'large', position, velocity)
         self.game.add_entity(asteroid)
     
     def check_wave_complete(self) -> bool:
