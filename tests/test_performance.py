@@ -1,126 +1,164 @@
-"""Performance tests for RogueAsteroid."""
+"""Performance tests for game systems."""
+import unittest
 import time
-import pytest
-import numpy as np
-from typing import List, Callable
-from dataclasses import dataclass
-from test_utils import MockGame, create_test_entity
-from src.core.entities.base import Entity, TransformComponent, CollisionComponent
-from src.entities.asteroid import Asteroid
-from src.entities.bullet import Bullet
-from src.entities.ship import Ship
 import pygame
-import random
+import gc
+import psutil
+import os
+from src.core.config.effects import EFFECT_TEMPLATES
+from src.core.components.effect import EffectComponent
+from src.core.services.particle_service import ParticleService
+from src.core.entity import Entity
 
-@dataclass
-class BenchmarkResult:
-    """Results from a benchmark run."""
-    name: str
-    iterations: int
-    total_time: float
-    avg_time: float
-    min_time: float
-    max_time: float
+class MockGame:
+    """Mock game class for testing."""
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.Surface((800, 600))
+        self.width = 800
+        self.height = 600
 
-def benchmark(func: Callable, iterations: int = 1000) -> BenchmarkResult:
-    """Run a benchmark test.
+class TestParticleSystemPerformance(unittest.TestCase):
+    """Performance tests for particle system."""
     
-    Args:
-        func: Function to benchmark
-        iterations: Number of iterations to run
+    def setUp(self):
+        """Set up test environment."""
+        self.game = MockGame()
+        self.entity = Entity(self.game)
+        self.effects = EffectComponent(self.entity)
+        self.particle_service = ParticleService(self.game.screen)
         
-    Returns:
-        Benchmark results
-    """
-    times = []
-    total_start = time.perf_counter()
+        # Force garbage collection before each test
+        gc.collect()
+        
+    def tearDown(self):
+        """Clean up after tests."""
+        self.effects.clear_particles()
+        self.particle_service.clear()
+        gc.collect()
     
-    for _ in range(iterations):
-        start = time.perf_counter()
-        func()
-        end = time.perf_counter()
-        times.append(end - start)
+    def _get_memory_usage(self):
+        """Get current memory usage in MB."""
+        process = psutil.Process(os.getpid())
+        return process.memory_info().rss / 1024 / 1024
     
-    total_time = time.perf_counter() - total_start
-    avg_time = np.mean(times)
+    def test_particle_emission_performance(self):
+        """Test particle emission performance."""
+        position = (400, 300)
+        iterations = 100
+        total_time = 0
+        
+        # Measure emission time for multiple iterations
+        for _ in range(iterations):
+            start_time = time.perf_counter()
+            self.effects.emit('explosion', position, 0)
+            end_time = time.perf_counter()
+            total_time += end_time - start_time
+            
+            # Clean up for next iteration
+            self.effects.clear_particles()
+        
+        avg_time = total_time / iterations
+        self.assertLess(avg_time, 0.001, 
+                       f"Particle emission too slow: {avg_time:.6f}s average")
     
-    return BenchmarkResult(
-        name=func.__name__,
-        iterations=iterations,
-        total_time=total_time,
-        avg_time=avg_time,
-        min_time=min(times),
-        max_time=max(times)
-    )
+    def test_particle_update_performance(self):
+        """Test particle update performance with many particles."""
+        # Create many particles
+        for _ in range(10):  # Create 10 explosions
+            self.effects.emit('explosion', (400, 300), 0)
+        
+        # Measure update time
+        start_time = time.perf_counter()
+        for _ in range(60):  # Simulate 1 second at 60 FPS
+            self.effects.update(1/60)
+        end_time = time.perf_counter()
+        
+        update_time = end_time - start_time
+        self.assertLess(update_time, 0.1, 
+                       f"Particle update too slow: {update_time:.6f}s for 1 second simulation")
+    
+    def test_particle_memory_usage(self):
+        """Test memory usage under particle load."""
+        initial_memory = self._get_memory_usage()
+        
+        # Create maximum particles
+        for _ in range(50):  # Create many explosions
+            self.effects.emit('explosion', (400, 300), 0)
+        
+        # Measure memory after creation
+        peak_memory = self._get_memory_usage()
+        memory_increase = peak_memory - initial_memory
+        
+        # Clear particles
+        self.effects.clear_particles()
+        gc.collect()
+        
+        # Measure memory after cleanup
+        final_memory = self._get_memory_usage()
+        memory_leak = final_memory - initial_memory
+        
+        # Check memory usage
+        self.assertLess(memory_increase, 10.0,  # Allow up to 10MB increase
+                       f"Excessive memory usage: {memory_increase:.2f}MB")
+        self.assertLess(memory_leak, 1.0,  # Allow up to 1MB residual
+                       f"Possible memory leak: {memory_leak:.2f}MB residual")
+    
+    def test_particle_service_limits(self):
+        """Test particle service enforces limits correctly."""
+        position = (400, 300)
+        
+        # Try to exceed global particle limit
+        particles_before = len(self.particle_service._particles)
+        for _ in range(1000):  # Try to create way too many particles
+            self.particle_service.emit('explosion', position, 0)
+            
+        particles_after = len(self.particle_service._particles)
+        self.assertLessEqual(particles_after, self.particle_service.MAX_PARTICLES,
+                           "Particle service exceeded global limit")
+        
+        # Try to exceed per-effect limit
+        self.particle_service.clear()
+        for _ in range(1000):  # Try to create too many of one effect
+            self.particle_service.emit('thrust', position, 0)
+            
+        effect_count = self.particle_service._active_effects.get('thrust', 0)
+        self.assertLessEqual(effect_count, self.particle_service.MAX_PARTICLES_PER_EFFECT,
+                           "Particle service exceeded per-effect limit")
+    
+    @unittest.skip("Long-running stress test")
+    def test_particle_system_stress(self):
+        """Stress test the particle system."""
+        position = (400, 300)
+        frames = 3600  # 1 minute at 60 FPS
+        
+        start_time = time.perf_counter()
+        start_memory = self._get_memory_usage()
+        
+        # Simulate heavy particle usage
+        for frame in range(frames):
+            # Create new particles every few frames
+            if frame % 10 == 0:
+                for effect_type in EFFECT_TEMPLATES:
+                    self.effects.emit(effect_type, position, frame % 360)
+            
+            # Update and draw
+            self.effects.update(1/60)
+            self.effects.draw(self.game.screen)
+            
+        end_time = time.perf_counter()
+        end_memory = self._get_memory_usage()
+        
+        total_time = end_time - start_time
+        memory_increase = end_memory - start_memory
+        
+        print(f"\nStress Test Results:")
+        print(f"Total time: {total_time:.2f}s")
+        print(f"Average FPS: {frames/total_time:.1f}")
+        print(f"Memory increase: {memory_increase:.2f}MB")
+        
+        self.assertLess(memory_increase, 50.0,  # Allow up to 50MB increase for stress test
+                       f"Excessive memory growth during stress test: {memory_increase:.2f}MB")
 
-class TestGamePerformance:
-    """Test cases for game performance."""
-
-    def test_collision_detection_performance(self):
-        """Test the performance of collision detection."""
-        game = MockGame()
-        # Create test entities
-        entities = []
-        for _ in range(20):  # Create 20 entities with collision components
-            entity = Entity(game)
-            transform = entity.add_component(TransformComponent)
-            transform.position = pygame.Vector2(random.randint(0, 800), random.randint(0, 600))
-            entity.add_component(CollisionComponent, radius=20)
-            entities.append(entity)
-            game.add_entity(entity)
-
-        def check_collisions():
-            for i, entity1 in enumerate(entities):
-                collision1 = entity1.get_component('collision')
-                if collision1:
-                    for entity2 in entities[i+1:]:
-                        collision2 = entity2.get_component('collision')
-                        if collision2:
-                            collision1.check_collision(collision2)
-
-        # Run benchmark
-        result = benchmark(check_collisions, iterations=100)
-        print(f"Collision detection average time: {result.avg_time*1000:.2f}ms")
-        assert result.avg_time*1000 < 5.0, f"Collision detection too slow: {result.avg_time*1000:.2f}ms"
-
-    def test_entity_update_performance(self):
-        """Test the performance of entity updates."""
-        game = MockGame()
-        entities = []
-        for _ in range(100):  # Create 100 entities
-            entity = Entity(game)
-            transform = entity.add_component(TransformComponent)
-            transform.position = pygame.Vector2(random.randint(0, 800), random.randint(0, 600))
-            transform.velocity = pygame.Vector2(random.uniform(-100, 100), random.uniform(-100, 100))
-            entities.append(entity)
-            game.add_entity(entity)
-
-        def update_entities():
-            for entity in entities:
-                entity.update(1/60)  # Update at 60 FPS
-
-        # Run benchmark
-        result = benchmark(update_entities, iterations=100)
-        print(f"Entity update average time: {result.avg_time*1000:.2f}ms")
-        assert result.avg_time*1000 < 10.0, f"Entity updates too slow: {result.avg_time*1000:.2f}ms"
-
-    def test_particle_system_performance(self):
-        """Test the performance of the particle system."""
-        game = MockGame()
-        particles = []
-        for _ in range(1000):  # Create 1000 particles
-            particle = Entity(game)
-            transform = particle.add_component(TransformComponent)
-            transform.position = pygame.Vector2(random.randint(0, 800), random.randint(0, 600))
-            transform.velocity = pygame.Vector2(random.uniform(-100, 100), random.uniform(-100, 100))
-            particles.append(particle)
-            game.add_entity(particle)
-
-        def update_particles():
-            for particle in particles:
-                particle.update(1/60)  # Update at 60 FPS
-
-        # Run benchmark
-        result = benchmark(update_particles, iterations=100)
-        print(f"Particle system average time: {result.avg_time*1000:.2f}ms")
-        assert result.avg_time*1000 < 50.0, f"Particle system too slow: {result.avg_time*1000:.2f}ms" 
+if __name__ == '__main__':
+    unittest.main() 
