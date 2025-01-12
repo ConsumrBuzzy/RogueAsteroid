@@ -10,11 +10,16 @@ from src.core.state.game_states import GameState
 
 # Mock services
 class MockStateService:
+    """Mock state service for testing."""
     def __init__(self):
         self.current_state = GameState.MAIN_MENU
         self.is_ready = lambda: True
-        self.change_state = MagicMock()
+        self.change_state = self._change_state
         self.get_current_state = lambda: self.current_state
+        
+    def _change_state(self, new_state):
+        """Change the current state."""
+        self.current_state = new_state
 
 class MockEventManager:
     def __init__(self):
