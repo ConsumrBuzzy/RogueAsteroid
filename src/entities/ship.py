@@ -89,7 +89,7 @@ class Ship(Entity):
         print(f"Collision component added: {collision}")  # Debug info
         
         # Screen wrap component to wrap around screen edges
-        screen_wrap = ScreenWrapComponent(self)
+        screen_wrap = ScreenWrapComponent(self, screen_size=(self.game.width, self.game.height))
         self.add_component(screen_wrap)
         
         # Effects component for visual effects

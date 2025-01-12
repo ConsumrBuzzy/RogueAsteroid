@@ -679,3 +679,19 @@ Changes Made:
 Focus Areas: Entity System, Component Architecture
 Major Changes: Component Initialization
 Next Steps: Test ship initialization and movement 
+
+[2025-01-11 21:56PM] [FIX] ScreenWrapComponent Initialization
+
+- Fixed ScreenWrapComponent initialization in Ship class
+  - Added required screen_size parameter
+  - Using game width and height for screen dimensions
+  - Ensures proper screen wrapping behavior
+  - Fixes missing screen_size argument error
+
+Changes Made:
+1. Updated ScreenWrapComponent initialization with screen size
+2. Using game dimensions for screen wrapping
+
+Focus Areas: Entity System, Component Initialization
+Major Changes: Component Parameter Fix
+Next Steps: Test ship screen wrapping behavior 
