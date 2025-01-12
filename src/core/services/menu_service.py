@@ -97,10 +97,14 @@ class MenuService:
         input_service.add_handler(InputAction.MENU_SELECT, self.select)
         input_service.add_handler(InputAction.MENU_BACK, lambda: self._change_state(GameState.MAIN_MENU))
         
-        # Get render service and add menu to UI layer
-        from .render_service import RenderService
-        render_service = RenderService()  # Get singleton instance
-        render_service.add_to_layer("ui", self)
+        # Get render service from ServiceManager
+        from .. import ServiceManager
+        service_manager = ServiceManager()
+        render_service = service_manager.get_service('render')
+        if render_service:
+            render_service.add_to_layer("ui", self)
+        else:
+            print("Warning: Could not add menu to render layer - RenderService not found")
         
         print("MenuService initialized")
         
