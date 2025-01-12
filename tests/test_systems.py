@@ -110,55 +110,89 @@ class TestGame:
         assert len(game.asteroids) > initial_asteroids
 
 class TestParticleEffects:
-    def test_thrust_particles(self, game):
-        """Test that thrust particles are created when thrusting."""
+    def test_thrust_particle_creation(self, game):
+        """Test that thrust particles are created."""
         game.new_game()
         assert game.ship is not None
-        
-        # Get input component
+        initial_particles = len(game.particles)
+        game.ship.create_thrust_particles()
+        assert len(game.particles) > initial_particles
+
+    def test_thrust_particle_input(self, game):
+        """Test that thrust particles are created when UP key is pressed."""
+        game.new_game()
         input_comp = game.ship.get_component('input')
         assert input_comp is not None
         
         # Simulate thrust key press
-        input_comp.handle_keydown(pygame.K_UP)  # Add UP key to active keys
+        input_comp.handle_keydown(pygame.K_UP)
         assert pygame.K_UP in input_comp.active_keys
         
-        # Update a few frames to create particles
+        # Update a few frames
         initial_particles = len(game.particles)
         for _ in range(5):
-            game.update(1/60)  # Update at 60 FPS
-            
-        # Should have created some particles
+            game.update(1/60)
         assert len(game.particles) > initial_particles
-        
-        # Release key and verify no new particles
-        input_comp.handle_keyup(pygame.K_UP)
-        assert pygame.K_UP not in input_comp.active_keys
-    
-    def test_explosion_particles(self, game):
-        """Test explosion particle creation"""
+
+    def test_thrust_particle_cleanup(self, game):
+        """Test that thrust particles are removed after lifetime expires."""
         game.new_game()
+        game.ship.create_thrust_particles()
         initial_particles = len(game.particles)
-        game.create_explosion(400, 300)
-        assert len(game.particles) > initial_particles
+        assert initial_particles > 0
         
-    def test_particle_cleanup(self, game):
-        """Test particle cleanup"""
-        game.new_game()
-        game.create_explosion(400, 300)
-        initial_particles = len(game.particles)
-        
-        # Update for long enough to expire particles
-        # Most particles have lifetime between 0.5 and 1.0 seconds
-        # Update for 1.5 seconds to ensure all particles expire
-        total_time = 1.5  # seconds
-        frame_time = 0.016  # 60 FPS
-        frames = int(total_time / frame_time)
-        
-        for _ in range(frames):
-            game.update(frame_time)
-        
+        # Update long enough for particles to expire
+        total_time = 0.5  # Most thrust particles live 0.1-0.3 seconds
+        for _ in range(int(total_time * 60)):  # 60 FPS
+            game.update(1/60)
         assert len(game.particles) < initial_particles
+        
+    def test_explosion_particle_creation(self, game):
+        """Test that explosion creates correct number of particles."""
+        game.new_game()
+        initial_particles = len(game.particles)
+        game.create_explosion(400, 300)
+        new_particles = len(game.particles) - initial_particles
+        assert 8 <= new_particles <= 12  # From create_explosion method
+        
+    def test_explosion_particle_cleanup(self, game):
+        """Test that explosion particles are removed after lifetime expires."""
+        game.new_game()
+        game.create_explosion(400, 300)
+        initial_particles = len(game.particles)
+        assert initial_particles > 0
+        
+        # Update long enough for particles to expire
+        total_time = 1.5  # Most explosion particles live 0.5-1.0 seconds
+        for _ in range(int(total_time * 60)):  # 60 FPS
+            game.update(1/60)
+        assert len(game.particles) == 0
+
+    def test_particle_velocity(self, game):
+        """Test that particles move according to their velocity."""
+        game.new_game()
+        test_pos = pygame.Vector2(400, 300)
+        game.create_explosion(test_pos.x, test_pos.y)
+        
+        # Get initial positions
+        initial_positions = [pygame.Vector2(p['position']) for p in game.particles]
+        
+        # Update one frame
+        game.update(1/60)
+        
+        # Verify particles have moved
+        for i, particle in enumerate(game.particles):
+            current_pos = pygame.Vector2(particle['position'])
+            assert current_pos != initial_positions[i]
+
+    def test_particle_color(self, game):
+        """Test that particles maintain their color."""
+        game.new_game()
+        game.create_explosion(400, 300)
+        for particle in game.particles:
+            assert 'color' in particle
+            assert len(particle['color']) == 3  # RGB tuple
+            assert all(0 <= c <= 255 for c in particle['color'])
 
 class TestMenu:
     def test_menu_navigation(self, game):
