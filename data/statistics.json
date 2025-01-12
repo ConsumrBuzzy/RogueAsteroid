@@ -12,5 +12,19 @@
     "waves_completed": 0,
     "accuracy": 0.0,
     "highest_wave": 0
+  },
+  {
+    "session_id": "20250111_221355",
+    "start_time": "2025-01-11T22:13:55.017686",
+    "end_time": "2025-01-11T22:13:55.023684",
+    "duration": 0.005998,
+    "score": 0,
+    "asteroids_destroyed": 0,
+    "shots_fired": 0,
+    "shots_hit": 0,
+    "deaths": 0,
+    "waves_completed": 0,
+    "accuracy": 0.0,
+    "highest_wave": 0
   }
 ]
