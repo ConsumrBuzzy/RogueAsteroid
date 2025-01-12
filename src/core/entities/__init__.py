@@ -1,17 +1,18 @@
-"""Entity component system for RogueAsteroid."""
-
-from .base import (
-    Entity,
+"""Core entity components."""
+from .components import (
     Component,
     TransformComponent,
-    RenderComponent,
-    CollisionComponent
+    PhysicsComponent,
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
 )
 
 __all__ = [
-    'Entity',
     'Component',
     'TransformComponent',
-    'RenderComponent',
-    'CollisionComponent'
+    'PhysicsComponent',
+    'CollisionComponent',
+    'InputComponent',
+    'ScreenWrapComponent'
 ] 
