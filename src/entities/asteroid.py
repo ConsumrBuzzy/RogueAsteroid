@@ -3,8 +3,14 @@ import random
 import math
 from typing import List, Tuple, Union, Optional
 import pygame
-from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
-from src.core.entities.components import PhysicsComponent, ScreenWrapComponent
+from src.core.entities.base import Entity
+from src.core.entities.components import (
+    TransformComponent,
+    RenderComponent,
+    CollisionComponent,
+    PhysicsComponent,
+    ScreenWrapComponent
+)
 from src.core.constants import (
     WINDOW_WIDTH, 
     WINDOW_HEIGHT, 
