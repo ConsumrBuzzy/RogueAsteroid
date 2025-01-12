@@ -42,31 +42,31 @@ class TestShip:
     def test_ship_init(self, ship):
         """Test ship initialization."""
         assert isinstance(ship, Entity)
-        assert ship.get_component(TransformComponent) is not None
-        assert ship.get_component(PhysicsComponent) is not None
-        assert ship.get_component(RenderComponent) is not None
-        assert ship.get_component(CollisionComponent) is not None
-        assert ship.get_component(InputComponent) is not None
-        assert ship.get_component(ScreenWrapComponent) is not None
+        assert ship.get_transform() is not None
+        assert ship.get_physics() is not None
+        assert ship.get_render() is not None
+        assert ship.get_collision() is not None
+        assert ship.get_input() is not None
+        assert ship.get_effects() is not None
     
     def test_ship_thrust(self, ship):
         """Test ship thrust mechanics."""
-        transform = ship.get_component(TransformComponent)
-        physics = ship.get_component(PhysicsComponent)
+        transform = ship.get_transform()
+        physics = ship.get_physics()
         
         initial_pos = Vector2(transform.position)
-        ship.thrust(1.0)
+        ship._thrust_forward()
         physics.update(0.016)
         assert transform.position != initial_pos
     
     def test_ship_rotation(self, ship):
         """Test ship rotation."""
-        transform = ship.get_component(TransformComponent)
+        transform = ship.get_transform()
         initial_rotation = transform.rotation
         
-        ship.rotate_left(1.0)
+        ship._rotate_left()
         assert transform.rotation < initial_rotation
         
         initial_rotation = transform.rotation
-        ship.rotate_right(1.0)
+        ship._rotate_right()
         assert transform.rotation > initial_rotation 

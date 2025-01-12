@@ -44,7 +44,12 @@ class ServiceManager:
             if callable(service_type) and not isinstance(service_type, type):
                 service = service_type()
             else:
-                service = service_type()
+                # Pass game instance if service constructor accepts it
+                sig = inspect.signature(service_type.__init__)
+                if 'game' in sig.parameters:
+                    service = service_type(game=self.game)
+                else:
+                    service = service_type()
                 
             self._services[name] = service
             self._service_types[name] = service_type if isinstance(service_type, type) else type(service)
@@ -116,3 +121,13 @@ class ServiceManager:
                         dependencies.add(param.annotation)
                         
         return dependencies 
+        
+    def update(self, dt: float) -> None:
+        """Update all services.
+        
+        Args:
+            dt: Time elapsed since last update in seconds
+        """
+        for service in self._services.values():
+            if hasattr(service, 'update'):
+                service.update(dt) 

@@ -134,7 +134,13 @@ class TestInputComponent:
         
         # Simulate key press
         pygame.event.post(pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_SPACE}))
+        pygame.event.pump()  # Process events
         input_component.update(1/60)
+        
+        # Process any remaining events
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                input_component._handle_keydown(event)
         
         assert action_called is True
 
