@@ -1,9 +1,18 @@
 """Game service for core game management."""
 from typing import Dict, Optional, List
 import pygame
+import random
 
-from ..entity.entity import Entity
-from .state_service import GameState
+from ..entity import Entity
+from ..state.game_states import GameState
+from src.entities.ship import Ship
+from src.entities.asteroid import Asteroid
+from src.core.constants import (
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    STARTING_ASTEROIDS,
+    STARTING_LIVES
+)
 
 class GameService:
     """Service for core game management.
@@ -32,6 +41,17 @@ class GameService:
         self._running = False
         self._paused = False
         self._dt = 0
+        
+        # Game state
+        self._score = 0
+        self._lives = STARTING_LIVES
+        self._level = 1
+        
+        # Entity tracking
+        self.entities: List[Entity] = []
+        self.asteroids: List[Asteroid] = []
+        self.bullets: List[Entity] = []
+        self.player_ship: Optional[Ship] = None
         
         try:
             # Get required services
@@ -85,14 +105,54 @@ class GameService:
         """Start the game loop."""
         self._running = True
         self._event_manager.publish('game_start')
+        
+        # Initialize game state
+        self._score = 0
+        self._lives = STARTING_LIVES
+        self._level = 1
+        
+        # Create player ship
+        self.player_ship = Ship(self)
+        self.entities.append(self.player_ship)
+        
+        # Register ship with services
+        self._physics_service.register_entity(self.player_ship)
+        self._collision_service.register_entity(self.player_ship)
+        self._render_service.add_to_layer('game', self.player_ship)
+        
+        # Spawn initial asteroids
+        self._spawn_asteroids(STARTING_ASTEROIDS)
+        
         print("Game loop started")
-    
+        
+    def _spawn_asteroids(self, count: int) -> None:
+        """Spawn a number of asteroids.
+        
+        Args:
+            count: Number of asteroids to spawn
+        """
+        if not self.player_ship:
+            return
+            
+        for _ in range(count):
+            # Create asteroid away from player
+            asteroid = Asteroid.spawn_random(self, self.player_ship.get_component('transform').position)
+            
+            # Add to tracking lists
+            self.asteroids.append(asteroid)
+            self.entities.append(asteroid)
+            
+            # Register with services
+            self._physics_service.register_entity(asteroid)
+            self._collision_service.register_entity(asteroid)
+            self._render_service.add_to_layer('game', asteroid)
+            
     def stop(self) -> None:
         """Stop the game loop."""
         self._running = False
         self._event_manager.publish('game_stop')
         print("Game loop stopped")
-    
+        
     def pause(self) -> None:
         """Pause the game."""
         if self._state_service.get_current_state() == GameState.PLAYING:
@@ -100,7 +160,7 @@ class GameService:
             self._state_service.change_state(GameState.PAUSED)
             self._event_manager.publish('game_pause')
             print("Game paused")
-    
+        
     def resume(self) -> None:
         """Resume the game."""
         if self._state_service.get_current_state() == GameState.PAUSED:
@@ -108,7 +168,7 @@ class GameService:
             self._state_service.change_state(GameState.PLAYING)
             self._event_manager.publish('game_resume')
             print("Game resumed")
-    
+        
     def is_running(self) -> bool:
         """Check if game is running.
         
@@ -116,7 +176,7 @@ class GameService:
             True if game is running
         """
         return self._running
-    
+        
     def is_paused(self) -> bool:
         """Check if game is paused.
         
@@ -124,7 +184,7 @@ class GameService:
             True if game is paused
         """
         return self._paused
-    
+        
     def update(self, dt: float) -> None:
         """Update game state.
         
@@ -140,7 +200,7 @@ class GameService:
         if self._state_service.get_current_state() == GameState.QUIT:
             self.stop()
             return
-        
+            
         if not self._paused:
             try:
                 # Update all services
@@ -151,9 +211,14 @@ class GameService:
                 self._state_service.update(dt)
                 self._menu_service.update(dt)
                 
-                # Update entity factory
-                self._entity_factory.update(dt)
-                
+                # Update all entities
+                for entity in self.entities[:]:  # Copy list to allow removal
+                    entity.update(dt)
+                    
+                # Check if level is complete
+                if len(self.asteroids) == 0:
+                    self._event_manager.publish('level_complete', level=self._level)
+                    
                 # Process events
                 self._event_manager.process_events()
                 
@@ -186,7 +251,15 @@ class GameService:
         """Clear all game state."""
         try:
             # Clear all entities
-            self._entity_factory.clear_all()
+            for entity in self.entities:
+                self._physics_service.unregister_entity(entity)
+                self._collision_service.unregister_entity(entity)
+                self._render_service.remove_from_layer('game', entity)
+                
+            self.entities.clear()
+            self.asteroids.clear()
+            self.bullets.clear()
+            self.player_ship = None
             
             # Clear all services
             self._render_service.clear()
@@ -218,6 +291,8 @@ class GameService:
     def _on_level_complete(self, **kwargs) -> None:
         """Handle level complete event."""
         level = kwargs.get('level', 1)
+        self._level += 1
+        self._spawn_asteroids(STARTING_ASTEROIDS + self._level)
         print(f"Level {level} completed")
         
     def cleanup(self) -> None:
