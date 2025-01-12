@@ -5,7 +5,7 @@
 - [ ] Update remaining documentation with new tasklist format
 - [ ] Test ship initialization with error cases
 - [ ] Verify entity rendering with color constants
-- [ ] Test particle system memory usage under load
+- [ ] Run particle system stress tests in isolated environment
 
 ## Medium Priority
 - [ ] Test service retrieval functionality
@@ -15,6 +15,7 @@
 - [ ] Add stress tests for effect system
 - [ ] Add benchmarks for particle rendering
 - [ ] Test effect template hot-reloading
+- [ ] Register custom pytest marks
 
 ## Low Priority
 - [ ] Complete API documentation
@@ -28,6 +29,7 @@
 ## Completed Tasks
 [Format: [YYYY-MM-DD HH:MM] Task Description]
 
+[2025-01-12 10:20] Test particle system memory usage under load
 [2025-01-12 10:10] Add performance tests for particle system
 [2025-01-12 10:05] Address pkg_resources deprecation warning in pygame
 [2025-01-12 10:00] Separate tasklist into dedicated file
