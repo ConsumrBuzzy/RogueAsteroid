@@ -1,5 +1,5 @@
 """State service for game state management."""
-from typing import Optional, Dict, Callable, Set
+from typing import Optional, Dict, Callable, Set, List
 import pygame
 from ..state.game_states import GameState
 
@@ -31,6 +31,7 @@ class StateService:
         self._state_handlers: Dict[GameState, Callable] = {}
         self._event_manager = None  # Will be set by set_event_manager
         self._valid_transitions: Dict[GameState, Set[GameState]] = {}
+        self._subscribers: Dict[str, List[Callable]] = {}
         
         # Set initial state
         self.change_state(GameState.MAIN_MENU)
@@ -149,11 +150,15 @@ class StateService:
             self._previous_state = self._current_state
             self._current_state = new_state
             
-            # Notify state change
+            # Notify state change through both systems
             if self._event_manager:
                 self._event_manager.publish('state_changed', 
                     old_state=self._previous_state,
                     new_state=self._current_state)
+                    
+            self._notify_subscribers('state_changed',
+                old_state=self._previous_state,
+                new_state=self._current_state)
             
             print(f"Changed state from {self._previous_state} to {new_state}")
             
@@ -230,4 +235,37 @@ class StateService:
         self._current_state = None
         self._previous_state = None
         self._state_handlers.clear()
+        self._subscribers.clear()
         print("StateService cleaned up") 
+
+    def subscribe(self, event_type: str, callback: Callable) -> None:
+        """Subscribe to state events.
+        
+        Args:
+            event_type: Type of event to subscribe to
+            callback: Function to call when event occurs
+            
+        Raises:
+            ValueError: If callback is not callable
+        """
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+            
+        if event_type not in self._subscribers:
+            self._subscribers[event_type] = []
+        self._subscribers[event_type].append(callback)
+        print(f"Added subscriber for {event_type}")
+
+    def _notify_subscribers(self, event_type: str, **kwargs) -> None:
+        """Notify subscribers of an event.
+        
+        Args:
+            event_type: Type of event that occurred
+            **kwargs: Event data
+        """
+        if event_type in self._subscribers:
+            for callback in self._subscribers[event_type]:
+                try:
+                    callback(**kwargs)
+                except Exception as e:
+                    print(f"Error in state event subscriber: {e}") 
