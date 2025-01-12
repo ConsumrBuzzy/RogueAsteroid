@@ -102,9 +102,12 @@ class Game:
     
     def new_game(self):
         """Start a new game."""
+        print("Starting new game...")  # Debug info
         self.reset_game()
         self.state_manager.change_state(GameState.PLAYING)
+        print("Spawning player ship...")  # Debug info
         self.spawn_ship()
+        print("Spawning initial asteroids...")  # Debug info
         self.spawn_asteroid_wave()
     
     def reset_game(self):
@@ -121,10 +124,12 @@ class Game:
         self.lives = STARTING_LIVES
         self.scoring.reset()
         self.ship = None
+        print("Game state reset complete")  # Debug info
     
     def spawn_ship(self):
         """Spawn the player's ship."""
         if self.ship is None:
+            print("Creating new ship...")  # Debug info
             self.ship = Ship(self)
             self.entities.append(self.ship)
             # Set initial position
@@ -132,9 +137,13 @@ class Game:
             if transform:
                 transform.position = pygame.Vector2(self.width // 2, self.height // 2)
                 transform.rotation = 0.0
+                print(f"Ship spawned at position {transform.position}")  # Debug info
+            else:
+                print("Warning: Ship missing transform component!")  # Debug info
     
     def spawn_asteroid_wave(self):
         """Spawn a wave of asteroids."""
+        print(f"Spawning asteroid wave for level {self.level}")  # Debug info
         self.spawner.start_wave()
     
     def pause(self):

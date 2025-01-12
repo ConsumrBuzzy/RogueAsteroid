@@ -48,7 +48,7 @@ class StateManager:
         if new_state == GameState.PLAYING:
             if old_state == GameState.MAIN_MENU:
                 print("Starting new game")  # Debug info
-                self.game.reset_game()
+                self.game.new_game()
             elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
