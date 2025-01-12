@@ -4,7 +4,8 @@ import pygame
 from pygame import Surface, Vector2
 from typing import Tuple
 
-from src.core.entities.base import Entity
+from src.core.services import ServiceManager
+from src.core.game import Game
 from src.core.components import (
     TransformComponent,
     PhysicsComponent,
@@ -13,9 +14,18 @@ from src.core.components import (
     InputComponent,
     ScreenWrapComponent
 )
-from src.core.game import Game
-from src.core.services import ServiceManager
-from src.core.constants import TARGET_FPS
+from src.core.config.display import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    TARGET_FPS
+)
+from src.core.config.gameplay import (
+    INITIAL_ASTEROIDS,
+    ASTEROIDS_INCREMENT,
+    MAX_ASTEROIDS,
+    PHYSICS_TIME_STEP
+)
+from src.core.entities.base import Entity
 
 @pytest.fixture
 def mock_game():

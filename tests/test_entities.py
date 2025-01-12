@@ -17,6 +17,14 @@ from src.core.game import Game
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
+from src.core.config.entities import (
+    SHIP_ACCELERATION,
+    SHIP_ROTATION_SPEED,
+    SHIP_MAX_SPEED,
+    ASTEROID_SIZES,
+    BULLET_SPEED,
+    BULLET_LIFETIME
+)
 
 @pytest.fixture
 def mock_game():

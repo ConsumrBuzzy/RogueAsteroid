@@ -6,6 +6,7 @@ from typing import Tuple
 from dataclasses import dataclass
 
 from src.core.entities.base import Entity
+from src.core.services.state_service import GameState
 from src.core.components import (
     TransformComponent,
     PhysicsComponent,
@@ -14,9 +15,19 @@ from src.core.components import (
     InputComponent,
     ScreenWrapComponent
 )
+from src.core.config.display import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    TARGET_FPS
+)
+from src.core.config.gameplay import (
+    INITIAL_ASTEROIDS,
+    ASTEROIDS_INCREMENT,
+    MAX_ASTEROIDS,
+    PHYSICS_TIME_STEP
+)
 from src.core.game import Game
 from src.core.services import ServiceManager
-from src.core.services.state_service import GameState
 
 @dataclass
 class MockComponent:

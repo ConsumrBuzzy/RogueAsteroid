@@ -1,10 +1,11 @@
-"""Integration tests for game systems."""
+"""Tests for game systems."""
 import pytest
 import pygame
 from pygame import Surface, Vector2
 from typing import Tuple
 
-from src.core.entities.base import Entity
+from src.core.services import ServiceManager
+from src.core.services.state_service import GameState
 from src.core.components import (
     TransformComponent,
     PhysicsComponent,
@@ -14,11 +15,26 @@ from src.core.components import (
     ScreenWrapComponent
 )
 from src.core.game import Game
-from src.core.services import ServiceManager
-from src.core.services.state_service import GameState
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
+from src.core.config.entities import (
+    SHIP_ACCELERATION,
+    SHIP_ROTATION_SPEED,
+    SHIP_MAX_SPEED,
+    ASTEROID_SIZES,
+    BULLET_SPEED,
+    BULLET_LIFETIME
+)
+from src.core.config.gameplay import (
+    INITIAL_ASTEROIDS,
+    ASTEROIDS_INCREMENT,
+    MAX_ASTEROIDS
+)
+from src.core.config.display import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT
+)
 
 @pytest.fixture
 def mock_game():
