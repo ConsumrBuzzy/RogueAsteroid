@@ -67,7 +67,10 @@ class ServiceManager:
         Returns:
             Service instance or None if not found
         """
-        return self._services.get(name)
+        service = self._services.get(name)
+        if service is None:
+            print(f"Warning: Service '{name}' not found")
+        return service
         
     def init_services(self, screen: pygame.Surface) -> bool:
         """Initialize all game services.
@@ -93,6 +96,14 @@ class ServiceManager:
             state = StateService()
             self.register_service("state", state)
             
+            # UI service (moved earlier)
+            ui = UIService(screen)
+            self.register_service("ui", ui)
+            
+            # Menu service with direct references
+            menu = MenuService(ui_service=ui, state_service=state)
+            self.register_service("menu", menu)
+            
             # Physics and rendering services
             physics = PhysicsService(screen.get_width(), screen.get_height())
             self.register_service("physics", physics)
@@ -106,19 +117,9 @@ class ServiceManager:
             particle = ParticleService(screen)
             self.register_service("particle", particle)
             
-            # Input and UI services
+            # Input service
             input_service = InputService()
             self.register_service("input", input_service)
-            
-            ui = UIService(screen)
-            self.register_service("ui", ui)
-            
-            # Create menu service with explicit type casting
-            menu = MenuService(
-                ui_service=self.get_service("ui"),
-                state_service=self.get_service("state")
-            )
-            self.register_service("menu", menu)
             
             # Game services
             entity_factory = EntityFactoryService(service_manager=self)
