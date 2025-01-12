@@ -1,6 +1,9 @@
 """Particle entity for visual effects."""
-from src.core.entities.base import Entity, TransformComponent, RenderComponent
-from src.core.entities.components import PhysicsComponent, ParticleComponent
+from src.core.entity.entity import Entity
+from src.core.components.transform import TransformComponent
+from src.core.components.render import RenderComponent
+from src.core.components.physics import PhysicsComponent
+from src.core.components.effect import EffectComponent
 
 class Particle(Entity):
     """A particle entity for visual effects."""
@@ -24,8 +27,8 @@ class Particle(Entity):
         physics.mass = 0.1
         physics.max_speed = 1000.0  # Allow high speeds for particles
         
-        # Add particle component with lifetime and color
-        particle = self.add_component(ParticleComponent)
-        particle.lifetime = lifetime
-        particle.color = color
-        particle.size = 2.0  # Default size in pixels 
+        # Add effect component with lifetime and color
+        effect = self.add_component(EffectComponent)
+        effect.lifetime = lifetime
+        effect.color = color
+        effect.size = 2.0  # Default size in pixels 
