@@ -34,6 +34,40 @@ Current Phase: Modular Refactoring
   * Enhanced extensibility
   * Cleaner dependencies
 
+### Modular Refactoring Plan
+
+1. Core Systems Separation:
+   - Game state management
+   - Entity management
+   - Component system
+   - Event system
+   - Resource management
+
+2. Service Layer:
+   - Input handling service
+   - Physics service
+   - Rendering service
+   - Collision service
+   - Particle system service
+
+3. Entity Framework:
+   - Entity factory
+   - Component registry
+   - Entity lifecycle management
+   - Entity pooling system
+
+4. Resource Management:
+   - Asset loading/unloading
+   - Resource caching
+   - Memory management
+   - Configuration management
+
+Implementation Order:
+1. Core systems separation - establish foundation
+2. Service layer - abstract core functionality
+3. Entity framework - improve object management
+4. Resource management - optimize performance
+
 [2025-01-11 19:15PM] [IMPL] Added Continuous Shooting:
 - Enabled continuous firing while holding spacebar/numpad enter
 - Maintained existing shoot cooldown for balance
