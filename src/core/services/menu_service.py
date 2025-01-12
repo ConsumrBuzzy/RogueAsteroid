@@ -1,7 +1,7 @@
 """Menu service for managing game menus."""
 from typing import Dict, List, Optional, Callable
 import pygame
-from ..game_states import GameState
+from core.game_states import GameState
 from .ui_service import UIService
 from .state_service import StateService
 
