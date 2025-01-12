@@ -239,7 +239,7 @@ class ParticleComponent(Component):
         if not self.entity:
             return
             
-        transform = self.entity.get_component('transform')
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
             

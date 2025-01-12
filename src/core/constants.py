@@ -8,26 +8,24 @@ WINDOW_HEIGHT = 600
 FPS = 60
 BACKGROUND_COLOR = (0, 0, 0)
 
-# Physics settings
-FRICTION = 0.99
-MAX_SPEED = 400.0
-ROTATION_SPEED = 180.0
-THRUST_FORCE = 300.0
-
-# Collision settings
-COLLISION_MARGIN = 2  # pixels
-
-# Display settings
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-TARGET_FPS = 60
-
-# Game settings
+# Ship settings
 SHIP_ACCELERATION = 300.0
 SHIP_ROTATION_SPEED = 180.0
 SHIP_MAX_SPEED = 400.0
 SHIP_FRICTION = 0.99
 SHIP_INVULNERABILITY_TIME = 3.0
+
+# Physics settings
+FRICTION = 0.99
+MAX_SPEED = 400.0
+ROTATION_SPEED = 180.0
+THRUST_FORCE = 300.0
+PHYSICS_TIME_STEP = 1.0 / 60.0
+PHYSICS_VELOCITY_ITERATIONS = 8
+PHYSICS_POSITION_ITERATIONS = 3
+
+# Collision settings
+COLLISION_MARGIN = 2  # pixels
 
 # Weapon settings
 BULLET_SPEED = 500.0
@@ -68,11 +66,6 @@ THRUST_EFFECT_LIFETIME = 0.5
 EXPLOSION_EFFECT_LIFETIME = 1.0
 SPARKLE_EFFECT_LIFETIME = 0.3
 
-# Physics settings
-PHYSICS_TIME_STEP = 1.0 / 60.0
-PHYSICS_VELOCITY_ITERATIONS = 8
-PHYSICS_POSITION_ITERATIONS = 3
-
 # Audio settings
 SOUND_VOLUME = 0.7
 MUSIC_VOLUME = 0.5
@@ -83,40 +76,40 @@ FONT_SIZE_MEDIUM = 24
 FONT_SIZE_LARGE = 32
 UI_PADDING = 10
 
-# State settings
+# Game states
 MENU_STATE = "menu"
 GAME_STATE = "game"
 PAUSE_STATE = "pause"
 GAME_OVER_STATE = "game_over"
 HIGH_SCORE_STATE = "high_score"
 
-# Achievement settings
+# Achievements
 ACHIEVEMENT_FIRST_KILL = "first_kill"
 ACHIEVEMENT_SURVIVOR = "survivor"
 ACHIEVEMENT_SHARPSHOOTER = "sharpshooter"
 
-# Statistics settings
+# Statistics
 STAT_ASTEROIDS_DESTROYED = "asteroids_destroyed"
 STAT_BULLETS_FIRED = "bullets_fired"
 STAT_DEATHS = "deaths"
 STAT_TIME_PLAYED = "time_played"
 STAT_HIGH_SCORE = "high_score"
 
-# Resource settings
+# Resources
 RESOURCE_SHIP = "ship"
 RESOURCE_ASTEROID = "asteroid"
 RESOURCE_BULLET = "bullet"
 RESOURCE_EXPLOSION = "explosion"
 RESOURCE_THRUST = "thrust"
 
-# Input settings
+# Input bindings
 INPUT_LEFT = "left"
 INPUT_RIGHT = "right"
 INPUT_THRUST = "thrust"
 INPUT_FIRE = "fire"
 INPUT_PAUSE = "pause"
 
-# Event types
+# Events
 EVENT_GAME_START = "game_start"
 EVENT_GAME_OVER = "game_over"
 EVENT_LEVEL_START = "level_start"
