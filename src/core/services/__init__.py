@@ -18,7 +18,6 @@ from .statistics_service import StatisticsService
 from .entity_factory_service import EntityFactoryService
 from .event_manager_service import EventManagerService
 from .resource_manager_service import ResourceManagerService
-from .audio_service import AudioService
 
 class ServiceManager:
     """Manages all game services."""
@@ -40,7 +39,7 @@ class ServiceManager:
         self._services: Dict[str, object] = {}
         self._initialized = True
         print("ServiceManager initialized")
-    
+        
     def init_services(self, screen: pygame.Surface, settings: Dict) -> None:
         """Initialize all game services.
         
@@ -53,7 +52,10 @@ class ServiceManager:
             self._services['settings'] = SettingsService()
             self._services['events'] = EventManagerService()
             self._services['resources'] = ResourceManagerService()
-            self._services['audio'] = AudioService()
+            
+            # Get service references
+            settings_service = self._services['settings']
+            event_manager = self._services['events']
             
             # Initialize core services (depend on system services)
             self._services['state'] = StateService()
@@ -72,77 +74,47 @@ class ServiceManager:
             )
             self._services['collision'] = CollisionService()
             
-            # Menu service depends on UI service
-            ui_service = self._services['ui']
-            self._services['menu'] = MenuService(ui_service)
-            
-            # Initialize data services (depend on settings and events)
-            settings_service = self._services['settings']
-            event_manager = self._services['events']
-            
+            # Initialize menu and data services
+            self._services['menu'] = MenuService(self._services['ui'])
             self._services['high_score'] = HighScoreService(
                 settings_service=settings_service,
                 event_manager=event_manager
             )
-            
             self._services['achievement'] = AchievementService(
-                settings=settings_service,
+                settings_service=settings_service,
                 event_manager=event_manager
             )
-            
             self._services['statistics'] = StatisticsService(
-                settings=settings_service,
+                settings_service=settings_service,
                 event_manager=event_manager
             )
             
             # Initialize game service last (depends on all others)
             self._services['game'] = GameService(screen, settings, self)
             
-            print("All services initialized")
-            
         except Exception as e:
             print(f"Error initializing services: {e}")
-            self.cleanup()  # Clean up any services that were initialized
+            self.cleanup()
             raise
-    
-    def get_service(self, service_name: str) -> Optional[object]:
+            
+    def get_service(self, name: str) -> Optional[object]:
         """Get a service by name.
         
         Args:
-            service_name: Name of service to get
+            name: Service name
             
         Returns:
-            Service instance if found, None otherwise
+            Service instance or None if not found
         """
-        return self._services.get(service_name)
-    
+        return self._services.get(name)
+        
     def cleanup(self) -> None:
         """Clean up all services."""
         # Clean up in reverse dependency order
-        cleanup_order = [
-            'game',  # Game service first (depends on all others)
-            
-            # Data services
-            'statistics', 'achievement', 'high_score',
-            
-            # Gameplay services
-            'menu', 'collision', 'physics',
-            
-            # Rendering services
-            'ui', 'particle', 'render',
-            
-            # Core services
-            'entity_factory', 'input', 'state',
-            
-            # System services last
-            'audio', 'resources', 'events', 'settings'
-        ]
-        
-        for service_name in cleanup_order:
-            service = self._services.get(service_name)
-            if service and hasattr(service, 'cleanup'):
+        for service_name in reversed(list(self._services.keys())):
+            service = self._services[service_name]
+            if hasattr(service, 'cleanup'):
                 service.cleanup()
                 print(f"Cleaned up {service_name} service")
-                
         self._services.clear()
         print("All services cleaned up") 

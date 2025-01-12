@@ -1,0 +1,27 @@
+[
+  {
+    "id": "first_kill",
+    "current_value": 0,
+    "status": "LOCKED"
+  },
+  {
+    "id": "sharpshooter",
+    "current_value": 0,
+    "status": "LOCKED"
+  },
+  {
+    "id": "survivor",
+    "current_value": 0,
+    "status": "LOCKED"
+  },
+  {
+    "id": "asteroid_master",
+    "current_value": 0,
+    "status": "LOCKED"
+  },
+  {
+    "id": "high_scorer",
+    "current_value": 0,
+    "status": "LOCKED"
+  }
+]
