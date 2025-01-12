@@ -124,16 +124,10 @@ class GameService:
             
     def draw(self) -> None:
         """Draw the current frame."""
-        # Clear screen
-        self._screen.fill((0, 0, 0))
-        
-        # Draw game elements
+        # Draw game elements in order
         self._render_service.draw()
         self._particle_service.draw()
         self._ui_service.draw()
-        
-        # Update display
-        pygame.display.flip()
         
     def clear(self) -> None:
         """Clear all game state."""

@@ -97,6 +97,9 @@ class RenderService:
             
     def draw(self) -> None:
         """Draw all visible layers in order."""
+        # Clear screen
+        self._screen.fill((0, 0, 0))  # Black background
+        
         # Sort layers by order
         sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
         
@@ -107,6 +110,9 @@ class RenderService:
                     if hasattr(entity, 'draw'):
                         entity.draw(self._screen)
                         
+        # Update display
+        pygame.display.flip()
+        
     def clear(self) -> None:
         """Clear all render layers."""
         for layer in self._layers.values():
