@@ -28,6 +28,41 @@ BULLET_SPEED = 400.0      # Pixels/second
 BULLET_LIFETIME = 1.0     # Seconds before despawning
 MAX_BULLETS = 5           # Maximum bullets on screen
 
+ASTEROID_SIZES = {
+    'large': {
+        'radius': 40.0,
+        'points': 3,
+        'splits': 2,
+        'speed_range': (50.0, 100.0),
+        'vertices_range': (10, 14),
+        'mass': 3.0
+    },
+    'medium': {
+        'radius': 20.0,
+        'points': 2,
+        'splits': 2,
+        'speed_range': (75.0, 150.0),
+        'vertices_range': (8, 12),
+        'mass': 2.0
+    },
+    'small': {
+        'radius': 10.0,
+        'points': 1,
+        'splits': 0,
+        'speed_range': (100.0, 200.0),
+        'vertices_range': (6, 10),
+        'mass': 1.0
+    }
+}
+
+THRUST_PARTICLES = {
+    'count': 5,
+    'speed_range': (100, 200),
+    'size_range': (1, 2),
+    'lifetime_range': (0.1, 0.3),
+    'spread_angle': 30.0  # Degrees
+}
+
 # Asteroid settings
 ASTEROID_SPEED_MIN = 50.0  # Minimum asteroid speed
 ASTEROID_SPEED_MAX = 150.0 # Maximum asteroid speed
@@ -43,3 +78,7 @@ EXTRA_LIFE_SCORE = 10000
 # Debug settings
 DEBUG_DRAW_COLLIDERS = False
 DEBUG_SHOW_FPS = True 
+
+# High score settings
+MAX_HIGH_SCORES = 5  # Reduced from 10 to match current implementation
+HIGH_SCORE_NAME_LENGTH = 10 
