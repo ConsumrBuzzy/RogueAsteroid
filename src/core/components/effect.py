@@ -267,3 +267,8 @@ class EffectComponent(Component):
                 # Draw particle
                 pygame.draw.circle(surface, color, (int(particle.x), int(particle.y)), 
                                  int(particle.size)) 
+    
+    def clear_particles(self) -> None:
+        """Clear all particles from all effects."""
+        for effect in self.effects.values():
+            effect.particles.clear() 

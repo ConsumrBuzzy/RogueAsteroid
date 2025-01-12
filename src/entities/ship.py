@@ -41,11 +41,13 @@ class Ship(Entity):
         ScreenWrapComponent: "Screen wrapping"
     }
     
-    def __init__(self, game):
+    def __init__(self, game, position=None, rotation=0):
         """Initialize the ship.
         
         Args:
             game: The game instance this ship belongs to
+            position: Optional initial position (defaults to screen center)
+            rotation: Initial rotation in degrees (default: 0)
             
         Raises:
             RuntimeError: If required components fail to initialize
@@ -54,6 +56,8 @@ class Ship(Entity):
         self._invulnerable_timer = 0
         self._thrust_timer = 0
         self._initialized_components = set()
+        self._initial_position = position
+        self._initial_rotation = rotation
         
         try:
             self._init_components()
@@ -73,7 +77,11 @@ class Ship(Entity):
         try:
             # Transform component for position and movement
             transform = TransformComponent(self)
-            transform.position = Vector2(self.game.width / 2, self.game.height / 2)
+            if self._initial_position:
+                transform.position = Vector2(self._initial_position)
+            else:
+                transform.position = Vector2(self.game.width / 2, self.game.height / 2)
+            transform.rotation = self._initial_rotation
             components.append(transform)
             self._initialized_components.add(TransformComponent)
             

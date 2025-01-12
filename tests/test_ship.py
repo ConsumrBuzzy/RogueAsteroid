@@ -23,6 +23,8 @@ def mock_game():
     class MockGame:
         def __init__(self):
             self.screen = Surface((800, 600))
+            self.width = 800
+            self.height = 600
             self.dt = 0.016
             self.services = ServiceManager(self)
             self.component_registry = ComponentRegistry()
