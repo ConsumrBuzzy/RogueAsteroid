@@ -1,0 +1,26 @@
+"""Display configuration."""
+
+# Window dimensions
+SCREEN_WIDTH = WINDOW_WIDTH = 800
+SCREEN_HEIGHT = WINDOW_HEIGHT = 600
+TARGET_FPS = FPS = 60
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
+# UI settings
+FONT_SIZE_SMALL = 16
+FONT_SIZE_MEDIUM = 24
+FONT_SIZE_LARGE = 32
+UI_PADDING = 10
+
+# Debug display
+DEBUG_DRAW_COLLIDERS = False
+DEBUG_SHOW_FPS = True
+
+BACKGROUND_COLOR = BLACK 
