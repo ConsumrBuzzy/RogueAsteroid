@@ -1,136 +1,138 @@
-"""Render component for handling entity visualization."""
-from typing import List, Tuple, Optional
-import math
+"""Component for rendering entities."""
+from typing import List, Tuple, TYPE_CHECKING
 import pygame
-from .component import Component
+import numpy as np
 
-class RenderComponent(Component):
-    """Component for managing entity rendering.
+from ..entity.entity import Entity
+from .transform import TransformComponent
+
+if TYPE_CHECKING:
+    from ..game import Game
+
+class RenderComponent:
+    """Component for rendering entities.
     
-    Provides:
-    - Shape definition and drawing
+    Manages the visual representation of an entity, including:
+    - Shape definition (vertices)
     - Color management
     - Visibility control
     - Transform integration
-    - Debug visualization
     """
     
-    def __init__(self, entity, vertices: List[Tuple[float, float]], color: Tuple[int, int, int],
-                 line_width: int = 1, alpha: int = 255):
-        """Initialize render component.
+    def __init__(self, entity: Entity, vertices: List[Tuple[float, float]] = None, 
+                 color: Tuple[int, int, int] = (255, 255, 255), line_width: int = 1,
+                 alpha: int = 255) -> None:
+        """Initialize the render component.
         
         Args:
-            entity: Entity this component belongs to
-            vertices: List of (x, y) vertex coordinates defining the shape
-            color: RGB color tuple (0-255 for each component)
-            line_width: Width of lines when drawing (default: 1)
-            alpha: Transparency value (0-255, default: 255)
+            entity: The entity this component belongs to
+            vertices: List of (x,y) vertex coordinates defining the shape
+            color: RGB color tuple
+            line_width: Width of lines when drawing
+            alpha: Transparency value (0-255)
         """
-        super().__init__(entity)
-        self.vertices = vertices
-        self.color = color
-        self.line_width = line_width
-        self.alpha = alpha
-        self.visible = True
-        self._transformed_vertices: List[Tuple[float, float]] = []
+        self._entity = entity
+        self._vertices = vertices or [(0, 0)]
+        self._color = color
+        self._line_width = line_width
+        self._alpha = alpha
+        self._visible = True
+        self._transform = None
+        self._transformed_vertices = None
+        self._update_transform()
         
-        print(f"RenderComponent initialized with {len(vertices)} vertices, color={color}")
-    
+    @property
+    def entity(self) -> Entity:
+        """Get the entity this component belongs to."""
+        return self._entity
+        
+    @property
+    def visible(self) -> bool:
+        """Get visibility state."""
+        return self._visible
+        
+    @visible.setter
+    def visible(self, value: bool) -> None:
+        """Set visibility state.
+        
+        Args:
+            value: New visibility state
+        """
+        self._visible = value
+        
+    @property
+    def color(self) -> Tuple[int, int, int]:
+        """Get current color."""
+        return self._color
+        
+    @color.setter
+    def color(self, value: Tuple[int, int, int]) -> None:
+        """Set color.
+        
+        Args:
+            value: New RGB color tuple
+        """
+        self._color = value
+        
+    @property
+    def vertices(self) -> List[Tuple[float, float]]:
+        """Get shape vertices."""
+        return self._vertices
+        
+    @vertices.setter
+    def vertices(self, value: List[Tuple[float, float]]) -> None:
+        """Set shape vertices.
+        
+        Args:
+            value: New vertex list
+        """
+        self._vertices = value
+        self._update_transform()
+        
+    def _update_transform(self) -> None:
+        """Update transformed vertices based on entity transform."""
+        self._transform = self.entity.get_component('transform')
+        if self._transform and self._vertices:
+            # Convert vertices to numpy array for transformation
+            vertices = np.array(self._vertices)
+            
+            # Get transform properties
+            pos = self._transform.position
+            angle = np.radians(self._transform.rotation)
+            
+            # Create rotation matrix
+            c, s = np.cos(angle), np.sin(angle)
+            R = np.array([[c, -s], [s, c]])
+            
+            # Apply rotation and translation
+            self._transformed_vertices = vertices @ R + pos
+            
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the entity on the screen.
         
         Args:
             screen: Pygame surface to draw on
         """
-        if not self.enabled or not self.visible:
+        if not self._visible:
             return
             
-        # Get transform component for position and rotation
-        transform = self.get_sibling_component('TransformComponent')
-        if not transform:
-            return
+        self._update_transform()
+        if self._transformed_vertices is not None:
+            # Convert vertices to screen coordinates
+            points = [(int(x), int(y)) for x, y in self._transformed_vertices]
             
-        # Update transformed vertices based on entity transform
-        self._update_transformed_vertices(transform)
-        
-        # Draw the shape
-        if len(self._transformed_vertices) >= 2:
-            if self.alpha < 255:
-                # Create a temporary surface for alpha blending
-                temp_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-                pygame.draw.lines(
-                    temp_surface,
-                    (*self.color, self.alpha),
-                    True,  # closed polygon
-                    self._transformed_vertices,
-                    self.line_width
-                )
-                screen.blit(temp_surface, (0, 0))
+            # Draw shape
+            if len(points) > 2:
+                pygame.draw.polygon(screen, self._color, points, self._line_width)
+            elif len(points) == 2:
+                pygame.draw.line(screen, self._color, points[0], points[1], self._line_width)
             else:
-                # Direct drawing for fully opaque shapes
-                pygame.draw.lines(
-                    screen,
-                    self.color,
-                    True,  # closed polygon
-                    self._transformed_vertices,
-                    self.line_width
-                )
-    
-    def _update_transformed_vertices(self, transform) -> None:
-        """Update vertex positions based on entity transform.
+                pygame.draw.circle(screen, self._color, points[0], self._line_width)
+                
+    def update(self, dt: float) -> None:
+        """Update the render component.
         
         Args:
-            transform: TransformComponent instance
+            dt: Delta time in seconds
         """
-        self._transformed_vertices = []
-        angle_rad = math.radians(transform.rotation)
-        cos_rot = math.cos(angle_rad)
-        sin_rot = math.sin(angle_rad)
-        
-        for vx, vy in self.vertices:
-            # Scale
-            scaled_x = vx * transform.scale
-            scaled_y = vy * transform.scale
-            
-            # Rotate
-            rotated_x = scaled_x * cos_rot - scaled_y * sin_rot
-            rotated_y = scaled_x * sin_rot + scaled_y * cos_rot
-            
-            # Translate
-            final_x = rotated_x + transform.x
-            final_y = rotated_y + transform.y
-            
-            self._transformed_vertices.append((final_x, final_y))
-    
-    def set_color(self, color: Tuple[int, int, int]) -> None:
-        """Set the render color.
-        
-        Args:
-            color: RGB color tuple (0-255 for each component)
-        """
-        self.color = color
-    
-    def set_alpha(self, alpha: int) -> None:
-        """Set transparency value.
-        
-        Args:
-            alpha: Transparency value (0-255)
-        """
-        self.alpha = max(0, min(255, alpha))
-    
-    def set_vertices(self, vertices: List[Tuple[float, float]]) -> None:
-        """Set new vertices for the shape.
-        
-        Args:
-            vertices: List of (x, y) vertex coordinates
-        """
-        self.vertices = vertices
-        print(f"Updated shape to {len(vertices)} vertices")
-    
-    def show(self) -> None:
-        """Make the entity visible."""
-        self.visible = True
-    
-    def hide(self) -> None:
-        """Make the entity invisible."""
-        self.visible = False 
+        pass  # Rendering is handled in draw() 
