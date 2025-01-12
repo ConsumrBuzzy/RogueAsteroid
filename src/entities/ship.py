@@ -18,7 +18,8 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     WHITE,
     MAX_BULLETS,
-    SHIP_INVULNERABLE_TIME
+    SHIP_INVULNERABLE_TIME,
+    DEBUG
 )
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
