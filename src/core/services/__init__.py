@@ -8,7 +8,7 @@ from .resource_manager_service import ResourceManagerService
 from .input_service import InputService
 from .render_service import RenderService
 from .physics_service import PhysicsService
-from .entity_factory_service import EntityFactoryService as EntityService
+from .entity_manager_service import EntityManagerService
 from .particle_service import ParticleService
 from .audio_service import AudioService
 from .menu_service import MenuService
@@ -20,6 +20,28 @@ from .statistics_service import StatisticsService
 from .settings_service import SettingsService
 from .logging_service import LoggingService
 from .ui_service import UIService
+
+__all__ = [
+    'ServiceManager',
+    'EventManagerService',
+    'StateService',
+    'ResourceManagerService',
+    'InputService',
+    'RenderService',
+    'PhysicsService',
+    'EntityManagerService',
+    'ParticleService',
+    'AudioService',
+    'MenuService',
+    'GameService',
+    'CollisionService',
+    'AchievementService',
+    'HighScoreService',
+    'StatisticsService',
+    'SettingsService',
+    'LoggingService',
+    'UIService'
+]
 
 class ServiceManager:
     """Manages game services and their dependencies."""
@@ -51,10 +73,14 @@ class ServiceManager:
         
         try:
             # Create service instance
-            service = service_type()
+            if callable(service_type) and not isinstance(service_type, type):
+                service = service_type()
+            else:
+                service = service_type()
+                
             self._services[name] = service
-            self._service_types[name] = service_type
-            self._initialization_order.append(service_type)
+            self._service_types[name] = service_type if isinstance(service_type, type) else type(service)
+            self._initialization_order.append(self._service_types[name])
             
         except Exception as e:
             raise RuntimeError(f"Failed to initialize service {name}: {str(e)}")
@@ -102,45 +128,19 @@ class ServiceManager:
         """Get the service dependencies for a service type.
         
         Args:
-            service_type: The service class to check for dependencies.
+            service_type: The service type to check.
             
         Returns:
-            A set of service types that this service depends on.
+            Set of service types that this service depends on.
         """
         dependencies = set()
         
         # Check constructor parameters
-        if hasattr(service_type, '__init__'):
+        if isinstance(service_type, type):
             sig = inspect.signature(service_type.__init__)
             for param in sig.parameters.values():
                 if param.annotation != inspect.Parameter.empty:
-                    # Check if parameter type is a service
-                    if inspect.isclass(param.annotation) and any(
-                        issubclass(param.annotation, base) 
-                        for base in [EventManagerService, StateService, ResourceManagerService]
-                    ):
+                    if isinstance(param.annotation, type):
                         dependencies.add(param.annotation)
-        
-        return dependencies
-
-__all__ = [
-    'ServiceManager',
-    'EventManagerService',
-    'StateService',
-    'ResourceManagerService',
-    'InputService',
-    'RenderService',
-    'PhysicsService',
-    'EntityService',
-    'ParticleService',
-    'AudioService',
-    'MenuService',
-    'GameService',
-    'CollisionService',
-    'AchievementService',
-    'HighScoreService',
-    'StatisticsService',
-    'SettingsService',
-    'LoggingService',
-    'UIService'
-] 
+                        
+        return dependencies 
