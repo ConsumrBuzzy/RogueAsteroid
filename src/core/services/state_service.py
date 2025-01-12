@@ -150,15 +150,20 @@ class StateService:
             self._previous_state = self._current_state
             self._current_state = new_state
             
-            # Notify state change through both systems
+            # Notify state change through event manager first
             if self._event_manager:
                 self._event_manager.publish('state_changed', 
                     old_state=self._previous_state,
                     new_state=self._current_state)
                     
-            self._notify_subscribers(event_type='state_changed', 
-                old_state=self._previous_state,
-                new_state=self._current_state)
+            # Then notify direct subscribers
+            for subscriber_id, callbacks in self._subscribers.items():
+                for callback in callbacks:
+                    try:
+                        callback(old_state=self._previous_state, new_state=self._current_state)
+                    except Exception as e:
+                        print(f"Error in state change callback for {subscriber_id}: {e}")
+                        continue
             
             print(f"Changed state from {self._previous_state} to {new_state}")
             
@@ -279,12 +284,6 @@ class StateService:
             event_type: Type of event that occurred
             **kwargs: Event data including old_state and new_state
         """
-        if event_type not in self._subscribers:
-            return
-            
-        for callback in self._subscribers[event_type]:
-            try:
-                callback(**kwargs)
-            except Exception as e:
-                print(f"Error in state change callback: {e}")
-                continue 
+        # This method is now deprecated in favor of direct notification
+        # Kept for backward compatibility
+        pass 
