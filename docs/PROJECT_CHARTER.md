@@ -56,18 +56,10 @@ Responsibilities:
 8. Follow KISS principle
 
 ### Version Control
-1. Use descriptive commit messages
-2. Include timestamps [YYYY-MM-DD HH:MM]
-   - 1 Minute Interval
-3. Use appropriate tags:
-   - [DESIGN] Design changes
-   - [IMPL] Implementation
-   - [TEST] Testing
-   - [TASK] Task management
-   - [BUG] Bug reports
-   - [FIX] Bug fixes
-   - [NOTE] Notes/comments
-   - [REVIEW] Code review
+- Use [YYYY-MM-DD HH:MM] format for all timestamps (1-minute intervals)
+- Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
+- All changes must be logged with precise timestamps
+- Maintain consistent format across all documentation
 
 ## Project Goals
 
