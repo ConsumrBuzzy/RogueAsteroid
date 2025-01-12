@@ -26,6 +26,9 @@ class InputService:
     - Event handling
     """
     
+    # Maximum key code value for pygame (most keys are below 1000)
+    MAX_KEY_CODE = 1000
+    
     def __init__(self):
         """Initialize the input service."""
         self._key_map: Dict[int, InputAction] = {}
@@ -183,8 +186,8 @@ class InputService:
                 
             # Check each mapped key
             for key, action in self._key_map.items():
-                # Skip invalid key codes (outside pygame's valid range)
-                if not isinstance(key, int) or key < 0 or key >= pygame.K_LAST:
+                # Skip invalid key codes
+                if not isinstance(key, int) or key < 0 or key >= self.MAX_KEY_CODE:
                     continue
                     
                 if key >= len(keys):
