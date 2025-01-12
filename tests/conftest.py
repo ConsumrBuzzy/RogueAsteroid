@@ -33,9 +33,9 @@ def screen() -> pygame.Surface:
     return pygame.Surface((800, 600))
 
 @pytest.fixture
-def entity() -> Entity:
+def entity(mock_game: MockGame) -> Entity:
     """Create a basic test entity."""
-    return Entity()
+    return Entity(mock_game)
 
 @pytest.fixture
 def transform(entity: Entity) -> TransformComponent:
@@ -90,3 +90,20 @@ class MockGame:
 def mock_game() -> MockGame:
     """Create a mock game instance for testing."""
     return MockGame() 
+
+class PerformanceEnv:
+    """Environment for performance testing."""
+    def __init__(self):
+        self.screen = pygame.Surface((800, 600))
+        self.dt = 1/60
+        self.running = True
+
+@pytest.fixture
+def performance_env() -> PerformanceEnv:
+    """Create a performance testing environment."""
+    return PerformanceEnv()
+
+@pytest.fixture
+def test_entity(mock_game) -> Entity:
+    """Create a test entity for performance testing."""
+    return Entity(mock_game) 
