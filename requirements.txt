@@ -1,3 +1,5 @@
+setuptools>=68.0.0
+wheel>=0.40.0
 pygame==2.5.2
-numpy==1.24.3  # For physics calculations
-typing-extensions==4.7.1  # For type hints 
+numpy>=1.24.3  # For physics calculations
+typing-extensions>=4.7.1  # For type hints 
