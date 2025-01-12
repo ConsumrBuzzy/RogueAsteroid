@@ -1,0 +1,8 @@
+=== Game Session Log 20250112_161700 ===
+
+[16:17:00] DEBUG: State transitions initialized
+[16:17:00] INFO: StateService initialized
+[16:17:00] INFO: Changed state from GameState.MAIN_MENU to GameState.PLAYING
+[16:17:00] INFO: Changed state from GameState.PLAYING to GameState.PAUSED
+[16:17:00] INFO: Registered handler for state PLAYING
+[16:17:00] INFO: Changed state from GameState.PAUSED to GameState.PLAYING
