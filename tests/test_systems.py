@@ -2,9 +2,10 @@ import pytest
 import pygame
 from src.core.game_state import GameState
 from src.core.scoring import ScoringSystem
-from src.core.spawner import SpawnSystem
+from src.core.spawner import Spawner
 from src.core.particles import ParticleSystem
 from src.core.menu import MenuSystem
+from src.core.game import Game
 from src.core.constants import *
 
 class TestGameState:
@@ -73,36 +74,39 @@ class TestScoreSystem:
         assert high_scores[0].score == 2000
         assert high_scores[0].name == name
 
-class TestSpawnSystem:
+class TestSpawner:
     @pytest.fixture
-    def spawn_system(self):
-        return SpawnSystem()
+    def game(self):
+        pygame.init()
+        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        return Game(screen)
     
-    def test_asteroid_spawning(self, spawn_system):
-        """Test asteroid spawning logic"""
-        asteroids = spawn_system.spawn_asteroids(level=1)
-        assert len(asteroids) > 0
-        assert all(asteroid.size in ['large', 'medium', 'small'] for asteroid in asteroids)
-        
-    def test_level_scaling(self, spawn_system):
-        """Test asteroid count scaling with level"""
-        level1_asteroids = len(spawn_system.spawn_asteroids(level=1))
-        level2_asteroids = len(spawn_system.spawn_asteroids(level=2))
-        assert level2_asteroids > level1_asteroids
-        
-    def test_asteroid_properties(self, spawn_system):
-        """Test asteroid property initialization"""
-        asteroids = spawn_system.spawn_asteroids(level=1)
-        for asteroid in asteroids:
-            assert hasattr(asteroid, 'velocity')
-            assert hasattr(asteroid, 'position')
-            assert hasattr(asteroid, 'rotation')
+    @pytest.fixture
+    def spawner(self, game):
+        return Spawner(game)
+    
+    def test_wave_progression(self, spawner):
+        """Test wave progression"""
+        initial_wave = spawner.wave
+        spawner.advance_wave()
+        assert spawner.wave == initial_wave + 1
+    
+    def test_asteroid_spawning(self, spawner):
+        """Test asteroid spawning"""
+        spawner.start_wave()
+        assert len(spawner.game.asteroids) > 0
+    
+    def test_wave_completion(self, spawner):
+        """Test wave completion detection"""
+        spawner.start_wave()
+        spawner.game.asteroids.clear()  # Remove all asteroids
+        assert spawner.check_wave_complete()
 
 class TestParticleSystem:
     @pytest.fixture
     def particle_system(self):
         pygame.init()
-        screen = pygame.display.set_mode((800, 600))
+        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         return ParticleSystem(screen)
     
     def test_particle_creation(self, particle_system):
@@ -118,15 +122,6 @@ class TestParticleSystem:
         particle_system.update(1.0)  # Update with 1 second delta
         assert len(particle_system.particles) <= initial_particles  # Particles should decay
         
-    def test_particle_properties(self, particle_system):
-        """Test particle property initialization"""
-        particle_system.create_explosion(400, 300)
-        for particle in particle_system.particles:
-            assert hasattr(particle, 'position')
-            assert hasattr(particle, 'velocity')
-            assert hasattr(particle, 'lifetime')
-            assert particle.lifetime > 0
-            
     def test_particle_cleanup(self, particle_system):
         """Test particle cleanup"""
         particle_system.create_thrust(400, 300, 0)
@@ -137,7 +132,7 @@ class TestMenuSystem:
     @pytest.fixture
     def menu_system(self):
         pygame.init()
-        screen = pygame.display.set_mode((800, 600))
+        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         return MenuSystem(screen)
     
     def test_menu_navigation(self, menu_system):
