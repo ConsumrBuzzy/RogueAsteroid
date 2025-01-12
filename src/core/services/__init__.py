@@ -89,32 +89,29 @@ class ServiceManager:
             resources = ResourceManagerService()
             self.register_service("resources", resources)
             
-            # Physics service
+            # State service (moved earlier)
+            state = StateService()
+            self.register_service("state", state)
+            
+            # Physics and rendering services
             physics = PhysicsService(screen.get_width(), screen.get_height())
             self.register_service("physics", physics)
             
-            # Render service
             render = RenderService(screen)
             self.register_service("render", render)
             
-            # Collision service
             collision = CollisionService()
             self.register_service("collision", collision)
             
-            # Particle service
             particle = ParticleService(screen)
             self.register_service("particle", particle)
             
-            # Input service
+            # Input and UI services
             input_service = InputService()
             self.register_service("input", input_service)
             
-            # UI services
             ui = UIService(screen)
             self.register_service("ui", ui)
-            
-            state = StateService()
-            self.register_service("state", state)
             
             menu = MenuService(ui_service=ui, state_service=state)
             self.register_service("menu", menu)
