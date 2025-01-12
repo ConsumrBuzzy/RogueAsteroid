@@ -7,6 +7,7 @@ from src.core.entities.base import (
     CollisionComponent
 )
 from src.core.components.effect import EffectComponent
+from src.core.components.physics import PhysicsComponent
 
 class ComponentRegistry:
     """Registry for component types."""
@@ -28,6 +29,7 @@ class ComponentRegistry:
         self.register_component('RenderComponent', RenderComponent)
         self.register_component('CollisionComponent', CollisionComponent)
         self.register_component('EffectComponent', EffectComponent)
+        self.register_component('PhysicsComponent', PhysicsComponent)
         print("ComponentRegistry initialized")
     
     def register_component(self, type_name: str, component_type: Type[Component]) -> None:
@@ -67,4 +69,9 @@ class ComponentRegistry:
         Returns:
             The component type if registered, None otherwise
         """
-        return self._components.get(type_name) 
+        return self._components.get(type_name)
+
+__all__ = [
+    'ComponentRegistry',
+    'PhysicsComponent'
+] 

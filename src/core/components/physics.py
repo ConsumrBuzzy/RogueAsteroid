@@ -1,118 +1,59 @@
-"""Physics component for handling velocity and forces."""
-from typing import Tuple
-from .component import Component
+"""Physics component for entity movement."""
+import pygame
+from src.core.entities.base import Component, Entity, TransformComponent
 
 class PhysicsComponent(Component):
-    """Component for managing entity physics.
+    """Component for physics-based movement."""
     
-    Provides:
-    - Velocity management
-    - Acceleration handling
-    - Force application
-    - Friction/drag
-    - Speed limiting
-    """
-    
-    def __init__(self, entity, max_speed: float = float('inf'), friction: float = 0):
-        """Initialize physics component.
+    def __init__(self, entity: Entity):
+        """Initialize the physics component.
         
         Args:
-            entity: Entity this component belongs to
-            max_speed: Maximum speed limit (infinity for no limit)
-            friction: Friction coefficient (0 for no friction)
+            entity: The entity this component belongs to
         """
         super().__init__(entity)
-        self.velocity_x = 0.0
-        self.velocity_y = 0.0
-        self.acceleration_x = 0.0
-        self.acceleration_y = 0.0
-        self.max_speed = max_speed
-        self.friction = friction
-        
-        print(f"PhysicsComponent initialized with max_speed={max_speed}, friction={friction}")
+        self.max_speed = 0.0
+        self.friction = 0.0
+        self.acceleration = pygame.Vector2(0.0, 0.0)
     
-    @property
-    def velocity(self) -> Tuple[float, float]:
-        """Get current velocity vector."""
-        return (self.velocity_x, self.velocity_y)
-    
-    @velocity.setter
-    def velocity(self, value: Tuple[float, float]) -> None:
-        """Set velocity from tuple.
-        
-        Args:
-            value: (x, y) velocity tuple
-        """
-        self.velocity_x, self.velocity_y = value
-        self._clamp_speed()
-    
-    @property
-    def speed(self) -> float:
-        """Get current speed (magnitude of velocity)."""
-        return (self.velocity_x * self.velocity_x + 
-                self.velocity_y * self.velocity_y) ** 0.5
+    def initialize(self) -> None:
+        """Initialize the component."""
+        # Verify we have a transform component
+        if not self.entity.get_component(TransformComponent):
+            raise RuntimeError("PhysicsComponent requires TransformComponent")
     
     def update(self, dt: float) -> None:
-        """Update physics simulation.
+        """Update physics state.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds
         """
-        if not self.enabled:
+        if not self.active:
+            return
+            
+        transform = self.entity.get_component(TransformComponent)
+        if not transform:
             return
             
         # Apply acceleration
-        self.velocity_x += self.acceleration_x * dt
-        self.velocity_y += self.acceleration_y * dt
+        transform.velocity += self.acceleration * dt
         
         # Apply friction
-        if self.friction > 0:
-            self.velocity_x *= (1 - self.friction)
-            self.velocity_y *= (1 - self.friction)
+        if transform.velocity.length() > 0:
+            friction = transform.velocity.normalize() * -self.friction * dt
+            transform.velocity += friction
         
         # Clamp speed
-        self._clamp_speed()
-        
-        # Update position via transform component
-        transform = self.get_sibling_component('TransformComponent')
-        if transform:
-            transform.move(
-                self.velocity_x * dt,
-                self.velocity_y * dt
-            )
+        if self.max_speed > 0 and transform.velocity.length() > self.max_speed:
+            transform.velocity.scale_to_length(self.max_speed)
+            
+        # Reset acceleration
+        self.acceleration = pygame.Vector2(0.0, 0.0)
     
-    def _clamp_speed(self) -> None:
-        """Limit speed to max_speed if set."""
-        current_speed = self.speed
-        if current_speed > self.max_speed:
-            scale = self.max_speed / current_speed
-            self.velocity_x *= scale
-            self.velocity_y *= scale
-    
-    def add_force(self, force_x: float, force_y: float) -> None:
-        """Add a force vector to current acceleration.
+    def apply_force(self, force: pygame.Vector2) -> None:
+        """Apply a force to the entity.
         
         Args:
-            force_x: X component of force
-            force_y: Y component of force
+            force: Force vector to apply
         """
-        self.acceleration_x += force_x
-        self.acceleration_y += force_y
-    
-    def add_impulse(self, impulse_x: float, impulse_y: float) -> None:
-        """Add an instantaneous impulse to velocity.
-        
-        Args:
-            impulse_x: X component of impulse
-            impulse_y: Y component of impulse
-        """
-        self.velocity_x += impulse_x
-        self.velocity_y += impulse_y
-        self._clamp_speed()
-    
-    def stop(self) -> None:
-        """Stop all movement."""
-        self.velocity_x = 0
-        self.velocity_y = 0
-        self.acceleration_x = 0
-        self.acceleration_y = 0 
+        self.acceleration += force 
