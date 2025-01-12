@@ -102,22 +102,55 @@ class InputService:
         Args:
             event: Pygame event to handle
         """
-        if event.type == pygame.KEYDOWN:
-            self._pressed_keys.add(event.key)
-            if action := self._key_map.get(event.key):
-                for handler in self._action_handlers[action]:
-                    handler()
+        try:
+            if event.type == pygame.KEYDOWN:
+                self._pressed_keys.add(event.key)
+                if action := self._key_map.get(event.key):
+                    self._trigger_action(action)
                     
-        elif event.type == pygame.KEYUP:
-            self._pressed_keys.discard(event.key)
+            elif event.type == pygame.KEYUP:
+                self._pressed_keys.discard(event.key)
+                
+        except Exception as e:
+            print(f"Error handling input event: {e}")
             
+    def _trigger_action(self, action: InputAction) -> None:
+        """Trigger handlers for an action.
+        
+        Args:
+            action: Input action to trigger
+        """
+        if action not in self._action_handlers:
+            return
+            
+        for handler in self._action_handlers[action]:
+            try:
+                handler()
+            except Exception as e:
+                print(f"Error in input handler for action {action.name}: {e}")
+                continue  # Skip to next handler
+                
     def update(self) -> None:
         """Update input state."""
-        # Handle continuous input for pressed keys
-        for key in self._pressed_keys:
-            if action := self._key_map.get(key):
-                for handler in self._action_handlers[action]:
-                    handler()
+        try:
+            # Get current key states to handle continuous input
+            keys = pygame.key.get_pressed()
+            
+            # Check each mapped key
+            for key, action in self._key_map.items():
+                if keys[key]:  # Key is currently held down
+                    # Only trigger continuous actions (movement)
+                    if action in {
+                        InputAction.MOVE_UP,
+                        InputAction.MOVE_DOWN,
+                        InputAction.MOVE_LEFT,
+                        InputAction.MOVE_RIGHT,
+                        InputAction.SHOOT
+                    }:
+                        self._trigger_action(action)
+                        
+        except Exception as e:
+            print(f"Error updating input state: {e}")
                     
     def cleanup(self) -> None:
         """Clean up the service."""

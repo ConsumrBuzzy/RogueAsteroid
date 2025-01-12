@@ -50,7 +50,15 @@ class StateService:
         Args:
             state: Game state to handle
             handler: Function to call when state is active
+            
+        Raises:
+            ValueError: If state or handler is invalid
         """
+        if not isinstance(state, GameState):
+            raise ValueError(f"Invalid state type: {type(state)}")
+        if not callable(handler):
+            raise ValueError("Handler must be callable")
+            
         self._state_handlers[state] = handler
         print(f"Registered handler for state {state.name}")
         
@@ -59,14 +67,39 @@ class StateService:
         
         Args:
             new_state: State to change to
+            
+        Raises:
+            ValueError: If new_state is invalid
         """
+        if not isinstance(new_state, GameState):
+            raise ValueError(f"Invalid state type: {type(new_state)}")
+            
         if new_state == self._current_state:
             return
             
-        self._previous_state = self._current_state
-        self._current_state = new_state
-        print(f"Changed state from {self._previous_state} to {new_state}")
-        
+        try:
+            # Call exit handler for current state if it exists
+            if self._current_state and self._current_state in self._state_handlers:
+                handler = self._state_handlers[self._current_state]
+                if hasattr(handler, 'on_exit'):
+                    handler.on_exit()
+                    
+            self._previous_state = self._current_state
+            self._current_state = new_state
+            print(f"Changed state from {self._previous_state} to {new_state}")
+            
+            # Call enter handler for new state if it exists
+            if new_state in self._state_handlers:
+                handler = self._state_handlers[new_state]
+                if hasattr(handler, 'on_enter'):
+                    handler.on_enter()
+                    
+        except Exception as e:
+            print(f"Error during state transition: {e}")
+            # Revert to previous state on error
+            self._current_state = self._previous_state
+            raise
+            
     def get_current_state(self) -> Optional[GameState]:
         """Get the current game state.
         
@@ -89,8 +122,18 @@ class StateService:
         Args:
             dt: Delta time in seconds
         """
-        if self._current_state and self._current_state in self._state_handlers:
-            self._state_handlers[self._current_state](dt)
+        if not self._current_state:
+            return
+            
+        try:
+            if self._current_state in self._state_handlers:
+                self._state_handlers[self._current_state](dt)
+        except Exception as e:
+            print(f"Error updating state {self._current_state.name}: {e}")
+            # Consider changing to a safe state (like MAIN_MENU) on critical errors
+            if isinstance(e, (RuntimeError, SystemError)):
+                print("Critical error, reverting to main menu")
+                self.change_state(GameState.MAIN_MENU)
             
     def cleanup(self) -> None:
         """Clean up the service."""
