@@ -35,10 +35,36 @@ class StateService:
         self._subscribers: Dict[str, List[Callable]] = {}
         self._logger = LoggingService()
         
-        # Set initial state
-        self.change_state(GameState.MAIN_MENU)
+        # Initialize valid transitions
+        self._setup_valid_transitions()
+        
+        # Set initial state without triggering handlers
+        self._current_state = GameState.MAIN_MENU
         self._logger.log("StateService initialized", "INFO")
         self._initialized = True
+        
+    def _setup_valid_transitions(self) -> None:
+        """Setup valid state transitions."""
+        # Define valid transitions from each state
+        self.add_valid_transition(None, GameState.MAIN_MENU)  # Initial transition
+        self.add_valid_transition(GameState.MAIN_MENU, GameState.PLAYING)
+        self.add_valid_transition(GameState.MAIN_MENU, GameState.OPTIONS)
+        self.add_valid_transition(GameState.MAIN_MENU, GameState.HIGH_SCORES)
+        self.add_valid_transition(GameState.MAIN_MENU, GameState.QUIT)
+        
+        self.add_valid_transition(GameState.PLAYING, GameState.PAUSED)
+        self.add_valid_transition(GameState.PLAYING, GameState.GAME_OVER)
+        
+        self.add_valid_transition(GameState.PAUSED, GameState.PLAYING)
+        self.add_valid_transition(GameState.PAUSED, GameState.MAIN_MENU)
+        
+        self.add_valid_transition(GameState.GAME_OVER, GameState.MAIN_MENU)
+        self.add_valid_transition(GameState.GAME_OVER, GameState.PLAYING)  # For restart
+        
+        self.add_valid_transition(GameState.OPTIONS, GameState.MAIN_MENU)
+        self.add_valid_transition(GameState.HIGH_SCORES, GameState.MAIN_MENU)
+        
+        self._logger.log("State transitions initialized", "DEBUG")
         
     def register_handler(self, state: GameState, handler: Callable) -> None:
         """Register a handler for a state.
@@ -82,6 +108,14 @@ class StateService:
             event_manager: EventManagerService instance
         """
         self._event_manager = event_manager
+        self._logger.log("Event manager connected to state service", "INFO")
+        
+        # Now that we have the event manager, publish initial state
+        if self._current_state:
+            self._event_manager.publish('state_changed', 
+                old_state=None,
+                new_state=self._current_state)
+            self._logger.log(f"Published initial state: {self._current_state}", "DEBUG")
 
     def add_valid_transition(self, from_state: GameState, to_state: GameState) -> None:
         """Add a valid state transition.
