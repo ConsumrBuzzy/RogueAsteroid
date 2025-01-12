@@ -2,8 +2,12 @@
 import pygame
 import numpy as np
 from typing import TYPE_CHECKING
-from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
-from src.core.entities.components import (
+
+from src.core.entity.entity import Entity
+from src.core.entities.base import (
+    TransformComponent,
+    RenderComponent,
+    CollisionComponent,
     ScreenWrapComponent,
     InputComponent,
     PhysicsComponent,
