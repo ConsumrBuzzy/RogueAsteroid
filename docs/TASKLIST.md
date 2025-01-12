@@ -5,7 +5,6 @@
 - [ ] Update remaining documentation with new tasklist format
 - [ ] Test ship initialization with error cases
 - [ ] Verify entity rendering with color constants
-- [ ] Address pkg_resources deprecation warning in pygame
 - [ ] Add performance tests for particle system
 - [ ] Test particle system memory usage under load
 
@@ -30,11 +29,13 @@
 ## Completed Tasks
 [Format: [YYYY-MM-DD HH:MM] Task Description]
 
-[2025-01-12 09:39] Update remaining documentation with new tasklist format
+[2025-01-12 10:05] Address pkg_resources deprecation warning in pygame
+[2025-01-12 10:00] Separate tasklist into dedicated file
 [2025-01-12 09:55] Implement and test effect template configuration
 [2025-01-12 09:50] Create comprehensive effect system test suite
 [2025-01-12 09:45] Move effect templates to configuration
 [2025-01-12 09:40] Consolidate component system implementation
+[2025-01-12 09:39] Update remaining documentation with new tasklist format
 
 ## Task Rules
 1. All tasks must be categorized by priority
