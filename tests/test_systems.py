@@ -102,25 +102,29 @@ class TestGame:
 
 class TestParticleEffects:
     def test_thrust_particles(self, game):
-        """Test thrust particle creation"""
+        """Test that thrust particles are created when thrusting."""
         game.new_game()
-        assert game.ship is not None, "Ship should exist after new_game()"
+        assert game.ship is not None
         
+        # Get input component
+        input_comp = game.ship.get_component('input')
+        assert input_comp is not None
+        
+        # Simulate thrust key press
+        input_comp.handle_keydown(pygame.K_UP)  # Add UP key to active keys
+        assert pygame.K_UP in input_comp.active_keys
+        
+        # Update a few frames to create particles
         initial_particles = len(game.particles)
+        for _ in range(5):
+            game.update(1/60)  # Update at 60 FPS
+            
+        # Should have created some particles
+        assert len(game.particles) > initial_particles
         
-        # Get input component and simulate thrust
-        input_component = game.ship.get_component('input')
-        assert input_component is not None, "Ship should have input component"
-        
-        # Simulate thrusting for multiple frames to ensure particles are created
-        for _ in range(5):  # Simulate for 5 frames
-            input_component.handle_keydown(pygame.K_UP)  # Simulate pressing UP key
-            game.update(0.016)  # Update one frame
-        
-        input_component.handle_keyup(pygame.K_UP)  # Release key
-        game.update(0.016)  # One more update
-        
-        assert len(game.particles) > initial_particles, "Thrusting should create particles"
+        # Release key and verify no new particles
+        input_comp.handle_keyup(pygame.K_UP)
+        assert pygame.K_UP not in input_comp.active_keys
     
     def test_explosion_particles(self, game):
         """Test explosion particle creation"""

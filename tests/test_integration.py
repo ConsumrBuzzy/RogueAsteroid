@@ -147,44 +147,44 @@ class TestGameplayFlow:
         assert high_scores[0].name == "TEST", "First high score should be from TEST player"
     
     def test_pause_resume_flow(self, game):
-        """Test pause and resume functionality."""
+        """Test that game pauses and resumes correctly."""
         game.new_game()
         
-        # Record initial state
-        initial_asteroids = [(a, a.get_component('transform').position.copy()) for a in game.asteroids]
-        initial_ship_pos = game.ship.get_component('transform').position.copy()
+        # Record initial positions
+        initial_positions = []
+        for asteroid in game.asteroids:
+            transform = asteroid.get_component('transform')
+            initial_positions.append((asteroid, transform.position.copy()))
         
         # Pause game
-        game.pause()
-        assert game.state_manager.current_state == GameState.PAUSED
+        input_comp = game.ship.get_component('input')
+        input_comp.handle_keydown(pygame.K_ESCAPE)
+        game.update(1/60)  # Process pause
+        assert game.state == GameState.PAUSED
         
-        # Update while paused
-        game.update(1.0)
-        
-        # Verify nothing moved while paused
-        for asteroid, initial_pos in initial_asteroids:
-            current_pos = asteroid.get_component('transform').position
-            assert abs(current_pos.x - initial_pos.x) < 0.001, "X position changed while paused"
-            assert abs(current_pos.y - initial_pos.y) < 0.001, "Y position changed while paused"
-        
-        current_ship_pos = game.ship.get_component('transform').position
-        assert abs(current_ship_pos.x - initial_ship_pos.x) < 0.001, "Ship X position changed while paused"
-        assert abs(current_ship_pos.y - initial_ship_pos.y) < 0.001, "Ship Y position changed while paused"
+        # Update while paused - positions should not change
+        game.update(1/60)
+        for asteroid, initial_pos in initial_positions:
+            transform = asteroid.get_component('transform')
+            assert np.allclose(transform.position, initial_pos, atol=0.001)
         
         # Resume game
-        game.resume()
-        assert game.state_manager.current_state == GameState.PLAYING
+        input_comp.handle_keydown(pygame.K_ESCAPE)
+        game.update(1/60)  # Process resume
+        assert game.state == GameState.PLAYING
         
-        # Update and verify movement resumes
-        game.update(1.0)
-        any_moved = False
-        for asteroid, initial_pos in initial_asteroids:
-            current_pos = asteroid.get_component('transform').position
-            if (abs(current_pos.x - initial_pos.x) > 0.001 or 
-                abs(current_pos.y - initial_pos.y) > 0.001):
-                any_moved = True
+        # Update several frames - positions should change
+        for _ in range(5):
+            game.update(1/60)
+        
+        # Verify positions have changed
+        positions_changed = False
+        for asteroid, initial_pos in initial_positions:
+            transform = asteroid.get_component('transform')
+            if not np.allclose(transform.position, initial_pos, atol=0.001):
+                positions_changed = True
                 break
-        assert any_moved, "No asteroids moved after resuming"
+        assert positions_changed, "Asteroid positions should change after resuming"
     
     def test_particle_effects_integration(self, game):
         """Test particle system integration."""

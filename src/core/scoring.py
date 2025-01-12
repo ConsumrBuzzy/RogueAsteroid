@@ -127,7 +127,7 @@ class ScoringSystem:
             
         # Otherwise, check if current score beats the lowest high score
         lowest_score = min(score.score for score in self.high_scores)
-        return self.score > lowest_score
+        return self.current_score > lowest_score
     
     def add_high_score(self, name: str, level: int) -> bool:
         """Add a new high score entry.
