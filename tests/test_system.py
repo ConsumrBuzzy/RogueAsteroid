@@ -55,9 +55,13 @@ class TestGameSystems:
         class TestService:
             def __init__(self, game):
                 self.game = game
+                self.initialized = True
                 
-        services.register_service('test', TestService(mock_game))
-        assert services.get_service('test') is not None
+        services.register_service('test', TestService)
+        service = services.get_service('test')
+        assert service is not None
+        assert service.initialized is True
+        assert service.game is mock_game
     
     def test_game_loop(self, mock_game):
         """Test game loop timing."""

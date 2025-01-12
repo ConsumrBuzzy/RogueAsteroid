@@ -19,6 +19,16 @@ from src.core.components.base import (
 )
 from src.core.entities.base import Entity
 from src.core.components import ComponentRegistry
+from src.core.services import ServiceManager
+
+class MockGame:
+    """Mock game class for testing."""
+    def __init__(self):
+        self.screen = pygame.Surface((800, 600))
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.dt = 1.0 / 60.0
+        self.services = ServiceManager()
 
 @pytest.fixture(scope="session", autouse=True)
 def pygame_init() -> Generator[None, None, None]:
@@ -31,6 +41,11 @@ def pygame_init() -> Generator[None, None, None]:
 def screen() -> pygame.Surface:
     """Create a test screen surface."""
     return pygame.Surface((800, 600))
+
+@pytest.fixture
+def mock_game() -> MockGame:
+    """Create a mock game instance for testing."""
+    return MockGame()
 
 @pytest.fixture
 def entity(mock_game: MockGame) -> Entity:
@@ -77,19 +92,6 @@ def mock_dt() -> float:
 def mock_event() -> pygame.event.Event:
     """Create a mock pygame event."""
     return pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_SPACE})
-
-class MockGame:
-    """Mock game class for testing."""
-    def __init__(self):
-        self.screen = pygame.Surface((800, 600))
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.dt = 1.0 / 60.0
-
-@pytest.fixture
-def mock_game() -> MockGame:
-    """Create a mock game instance for testing."""
-    return MockGame() 
 
 class PerformanceEnv:
     """Environment for performance testing."""

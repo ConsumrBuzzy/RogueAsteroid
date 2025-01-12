@@ -5,13 +5,14 @@ from pygame import Surface, Vector2
 from typing import Tuple
 
 from src.core.entities.base import Entity
-from src.core.components import (
+from src.core.components.base import (
     TransformComponent,
     PhysicsComponent,
     RenderComponent,
     CollisionComponent,
     InputComponent,
-    ScreenWrapComponent
+    ScreenWrapComponent,
+    ComponentRegistry
 )
 from src.core.game import Game
 from src.entities.ship import Ship
