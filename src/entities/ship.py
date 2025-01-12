@@ -67,62 +67,66 @@ class Ship(Entity):
         """Initialize ship components.
         
         Raises:
-            ValueError: If component initialization fails
+            RuntimeError: If component initialization fails
         """
+        components = []
         try:
             # Transform component for position and movement
             transform = self._registry.create_component('TransformComponent', self)
             transform.position = Vector2(self.game.width / 2, self.game.height / 2)
+            components.append(transform)
             self._initialized_components.add(TransformComponent)
             
             # Render component for drawing
             render = self._registry.create_component('RenderComponent', self)
             render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]
             render.color = (255, 255, 255)
+            components.append(render)
             self._initialized_components.add(RenderComponent)
             
             # Physics component for thrust and momentum
             physics = self._registry.create_component('PhysicsComponent', self)
             physics.max_speed = SHIP_MAX_SPEED
             physics.friction = SHIP_FRICTION
+            components.append(physics)
             self._initialized_components.add(PhysicsComponent)
             
             # Collision component for hit detection
             collision = self._registry.create_component('CollisionComponent', self, radius=15)
+            components.append(collision)
             self._initialized_components.add(CollisionComponent)
             
             # Screen wrap component
             screen_wrap = self._registry.create_component('ScreenWrapComponent', self, 
                 screen_size=(self.game.width, self.game.height))
+            components.append(screen_wrap)
             self._initialized_components.add(ScreenWrapComponent)
             
             # Effects component for visual effects
             effects = self._registry.create_component('EffectComponent', self)
             self._init_thrust_effect(effects)
+            components.append(effects)
             self._initialized_components.add(EffectComponent)
             
             # Input component for controls
             input_component = self._registry.create_component('InputComponent', self)
             self.update_controls()
+            components.append(input_component)
             self._initialized_components.add(InputComponent)
             
             # Add all components to entity
-            self.components.extend([
-                transform,
-                render,
-                physics,
-                collision,
-                screen_wrap,
-                effects,
-                input_component
-            ])
+            self.components.extend(components)
             
             # Initialize the entity after all components are added
             self.initialize()
             
         except Exception as e:
-            print(f"Component initialization failed: {e}")
-            raise ValueError(f"Failed to initialize components: {e}")
+            # Clean up any components that were created
+            for component in components:
+                if hasattr(component, 'destroy'):
+                    component.destroy()
+            self._initialized_components.clear()
+            raise RuntimeError(f"Failed to initialize components: {e}")
             
     def _validate_components(self) -> None:
         """Validate that all required components are initialized.
@@ -136,6 +140,7 @@ class Ship(Entity):
                 missing_components.append(f"{component_type.__name__} ({purpose})")
                 
         if missing_components:
+            self.destroy()  # Clean up the entity if validation fails
             raise RuntimeError(f"Missing required components: {', '.join(missing_components)}")
             
         print("All required ship components initialized successfully")

@@ -186,4 +186,10 @@ class EffectComponent(Component):
     @property
     def particle_count(self) -> int:
         """Get number of active particles."""
-        return len(self._particles) 
+        return len(self._particles)
+        
+    def destroy(self) -> None:
+        """Clean up component resources."""
+        self.clear_particles()
+        self._effect_templates.clear()
+        super().destroy() 
