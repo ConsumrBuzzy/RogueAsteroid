@@ -97,72 +97,49 @@ class Ship(Entity):
         
         # Get current control scheme
         controls = self.game.settings.get('controls', 'arrows')
-        
-        # Set up keys based on control scheme
-        if controls == 'arrows':
-            # Regular arrow keys and numpad
-            thrust_keys = [pygame.K_UP, pygame.K_KP8]
-            reverse_keys = [pygame.K_DOWN, pygame.K_KP2]
-            left_keys = [pygame.K_LEFT, pygame.K_KP4]
-            right_keys = [pygame.K_RIGHT, pygame.K_KP6]
-        else:  # wasd
-            thrust_keys = [pygame.K_w]
-            reverse_keys = [pygame.K_s]
-            left_keys = [pygame.K_a]
-            right_keys = [pygame.K_d]
-        
-        # Bind controls - each key in the key groups
-        for thrust_key in thrust_keys:
-            self.input_component.bind_key(thrust_key, self._apply_thrust, True)
-        for reverse_key in reverse_keys:
-            self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
-        for left_key in left_keys:
-            self.input_component.bind_key(left_key, self._rotate_left, True)
-        for right_key in right_keys:
-            self.input_component.bind_key(right_key, self._rotate_right, True)
-            
-        # Bind shoot to both regular space and numpad enter with continuous=True
-        self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
-        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot, True)
-        
         print(f"Controls updated to scheme: {controls}")  # Debug info
+        
+        if controls == 'arrows':
+            # Arrow key controls
+            self.input_component.bind_key(pygame.K_UP, self.handle_thrust, continuous=True)
+            self.input_component.bind_key(pygame.K_LEFT, self.handle_rotate_left, continuous=True)
+            self.input_component.bind_key(pygame.K_RIGHT, self.handle_rotate_right, continuous=True)
+            self.input_component.bind_key(pygame.K_SPACE, self.handle_shoot)
+        else:
+            # WASD controls
+            self.input_component.bind_key(pygame.K_w, self.handle_thrust, continuous=True)
+            self.input_component.bind_key(pygame.K_a, self.handle_rotate_left, continuous=True)
+            self.input_component.bind_key(pygame.K_d, self.handle_rotate_right, continuous=True)
+            self.input_component.bind_key(pygame.K_SPACE, self.handle_shoot)
     
-    def _apply_thrust(self) -> None:
-        """Apply forward thrust force."""
-        self._apply_thrust_force(1.0)
-    
-    def _apply_reverse_thrust(self) -> None:
-        """Apply reverse thrust force."""
-        self._apply_thrust_force(-0.5)  # Half power for reverse
-    
-    def _apply_thrust_force(self, power: float) -> None:
-        """Apply thrust force in current direction with given power."""
+    def handle_thrust(self) -> None:
+        """Handle thrust input."""
         transform = self.get_component('transform')
         physics = self.get_component('physics')
-        effects = self.get_component('effects')
+        if not transform or not physics:
+            return
+            
+        # Calculate thrust direction based on rotation
+        angle = transform.rotation
+        thrust_dir = np.array([
+            np.sin(np.radians(angle)),
+            -np.cos(np.radians(angle))
+        ])
         
-        if transform and physics:
-            # Calculate thrust direction
-            # Adjust angle by -90 degrees because ship points up at 0 degrees
-            angle_rad = np.radians(transform.rotation - 90)
-            direction = np.array([
-                np.cos(angle_rad),
-                np.sin(angle_rad)
-            ])
-            
-            # Debug thrust direction
-            print(f"Rotation: {transform.rotation}, Thrust direction: {direction}, Power: {power}")  # Debug info
-            
-            # Apply force
-            force = direction * SHIP_ACCELERATION * power
-            physics.apply_force(force)
-            
-            # Activate thrust effect
-            if effects and power > 0:
-                effects.set_effect_active('thrust', True)
+        # Apply thrust force
+        thrust_force = thrust_dir * SHIP_ACCELERATION
+        physics.apply_force(thrust_force)
+        
+        # Create thrust particles
+        self.create_thrust_particles()
+        
+        # Update thrust effect
+        effects = self.get_component('effect')
+        if effects:
+            effects.set_effect_active('thrust', True)
     
-    def _rotate_left(self) -> None:
-        """Rotate ship counter-clockwise."""
+    def handle_rotate_left(self) -> None:
+        """Handle rotate left input."""
         transform = self.get_component('transform')
         if transform:
             # Apply rotation speed based on delta time
@@ -170,8 +147,8 @@ class Ship(Entity):
             transform.rotation = (transform.rotation - rotation_change) % 360
             print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
-    def _rotate_right(self) -> None:
-        """Rotate ship clockwise."""
+    def handle_rotate_right(self) -> None:
+        """Handle rotate right input."""
         transform = self.get_component('transform')
         if transform:
             # Apply rotation speed based on delta time
@@ -179,8 +156,8 @@ class Ship(Entity):
             transform.rotation = (transform.rotation + rotation_change) % 360
             print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
-    def _shoot(self):
-        """Create and fire a bullet."""
+    def handle_shoot(self):
+        """Handle shoot input."""
         if len(self.game.bullets) >= MAX_BULLETS or self.shoot_timer > 0:
             return
             
@@ -212,46 +189,41 @@ class Ship(Entity):
         
         print("Bullet fired")  # Debug info
     
-    def _create_thrust_particles(self):
-        """Create particles for engine thrust effect"""
+    def create_thrust_particles(self) -> None:
+        """Create particles for thrust effect."""
         transform = self.get_component('transform')
         if not transform:
             return
+            
+        # Calculate thrust direction based on ship rotation
+        angle = transform.rotation
+        thrust_dir = np.array([
+            np.sin(np.radians(angle)),
+            -np.cos(np.radians(angle))
+        ])
+        print(f"Rotation: {angle}, Thrust direction: {thrust_dir}, Power: {1.0}")  # Debug info
         
-        # Calculate thrust direction (opposite of ship's facing direction)
-        angle_rad = np.radians(transform.rotation - 90)  # -90 to match ship's upward orientation
-        direction = pygame.Vector2(
-            np.cos(angle_rad),
-            np.sin(angle_rad)
-        )
-        
-        # Position particles at ship's rear (opposite of direction)
-        rear_pos = pygame.Vector2(transform.position) - direction * 15  # 15 pixels behind ship
-        
-        # Create 2-3 particles per frame when thrusting
+        # Create 2-3 particles per thrust
         num_particles = random.randint(2, 3)
         for _ in range(num_particles):
-            particle = Particle(
-                self.game,
-                lifetime=random.uniform(0.2, 0.4),
-                color=(random.randint(180, 220), random.randint(180, 220), 255)  # Blue-white color
-            )
+            # Randomize particle velocity around thrust direction
+            spread = 30  # Degrees
+            particle_angle = angle + random.uniform(-spread, spread)
+            particle_speed = random.uniform(50, 150)
+            particle_vel = np.array([
+                np.sin(np.radians(particle_angle)),
+                -np.cos(np.radians(particle_angle))
+            ]) * particle_speed
             
-            # Position slightly randomized around rear
-            offset = pygame.Vector2(random.uniform(-3, 3), random.uniform(-3, 3))
-            particle_transform = particle.get_component('transform')
-            if particle_transform:
-                particle_transform.position = rear_pos + offset
-            
-            # Velocity opposite of ship direction with spread
-            angle = random.uniform(-20, 20)  # 20 degree spread
-            velocity = direction.rotate(180 + angle) * random.uniform(100, 150)
-            physics = particle.get_component('physics')
-            if physics:
-                physics.velocity = velocity
-            
-            # Add to game entities
-            self.game.entities.append(particle)
+            # Create particle at ship's position
+            pos = transform.position + thrust_dir * 20  # Offset behind ship
+            particle = {
+                'position': np.array([pos[0], pos[1]]),
+                'velocity': -particle_vel,  # Opposite of thrust direction
+                'lifetime': random.uniform(0.2, 0.4),  # Short lifetime
+                'color': (255, 165, 0)  # Orange color
+            }
+            self.game.particles.append(particle)
     
     def update(self, dt: float) -> None:
         """Update ship state."""
@@ -289,18 +261,18 @@ class Ship(Entity):
             thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
             effects.set_effect_active('thrust', thrust_key in input_component.active_keys)
     
-    def _init_thrust_effect(self, effects):
+    def _init_thrust_effect(self, effects: 'EffectComponent') -> None:
         """Initialize the thrust visual effect."""
-        # Create triangular flame shape
-        thrust_vertices = [
-            (0, 15),      # Tip of flame (at back of ship)
-            (-5, 25),     # Left point
-            (0, 20),      # Middle indent
-            (5, 25),      # Right point
-        ]
-        effects.add_effect('thrust', thrust_vertices, (255, 165, 0))  # Orange flame
-        print("Thrust effect initialized")  # Debug info 
-
+        print("Thrust effect initialized")  # Debug info
+        
+        # Add thrust effect
+        effects.add_effect(
+            'thrust',
+            [(0, 10), (-5, 20), (5, 20)],  # Small triangle behind ship
+            (255, 165, 0),  # Orange color
+            (0, 15)  # Offset behind ship
+        )
+        
     @property
     def invulnerable(self):
         """Check if ship is currently invulnerable."""

@@ -124,6 +124,10 @@ class ScoringSystem:
         if len(self.high_scores) < 5:  # Changed from 10 to 5
             return True
             
+        # If there are no high scores yet, any score qualifies
+        if not self.high_scores:
+            return True
+            
         return self.current_score > min(
             entry.score for entry in self.high_scores
         )
