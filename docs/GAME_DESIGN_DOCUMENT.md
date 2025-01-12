@@ -1,100 +1,274 @@
-# RogueAsteroid - Game Design Document
+# Game Design Document
 
 ## Game Overview
-RogueAsteroid is a classic arcade-style space shooter where players pilot a ship through waves of asteroids. The game features precise controls, physics-based movement, and particle effects for visual feedback. The focus is on skill-based gameplay with increasing difficulty as players progress through levels.
 
-## Core Gameplay Elements
+### Concept
+RogueAsteroid is a modern take on the classic Asteroids arcade game, featuring enhanced graphics, additional gameplay mechanics, and modern gaming features while maintaining the core essence of the original.
 
-### Player Ship
-- Movement Mechanics:
-  * Thrust-based movement with gradual acceleration/deceleration
-  * Maximum speed of 400 pixels/second
-  * Rotation speed of 180 degrees/second
-  * Screen wrapping for continuous play space
-- Weapons:
-  * Single forward-firing bullet type
-  * Maximum of 12 bullets on screen
-  * 0.5 second bullet lifetime
-  * Visual feedback with particle effects
+### Genre
+- Arcade
+- Space Shooter
+- Action
+- Single Player
 
-### Asteroids
-- Types:
-  * Large: 50 points, splits into 2 medium
-  * Medium: 75 points, splits into 2 small
-  * Small: 100 points, destroyed completely
-- Mechanics:
-  * Random movement paths with consistent velocity
-  * Screen wrapping
-  * Arcade-style collisions with deflection
-  * Size-based collision radius
-  * Particle effects on destruction
+### Target Audience
+- Casual gamers
+- Arcade game enthusiasts
+- Players seeking quick gameplay sessions
+- Score-chasers
 
-### Scoring System
-- Point Values:
-  * Small Asteroids: 100 points
-  * Medium Asteroids: 75 points
-  * Large Asteroids: 50 points
-- High Score:
-  * Top 5 scores saved
-  * Player name entry for high scores
-  * Scores saved between sessions
+## Core Gameplay
+
+### Basic Mechanics
+1. Ship Control
+   - Thrust-based movement
+   - Rotation control
+   - Screen wrapping
+   - Momentum physics
+
+2. Combat
+   - Primary weapon system
+   - Limited fire rate
+   - Projectile physics
+   - Screen wrapping bullets
+
+3. Asteroids
+   - Multiple sizes
+   - Split mechanics
+   - Random trajectories
+   - Varied speeds
+
+### Advanced Mechanics
+1. Power-ups
+   - Shield
+   - Rapid fire
+   - Multi-shot
+   - Speed boost
+
+2. Scoring System
+   - Size-based points
+   - Combo multipliers
+   - Streak bonuses
+   - Time bonuses
+
+3. Achievement System
+   - Skill-based achievements
+   - Progress achievements
+   - Hidden achievements
+   - Special challenges
+
+## Game Flow
+
+### States
+1. Main Menu
+   - New Game
+   - High Scores
+   - Options
+   - Achievements
+   - Statistics
+   - Exit
+
+2. Gameplay
+   - Active play
+   - Paused
+   - Game Over
+   - Level Complete
+
+3. Menus
+   - Options Menu
+   - Pause Menu
+   - High Score Entry
+   - Achievement Display
+
+### Progression
+1. Wave System
+   - Increasing difficulty
+   - More asteroids
+   - Faster asteroids
+   - Special formations
+
+2. Scoring
+   - Points per asteroid
+   - Multiplier system
+   - Bonus objectives
+   - High score tracking
+
+3. Achievements
+   - Skill milestones
+   - Score thresholds
+   - Special challenges
+   - Hidden objectives
 
 ## Visual Design
 
 ### Art Style
-- Vector-based graphics
-- Particle effects for:
-  * Ship thrust
-  * Bullet impacts
-  * Asteroid destruction
-  * Asteroid splitting
-- Color scheme:
-  * Ship: White
-  * Bullets: White
-  * Asteroids: White
-  * Thrust particles: Blue-white
-  * Explosion particles: Orange/yellow
-  * UI text: White
+1. Graphics
+   - Clean vector graphics
+   - Particle effects
+   - Screen shake effects
+   - Impact effects
 
-### UI Elements
-- HUD:
-  * Score display (top left)
-  * Lives counter (below score)
-  * Level indicator (top right)
-- Menus:
-  * Main Menu: New Game, High Scores, Options, Quit
-  * Pause Menu: Resume, Options, Main Menu
-  * Options: Control scheme toggle (Arrows/WASD)
-  * Game Over: Score, Level, High Score status
+2. UI Elements
+   - Minimalist HUD
+   - Score display
+   - Lives indicator
+   - Power-up status
 
-## Game Flow
-- States:
-  * MAIN_MENU: Starting state
-  * PLAYING: Active gameplay
-  * PAUSED: Game paused
-  * GAME_OVER: End state
-  * NEW_HIGH_SCORE: Score entry
-  * OPTIONS: Settings menu
-- Levels:
-  * Progressive difficulty
-  * Extra life every two levels (max 5)
-  * Increasing number of asteroids
-  * Faster asteroid velocities
+3. Effects
+   - Thrust particles
+   - Explosion effects
+   - Shield visuals
+   - Power-up indicators
+
+### Color Scheme
+1. Game Elements
+   - Ship: White
+   - Asteroids: Gray
+   - Bullets: Yellow
+   - Power-ups: Varied
+
+2. UI Elements
+   - Text: White
+   - Background: Black
+   - Highlights: Blue
+   - Warnings: Red
+
+## Audio Design
+
+### Sound Effects
+1. Ship Sounds
+   - Thrust
+   - Shooting
+   - Collision
+   - Power-up activation
+
+2. Environment Sounds
+   - Asteroid destruction
+   - Power-up appearance
+   - Achievement unlock
+   - Menu navigation
+
+### Music
+1. Background Tracks
+   - Menu theme
+   - Gameplay theme
+   - High score theme
+   - Game over theme
+
+2. Dynamic Audio
+   - Intensity scaling
+   - Achievement jingles
+   - Victory fanfare
+   - Warning sounds
+
+## User Interface
+
+### HUD Elements
+1. Game Information
+   - Score
+   - Lives
+   - Level
+   - Multiplier
+
+2. Status Indicators
+   - Power-up status
+   - Shield strength
+   - Warning indicators
+   - Achievement progress
+
+### Menu System
+1. Main Menu
+   - Clean layout
+   - Easy navigation
+   - Visual feedback
+   - Animation transitions
+
+2. Pause Menu
+   - Quick access
+   - Resume option
+   - Settings access
+   - Quit option
 
 ## Technical Requirements
-- Python with Pygame
-- 60 FPS target
-- Smooth particle effects
-- Responsive controls
-- Efficient collision detection
-- State-based game management
 
-## Success Metrics
-- Smooth, responsive controls
-- Clear visual feedback
-- Progressive difficulty
-- Engaging score system
-- Polished particle effects
-- Clean state transitions
+### Performance Targets
+1. Frame Rate
+   - 60 FPS minimum
+   - Stable performance
+   - Smooth animation
+   - Consistent physics
 
-Note: This document reflects the current implementation. Future updates may include sound effects and additional gameplay features. 
+2. Response Time
+   - Immediate controls
+   - Quick menu navigation
+   - Fast loading
+   - Smooth transitions
+
+### Platform Support
+1. Windows
+   - Windows 10+
+   - DirectX 11+
+   - OpenGL 4.0+
+   - 1080p minimum
+
+2. Input Support
+   - Keyboard
+   - Mouse (menus)
+   - Controller (future)
+   - Custom bindings
+
+## Additional Features
+
+### Statistics Tracking
+1. Game Stats
+   - Shots fired
+   - Accuracy
+   - Time played
+   - Asteroids destroyed
+
+2. Achievement Progress
+   - Completion percentage
+   - Hidden achievements
+   - Progress tracking
+   - Unlock dates
+
+### High Score System
+1. Score Tracking
+   - Local high scores
+   - Score breakdown
+   - Date/time stamps
+   - Player initials
+
+2. Leaderboards
+   - Top 10 scores
+   - Daily best
+   - Weekly best
+   - All-time best
+
+## Future Enhancements
+
+### Planned Features
+1. Gameplay
+   - New power-ups
+   - Special asteroids
+   - Boss battles
+   - Challenge modes
+
+2. Technical
+   - Online leaderboards
+   - Cloud saves
+   - Replays
+   - Performance metrics
+
+### Potential Additions
+1. Content
+   - Ship skins
+   - Visual themes
+   - Sound packs
+   - Achievement rewards
+
+2. Features
+   - Daily challenges
+   - Weekly tournaments
+   - Custom game modes
+   - Practice mode 

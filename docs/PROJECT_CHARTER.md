@@ -1,32 +1,201 @@
-# RogueAsteroid Project Rules
+# Project Charter
 
-## Project Type
-- Python-based Asteroids Clone
-- Designer (User) / Engineer (AI) Collaboration
+## Project Overview
+RogueAsteroid is a modern reimagining of the classic Asteroids game, built with Python using a service-oriented architecture. The project emphasizes clean code, robust error handling, and maintainable design.
 
-## Core Rules
-1. Check DEVELOPMENT_LOG.md first when resuming
-2. Follow design-first approach
-3. Engineer implements only approved designs
-4. All changes documented in real-time
-5. Use DRY, SOLID, and KISS principles
+## Project Roles
 
-## Documentation
-- PROJECT_CHARTER.md: Roles and methodology
-- GAME_DESIGN_DOCUMENT.md: Game specifications
-- DEVELOPMENT_LOG.md: Progress and tasks
-=> All documentation in docs/
+### Designer (User)
+Responsibilities:
+- Game design decisions
+- Feature prioritization
+- Gameplay mechanics
+- User experience
+- Visual direction
+- Sound design
+- Testing feedback
+- Final approval
 
-## Version Control
-- Use [YYYY-MM-DD HH:MM(AM/PM)] format
-- Use 1-minute intervals for timestamps
-- Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW]
-- All timestamps must be in chronological order
-- New entries added at the top of logs
+### Engineer (AI)
+Responsibilities:
+- Technical implementation
+- Architecture design
+- Code quality
+- Performance optimization
+- Testing implementation
+- Documentation
+- Bug fixes
+- Technical recommendations
 
-## Development Process
-1. Review DEVELOPMENT_LOG.md
-2. Implement approved designs
-3. Document changes in real-time
-4. Test implementations
-5. Update documentation 
+## Development Methodology
+
+### Design-First Approach
+1. Designer provides feature/change request
+2. Engineer analyzes technical implications
+3. Designer approves technical approach
+4. Engineer implements solution
+5. Designer reviews implementation
+6. Engineer addresses feedback
+7. Designer approves final version
+
+### Documentation Requirements
+1. All changes must be logged in real-time
+2. Documentation must be updated with changes
+3. Technical decisions must be documented
+4. Issues must be tracked and categorized
+5. Test coverage must be documented
+
+### Code Standards
+1. Follow Python best practices
+2. Use type hints
+3. Include docstrings
+4. Write unit tests
+5. Maintain test coverage
+6. Follow SOLID principles
+7. Use DRY principle
+8. Follow KISS principle
+
+### Version Control
+1. Use descriptive commit messages
+2. Include timestamps [YYYY-MM-DD HH:MM]
+   - 1 Minute Interval
+3. Use appropriate tags:
+   - [DESIGN] Design changes
+   - [IMPL] Implementation
+   - [TEST] Testing
+   - [TASK] Task management
+   - [BUG] Bug reports
+   - [FIX] Bug fixes
+   - [NOTE] Notes/comments
+   - [REVIEW] Code review
+
+## Project Goals
+
+### Technical Goals
+1. Maintainable Architecture
+   - Service-oriented design
+   - Clear separation of concerns
+   - Robust error handling
+   - Comprehensive testing
+
+2. Performance
+   - Stable frame rate
+   - Efficient memory usage
+   - Quick load times
+   - Smooth gameplay
+
+3. Code Quality
+   - High test coverage
+   - Clean architecture
+   - Clear documentation
+   - Type safety
+
+### Gameplay Goals
+1. Core Mechanics
+   - Smooth ship control
+   - Satisfying shooting
+   - Challenging asteroids
+   - Engaging power-ups
+
+2. Features
+   - High score system
+   - Achievement system
+   - Statistics tracking
+   - Multiple difficulty levels
+
+3. User Experience
+   - Intuitive controls
+   - Clear feedback
+   - Polished visuals
+   - Smooth transitions
+
+## Success Criteria
+
+### Technical Criteria
+1. Test Coverage: 80%+
+2. No critical bugs
+3. Stable frame rate
+4. Clean architecture
+5. Complete documentation
+
+### Gameplay Criteria
+1. Engaging gameplay
+2. Intuitive controls
+3. Clear progression
+4. Satisfying feedback
+
+## Timeline and Milestones
+
+### Phase 1: Core Systems
+- ✓ Basic architecture
+- ✓ Core services
+- ✓ Entity system
+- ✓ Event system
+
+### Phase 2: Game Mechanics
+- ✓ Ship controls
+- ✓ Asteroid behavior
+- ✓ Collision system
+- ✓ Scoring system
+
+### Phase 3: Features
+- ✓ Menu system
+- ✓ High scores
+- ✓ Achievements
+- ✓ Statistics
+
+### Phase 4: Polish
+- □ Visual effects
+- □ Sound effects
+- □ Tutorial system
+- □ Difficulty levels
+
+### Phase 5: Release
+- □ Performance optimization
+- □ Bug fixing
+- □ Final testing
+- □ Documentation completion
+
+## Risk Management
+
+### Technical Risks
+1. Performance issues
+2. Memory leaks
+3. Complex bugs
+4. Technical debt
+
+### Mitigation Strategies
+1. Regular testing
+2. Code reviews
+3. Performance monitoring
+4. Technical documentation
+5. Clean architecture
+6. Error handling
+
+## Communication
+
+### Documentation
+1. DEVELOPMENT_LOG.md: Daily progress
+2. ARCHITECTURE.md: System design
+3. GAME_DESIGN_DOCUMENT.md: Game design
+4. PROJECT_CHARTER.md: Project overview
+
+### Updates
+1. Real-time logging
+2. Regular reviews
+3. Clear communication
+4. Documented decisions
+
+## Maintenance
+
+### Code Maintenance
+1. Regular refactoring
+2. Technical debt tracking
+3. Performance monitoring
+4. Bug tracking
+
+### Documentation Maintenance
+1. Keep logs updated
+2. Update technical docs
+3. Track changes
+4. Document decisions 
