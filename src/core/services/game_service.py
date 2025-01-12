@@ -10,7 +10,7 @@ from src.entities.asteroid import Asteroid
 from src.core.constants import (
     WINDOW_WIDTH,
     WINDOW_HEIGHT,
-    STARTING_ASTEROIDS,
+    INITIAL_ASTEROIDS,
     STARTING_LIVES
 )
 
@@ -121,7 +121,7 @@ class GameService:
         self._render_service.add_to_layer('game', self.player_ship)
         
         # Spawn initial asteroids
-        self._spawn_asteroids(STARTING_ASTEROIDS)
+        self._spawn_asteroids(INITIAL_ASTEROIDS)
         
         print("Game loop started")
         
@@ -292,7 +292,7 @@ class GameService:
         """Handle level complete event."""
         level = kwargs.get('level', 1)
         self._level += 1
-        self._spawn_asteroids(STARTING_ASTEROIDS + self._level)
+        self._spawn_asteroids(INITIAL_ASTEROIDS + self._level)
         print(f"Level {level} completed")
         
     def cleanup(self) -> None:
