@@ -182,3 +182,102 @@ class TestGameService:
         assert len(game_service.asteroids) == 0
         assert len(game_service.bullets) == 0
         assert game_service.player_ship is None 
+
+    def test_spawn_player_ship(self, game_service):
+        """Test player ship spawning."""
+        # Mock the ship creation
+        mock_ship = MagicMock()
+        game_service._entity_factory.create_ship.return_value = mock_ship
+        
+        # Spawn the ship
+        game_service._spawn_player_ship()
+        
+        # Verify ship was created and registered
+        game_service._entity_factory.create_ship.assert_called_once()
+        assert game_service.player_ship == mock_ship
+        assert mock_ship in game_service.entities
+        game_service._physics_service.register_entity.assert_called_with(mock_ship)
+        game_service._collision_service.register_entity.assert_called_with(mock_ship)
+        game_service._render_service.add_to_layer.assert_called_with('game', mock_ship)
+        
+    def test_spawn_asteroids(self, game_service):
+        """Test asteroid spawning."""
+        # Mock the ship and asteroid creation
+        mock_ship = MagicMock()
+        mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
+        game_service.player_ship = mock_ship
+        
+        mock_asteroid = MagicMock()
+        game_service._entity_factory.create_asteroid.return_value = mock_asteroid
+        
+        # Spawn asteroids
+        count = 3
+        game_service._spawn_asteroids(count)
+        
+        # Verify asteroids were created and registered
+        assert game_service._entity_factory.create_asteroid.call_count == count
+        assert len(game_service.asteroids) == count
+        assert mock_asteroid in game_service.entities
+        assert game_service._physics_service.register_entity.call_count >= count
+        assert game_service._collision_service.register_entity.call_count >= count
+        
+    def test_game_over(self, game_service):
+        """Test game over handling."""
+        # Setup initial game state
+        game_service.start()
+        game_service._score = 1000
+        
+        # Trigger game over
+        game_service._on_game_over(score=game_service._score)
+        
+        # Verify game over state
+        assert game_service._state_service.get_current_state() == GameState.GAME_OVER
+        game_service._high_score_service.add_score.assert_called_with(1000)
+        
+    def test_level_complete(self, game_service):
+        """Test level completion handling."""
+        # Setup initial game state
+        initial_level = game_service._level
+        
+        # Mock player ship for asteroid spawning
+        mock_ship = MagicMock()
+        mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
+        game_service.player_ship = mock_ship
+        
+        # Trigger level complete
+        game_service._on_level_complete(level=initial_level)
+        
+        # Verify level progression
+        assert game_service._level == initial_level + 1
+        # Verify more asteroids are spawned
+        assert game_service._entity_factory.create_asteroid.called
+        
+    def test_update_game_state(self, game_service):
+        """Test game state updates."""
+        # Start the game
+        game_service.start()
+        game_service._state_service.current_state = GameState.PLAYING
+        
+        # Update game state
+        dt = 0.016  # 60 FPS
+        game_service.update(dt)
+        
+        # Verify services were updated
+        game_service._input_service.update.assert_called_once()
+        game_service._physics_service.update.assert_called_with(dt)
+        game_service._collision_service.update.assert_called_once()
+        game_service._particle_service.update.assert_called_with(dt)
+        game_service._menu_service.update.assert_called_with(dt)
+        
+    def test_draw_game_state(self, game_service):
+        """Test game rendering."""
+        # Start the game
+        game_service.start()
+        
+        # Draw game state
+        game_service.draw()
+        
+        # Verify rendering services were called
+        game_service._render_service.draw.assert_called_once()
+        game_service._particle_service.draw.assert_called_once()
+        game_service._ui_service.draw.assert_called_once() 
