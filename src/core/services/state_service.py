@@ -1,17 +1,7 @@
 """State service for game state management."""
-from enum import Enum, auto
 from typing import Optional, Dict, Callable
 import pygame
-
-class GameState(Enum):
-    """Game states."""
-    MAIN_MENU = auto()
-    PLAYING = auto()
-    PAUSED = auto()
-    GAME_OVER = auto()
-    HIGH_SCORE = auto()
-    OPTIONS = auto()
-    QUIT = auto()
+from ..state.game_states import GameState
 
 class StateService:
     """Service for managing game states.
