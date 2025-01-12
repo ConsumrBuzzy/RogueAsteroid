@@ -5,8 +5,13 @@ from src.core.components.base import Component
 class Entity:
     """Base class for all game entities."""
     
-    def __init__(self):
-        """Initialize the entity."""
+    def __init__(self, game):
+        """Initialize the entity.
+        
+        Args:
+            game: The game instance this entity belongs to
+        """
+        self.game = game
         self.components: Dict[str, Component] = {}
         self.active = True
         self.id = None  # Set by EntityManager when added
