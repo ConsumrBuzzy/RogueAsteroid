@@ -227,13 +227,15 @@ class TestGameService:
                 self.transform.position = ship_pos or pygame.Vector2(400, 300)
                 self.transform.velocity = pygame.Vector2(0, 0)
                 self.transform.rotation = 0
-                self._components = {'TransformComponent': self.transform}
                 
-                # Initialize other components
-                self.render = self.add_component('RenderComponent')
-                self.physics = self.add_component('PhysicsComponent')
-                self.collision = self.add_component('CollisionComponent')
-                self.screen_wrap = self.add_component('ScreenWrapComponent')
+                # Initialize components
+                self._components = {
+                    'TransformComponent': self.transform,
+                    'RenderComponent': MagicMock(),
+                    'PhysicsComponent': MagicMock(),
+                    'CollisionComponent': MagicMock(),
+                    'ScreenWrapComponent': MagicMock()
+                }
                 
             def get_component(self, component_type):
                 return self._components.get(component_type, MagicMock())
@@ -290,13 +292,15 @@ class TestGameService:
                 self.transform.position = ship_pos or pygame.Vector2(400, 300)
                 self.transform.velocity = pygame.Vector2(0, 0)
                 self.transform.rotation = 0
-                self._components = {'TransformComponent': self.transform}
                 
-                # Initialize other components
-                self.render = self.add_component('RenderComponent')
-                self.physics = self.add_component('PhysicsComponent')
-                self.collision = self.add_component('CollisionComponent')
-                self.screen_wrap = self.add_component('ScreenWrapComponent')
+                # Initialize components
+                self._components = {
+                    'TransformComponent': self.transform,
+                    'RenderComponent': MagicMock(),
+                    'PhysicsComponent': MagicMock(),
+                    'CollisionComponent': MagicMock(),
+                    'ScreenWrapComponent': MagicMock()
+                }
                 
             def get_component(self, component_type):
                 return self._components.get(component_type, MagicMock())
