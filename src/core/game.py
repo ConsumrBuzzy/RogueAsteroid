@@ -213,7 +213,7 @@ class Game:
         self.scoring.update(dt)
         
         # Check for collisions
-        self._check_collisions()
+        self.handle_collisions()
         
         # Update debug info
         if DEBUG:
