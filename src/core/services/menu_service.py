@@ -159,6 +159,15 @@ class MenuService:
         Args:
             dt: Delta time in seconds
         """
+        # Menu state updates would go here
+        pass
+                
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the menu on screen.
+        
+        Args:
+            screen: Pygame surface to render to
+        """
         if self._current_menu:
             # Draw menu title
             self._ui_service.draw_text(

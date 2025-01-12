@@ -82,7 +82,7 @@ class ServiceManager:
             True if initialization successful, False otherwise
         """
         try:
-            # Core services
+            # Core services (no dependencies)
             settings = SettingsService()
             self.register_service("settings", settings)
             
@@ -92,24 +92,27 @@ class ServiceManager:
             resources = ResourceManagerService()
             self.register_service("resources", resources)
             
-            # State service (moved earlier)
+            # Input service (needed by many services)
+            input_service = InputService()
+            self.register_service("input", input_service)
+            
+            # State service (needed by menu)
             state = StateService()
             self.register_service("state", state)
             
-            # UI service (moved earlier)
+            # Rendering stack
+            render = RenderService(screen)
+            self.register_service("render", render)
+            
             ui = UIService(screen)
             self.register_service("ui", ui)
             
-            # Menu service with direct references
             menu = MenuService(ui_service=ui, state_service=state)
             self.register_service("menu", menu)
             
-            # Physics and rendering services
+            # Physics stack
             physics = PhysicsService(screen.get_width(), screen.get_height())
             self.register_service("physics", physics)
-            
-            render = RenderService(screen)
-            self.register_service("render", render)
             
             collision = CollisionService()
             self.register_service("collision", collision)
@@ -117,18 +120,15 @@ class ServiceManager:
             particle = ParticleService(screen)
             self.register_service("particle", particle)
             
-            # Input service
-            input_service = InputService()
-            self.register_service("input", input_service)
-            
-            # Game services
+            # Entity system (depends on many services)
             entity_factory = EntityFactoryService(service_manager=self)
             self.register_service("entity_factory", entity_factory)
             
+            # Game service (depends on everything)
             game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
             self.register_service("game", game)
             
-            # Data services
+            # Data services (depend on settings and events)
             high_score = HighScoreService(settings, events)
             self.register_service("high_score", high_score)
             

@@ -97,21 +97,34 @@ class RenderService:
             
     def draw(self) -> None:
         """Draw all visible layers in order."""
-        # Clear screen
-        self._screen.fill((0, 0, 0))  # Black background
-        
-        # Sort layers by order
-        sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
-        
-        # Draw each visible layer
-        for layer in sorted_layers:
-            if layer.visible:
-                for entity in layer.entities:
-                    if hasattr(entity, 'draw'):
-                        entity.draw(self._screen)
-                        
-        # Update display
-        pygame.display.flip()
+        try:
+            # Clear screen
+            self._screen.fill((0, 0, 0))  # Black background
+            
+            # Sort layers by order
+            sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
+            
+            # Draw each visible layer
+            for layer in sorted_layers:
+                if layer.visible:
+                    for entity in layer.entities:
+                        try:
+                            if hasattr(entity, 'draw'):
+                                entity.draw(self._screen)
+                        except Exception as e:
+                            print(f"Error drawing entity in layer {layer.name}: {e}")
+                            continue  # Skip to next entity
+                            
+            # Update display
+            pygame.display.flip()
+            
+        except Exception as e:
+            print(f"Error in render service draw: {e}")
+            # Ensure screen is updated even if there's an error
+            try:
+                pygame.display.flip()
+            except:
+                pass  # Screen update failed, nothing more we can do
         
     def clear(self) -> None:
         """Clear all render layers."""
