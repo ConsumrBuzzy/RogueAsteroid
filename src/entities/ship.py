@@ -36,7 +36,7 @@ class Ship(Entity):
         super().__init__(game)
         print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
-        self.invulnerable_timer = SHIP_INVULNERABLE_TIME
+        self.invulnerable_timer = 0.0
         
         # Add components
         self._init_components()
@@ -263,10 +263,11 @@ class Ship(Entity):
         # Update invulnerability
         if self.invulnerable_timer > 0:
             self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            
             # Flash the ship while invulnerable
             render = self.get_component('render')
             if render:
-                render.visible = int(self.invulnerable_timer * 10) % 2 == 0
+                render.visible = int(self.invulnerable_timer * 10) % 2 == 0  # Flash 5 times per second
         else:
             # Ensure ship is visible when not invulnerable
             render = self.get_component('render')
@@ -299,3 +300,8 @@ class Ship(Entity):
         ]
         effects.add_effect('thrust', thrust_vertices, (255, 165, 0))  # Orange flame
         print("Thrust effect initialized")  # Debug info 
+
+    @property
+    def invulnerable(self):
+        """Check if ship is currently invulnerable."""
+        return self.invulnerable_timer > 0 
