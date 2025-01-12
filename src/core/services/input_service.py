@@ -1,162 +1,126 @@
-"""Input handling service for game-wide input management."""
-from typing import Dict, List, Set, Callable, Any, Optional
+"""Input service for handling game input."""
+from typing import Dict, Set, Callable, List
 import pygame
 from enum import Enum, auto
 
 class InputAction(Enum):
-    """Enumeration of all possible input actions."""
+    """Input actions enumeration."""
     MOVE_UP = auto()
     MOVE_DOWN = auto()
     MOVE_LEFT = auto()
     MOVE_RIGHT = auto()
     SHOOT = auto()
     PAUSE = auto()
-    CONFIRM = auto()
-    CANCEL = auto()
-    MENU = auto()
+    MENU_UP = auto()
+    MENU_DOWN = auto()
+    MENU_SELECT = auto()
+    MENU_BACK = auto()
 
 class InputService:
-    """Service for game-wide input handling.
+    """Service for handling game input.
     
     Provides:
-    - Action mapping
-    - Input state tracking
+    - Action-based input mapping
     - Multiple control schemes
-    - Event filtering
-    - Input buffering
-    - Debug support
+    - Input state tracking
+    - Event handling
     """
     
     def __init__(self):
         """Initialize the input service."""
-        self._action_bindings: Dict[InputAction, List[int]] = {}
+        self._key_map: Dict[int, InputAction] = {}
         self._pressed_keys: Set[int] = set()
         self._action_handlers: Dict[InputAction, List[Callable]] = {}
-        self._control_scheme: str = 'arrows'  # 'arrows' or 'wasd'
+        
+        # Initialize handlers for each action
+        for action in InputAction:
+            self._action_handlers[action] = []
+            
+        # Set up default key bindings
+        self._setup_default_bindings()
         print("InputService initialized")
         
-    def bind_action(self, action: InputAction, keys: List[int]) -> None:
-        """Bind keys to an action.
+    def _setup_default_bindings(self) -> None:
+        """Set up default key bindings."""
+        # Arrow key controls
+        self._key_map[pygame.K_UP] = InputAction.MOVE_UP
+        self._key_map[pygame.K_DOWN] = InputAction.MOVE_DOWN
+        self._key_map[pygame.K_LEFT] = InputAction.MOVE_LEFT
+        self._key_map[pygame.K_RIGHT] = InputAction.MOVE_RIGHT
+        
+        # WASD controls
+        self._key_map[pygame.K_w] = InputAction.MOVE_UP
+        self._key_map[pygame.K_s] = InputAction.MOVE_DOWN
+        self._key_map[pygame.K_a] = InputAction.MOVE_LEFT
+        self._key_map[pygame.K_d] = InputAction.MOVE_RIGHT
+        
+        # Action keys
+        self._key_map[pygame.K_SPACE] = InputAction.SHOOT
+        self._key_map[pygame.K_RETURN] = InputAction.SHOOT
+        self._key_map[pygame.K_ESCAPE] = InputAction.PAUSE
+        
+        # Menu controls
+        self._key_map[pygame.K_UP] = InputAction.MENU_UP
+        self._key_map[pygame.K_DOWN] = InputAction.MENU_DOWN
+        self._key_map[pygame.K_RETURN] = InputAction.MENU_SELECT
+        self._key_map[pygame.K_ESCAPE] = InputAction.MENU_BACK
+        
+    def add_handler(self, action: InputAction, handler: Callable) -> None:
+        """Add a handler for an input action.
         
         Args:
-            action: Action to bind keys to
-            keys: List of pygame key constants
+            action: Input action to handle
+            handler: Function to call when action occurs
         """
-        self._action_bindings[action] = keys
-        print(f"Bound keys to action: {action.name}")
-        
-    def register_handler(self, action: InputAction, handler: Callable) -> None:
-        """Register a handler for an action.
-        
-        Args:
-            action: Action to handle
-            handler: Callback function for when action occurs
-        """
-        if action not in self._action_handlers:
-            self._action_handlers[action] = []
-        self._action_handlers[action].append(handler)
-        print(f"Registered handler for action: {action.name}")
-        
+        if action in self._action_handlers:
+            self._action_handlers[action].append(handler)
+            
     def remove_handler(self, action: InputAction, handler: Callable) -> None:
-        """Remove a handler for an action.
+        """Remove a handler for an input action.
         
         Args:
-            action: Action to remove handler from
+            action: Input action to remove handler from
             handler: Handler to remove
         """
         if action in self._action_handlers and handler in self._action_handlers[action]:
             self._action_handlers[action].remove(handler)
-            print(f"Removed handler for action: {action.name}")
             
-    def set_control_scheme(self, scheme: str) -> None:
-        """Set the current control scheme.
+    def is_action_pressed(self, action: InputAction) -> bool:
+        """Check if an action is currently pressed.
         
         Args:
-            scheme: Control scheme to use ('arrows' or 'wasd')
+            action: Input action to check
+            
+        Returns:
+            True if any key for the action is pressed
         """
-        if scheme not in ['arrows', 'wasd']:
-            print(f"Invalid control scheme: {scheme}")
-            return
-            
-        self._control_scheme = scheme
-        self._update_bindings()
-        print(f"Control scheme set to: {scheme}")
-        
-    def _update_bindings(self) -> None:
-        """Update key bindings based on current control scheme."""
-        if self._control_scheme == 'arrows':
-            movement_keys = {
-                InputAction.MOVE_UP: [pygame.K_UP, pygame.K_KP8],
-                InputAction.MOVE_DOWN: [pygame.K_DOWN, pygame.K_KP5],
-                InputAction.MOVE_LEFT: [pygame.K_LEFT, pygame.K_KP4],
-                InputAction.MOVE_RIGHT: [pygame.K_RIGHT, pygame.K_KP6]
-            }
-        else:  # wasd
-            movement_keys = {
-                InputAction.MOVE_UP: [pygame.K_w],
-                InputAction.MOVE_DOWN: [pygame.K_s],
-                InputAction.MOVE_LEFT: [pygame.K_a],
-                InputAction.MOVE_RIGHT: [pygame.K_d]
-            }
-            
-        # Common bindings
-        common_keys = {
-            InputAction.SHOOT: [pygame.K_SPACE, pygame.K_KP_ENTER],
-            InputAction.PAUSE: [pygame.K_ESCAPE, pygame.K_p],
-            InputAction.CONFIRM: [pygame.K_RETURN, pygame.K_KP_ENTER],
-            InputAction.CANCEL: [pygame.K_ESCAPE],
-            InputAction.MENU: [pygame.K_ESCAPE]
-        }
-        
-        # Update all bindings
-        self._action_bindings.clear()
-        self._action_bindings.update(movement_keys)
-        self._action_bindings.update(common_keys)
+        return any(key in self._pressed_keys for key, act in self._key_map.items() if act == action)
         
     def handle_event(self, event: pygame.event.Event) -> None:
-        """Handle a pygame event.
+        """Handle a pygame input event.
         
         Args:
             event: Pygame event to handle
         """
         if event.type == pygame.KEYDOWN:
             self._pressed_keys.add(event.key)
-            self._check_actions(event.key, True)
+            if action := self._key_map.get(event.key):
+                for handler in self._action_handlers[action]:
+                    handler()
+                    
         elif event.type == pygame.KEYUP:
             self._pressed_keys.discard(event.key)
-            self._check_actions(event.key, False)
             
-    def _check_actions(self, key: int, is_pressed: bool) -> None:
-        """Check if any actions should trigger from a key event.
-        
-        Args:
-            key: Key that changed state
-            is_pressed: Whether key was pressed or released
-        """
-        for action, keys in self._action_bindings.items():
-            if key in keys:
-                if is_pressed and action in self._action_handlers:
-                    for handler in self._action_handlers[action]:
-                        try:
-                            handler()
-                        except Exception as e:
-                            print(f"Error in input handler for {action.name}: {e}")
-                            
-    def is_action_pressed(self, action: InputAction) -> bool:
-        """Check if any key for an action is currently pressed.
-        
-        Args:
-            action: Action to check
-            
-        Returns:
-            True if any key for the action is pressed
-        """
-        if action not in self._action_bindings:
-            return False
-        return any(key in self._pressed_keys for key in self._action_bindings[action])
-        
-    def clear(self) -> None:
-        """Clear all input state and handlers."""
+    def update(self) -> None:
+        """Update input state."""
+        # Handle continuous input for pressed keys
+        for key in self._pressed_keys:
+            if action := self._key_map.get(key):
+                for handler in self._action_handlers[action]:
+                    handler()
+                    
+    def cleanup(self) -> None:
+        """Clean up the service."""
         self._pressed_keys.clear()
         self._action_handlers.clear()
-        print("Input service cleared") 
+        print("InputService cleaned up") 

@@ -1,25 +1,29 @@
-"""Rendering service for game-wide display management."""
-from typing import List, Dict, Optional, Tuple
+"""Render service for game graphics."""
+from typing import Dict, List, Optional
 import pygame
-from ..entity import Entity
 
 class RenderLayer:
-    """Enumeration of render layers."""
-    BACKGROUND = 0
-    PARTICLES = 1
-    ENTITIES = 2
-    EFFECTS = 3
-    UI = 4
-    DEBUG = 5
+    """Layer for organizing game rendering."""
+    
+    def __init__(self, name: str, order: int):
+        """Initialize render layer.
+        
+        Args:
+            name: Layer name
+            order: Render order (lower = earlier)
+        """
+        self.name = name
+        self.order = order
+        self.entities: List = []
+        self.visible = True
 
 class RenderService:
-    """Service for game-wide rendering management.
+    """Service for managing game rendering.
     
     Provides:
     - Layer-based rendering
-    - Entity rendering
+    - Entity registration
     - Screen management
-    - Debug visualization
     - Performance optimization
     """
     
@@ -30,85 +34,86 @@ class RenderService:
             screen: Pygame surface to render to
         """
         self._screen = screen
-        self._entities: Dict[int, List[Entity]] = {
-            layer: [] for layer in range(RenderLayer.DEBUG + 1)
-        }
-        self._background_color = (0, 0, 0)
+        self._layers: Dict[str, RenderLayer] = {}
+        
+        # Create default layers
+        self._create_layer("background", 0)
+        self._create_layer("game", 1)
+        self._create_layer("particles", 2)
+        self._create_layer("ui", 3)
+        self._create_layer("debug", 4)
+        
         print("RenderService initialized")
         
-    def register_entity(self, entity: Entity, layer: int = RenderLayer.ENTITIES) -> None:
-        """Register an entity for rendering.
+    def _create_layer(self, name: str, order: int) -> None:
+        """Create a new render layer.
         
         Args:
-            entity: Entity to register
-            layer: Render layer to use
+            name: Layer name
+            order: Render order
         """
-        if layer not in self._entities:
-            print(f"Invalid render layer: {layer}")
-            return
-            
-        if entity not in self._entities[layer]:
-            self._entities[layer].append(entity)
-            print(f"Registered entity {entity.id} for rendering on layer {layer}")
-            
-    def unregister_entity(self, entity: Entity, layer: int = RenderLayer.ENTITIES) -> None:
-        """Unregister an entity from rendering.
+        self._layers[name] = RenderLayer(name, order)
+        
+    def add_to_layer(self, layer_name: str, entity) -> None:
+        """Add an entity to a render layer.
         
         Args:
-            entity: Entity to unregister
-            layer: Render layer to remove from
+            layer_name: Name of layer to add to
+            entity: Entity to add
         """
-        if layer in self._entities and entity in self._entities[layer]:
-            self._entities[layer].remove(entity)
-            print(f"Unregistered entity {entity.id} from rendering")
-            
-    def set_background_color(self, color: Tuple[int, int, int]) -> None:
-        """Set the background color.
+        if layer := self._layers.get(layer_name):
+            if entity not in layer.entities:
+                layer.entities.append(entity)
+                
+    def remove_from_layer(self, layer_name: str, entity) -> None:
+        """Remove an entity from a render layer.
         
         Args:
-            color: RGB color tuple
+            layer_name: Name of layer to remove from
+            entity: Entity to remove
         """
-        self._background_color = color
-        print(f"Background color set to {color}")
+        if layer := self._layers.get(layer_name):
+            if entity in layer.entities:
+                layer.entities.remove(entity)
+                
+    def set_layer_visible(self, layer_name: str, visible: bool) -> None:
+        """Set visibility of a render layer.
         
-    def render(self) -> None:
-        """Render all registered entities by layer."""
-        # Clear screen
-        self._screen.fill(self._background_color)
-        
-        # Render each layer
-        for layer in range(RenderLayer.DEBUG + 1):
-            for entity in self._entities[layer]:
-                render = entity.get_component('RenderComponent')
-                if render and render.enabled:
-                    try:
-                        render.draw(self._screen)
-                    except Exception as e:
-                        print(f"Error rendering entity {entity.id}: {e}")
-                        
-        # Update display
-        pygame.display.flip()
-        
-    def get_screen_size(self) -> Tuple[int, int]:
-        """Get the screen dimensions.
-        
-        Returns:
-            Tuple of (width, height)
+        Args:
+            layer_name: Name of layer to modify
+            visible: Whether layer should be visible
         """
-        return self._screen.get_size()
-        
-    def clear_layer(self, layer: int) -> None:
+        if layer := self._layers.get(layer_name):
+            layer.visible = visible
+            
+    def clear_layer(self, layer_name: str) -> None:
         """Clear all entities from a render layer.
         
         Args:
-            layer: Layer to clear
+            layer_name: Name of layer to clear
         """
-        if layer in self._entities:
-            self._entities[layer].clear()
-            print(f"Cleared render layer {layer}")
+        if layer := self._layers.get(layer_name):
+            layer.entities.clear()
             
+    def draw(self) -> None:
+        """Draw all visible layers in order."""
+        # Sort layers by order
+        sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
+        
+        # Draw each visible layer
+        for layer in sorted_layers:
+            if layer.visible:
+                for entity in layer.entities:
+                    if hasattr(entity, 'draw'):
+                        entity.draw(self._screen)
+                        
     def clear(self) -> None:
-        """Clear all registered entities from all layers."""
-        for layer in self._entities.values():
-            layer.clear()
-        print("Render service cleared") 
+        """Clear all render layers."""
+        for layer in self._layers.values():
+            layer.entities.clear()
+            
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.clear()
+        self._layers.clear()
+        print("RenderService cleaned up") 
