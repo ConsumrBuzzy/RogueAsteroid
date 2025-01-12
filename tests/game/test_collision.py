@@ -1,11 +1,11 @@
 """Test suite for collision system."""
 import pytest
 import pygame
-import numpy as np
 from src.core.game import Game
-from src.entities.asteroid import Asteroid
-from src.entities.bullet import Bullet
-from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.entities.base import Entity
+from src.core.entities.components import CollisionComponent, TransformComponent
+from src.core.systems.collision import CollisionSystem
+from src.core.constants import *
 
 @pytest.fixture
 def game(mock_game, screen):
@@ -15,164 +15,192 @@ def game(mock_game, screen):
     yield game
 
 @pytest.fixture
-def collision_setup(game):
-    """Setup a fresh game state for collision testing."""
-    game.new_game()
-    return game
+def collision_system(game):
+    """Create a collision system instance."""
+    return CollisionSystem(game)
+
+@pytest.fixture
+def create_collider(game):
+    """Create an entity with collision component."""
+    def _create(pos=(0, 0), radius=10, tag="test"):
+        entity = Entity(game)
+        transform = entity.add_component(TransformComponent)
+        transform.position = pygame.Vector2(pos)
+        collider = entity.add_component(CollisionComponent)
+        collider.radius = radius
+        collider.tag = tag
+        return entity, collider
+    return _create
 
 @pytest.mark.game
 class TestCollisionSystem:
-    """Test cases for the collision detection system."""
+    """Test cases for the collision system."""
     
-    def test_bullet_asteroid_collision(self, game, collision_setup):
-        """Test collision between bullet and asteroid."""
-        # Create a test bullet
-        bullet_pos = pygame.Vector2(400, 300)
-        bullet_dir = pygame.Vector2(1, 0)  # Shooting right
-        bullet = Bullet(game, bullet_pos, bullet_dir)
-        game.add_entity(bullet)
-        game.bullets.append(bullet)
+    def test_collision_detection(self, game, collision_system, create_collider):
+        """Test basic collision detection between entities."""
+        # Create two overlapping entities
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20)
         
-        # Create a test asteroid near the bullet
-        asteroid = Asteroid(game, 'large', (bullet_pos.x + 5, bullet_pos.y))
-        game.add_entity(asteroid)
-        game.asteroids.append(asteroid)
+        # Check for collision
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
         
-        # Update to check collisions
-        game.update(1/60)  # One frame at 60 FPS
-        
-        # Verify collision handling
-        assert bullet not in game.entities, "Bullet should be destroyed on collision"
-        assert asteroid not in game.entities, "Asteroid should be destroyed on collision"
-        assert len(game.particles) > 0, "Collision should create explosion particles"
-        
-        # Verify score increase
-        assert game.scoring.current_score > 0, "Destroying asteroid should award points"
+        assert len(collisions) == 1, "One collision should be detected"
+        assert (collider1, collider2) in collisions or (collider2, collider1) in collisions, \
+            "Collision pair should be recorded"
     
-    def test_ship_asteroid_collision(self, game, collision_setup):
-        """Test collision between ship and asteroid."""
-        initial_lives = game.lives
+    def test_no_collision(self, game, collision_system, create_collider):
+        """Test entities that are not colliding."""
+        # Create two distant entities
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(200, 200), radius=20)
         
-        # Get ship position
-        ship_transform = game.ship.get_component('transform')
-        ship_pos = ship_transform.position
+        # Check for collisions
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
         
-        # Create asteroid at ship position
-        asteroid = Asteroid(game, 'large', (ship_pos.x + 5, ship_pos.y))
-        game.add_entity(asteroid)
-        game.asteroids.append(asteroid)
-        
-        # Update to check collision
-        game.update(1/60)
-        
-        # Verify collision handling
-        assert game.lives == initial_lives - 1, "Ship collision should reduce lives"
-        assert asteroid not in game.entities, "Asteroid should be destroyed on collision"
-        assert len(game.particles) > 0, "Collision should create explosion particles"
-        assert game.ship.invulnerable_timer > 0, "Ship should become invulnerable after collision"
+        assert len(collisions) == 0, "No collisions should be detected"
     
-    def test_asteroid_splitting(self, game, collision_setup):
-        """Test that large asteroids split into smaller ones."""
-        # Create a large asteroid
-        asteroid = Asteroid(game, 'large', (400, 300))
-        game.add_entity(asteroid)
-        game.asteroids.append(asteroid)
+    def test_collision_tags(self, game, collision_system, create_collider):
+        """Test collision filtering by tags."""
+        # Create entities with different tags
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20, tag="player")
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20, tag="enemy")
+        entity3, collider3 = create_collider(pos=(120, 120), radius=20, tag="bullet")
         
-        # Create a bullet to destroy it
-        bullet_pos = pygame.Vector2(395, 300)
-        bullet_dir = pygame.Vector2(1, 0)
-        bullet = Bullet(game, bullet_pos, bullet_dir)
-        game.add_entity(bullet)
-        game.bullets.append(bullet)
+        # Set collision masks
+        collision_system.set_collision_mask("player", ["enemy"])
+        collision_system.set_collision_mask("enemy", ["player", "bullet"])
+        collision_system.set_collision_mask("bullet", ["enemy"])
         
-        initial_asteroids = len(game.asteroids)
+        # Update and get collisions
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
         
-        # Update to trigger collision
-        game.update(1/60)
-        
-        # Verify asteroid splitting
-        assert len(game.asteroids) > initial_asteroids, "Large asteroid should split into smaller ones"
-        for new_asteroid in game.asteroids:
-            assert new_asteroid.size == 'medium', "Split asteroids should be medium sized"
-            assert new_asteroid in game.entities, "Split asteroids should be added to game entities"
+        # Verify correct collision pairs
+        for c1, c2 in collisions:
+            assert (c1.tag == "player" and c2.tag == "enemy") or \
+                   (c1.tag == "enemy" and c2.tag == "player") or \
+                   (c1.tag == "bullet" and c2.tag == "enemy") or \
+                   (c1.tag == "enemy" and c2.tag == "bullet"), \
+                "Only configured tag pairs should collide"
     
-    def test_invulnerability_frames(self, game, collision_setup):
-        """Test ship invulnerability after respawn."""
-        initial_lives = game.lives
+    def test_collision_callbacks(self, game, collision_system, create_collider):
+        """Test collision callback execution."""
+        # Track callback execution
+        callback_executed = False
+        def on_collision(other):
+            nonlocal callback_executed
+            callback_executed = True
         
-        # Force ship to be invulnerable
-        game.ship.invulnerable_timer = 2.0
+        # Create colliding entities
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20)
         
-        # Create asteroid at ship position
-        ship_transform = game.ship.get_component('transform')
-        asteroid = Asteroid(game, 'large', (ship_transform.position.x + 5, ship_transform.position.y))
-        game.add_entity(asteroid)
-        game.asteroids.append(asteroid)
+        # Set callback
+        collider1.on_collision = on_collision
         
-        # Update to check collision
-        game.update(1/60)
+        # Update system
+        collision_system.update(1/60)
         
-        # Verify invulnerability
-        assert game.lives == initial_lives, "Ship should not lose lives while invulnerable"
-        assert asteroid in game.entities, "Asteroid should not be destroyed during invulnerability"
-        assert game.ship.invulnerable_timer > 0, "Invulnerability timer should still be active"
-        
-        # Test invulnerability expiration
-        game.update(3.0)  # Update past invulnerability time
-        assert game.ship.invulnerable_timer <= 0, "Invulnerability should expire after timer"
+        assert callback_executed, "Collision callback should be executed"
     
-    def test_screen_wrapping_collision(self, game, collision_setup):
-        """Test collisions work correctly with screen wrapping."""
-        # Create asteroid near screen edge
-        asteroid = Asteroid(game, 'large', (WINDOW_WIDTH - 10, WINDOW_HEIGHT - 10))
-        game.add_entity(asteroid)
-        game.asteroids.append(asteroid)
+    def test_collision_resolution(self, game, collision_system, create_collider):
+        """Test basic collision resolution."""
+        # Create overlapping entities
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20)
         
-        # Create bullet near opposite screen edge
-        bullet_pos = pygame.Vector2(10, 10)
-        bullet_dir = pygame.Vector2(1, 1)
-        bullet = Bullet(game, bullet_pos, bullet_dir)
-        game.add_entity(bullet)
-        game.bullets.append(bullet)
+        # Store initial positions
+        initial_pos1 = entity1.get_component(TransformComponent).position.copy()
+        initial_pos2 = entity2.get_component(TransformComponent).position.copy()
         
-        # Track initial positions
-        asteroid_pos = asteroid.get_component('transform').position.copy()
-        bullet_pos = bullet.get_component('transform').position.copy()
+        # Enable collision resolution
+        collision_system.resolve_collisions = True
+        collision_system.update(1/60)
         
-        # Update several frames to allow for wrapping
-        for _ in range(10):
-            game.update(1/60)
-            
-        # Verify wrapping behavior
-        new_asteroid_pos = asteroid.get_component('transform').position
-        assert (new_asteroid_pos != asteroid_pos), "Asteroid should move from original position"
+        # Check positions have changed
+        current_pos1 = entity1.get_component(TransformComponent).position
+        current_pos2 = entity2.get_component(TransformComponent).position
         
-        # Verify collision still works after wrapping
-        assert len(game.entities) > 0, "Entities should persist through screen wrapping"
+        assert current_pos1 != initial_pos1 or current_pos2 != initial_pos2, \
+            "Entities should be moved apart"
         
-    def test_multiple_collisions(self, game, collision_setup):
-        """Test handling of multiple simultaneous collisions."""
-        # Create multiple asteroids around ship
-        ship_pos = game.ship.get_component('transform').position
-        asteroid_positions = [
-            (ship_pos.x + 5, ship_pos.y),
-            (ship_pos.x - 5, ship_pos.y),
-            (ship_pos.x, ship_pos.y + 5)
-        ]
+        # Verify no more collision
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
+        assert len(collisions) == 0, "Collision should be resolved"
+    
+    def test_dynamic_static_collision(self, game, collision_system, create_collider):
+        """Test collision between dynamic and static entities."""
+        # Create dynamic and static entities
+        dynamic, dynamic_collider = create_collider(pos=(100, 100), radius=20)
+        static, static_collider = create_collider(pos=(110, 110), radius=20)
         
-        asteroids = []
-        for pos in asteroid_positions:
-            asteroid = Asteroid(game, 'small', pos)
-            game.add_entity(asteroid)
-            game.asteroids.append(asteroid)
-            asteroids.append(asteroid)
-            
-        initial_lives = game.lives
+        # Mark static entity
+        static_collider.is_static = True
         
-        # Update to trigger multiple collisions
-        game.update(1/60)
+        # Store initial positions
+        initial_dynamic_pos = dynamic.get_component(TransformComponent).position.copy()
+        initial_static_pos = static.get_component(TransformComponent).position.copy()
         
-        # Verify multiple collision handling
-        assert game.lives == initial_lives - 1, "Multiple collisions should only subtract one life"
-        assert len(game.particles) > len(asteroids), "Each collision should create particles"
-        assert game.ship.invulnerable_timer > 0, "Ship should become invulnerable after collision" 
+        # Enable collision resolution
+        collision_system.resolve_collisions = True
+        collision_system.update(1/60)
+        
+        # Check only dynamic entity moved
+        current_dynamic_pos = dynamic.get_component(TransformComponent).position
+        current_static_pos = static.get_component(TransformComponent).position
+        
+        assert current_dynamic_pos != initial_dynamic_pos, "Dynamic entity should move"
+        assert current_static_pos == initial_static_pos, "Static entity should not move"
+    
+    def test_collision_layers(self, game, collision_system, create_collider):
+        """Test collision layer filtering."""
+        # Create entities on different layers
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20)
+        
+        # Set different layers
+        collider1.layer = 1
+        collider2.layer = 2
+        
+        # Configure layer collision matrix
+        collision_system.set_layer_collision(1, 2, False)
+        
+        # Update and check no collision
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
+        
+        assert len(collisions) == 0, "Entities on non-colliding layers should not interact"
+        
+        # Enable layer collision
+        collision_system.set_layer_collision(1, 2, True)
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
+        
+        assert len(collisions) == 1, "Entities should collide when layers are set to interact"
+    
+    def test_collision_groups(self, game, collision_system, create_collider):
+        """Test collision group filtering."""
+        # Create entities
+        entity1, collider1 = create_collider(pos=(100, 100), radius=20)
+        entity2, collider2 = create_collider(pos=(110, 110), radius=20)
+        entity3, collider3 = create_collider(pos=(120, 120), radius=20)
+        
+        # Set collision groups
+        collider1.group = 1
+        collider2.group = 1
+        collider3.group = 2
+        
+        # Update and check collisions
+        collision_system.update(1/60)
+        collisions = collision_system.get_collisions()
+        
+        # Verify group behavior
+        group_collisions = [(c1.group, c2.group) for c1, c2 in collisions]
+        assert (1, 2) in group_collisions or (2, 1) in group_collisions, \
+            "Different groups should collide"
+        assert not any(g1 == g2 == 1 for g1, g2 in group_collisions), \
+            "Same group should not collide" 
