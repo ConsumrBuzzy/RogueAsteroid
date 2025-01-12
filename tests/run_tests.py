@@ -3,7 +3,7 @@
 import os
 import sys
 import pytest
-import coverage
+from coverage.control import Coverage
 import argparse
 from typing import List, Optional
 
@@ -26,7 +26,7 @@ def run_tests(test_paths: Optional[List[str]] = None,
     """
     if coverage_enabled:
         # Start coverage tracking
-        cov = coverage.Coverage(
+        cov = Coverage(
             branch=True,
             source=['src'],
             omit=[
