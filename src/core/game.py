@@ -53,6 +53,7 @@ class Game:
         self.entities = []
         self.bullets = []
         self.asteroids = []
+        self.particles = []  # Add particle list
         
         # Initialize state management (but don't set state yet)
         self.state_manager = StateManager(self)
@@ -85,6 +86,13 @@ class Game:
         """Set current score."""
         self.scoring.current_score = value
     
+    def new_game(self):
+        """Start a new game."""
+        self.reset_game()
+        self.state_manager.change_state(GameState.PLAYING)
+        self.spawn_ship()
+        self.spawn_asteroid_wave()
+    
     def reset_game(self):
         """Reset the game state."""
         print("Resetting game...")  # Debug info
@@ -92,69 +100,84 @@ class Game:
         # Clear entities
         self.entities.clear()
         self.asteroids.clear()
-        self.bullets.clear()  # Clear bullets
+        self.bullets.clear()
+        self.particles.clear()
         
         # Reset game properties
         self.level = 1
         self.lives = STARTING_LIVES
-        self.scoring.reset()  # Use self.scoring instead of self.scoring_system
-        
-        # Create player ship
-        self.ship = Ship(self)
-        self.entities.append(self.ship)
-        print(f"Ship created: {self.ship}")  # Debug info
-        
-        # Spawn initial asteroids
-        self.spawn_asteroid_wave()
-        
-        print("Game reset complete")  # Debug info
+        self.scoring.reset()
+        self.ship = None
+    
+    def spawn_ship(self):
+        """Spawn the player's ship."""
+        if self.ship is None:
+            self.ship = Ship(self.width // 2, self.height // 2)
+            self.add_entity(self.ship)
     
     def spawn_asteroid_wave(self):
-        """Spawn a wave of asteroids based on current level."""
-        if not self.ship:
-            return
-            
-        ship_transform = self.ship.get_component('transform')
-        if not ship_transform:
-            return
-            
-        num_asteroids = min(3 + self.level, 8)  # Cap at 8 asteroids
-        
+        """Spawn a wave of asteroids."""
+        num_asteroids = 4 + (self.level - 1)  # Increase with level
         for _ in range(num_asteroids):
-            # Try to find a valid spawn position
-            for attempt in range(10):  # Limit attempts to prevent infinite loop
-                asteroid = Asteroid.spawn_random(self, ship_transform.position)
-                transform = asteroid.get_component('transform')
-                if not transform:
-                    continue
-                    
-                # Check distance from other asteroids
-                position = pygame.Vector2(transform.position)
-                collision = asteroid.get_component('collision')
-                if not collision:
-                    continue
-                    
-                # Check if too close to other asteroids
-                too_close = False
-                for other_asteroid in self.asteroids:
-                    other_collision = other_asteroid.get_component('collision')
-                    if not other_collision:
-                        continue
-                        
-                    other_pos = other_asteroid.get_component('transform').position
-                    min_distance = (collision.radius + other_collision.radius) * 1.5  # 50% buffer
-                    if (pygame.Vector2(position) - pygame.Vector2(other_pos)).length() < min_distance:
-                        too_close = True
-                        break
-                
-                if not too_close:
-                    self.asteroids.append(asteroid)
-                    self.entities.append(asteroid)
-                    print(f"Spawned asteroid at {position}")  # Debug info
-                    break
-                else:
-                    # Remove invalid asteroid
-                    del asteroid
+            # Choose spawn point on the edge of the screen
+            if random.random() < 0.5:
+                # Spawn on left/right edge
+                x = 0 if random.random() < 0.5 else self.width
+                y = random.uniform(0, self.height)
+            else:
+                # Spawn on top/bottom edge
+                x = random.uniform(0, self.width)
+                y = 0 if random.random() < 0.5 else self.height
+            
+            asteroid = Asteroid(x, y)
+            self.add_entity(asteroid)
+            self.asteroids.append(asteroid)
+    
+    def pause(self):
+        """Pause the game."""
+        if self.state == GameState.PLAYING:
+            self.state_manager.change_state(GameState.PAUSED)
+    
+    def resume(self):
+        """Resume the game."""
+        if self.state == GameState.PAUSED:
+            self.state_manager.change_state(GameState.PLAYING)
+    
+    def return_to_menu(self):
+        """Return to the main menu."""
+        self.reset_game()
+        self.state_manager.change_state(GameState.MAIN_MENU)
+    
+    def lose_life(self):
+        """Handle losing a life."""
+        self.lives -= 1
+        if self.lives <= 0:
+            self.state_manager.change_state(GameState.GAME_OVER)
+        else:
+            self.respawn_timer = SHIP_INVULNERABLE_TIME
+            self.spawn_ship()
+    
+    def toggle_control_scheme(self):
+        """Toggle between arrow keys and WASD controls."""
+        current = self.settings['controls']
+        self.settings['controls'] = 'wasd' if current == 'arrows' else 'arrows'
+    
+    def create_explosion(self, x, y):
+        """Create an explosion particle effect."""
+        num_particles = random.randint(8, 12)
+        for _ in range(num_particles):
+            angle = random.uniform(0, 2 * math.pi)
+            speed = random.uniform(50, 150)
+            velocity = np.array([
+                speed * math.cos(angle),
+                speed * math.sin(angle)
+            ])
+            self.particles.append({
+                'position': np.array([x, y]),
+                'velocity': velocity,
+                'lifetime': random.uniform(0.5, 1.0),
+                'color': (255, 255, 255)
+            })
     
     def update(self, dt):
         """Update game state."""
