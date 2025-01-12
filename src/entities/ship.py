@@ -72,53 +72,50 @@ class Ship(Entity):
         components = []
         try:
             # Transform component for position and movement
-            transform = self._registry.create_component('TransformComponent', self)
+            transform = TransformComponent(self)
             transform.position = Vector2(self.game.width / 2, self.game.height / 2)
             components.append(transform)
             self._initialized_components.add(TransformComponent)
             
             # Render component for drawing
-            render = self._registry.create_component('RenderComponent', self)
+            render = RenderComponent(self)
             render.vertices = [(0, -20.0), (-10.0, 10.0), (10.0, 10.0)]
             render.color = (255, 255, 255)
             components.append(render)
             self._initialized_components.add(RenderComponent)
             
             # Physics component for thrust and momentum
-            physics = self._registry.create_component('PhysicsComponent', self)
+            physics = PhysicsComponent(self)
             physics.max_speed = SHIP_MAX_SPEED
             physics.friction = SHIP_FRICTION
             components.append(physics)
             self._initialized_components.add(PhysicsComponent)
             
             # Collision component for hit detection
-            collision = self._registry.create_component('CollisionComponent', self, radius=15)
+            collision = CollisionComponent(self, radius=15)
             components.append(collision)
             self._initialized_components.add(CollisionComponent)
             
             # Screen wrap component
-            screen_wrap = self._registry.create_component('ScreenWrapComponent', self, 
-                screen_size=(self.game.width, self.game.height))
+            screen_wrap = ScreenWrapComponent(self, screen_size=(self.game.width, self.game.height))
             components.append(screen_wrap)
             self._initialized_components.add(ScreenWrapComponent)
             
             # Effects component for visual effects
-            effects = self._registry.create_component('EffectComponent', self)
+            effects = EffectComponent(self)
             self._init_thrust_effect(effects)
             components.append(effects)
             self._initialized_components.add(EffectComponent)
             
             # Input component for controls
-            input_component = self._registry.create_component('InputComponent', self)
+            input_component = InputComponent(self)
             self.update_controls()
             components.append(input_component)
             self._initialized_components.add(InputComponent)
             
             # Add all components to entity
-            self.components.extend(components)
-            
-            # Initialize the entity after all components are added
-            self.initialize()
+            for component in components:
+                self.components[component.__class__.__name__] = component
             
         except Exception as e:
             # Clean up any components that were created
@@ -126,7 +123,7 @@ class Ship(Entity):
                 if hasattr(component, 'destroy'):
                     component.destroy()
             self._initialized_components.clear()
-            raise RuntimeError(f"Missing required components: {e}")
+            raise RuntimeError(f"Failed to initialize components: {e}")
             
     def _validate_components(self) -> None:
         """Validate that all required components are initialized.
@@ -303,3 +300,12 @@ class Ship(Entity):
             True if ship is invulnerable
         """
         return self._invulnerable_timer > 0 
+        
+    def destroy(self) -> None:
+        """Clean up ship resources."""
+        # Clean up components
+        for component in self.components.values():
+            if hasattr(component, 'destroy'):
+                component.destroy()
+        self.components.clear()
+        self._initialized_components.clear() 

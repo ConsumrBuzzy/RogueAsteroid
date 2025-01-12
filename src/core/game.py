@@ -95,13 +95,15 @@ class Game:
             registry = ComponentRegistry()
             
             # Register all component types
-            from .components.transform import TransformComponent
+            from .components.base import (
+                TransformComponent,
+                RenderComponent,
+                CollisionComponent,
+                InputComponent,
+                ScreenWrapComponent
+            )
             from .components.physics import PhysicsComponent
-            from .components.render import RenderComponent
-            from .components.collision import CollisionComponent
-            from .components.input import InputComponent
             from .components.effect import EffectComponent
-            from .components.screen_wrap import ScreenWrapComponent
             from .components.health import HealthComponent
             from .components.timer import TimerComponent
             from .components.score import ScoreComponent
