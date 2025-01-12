@@ -1,70 +1,55 @@
 #!/usr/bin/env python3
-"""Test runner for RogueAsteroid game."""
+"""
+Test runner for RogueAsteroid
+Supports running tests by category and generating coverage reports
+"""
+
 import sys
-import os
 import pytest
-import pygame
+import argparse
+from pathlib import Path
 
-def init_pygame():
-    """Initialize pygame and required subsystems."""
-    try:
-        pygame.init()
-        if not pygame.font.get_init():
-            pygame.font.init()
-        if not pygame.display.get_init():
-            pygame.display.init()
-        print("Pygame initialized successfully")
-        return True
-    except Exception as e:
-        print(f"Error initializing pygame: {e}")
-        return False
+def parse_args():
+    parser = argparse.ArgumentParser(description='Run RogueAsteroid tests')
+    parser.add_argument('--category', '-c', choices=['unit', 'engine', 'game', 'ui', 'integration', 'all'],
+                      default='all', help='Test category to run')
+    parser.add_argument('--coverage', action='store_true', help='Generate coverage report')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
+    return parser.parse_args()
 
-def run_tests():
-    """Run all test suites."""
-    try:
-        # Initialize pygame first
-        if not init_pygame():
-            print("Failed to initialize pygame, aborting tests")
-            return False
-            
-        # Add src directory to Python path
-        src_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src')
-        if src_path not in sys.path:
-            sys.path.insert(0, src_path)
-            
-        # Run test suites
-        test_files = [
-            'test_game_state.py',
-            'test_scoring.py',
-            'test_particles.py',
-            'test_menu.py',
-            'test_collision.py'
-        ]
-        
-        args = [
-            '-v',  # Verbose output
-            '--tb=short',  # Shorter traceback format
-            '--capture=no'  # Show print statements
-        ]
-        
-        # Add test files to args
-        args.extend([os.path.join('tests', f) for f in test_files])
-        
-        # Run pytest
-        result = pytest.main(args)
-        
-        # Clean up pygame
-        pygame.quit()
-        
-        return result == 0
-        
-    except Exception as e:
-        print(f"Error running tests: {e}")
-        return False
-    finally:
-        # Ensure pygame is quit even if there's an error
-        pygame.quit()
+def run_tests(category='all', coverage=False, verbose=False):
+    """Run tests based on category and options"""
+    test_path = Path(__file__).parent
+    
+    # Build pytest arguments
+    pytest_args = []
+    
+    # Add category marker if not 'all'
+    if category != 'all':
+        pytest_args.extend(['-m', category])
+    
+    # Add coverage if requested
+    if coverage:
+        pytest_args.extend(['--cov=src', '--cov-report=html', '--cov-report=term'])
+    
+    # Add verbosity
+    if verbose:
+        pytest_args.append('-v')
+    
+    # Add test path
+    pytest_args.append(str(test_path))
+    
+    # Run tests
+    return pytest.main(pytest_args)
+
+def main():
+    args = parse_args()
+    result = run_tests(
+        category=args.category,
+        coverage=args.coverage,
+        verbose=args.verbose
+    )
+    sys.exit(result)
 
 if __name__ == '__main__':
-    success = run_tests()
-    sys.exit(0 if success else 1) 
+    main() 
