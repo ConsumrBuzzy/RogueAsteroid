@@ -163,15 +163,14 @@ class Ship(Entity):
             effects: The effects component to initialize
         """
         # Set up thrust particles
-        effects.add_emitter(
-            'thrust',
-            rate=30,
-            lifetime=0.5,
-            speed_range=(50, 100),
-            size_range=(2, 4),
-            color=(255, 100, 0),
-            spread=15
-        )
+        effects.add_effect_template('thrust', {
+            'count': 10,
+            'speed_range': (50, 100),
+            'angle_spread': 30,
+            'lifetime_range': (0.2, 0.4),
+            'size_range': (1, 2),
+            'colors': [(255, 200, 50), (255, 100, 0), (200, 50, 0)]
+        })
         
     def update_controls(self) -> None:
         """Update the ship's control mappings."""
