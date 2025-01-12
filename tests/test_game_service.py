@@ -16,6 +16,7 @@ class MockStateService:
         self.is_ready = lambda: True
         self.change_state = self._change_state
         self.get_current_state = lambda: self.current_state
+        self.update = MagicMock()
         
     def _change_state(self, new_state):
         """Change the current state."""
@@ -25,10 +26,12 @@ class MockEventManager:
     def __init__(self):
         self.subscribe = MagicMock()
         self.publish = MagicMock()
+        self.process_events = MagicMock()
 
 class MockResourceManager:
     def __init__(self):
         self.preload_resources = MagicMock()
+        self.update = MagicMock()
 
 class MockPhysicsService:
     def __init__(self):
@@ -43,6 +46,7 @@ class MockRenderService:
         self.clear = MagicMock()
         self.add_to_layer = MagicMock()
         self.remove_from_layer = MagicMock()
+        self.update = MagicMock()
 
 class MockCollisionService:
     def __init__(self):
@@ -74,6 +78,7 @@ class MockInputService:
 class MockHighScoreService:
     def __init__(self):
         self.add_score = MagicMock()
+        self.update = MagicMock()
 
 class MockAchievementService:
     def __init__(self):
@@ -181,16 +186,16 @@ class TestGameService:
         assert len(game_service.entities) == 0
         assert len(game_service.asteroids) == 0
         assert len(game_service.bullets) == 0
-        assert game_service.player_ship is None 
-
+        assert game_service.player_ship is None
+        
     def test_spawn_player_ship(self, game_service):
         """Test player ship spawning."""
         # Mock the ship creation
         mock_ship = MagicMock()
         game_service._entity_factory.create_ship.return_value = mock_ship
         
-        # Spawn the ship
-        game_service._spawn_player_ship()
+        # Trigger game start to spawn ship
+        game_service._on_game_start()
         
         # Verify ship was created and registered
         game_service._entity_factory.create_ship.assert_called_once()
@@ -200,7 +205,7 @@ class TestGameService:
         game_service._collision_service.register_entity.assert_called_with(mock_ship)
         game_service._render_service.add_to_layer.assert_called_with('game', mock_ship)
         
-    def test_spawn_asteroids(self, game_service):
+    def test_spawn_asteroids(self, game_service, monkeypatch):
         """Test asteroid spawning."""
         # Mock the ship and asteroid creation
         mock_ship = MagicMock()
@@ -208,14 +213,18 @@ class TestGameService:
         game_service.player_ship = mock_ship
         
         mock_asteroid = MagicMock()
-        game_service._entity_factory.create_asteroid.return_value = mock_asteroid
+        
+        # Mock the Asteroid.spawn_random static method
+        def mock_spawn_random(game, player_pos):
+            return mock_asteroid
+            
+        monkeypatch.setattr("src.entities.asteroid.Asteroid.spawn_random", mock_spawn_random)
         
         # Spawn asteroids
         count = 3
         game_service._spawn_asteroids(count)
         
         # Verify asteroids were created and registered
-        assert game_service._entity_factory.create_asteroid.call_count == count
         assert len(game_service.asteroids) == count
         assert mock_asteroid in game_service.entities
         assert game_service._physics_service.register_entity.call_count >= count
@@ -234,7 +243,7 @@ class TestGameService:
         assert game_service._state_service.get_current_state() == GameState.GAME_OVER
         game_service._high_score_service.add_score.assert_called_with(1000)
         
-    def test_level_complete(self, game_service):
+    def test_level_complete(self, game_service, monkeypatch):
         """Test level completion handling."""
         # Setup initial game state
         initial_level = game_service._level
@@ -244,19 +253,25 @@ class TestGameService:
         mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
         game_service.player_ship = mock_ship
         
+        # Mock asteroid spawning
+        mock_asteroid = MagicMock()
+        def mock_spawn_random(game, player_pos):
+            return mock_asteroid
+        monkeypatch.setattr("src.entities.asteroid.Asteroid.spawn_random", mock_spawn_random)
+        
         # Trigger level complete
         game_service._on_level_complete(level=initial_level)
         
         # Verify level progression
         assert game_service._level == initial_level + 1
-        # Verify more asteroids are spawned
-        assert game_service._entity_factory.create_asteroid.called
+        assert len(game_service.asteroids) > 0
         
     def test_update_game_state(self, game_service):
         """Test game state updates."""
         # Start the game
         game_service.start()
         game_service._state_service.current_state = GameState.PLAYING
+        game_service._paused = False
         
         # Update game state
         dt = 0.016  # 60 FPS
@@ -267,6 +282,7 @@ class TestGameService:
         game_service._physics_service.update.assert_called_with(dt)
         game_service._collision_service.update.assert_called_once()
         game_service._particle_service.update.assert_called_with(dt)
+        game_service._state_service.update.assert_called_with(dt)
         game_service._menu_service.update.assert_called_with(dt)
         
     def test_draw_game_state(self, game_service):
