@@ -183,8 +183,11 @@ class InputService:
                 
             # Check each mapped key
             for key, action in self._key_map.items():
+                # Skip invalid key codes (outside pygame's valid range)
+                if not isinstance(key, int) or key < 0 or key >= pygame.K_LAST:
+                    continue
+                    
                 if key >= len(keys):
-                    print(f"Warning: Invalid key code {key}")
                     continue
                     
                 if keys[key]:  # Key is currently held down

@@ -98,32 +98,30 @@ class Ship(Entity):
         # Get current control scheme
         controls = self.game.settings.get('controls', 'arrows')
         
-        # Set up keys based on control scheme
+        # Set up control scheme
         if controls == 'arrows':
-            # Regular arrow keys and numpad
-            thrust_keys = [pygame.K_UP, pygame.K_KP8]
-            reverse_keys = [pygame.K_DOWN, pygame.K_KP2]
-            left_keys = [pygame.K_LEFT, pygame.K_KP4]
-            right_keys = [pygame.K_RIGHT, pygame.K_KP6]
-        else:  # wasd
+            thrust_keys = [pygame.K_UP]
+            reverse_keys = [pygame.K_DOWN]
+            left_keys = [pygame.K_LEFT]
+            right_keys = [pygame.K_RIGHT]
+        else:  # WASD controls
             thrust_keys = [pygame.K_w]
             reverse_keys = [pygame.K_s]
             left_keys = [pygame.K_a]
             right_keys = [pygame.K_d]
-        
-        # Bind controls - each key in the key groups
-        for thrust_key in thrust_keys:
-            self.input_component.bind_key(thrust_key, self._apply_thrust, True)
-        for reverse_key in reverse_keys:
-            self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
-        for left_key in left_keys:
-            self.input_component.bind_key(left_key, self._rotate_left, True)
-        for right_key in right_keys:
-            self.input_component.bind_key(right_key, self._rotate_right, True)
             
-        # Bind shoot to both regular space and numpad enter with continuous=True
+        # Bind movement keys
+        for key in thrust_keys:
+            self.input_component.bind_key(key, self._apply_thrust, True)
+        for key in reverse_keys:
+            self.input_component.bind_key(key, self._apply_reverse_thrust, True)
+        for key in left_keys:
+            self.input_component.bind_key(key, self._rotate_left, True)
+        for key in right_keys:
+            self.input_component.bind_key(key, self._rotate_right, True)
+            
+        # Bind shoot to space only
         self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
-        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot, True)
         
         print(f"Controls updated to scheme: {controls}")  # Debug info
     
