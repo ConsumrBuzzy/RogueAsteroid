@@ -1,267 +1,146 @@
-"""Service management for game systems."""
-from typing import Dict, Optional, Type, TypeVar, Set
-import pygame
+"""Service management system for RogueAsteroid."""
+from typing import Dict, Type, Optional, List, Set
+import inspect
 
-# Service name constants
-SERVICE_SETTINGS = "settings"
-SERVICE_EVENTS = "events"
-SERVICE_RESOURCES = "resources"
-SERVICE_INPUT = "input"
-SERVICE_STATE = "state"
-SERVICE_RENDER = "render"
-SERVICE_UI = "ui"
-SERVICE_MENU = "menu"
-SERVICE_PHYSICS = "physics"
-SERVICE_COLLISION = "collision"
-SERVICE_PARTICLE = "particle"
-SERVICE_ENTITY_FACTORY = "entity_factory"
-SERVICE_HIGH_SCORE = "high_score"
-SERVICE_ACHIEVEMENT = "achievement"
-SERVICE_STATISTICS = "statistics"
-SERVICE_GAME = "game"
-
-# Import services
-from .settings_service import SettingsService
 from .event_manager_service import EventManagerService
-from .resource_manager_service import ResourceManagerService
 from .state_service import StateService
-from .menu_service import MenuService
-from .ui_service import UIService
-from .entity_factory_service import EntityFactoryService
-from .game_service import GameService
-from .achievement_service import AchievementService
-from .statistics_service import StatisticsService
+from .resource_manager_service import ResourceManagerService
 from .input_service import InputService
-from .physics_service import PhysicsService
 from .render_service import RenderService
-from .collision_service import CollisionService
+from .physics_service import PhysicsService
+from .entity_factory_service import EntityService
 from .particle_service import ParticleService
-from .high_score_service import HighScoreService
 from .audio_service import AudioService
-
-T = TypeVar('T')
+from .menu_service import MenuService
+from .game_service import GameService
+from .collision_service import CollisionService
+from .achievement_service import AchievementService
+from .high_score_service import HighScoreService
+from .statistics_service import StatisticsService
+from .settings_service import SettingsService
+from .logging_service import LoggingService
+from .ui_service import UIService
 
 class ServiceManager:
-    """Manager for game services.
+    """Manages game services and their dependencies."""
     
-    Provides:
-    - Service registration
-    - Service access
-    - Service lifecycle management
-    """
-    
-    _instance = None
-    
-    def __new__(cls):
-        """Create or return singleton instance."""
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
-        
     def __init__(self):
         """Initialize the service manager."""
-        if self._initialized:
-            return
-            
         self._services: Dict[str, object] = {}
-        self._dependencies: Dict[str, Set[str]] = {
-            SERVICE_MENU: {SERVICE_UI, SERVICE_STATE, SERVICE_INPUT},
-            SERVICE_GAME: {SERVICE_INPUT, SERVICE_PHYSICS, SERVICE_RENDER, SERVICE_COLLISION,
-                          SERVICE_PARTICLE, SERVICE_UI, SERVICE_STATE, SERVICE_MENU,
-                          SERVICE_HIGH_SCORE, SERVICE_ACHIEVEMENT, SERVICE_STATISTICS,
-                          SERVICE_EVENTS, SERVICE_RESOURCES, SERVICE_ENTITY_FACTORY},
-            SERVICE_HIGH_SCORE: {SERVICE_SETTINGS, SERVICE_EVENTS},
-            SERVICE_ACHIEVEMENT: {SERVICE_SETTINGS, SERVICE_EVENTS},
-            SERVICE_STATISTICS: {SERVICE_SETTINGS, SERVICE_EVENTS},
-            SERVICE_ENTITY_FACTORY: {SERVICE_PHYSICS, SERVICE_COLLISION, SERVICE_PARTICLE}
-        }
-        self._initialized = True
-        print("ServiceManager initialized")
-
-    def _validate_dependencies(self, service_name: str) -> None:
-        """Validate service dependencies are registered.
+        self._service_types: Dict[str, Type] = {}
+        self._initialization_order: List[Type] = []
+        
+    def register_service(self, name: str, service_type: Type) -> None:
+        """Register a new service.
         
         Args:
-            service_name: Service to validate
-            
+            name: Unique identifier for the service.
+            service_type: The class of the service to register.
+        
         Raises:
-            ValueError: If dependencies are missing
+            RuntimeError: If service initialization fails or dependencies are invalid.
         """
-        if service_name not in self._dependencies:
-            return
+        if name in self._services:
+            raise RuntimeError(f"Service {name} already registered")
             
-        missing = [dep for dep in self._dependencies[service_name] 
-                  if dep not in self._services]
-        if missing:
-            raise ValueError(f"Missing dependencies for {service_name}: {missing}")
-
-    def register_service(self, name: str, service: object) -> None:
-        """Register a service.
+        # Check dependencies before instantiation
+        dependencies = self._get_dependencies(service_type)
+        for dependency in dependencies:
+            if not any(isinstance(service, dependency) for service in self._services.values()):
+                raise RuntimeError(f"Service {name} requires {dependency.__name__} which is not registered")
         
-        Args:
-            name: Service name
-            service: Service instance
-            
-        Raises:
-            ValueError: If service name is empty or instance is None
-        """
-        if not name:
-            raise ValueError("Service name cannot be empty")
-        if service is None:
-            raise ValueError("Service instance cannot be None")
-            
-        # Validate dependencies before registration
-        self._validate_dependencies(name)
-            
-        self._services[name] = service
-        print(f"Registered service: {name}")
-        
-        # Special handling for StateService and EventManager
-        if name == SERVICE_STATE and hasattr(service, 'set_event_manager'):
-            event_manager = self.get_service(SERVICE_EVENTS)
-            if event_manager:
-                service.set_event_manager(event_manager)
-                print("Set event manager for state service")
-
-    def get_service(self, name: str) -> Optional[object]:
-        """Get a registered service by name.
-        
-        Args:
-            name: Name of the service to get
-            
-        Returns:
-            The service instance if found, None otherwise
-            
-        Raises:
-            ValueError: If service name is empty
-        """
-        if not name:
-            raise ValueError("Service name cannot be empty")
-        return self._services.get(name)
-
-    def init_services(self, screen: pygame.Surface) -> bool:
-        """Initialize all game services.
-        
-        Args:
-            screen: Pygame surface for rendering
-            
-        Returns:
-            True if initialization successful, False otherwise
-        """
         try:
-            # Level 1: Core services (no dependencies)
-            print("Initializing core services...")
-            settings = SettingsService()
-            self.register_service(SERVICE_SETTINGS, settings)
-            
-            events = EventManagerService()
-            self.register_service(SERVICE_EVENTS, events)
-            
-            state = StateService()
-            self.register_service(SERVICE_STATE, state)
-            
-            # Connect event manager to state service immediately
-            state.set_event_manager(events)
-            print("Connected event manager to state service")
-            
-            # Level 2: Resource services
-            print("Initializing resource services...")
-            resources = ResourceManagerService()
-            self.register_service(SERVICE_RESOURCES, resources)
-            
-            audio = AudioService()
-            self.register_service("audio", audio)
-            
-            # Level 3: Input and UI base
-            print("Initializing input and UI services...")
-            input_service = InputService()
-            self.register_service(SERVICE_INPUT, input_service)
-            
-            render = RenderService(screen)
-            self.register_service(SERVICE_RENDER, render)
-            
-            ui = UIService(screen)
-            self.register_service(SERVICE_UI, ui)
-            
-            # Level 4: Game systems
-            print("Initializing game systems...")
-            physics = PhysicsService(screen.get_width(), screen.get_height())
-            self.register_service(SERVICE_PHYSICS, physics)
-            
-            collision = CollisionService()
-            self.register_service(SERVICE_COLLISION, collision)
-            
-            particle = ParticleService(screen)
-            self.register_service(SERVICE_PARTICLE, particle)
-            
-            # Level 5: Entity system
-            print("Initializing entity system...")
-            entity_factory = EntityFactoryService(service_manager=self)
-            self.register_service(SERVICE_ENTITY_FACTORY, entity_factory)
-            
-            # Level 6: Game data services
-            print("Initializing data services...")
-            high_score = HighScoreService(settings, events)
-            self.register_service(SERVICE_HIGH_SCORE, high_score)
-            
-            achievements = AchievementService(settings, events)
-            self.register_service(SERVICE_ACHIEVEMENT, achievements)
-            
-            statistics = StatisticsService(settings, events)
-            self.register_service(SERVICE_STATISTICS, statistics)
-            
-            # Level 7: Menu system (depends on UI and State)
-            print("Initializing menu system...")
-            menu = MenuService(ui_service=ui, state_service=state, input_service=input_service)
-            self.register_service(SERVICE_MENU, menu)
-            
-            # Level 8: Game service (depends on everything)
-            print("Initializing game service...")
-            game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
-            self.register_service(SERVICE_GAME, game)
-            
-            # Verify core services are ready
-            if not state.is_ready():
-                raise RuntimeError("State service not ready after initialization")
-            
-            print("All services initialized successfully")
-            return True
+            # Create service instance
+            service = service_type()
+            self._services[name] = service
+            self._service_types[name] = service_type
+            self._initialization_order.append(service_type)
             
         except Exception as e:
-            print(f"Error initializing services: {e}")
-            self.cleanup()
-            return False
-
-    def cleanup(self) -> None:
-        """Clean up all services.
+            raise RuntimeError(f"Failed to initialize service {name}: {str(e)}")
+            
+    def get_service(self, service_type: Type) -> Optional[object]:
+        """Get a service instance by type.
         
-        Ensures each service is cleaned up properly, even if errors occur.
-        Services are cleaned up in reverse order of initialization.
+        Args:
+            service_type: The type of service to retrieve.
+            
+        Returns:
+            The service instance if found, None otherwise.
         """
-        cleanup_errors = []
-        services = list(self._services.items())
+        for service in self._services.values():
+            if isinstance(service, service_type):
+                return service
+        return None
         
-        # Clean up in reverse order of initialization
-        for name, service in reversed(services):
-            try:
-                if hasattr(service, "cleanup"):
+    def cleanup(self) -> None:
+        """Clean up all services in reverse initialization order."""
+        # Create a list of cleanup errors
+        cleanup_errors = []
+        
+        # Clean up services in reverse order
+        for service_type in reversed(self._initialization_order):
+            service = self.get_service(service_type)
+            if service and hasattr(service, 'cleanup'):
+                try:
                     service.cleanup()
-                print(f"Cleaned up {name} service")
-            except Exception as e:
-                error_msg = f"Error cleaning up {name} service: {e}"
-                print(error_msg)
-                cleanup_errors.append(error_msg)
-                # Continue cleanup despite errors
-                continue
-                
-        # Clear service registry
+                except Exception as e:
+                    cleanup_errors.append(f"Error cleaning up {service_type.__name__}: {str(e)}")
+        
+        # Clear service collections
         self._services.clear()
+        self._service_types.clear()
+        self._initialization_order.clear()
         
         # Report any cleanup errors
         if cleanup_errors:
-            print("\nService cleanup completed with errors:")
+            print("Errors during service cleanup:")
             for error in cleanup_errors:
-                print(f"- {error}")
-        else:
-            print("All services cleaned up successfully") 
+                print(f"  {error}")
+                
+    def _get_dependencies(self, service_type: Type) -> Set[Type]:
+        """Get the service dependencies for a service type.
+        
+        Args:
+            service_type: The service class to check for dependencies.
+            
+        Returns:
+            A set of service types that this service depends on.
+        """
+        dependencies = set()
+        
+        # Check constructor parameters
+        if hasattr(service_type, '__init__'):
+            sig = inspect.signature(service_type.__init__)
+            for param in sig.parameters.values():
+                if param.annotation != inspect.Parameter.empty:
+                    # Check if parameter type is a service
+                    if inspect.isclass(param.annotation) and any(
+                        issubclass(param.annotation, base) 
+                        for base in [EventManagerService, StateService, ResourceManagerService]
+                    ):
+                        dependencies.add(param.annotation)
+        
+        return dependencies
+
+__all__ = [
+    'ServiceManager',
+    'EventManagerService',
+    'StateService',
+    'ResourceManagerService',
+    'InputService',
+    'RenderService',
+    'PhysicsService',
+    'EntityService',
+    'ParticleService',
+    'AudioService',
+    'MenuService',
+    'GameService',
+    'CollisionService',
+    'AchievementService',
+    'HighScoreService',
+    'StatisticsService',
+    'SettingsService',
+    'LoggingService',
+    'UIService'
+] 
