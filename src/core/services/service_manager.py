@@ -35,9 +35,12 @@ class ServiceManager:
             
         # Check dependencies before instantiation
         dependencies = self._get_dependencies(service_type)
+        dependency_instances = {}
         for dependency in dependencies:
-            if not any(isinstance(service, dependency) for service in self._services.values()):
+            service = self.get_service(dependency)
+            if not service:
                 raise RuntimeError(f"Service {name} requires {dependency.__name__} which is not registered")
+            dependency_instances[dependency.__name__.lower()] = service
         
         try:
             # Create service instance
@@ -46,10 +49,20 @@ class ServiceManager:
             else:
                 # Pass game instance if service constructor accepts it
                 sig = inspect.signature(service_type.__init__)
+                params = {}
+                
+                # Add game parameter if needed
                 if 'game' in sig.parameters:
-                    service = service_type(game=self.game)
-                else:
-                    service = service_type()
+                    params['game'] = self.game
+                    
+                # Add dependency parameters
+                for param_name, param in sig.parameters.items():
+                    if param_name in dependency_instances:
+                        params[param_name] = dependency_instances[param_name]
+                    elif param.annotation in dependencies:
+                        params[param_name] = self.get_service(param.annotation)
+                
+                service = service_type(**params)
                 
             self._services[name] = service
             self._service_types[name] = service_type if isinstance(service_type, type) else type(service)
