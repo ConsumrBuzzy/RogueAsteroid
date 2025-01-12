@@ -139,19 +139,19 @@ class ServiceManager:
             entity_factory = EntityFactoryService(service_manager=self)
             self.register_service("entity_factory", entity_factory)
             
-            # Game service (depends on everything)
-            game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
-            self.register_service("game", game)
-            
             # Data services (depend on settings and events)
             high_score = HighScoreService(settings, events)
             self.register_service("high_score", high_score)
             
             achievements = AchievementService(settings, events)
-            self.register_service("achievements", achievements)
+            self.register_service("achievement", achievements)
             
             statistics = StatisticsService(settings, events)
             self.register_service("statistics", statistics)
+            
+            # Game service (depends on everything)
+            game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
+            self.register_service("game", game)
             
             print("All services initialized")
             return True
