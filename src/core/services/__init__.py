@@ -18,6 +18,7 @@ from .statistics_service import StatisticsService
 from .entity_factory_service import EntityFactoryService
 from .event_manager_service import EventManagerService
 from .resource_manager_service import ResourceManagerService
+from .audio_service import AudioService
 
 class ServiceManager:
     """Manages all game services."""
@@ -47,31 +48,34 @@ class ServiceManager:
             screen: Pygame surface to render to
             settings: Game settings
         """
-        # Initialize system services first
+        # Initialize system services first (no dependencies)
         self._services['settings'] = SettingsService()
         self._services['events'] = EventManagerService()
         self._services['resources'] = ResourceManagerService()
+        self._services['audio'] = AudioService()
         
-        # Initialize core services
+        # Initialize core services (depend on system services)
         self._services['state'] = StateService()
         self._services['input'] = InputService()
         self._services['entity_factory'] = EntityFactoryService()
         
-        # Initialize rendering and graphics services
+        # Initialize rendering services (depend on resources)
         self._services['render'] = RenderService(screen)
         self._services['particle'] = ParticleService(screen)
         self._services['ui'] = UIService(screen)
         
-        # Initialize gameplay services
+        # Initialize gameplay services (depend on core and rendering)
         self._services['physics'] = PhysicsService(settings['window']['width'], 
                                                  settings['window']['height'])
         self._services['collision'] = CollisionService()
         self._services['menu'] = MenuService()
+        
+        # Initialize data services (depend on settings and events)
         self._services['high_score'] = HighScoreService()
         self._services['achievement'] = AchievementService()
         self._services['statistics'] = StatisticsService()
         
-        # Initialize game service last as it depends on others
+        # Initialize game service last (depends on all others)
         self._services['game'] = GameService(screen, settings, self)
         
         print("All services initialized")
@@ -91,12 +95,22 @@ class ServiceManager:
         """Clean up all services."""
         # Clean up in reverse dependency order
         cleanup_order = [
-            'game',
+            'game',  # Game service first (depends on all others)
+            
+            # Data services
             'statistics', 'achievement', 'high_score',
+            
+            # Gameplay services
             'menu', 'collision', 'physics',
+            
+            # Rendering services
             'ui', 'particle', 'render',
+            
+            # Core services
             'entity_factory', 'input', 'state',
-            'resources', 'events', 'settings'
+            
+            # System services last
+            'audio', 'resources', 'events', 'settings'
         ]
         
         for service_name in cleanup_order:
