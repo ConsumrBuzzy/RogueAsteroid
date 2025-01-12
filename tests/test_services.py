@@ -3,6 +3,8 @@ import pytest
 from typing import Optional
 
 from src.core.services.service_manager import ServiceManager
+from src.core.services.state_service import StateService
+from src.core.state.game_states import GameState
 
 # Mock services for testing
 class MockService:
@@ -34,6 +36,11 @@ def mock_game():
 def service_manager(mock_game):
     """Create a service manager instance."""
     return ServiceManager(game=mock_game)
+
+@pytest.fixture
+def state_service():
+    """Create a state service instance."""
+    return StateService()
 
 @pytest.mark.unit
 class TestServiceManager:
@@ -83,3 +90,47 @@ class TestServiceManager:
         service_manager.register_service("mock", MockService)
         service_manager.cleanup()
         assert service_manager.get_service(MockService) is None 
+
+@pytest.mark.unit
+class TestStateService:
+    """Test cases for StateService."""
+    
+    def test_state_service_init(self, state_service):
+        """Test state service initialization."""
+        assert state_service is not None
+        assert state_service.is_ready()
+        assert state_service.get_current_state() == GameState.MAIN_MENU
+        
+    def test_state_transitions(self, state_service):
+        """Test state transitions."""
+        # Test valid transitions
+        state_service.change_state(GameState.PLAYING)
+        assert state_service.get_current_state() == GameState.PLAYING
+        
+        state_service.change_state(GameState.PAUSED)
+        assert state_service.get_current_state() == GameState.PAUSED
+        assert state_service.get_previous_state() == GameState.PLAYING
+        
+    def test_invalid_state_transition(self, state_service):
+        """Test that invalid state transitions raise an error."""
+        # Can't go directly from MAIN_MENU to GAME_OVER
+        with pytest.raises(RuntimeError):
+            state_service.change_state(GameState.GAME_OVER)
+            
+    def test_state_handlers(self, state_service):
+        """Test state handler registration and execution."""
+        handler_called = False
+        
+        def test_handler():
+            nonlocal handler_called
+            handler_called = True
+            
+        state_service.register_state_handler(GameState.PLAYING, test_handler)
+        state_service.change_state(GameState.PLAYING)
+        assert handler_called
+        
+    def test_state_service_singleton(self):
+        """Test that StateService is a singleton."""
+        service1 = StateService()
+        service2 = StateService()
+        assert service1 is service2 
