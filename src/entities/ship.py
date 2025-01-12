@@ -21,7 +21,7 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     WHITE,
     MAX_BULLETS,
-    SHIP_INVULNERABLE_TIME
+    INVULNERABILITY_TIME
 )
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
@@ -263,15 +263,69 @@ class Ship(Entity):
             self.game.entities.append(particle)
     
     def update(self, dt: float) -> None:
-        """Update ship state."""
+        """Update ship state.
+        
+        Args:
+            dt: Time delta in seconds
+        """
         super().update(dt)
         
-        # Update shoot cooldown
-        self.shoot_timer = max(0.0, self.shoot_timer - dt)
-        
-        # Update invulnerability
+        # Update timers
+        if self.shoot_timer > 0:
+            self.shoot_timer -= dt
         if self.invulnerable_timer > 0:
-            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            self.invulnerable_timer -= dt
+            
+            # Flash the ship while invulnerable
+            render = self.get_component('render')
+            if render:
+                render.visible = int(self.invulnerable_timer * 10) % 2 == 0  # Flash 5 times per second
+        else:
+            # Ensure ship is visible when not invulnerable
+            render = self.get_component('render')
+            if render:
+                render.visible = True
+        
+        # Create thrust particles if thrusting
+        input_component = self.get_component('input')
+        if input_component:
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
+            if thrust_key in input_component.active_keys:
+                self._create_thrust_particles()
+        
+        # Deactivate thrust effect if not thrusting
+        effects = self.get_component('effects')
+        if effects and input_component:
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
+            effects.set_effect_active('thrust', thrust_key in input_component.active_keys)
+    
+    def _init_thrust_effect(self, effects: EffectComponent) -> None:
+        """Initialize thrust particle effect."""
+        # Thrust effect is built into EffectComponent now
+        print("Thrust effect initialized")  # Debug info
+
+    @property
+    def invulnerable(self):
+        """Check if ship is currently invulnerable."""
+        return self.invulnerable_timer > 0
+
+    def make_invulnerable(self):
+        """Make ship temporarily invulnerable."""
+        self.invulnerable_timer = INVULNERABILITY_TIME  # Changed from SHIP_INVULNERABLE_TIME
+
+    def update(self, dt: float) -> None:
+        """Update ship state.
+        
+        Args:
+            dt: Time delta in seconds
+        """
+        # Update timers
+        if self.shoot_timer > 0:
+            self.shoot_timer -= dt
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer -= dt
             
             # Flash the ship while invulnerable
             render = self.get_component('render')
