@@ -52,97 +52,90 @@ class RenderService:
         
         Args:
             name: Layer name
-            order: Render order
+            order: Render order (lower = earlier)
         """
         self._layers[name] = RenderLayer(name, order)
         self._needs_sort = True
         
     def _ensure_sorted_layers(self) -> None:
-        """Ensure layers are sorted by order."""
-        if self._needs_sort or self._sorted_layers is None:
-            self._sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
+        """Sort layers by render order if needed."""
+        if self._needs_sort:
+            self._sorted_layers = sorted(
+                self._layers.values(), 
+                key=lambda x: x.order
+            )
             self._needs_sort = False
             
     def add_to_layer(self, layer_name: str, entity) -> None:
-        """Add an entity to a render layer.
+        """Add entity to render layer.
         
         Args:
             layer_name: Name of layer to add to
             entity: Entity to add
         """
-        if layer := self._layers.get(layer_name):
-            if entity not in layer.entities:
-                layer.entities.append(entity)
-                
+        if layer_name in self._layers:
+            self._layers[layer_name].entities.append(entity)
+            
     def remove_from_layer(self, layer_name: str, entity) -> None:
-        """Remove an entity from a render layer.
+        """Remove entity from render layer.
         
         Args:
             layer_name: Name of layer to remove from
             entity: Entity to remove
         """
-        if layer := self._layers.get(layer_name):
-            if entity in layer.entities:
-                layer.entities.remove(entity)
+        if layer_name in self._layers:
+            try:
+                self._layers[layer_name].entities.remove(entity)
+            except ValueError:
+                pass
                 
     def set_layer_visible(self, layer_name: str, visible: bool) -> None:
-        """Set visibility of a render layer.
+        """Set layer visibility.
         
         Args:
-            layer_name: Name of layer to modify
+            layer_name: Name of layer
             visible: Whether layer should be visible
         """
-        if layer := self._layers.get(layer_name):
-            layer.visible = visible
+        if layer_name in self._layers:
+            self._layers[layer_name].visible = visible
             
     def clear_layer(self, layer_name: str) -> None:
-        """Clear all entities from a render layer.
+        """Clear all entities from layer.
         
         Args:
             layer_name: Name of layer to clear
         """
-        if layer := self._layers.get(layer_name):
-            layer.entities.clear()
+        if layer_name in self._layers:
+            self._layers[layer_name].entities.clear()
             
     def draw(self) -> None:
         """Draw all visible layers in order."""
-        try:
-            # Clear screen
-            self._screen.fill((0, 0, 0))  # Black background
-            
-            # Ensure layers are sorted
-            self._ensure_sorted_layers()
-            
-            # Draw each visible layer
-            for layer in self._sorted_layers:
-                if layer.visible:
-                    for entity in layer.entities:
-                        try:
-                            if hasattr(entity, 'draw'):
-                                entity.draw(self._screen)
-                        except Exception as e:
-                            print(f"Error drawing entity in layer {layer.name}: {e}")
-                            continue  # Skip to next entity
-                            
-            # Update display
-            pygame.display.flip()
-            
-        except Exception as e:
-            print(f"Error in render service draw: {e}")
-            # Ensure screen is updated even if there's an error
-            try:
-                pygame.display.flip()
-            except:
-                pass  # Screen update failed, nothing more we can do
+        self._ensure_sorted_layers()
+        self._screen.fill((0, 0, 0))  # Clear screen
         
+        if not self._sorted_layers:
+            return
+            
+        for layer in self._sorted_layers:
+            if not layer.visible:
+                continue
+                
+            for entity in layer.entities:
+                if hasattr(entity, 'draw'):
+                    entity.draw(self._screen)
+                    
+    def present(self) -> None:
+        """Update the display with the current frame."""
+        pygame.display.flip()
+                    
     def clear(self) -> None:
-        """Clear all render layers."""
+        """Clear the screen."""
+        self._screen.fill((0, 0, 0))
+        
+    def cleanup(self) -> None:
+        """Clean up render service resources."""
         for layer in self._layers.values():
             layer.entities.clear()
-            
-    def cleanup(self) -> None:
-        """Clean up the service."""
-        self.clear()
         self._layers.clear()
         self._sorted_layers = None
         print("RenderService cleaned up") 
