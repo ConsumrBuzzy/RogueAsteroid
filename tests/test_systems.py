@@ -49,8 +49,16 @@ class TestScoreSystem:
     
     def test_high_score_tracking(self, game):
         """Test high score tracking"""
+        game.new_game()  # Start a new game first
+        game.scoring.reset()  # Reset scoring to ensure clean state
         game.scoring.add_points(10000)  # Add enough points to beat default high score
-        assert game.scoring.check_high_score()
+        assert game.scoring.check_high_score()  # Should be a high score since we reset
+        
+        # Add a high score and verify it was added
+        game.scoring.add_high_score("TEST", 1)
+        high_scores = game.scoring.get_high_scores()
+        assert len(high_scores) > 0
+        assert high_scores[0].score == 10000
         
     def test_score_reset(self, game):
         """Test score reset functionality"""
@@ -96,16 +104,23 @@ class TestParticleEffects:
     def test_thrust_particles(self, game):
         """Test thrust particle creation"""
         game.new_game()
+        assert game.ship is not None, "Ship should exist after new_game()"
+        
         initial_particles = len(game.particles)
         
         # Get input component and simulate thrust
         input_component = game.ship.get_component('input')
-        if input_component:
+        assert input_component is not None, "Ship should have input component"
+        
+        # Simulate thrusting for multiple frames to ensure particles are created
+        for _ in range(5):  # Simulate for 5 frames
             input_component.handle_keydown(pygame.K_UP)  # Simulate pressing UP key
             game.update(0.016)  # Update one frame
-            input_component.handle_keyup(pygame.K_UP)  # Release key
         
-        assert len(game.particles) > initial_particles
+        input_component.handle_keyup(pygame.K_UP)  # Release key
+        game.update(0.016)  # One more update
+        
+        assert len(game.particles) > initial_particles, "Thrusting should create particles"
     
     def test_explosion_particles(self, game):
         """Test explosion particle creation"""

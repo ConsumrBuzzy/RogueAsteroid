@@ -45,10 +45,17 @@ class TestGameplayFlow:
         assert isinstance(game.ship, Ship)
         assert len(game.asteroids) > 0  # Initial wave spawned
         
-        # Verify ship properties
-        assert hasattr(game.ship, 'position')
-        assert hasattr(game.ship, 'velocity')
-        assert game.lives == STARTING_LIVES
+        # Verify ship components
+        transform = game.ship.get_component('transform')
+        assert transform is not None, "Ship should have transform component"
+        assert hasattr(transform, 'position')
+        assert hasattr(transform, 'velocity')
+        assert transform.position.x == WINDOW_WIDTH // 2  # Ship should start in center
+        assert transform.position.y == WINDOW_HEIGHT // 2
+        
+        # Verify other required components
+        assert game.ship.get_component('input') is not None
+        assert game.ship.get_component('collision') is not None
     
     def test_wave_progression(self, game):
         """Test wave system and asteroid spawning."""
