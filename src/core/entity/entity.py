@@ -14,11 +14,17 @@ class Entity:
     - Lifecycle hooks
     - Unique identification
     - Debug support
+    - Game reference
     """
     
-    def __init__(self):
-        """Initialize the entity."""
+    def __init__(self, game):
+        """Initialize the entity.
+        
+        Args:
+            game: The game instance this entity belongs to
+        """
         self.id = str(uuid4())
+        self.game = game
         self._components: Dict[Type[Component], Component] = {}
         self._initialized = False
         self._enabled = True
