@@ -12,14 +12,33 @@
 5. Use DRY, SOLID, and KISS principles
 6. Use PEP8 for Python code
 7. Use PEP257 for docstrings
-8. Preserve existing code unless it's outdated, check first, then delete.
+8. Preserve existing code unless:
+   - It violates current design patterns
+   - It causes compatibility issues
+   - It has been explicitly marked for replacement
+   - It has been superseded by new functionality
 
 ## Documentation
 - PROJECT_CHARTER.md: Roles and methodology
 - GAME_DESIGN_DOCUMENT.md: Game specifications
 - DEVELOPMENT_LOG.md: Progress and tasks
 => All documentation in docs/
+   - Runtime logs in docs/logs/runtime/
+   - Debug logs in docs/logs/debug/
+   - Design docs in docs/design/
+   - API docs in docs/api/
 
 ## Version Control
-- Use [YYYY-MM-DD HH:MM] format
-- Use category tags: [DESIGN] [IMPL] [TEST] [TASK] [BUG] [FIX] [NOTE] [REVIEW] 
+- Use [YYYY-MM-DD HH:MM] format (24-hour time)
+- Use category tags:
+  [DESIGN]   - Design decisions and changes
+  [IMPL]     - Implementation of new features
+  [TEST]     - Testing related changes
+  [TASK]     - General development tasks
+  [BUG]      - Bug reports and tracking
+  [FIX]      - Bug fixes and corrections
+  [NOTE]     - General notes and documentation
+  [REVIEW]   - Code review and feedback
+  [PERF]     - Performance improvements
+  [REFACTOR] - Code restructuring
+  [CONFIG]   - Configuration changes 
