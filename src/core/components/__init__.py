@@ -1,6 +1,6 @@
 """Component system initialization."""
 from typing import Dict, Type, Any, Optional
-from src.core.entities.base import (
+from src.core.components.base import (
     Component,
     TransformComponent,
     RenderComponent,
