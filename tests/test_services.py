@@ -114,7 +114,7 @@ class TestStateService:
     def test_invalid_state_transition(self, state_service):
         """Test that invalid state transitions raise an error."""
         # Can't go directly from MAIN_MENU to GAME_OVER
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValueError):
             state_service.change_state(GameState.GAME_OVER)
             
     def test_state_handlers(self, state_service):
@@ -125,7 +125,7 @@ class TestStateService:
             nonlocal handler_called
             handler_called = True
             
-        state_service.register_state_handler(GameState.PLAYING, test_handler)
+        state_service.register_handler(GameState.PLAYING, test_handler)
         state_service.change_state(GameState.PLAYING)
         assert handler_called
         
