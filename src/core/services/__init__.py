@@ -231,3 +231,14 @@ class ServiceManager:
                 print(f"- {error}")
         else:
             print("All services cleaned up successfully") 
+
+    def get_service(self, name: str) -> Optional[object]:
+        """Get a registered service by name.
+        
+        Args:
+            name: Name of the service to get
+            
+        Returns:
+            The service instance if found, None otherwise
+        """
+        return self._services.get(name) 
