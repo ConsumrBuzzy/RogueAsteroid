@@ -126,7 +126,7 @@ class Ship(Entity):
                 if hasattr(component, 'destroy'):
                     component.destroy()
             self._initialized_components.clear()
-            raise RuntimeError(f"Failed to initialize components: {e}")
+            raise RuntimeError(f"Missing required components: {e}")
             
     def _validate_components(self) -> None:
         """Validate that all required components are initialized.
