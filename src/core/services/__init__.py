@@ -55,14 +55,20 @@ class ServiceManager:
             name: Service name
             service: Service instance
         """
+        if not name:
+            raise ValueError("Service name cannot be empty")
+        if service is None:
+            raise ValueError("Service instance cannot be None")
+            
         self._services[name] = service
         print(f"Registered service: {name}")
         
-    def get_service(self, name: str) -> Optional[object]:
+    def get_service(self, name: str, service_type: Optional[Type[T]] = None) -> Optional[T]:
         """Get a service by name.
         
         Args:
             name: Service name
+            service_type: Optional type to cast service to
             
         Returns:
             Service instance or None if not found
@@ -70,6 +76,15 @@ class ServiceManager:
         service = self._services.get(name)
         if service is None:
             print(f"Warning: Service '{name}' not found")
+            return None
+            
+        if service_type is not None:
+            try:
+                return service_type(service)
+            except (TypeError, ValueError) as e:
+                print(f"Warning: Could not cast service '{name}' to type {service_type.__name__}: {e}")
+                return None
+                
         return service
         
     def init_services(self, screen: pygame.Surface) -> bool:

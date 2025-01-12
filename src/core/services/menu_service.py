@@ -212,30 +212,3 @@ class MenuService:
         self.clear()
         self._menus.clear()
         print("MenuService cleaned up") 
-        
-    def draw(self, screen: pygame.Surface) -> None:
-        """Draw the menu on screen.
-        
-        Args:
-            screen: Pygame surface to render to
-        """
-        if self._current_menu:
-            # Draw menu title
-            self._ui_service.draw_text(
-                self._current_menu.title,
-                (400, 100),
-                font_size=48,
-                color=(255, 255, 255),
-                centered=True
-            )
-            
-            # Draw menu items
-            for item in self._current_menu.items:
-                color = (255, 165, 0) if item.selected else (255, 255, 255)
-                self._ui_service.draw_text(
-                    item.text,
-                    item.position,
-                    font_size=36,
-                    color=color,
-                    centered=True
-                ) 
