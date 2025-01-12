@@ -663,3 +663,19 @@ Next Steps: Test menu navigation with updated key bindings
 Focus Areas: Input System, Controls
 Major Changes: Control Scheme Separation
 Next Steps: Test game movement and menu navigation independently 
+
+[2025-01-11 21:55PM] [FIX] Component Initialization in Ship
+- Fixed component initialization in Ship class
+  - Changed from passing component types to creating instances
+  - Properly instantiating components with entity reference
+  - Fixed component position setting
+  - Ensures components are properly initialized before use
+
+Changes Made:
+1. Updated all component creation to instantiate first
+2. Fixed component addition sequence
+3. Improved component initialization clarity
+
+Focus Areas: Entity System, Component Architecture
+Major Changes: Component Initialization
+Next Steps: Test ship initialization and movement 
