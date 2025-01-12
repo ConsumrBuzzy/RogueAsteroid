@@ -41,51 +41,66 @@ class MenuItem:
             self.callback()
 
 class Menu:
-    """Menu containing multiple items."""
-    def __init__(self, title: str, items: List[MenuItem]):
+    """Base class for game menus."""
+    def __init__(self, title: str):
         """Initialize a menu.
         
         Args:
             title: Menu title
-            items: List of menu items
         """
         self.title = title
-        self.items = items
+        self.items: List[MenuItem] = []
         self._selected_index = 0
-        self.items[0].select()
         
+    def add_item(self, text: str, callback: Callable, position: Tuple[int, int]) -> None:
+        """Add an item to the menu.
+        
+        Args:
+            text: Display text
+            callback: Function to call when selected
+            position: (x, y) position on screen
+        """
+        item = MenuItem(text, callback, position)
+        self.items.append(item)
+        if len(self.items) == 1:
+            item.select()
+            
     def select_next(self) -> None:
         """Select the next menu item."""
+        if not self.items:
+            return
+            
         self.items[self._selected_index].deselect()
         self._selected_index = (self._selected_index + 1) % len(self.items)
         self.items[self._selected_index].select()
         
     def select_previous(self) -> None:
         """Select the previous menu item."""
+        if not self.items:
+            return
+            
         self.items[self._selected_index].deselect()
         self._selected_index = (self._selected_index - 1) % len(self.items)
         self.items[self._selected_index].select()
         
     def execute_selected(self) -> None:
         """Execute the currently selected item."""
-        self.items[self._selected_index].execute()
-        
-    def get_selected(self) -> MenuItem:
-        """Get the currently selected item.
-        
-        Returns:
-            Currently selected MenuItem
-        """
-        return self.items[self._selected_index]
+        if self.items:
+            self.items[self._selected_index].execute()
+            
+    def clear(self) -> None:
+        """Clear all menu items."""
+        self.items.clear()
+        self._selected_index = 0
 
 class MenuService:
-    """Service for game menu management.
+    """Service for managing game menus.
     
     Provides:
     - Menu creation and management
     - Menu navigation
-    - Menu state handling
     - Menu rendering
+    - Input handling
     """
     
     def __init__(self, ui_service: UIService):
@@ -97,85 +112,109 @@ class MenuService:
         self._ui_service = ui_service
         self._menus: Dict[GameState, Menu] = {}
         self._current_menu: Optional[Menu] = None
+        
+        # Create default menus
+        self._create_menus()
         print("MenuService initialized")
         
-    def create_menu(self, state: GameState, title: str, items: List[MenuItem]) -> None:
-        """Create a new menu for a game state.
+    def _create_menus(self) -> None:
+        """Create default game menus."""
+        # Main menu
+        main_menu = Menu("Main Menu")
+        main_menu.add_item("Start Game", lambda: self._change_state(GameState.PLAYING), (400, 200))
+        main_menu.add_item("High Scores", lambda: self._change_state(GameState.HIGH_SCORE), (400, 250))
+        main_menu.add_item("Options", lambda: self._change_state(GameState.OPTIONS), (400, 300))
+        main_menu.add_item("Quit", self._quit_game, (400, 350))
+        self._menus[GameState.MAIN_MENU] = main_menu
         
-        Args:
-            state: Game state this menu is for
-            title: Menu title
-            items: List of menu items
-        """
-        menu = Menu(title, items)
-        self._menus[state] = menu
-        print(f"Created menu for state {state.name}")
+        # Options menu
+        options_menu = Menu("Options")
+        options_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU), (400, 300))
+        self._menus[GameState.OPTIONS] = options_menu
         
-    def show_menu(self, state: GameState) -> None:
-        """Show the menu for a specific state.
+        # High score menu
+        high_score_menu = Menu("High Scores")
+        high_score_menu.add_item("Back", lambda: self._change_state(GameState.MAIN_MENU), (400, 400))
+        self._menus[GameState.HIGH_SCORE] = high_score_menu
+        
+        # Game over menu
+        game_over_menu = Menu("Game Over")
+        game_over_menu.add_item("Retry", lambda: self._change_state(GameState.PLAYING), (400, 300))
+        game_over_menu.add_item("Main Menu", lambda: self._change_state(GameState.MAIN_MENU), (400, 350))
+        self._menus[GameState.GAME_OVER] = game_over_menu
+        
+    def set_current_menu(self, state: GameState) -> None:
+        """Set the current menu based on game state.
         
         Args:
             state: Game state to show menu for
         """
-        if menu := self._menus.get(state):
-            self._current_menu = menu
-            self._update_ui()
-            print(f"Showing menu for state {state.name}")
-            
-    def hide_menu(self) -> None:
-        """Hide the current menu."""
-        self._current_menu = None
-        self._ui_service.clear()
-        print("Menu hidden")
+        self._current_menu = self._menus.get(state)
         
-    def handle_input(self, event: pygame.event.Event) -> None:
-        """Handle input for the current menu.
+    def navigate_up(self) -> None:
+        """Navigate to previous menu item."""
+        if self._current_menu:
+            self._current_menu.select_previous()
+            
+    def navigate_down(self) -> None:
+        """Navigate to next menu item."""
+        if self._current_menu:
+            self._current_menu.select_next()
+            
+    def select(self) -> None:
+        """Select current menu item."""
+        if self._current_menu:
+            self._current_menu.execute_selected()
+            
+    def update(self, dt: float) -> None:
+        """Update menu state.
         
         Args:
-            event: Pygame event to handle
+            dt: Delta time in seconds
         """
-        if not self._current_menu:
-            return
-            
-        if event.type == pygame.KEYDOWN:
-            if event.key in (pygame.K_UP, pygame.K_w):
-                self._current_menu.select_previous()
-                self._update_ui()
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                self._current_menu.select_next()
-                self._update_ui()
-            elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                self._current_menu.execute_selected()
-                
-    def _update_ui(self) -> None:
-        """Update the UI elements for the current menu."""
-        if not self._current_menu:
-            return
-            
-        self._ui_service.clear()
-        
-        # Add title
-        self._ui_service.add_element(
-            'menu_title',
-            self._current_menu.title,
-            (400, 100),  # Centered position
-            centered=True,
-            font_size=36
-        )
-        
-        # Add items
-        for i, item in enumerate(self._current_menu.items):
-            self._ui_service.add_element(
-                f'menu_item_{i}',
-                item.text,
-                item.position,
-                centered=True,
-                selected=item.selected
+        if self._current_menu:
+            # Draw menu title
+            self._ui_service.draw_text(
+                self._current_menu.title,
+                (400, 100),
+                font_size=48,
+                color=(255, 255, 255),
+                centered=True
             )
             
+            # Draw menu items
+            for item in self._current_menu.items:
+                color = (255, 165, 0) if item.selected else (255, 255, 255)
+                self._ui_service.draw_text(
+                    item.text,
+                    item.position,
+                    font_size=36,
+                    color=color,
+                    centered=True
+                )
+                
     def clear(self) -> None:
         """Clear all menus."""
-        self._menus.clear()
+        for menu in self._menus.values():
+            menu.clear()
         self._current_menu = None
-        self._ui_service.clear()
-        print("Menu service cleared") 
+        
+    def _change_state(self, state: GameState) -> None:
+        """Change game state.
+        
+        Args:
+            state: State to change to
+        """
+        from .state_service import StateService
+        state_service = StateService()
+        state_service.change_state(state)
+        
+    def _quit_game(self) -> None:
+        """Quit the game."""
+        pygame.event.post(pygame.event.Event(pygame.QUIT))
+        
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.clear()
+        self._menus.clear()
+        print("MenuService cleaned up") 

@@ -59,7 +59,6 @@ class GameService:
         """Start the game loop."""
         self._running = True
         self._event_manager.publish('game_start')
-        self._state_service.change_state(GameState.MAIN_MENU)
         print("Game loop started")
     
     def stop(self) -> None:
@@ -70,15 +69,19 @@ class GameService:
     
     def pause(self) -> None:
         """Pause the game."""
-        self._paused = True
-        self._event_manager.publish('game_pause')
-        print("Game paused")
+        if self._state_service.get_current_state() == GameState.PLAYING:
+            self._paused = True
+            self._state_service.change_state(GameState.PAUSED)
+            self._event_manager.publish('game_pause')
+            print("Game paused")
     
     def resume(self) -> None:
         """Resume the game."""
-        self._paused = False
-        self._event_manager.publish('game_resume')
-        print("Game resumed")
+        if self._state_service.get_current_state() == GameState.PAUSED:
+            self._paused = False
+            self._state_service.change_state(GameState.PLAYING)
+            self._event_manager.publish('game_resume')
+            print("Game resumed")
     
     def is_running(self) -> bool:
         """Check if game is running.
@@ -157,6 +160,7 @@ class GameService:
         """Handle game over event."""
         score = kwargs.get('score', 0)
         self._high_score_service.add_score(score)
+        self._state_service.change_state(GameState.GAME_OVER)
         print(f"Game over - score: {score}")
         
     def _on_level_complete(self, **kwargs) -> None:

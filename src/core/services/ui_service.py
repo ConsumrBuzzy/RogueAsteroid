@@ -1,103 +1,14 @@
-"""UI service for game-wide interface management."""
-from typing import List, Dict, Optional, Tuple, Union
+"""UI service for rendering UI elements."""
+from typing import Dict, Tuple, Optional
 import pygame
 
-class UIElement:
-    """Individual UI element with text and rendering properties."""
-    def __init__(self, 
-                 text: str,
-                 position: Tuple[int, int],
-                 color: Tuple[int, int, int] = (255, 255, 255),
-                 font_size: int = 24,
-                 centered: bool = False,
-                 visible: bool = True):
-        """Initialize a UI element.
-        
-        Args:
-            text: Text to display
-            position: (x, y) position on screen
-            color: RGB color tuple
-            font_size: Font size in pixels
-            centered: Whether to center text at position
-            visible: Initial visibility state
-        """
-        self.text = text
-        self.position = position
-        self.color = color
-        self.font_size = font_size
-        self.centered = centered
-        self.visible = visible
-        self._font: Optional[pygame.font.Font] = None
-        self._surface: Optional[pygame.Surface] = None
-        self._needs_update = True
-        
-    def _ensure_font(self) -> None:
-        """Ensure font is initialized."""
-        if self._font is None:
-            self._font = pygame.font.Font(None, self.font_size)
-            
-    def _update_surface(self) -> None:
-        """Update the cached text surface."""
-        self._ensure_font()
-        self._surface = self._font.render(self.text, True, self.color)
-        self._needs_update = False
-        
-    def set_text(self, text: str) -> None:
-        """Set new text for the element.
-        
-        Args:
-            text: New text to display
-        """
-        if self.text != text:
-            self.text = text
-            self._needs_update = True
-            
-    def set_color(self, color: Tuple[int, int, int]) -> None:
-        """Set new color for the element.
-        
-        Args:
-            color: New RGB color tuple
-        """
-        if self.color != color:
-            self.color = color
-            self._needs_update = True
-            
-    def set_visible(self, visible: bool) -> None:
-        """Set visibility of the element.
-        
-        Args:
-            visible: New visibility state
-        """
-        self.visible = visible
-        
-    def draw(self, screen: pygame.Surface) -> None:
-        """Draw the element on the screen.
-        
-        Args:
-            screen: Surface to draw on
-        """
-        if not self.visible:
-            return
-            
-        if self._needs_update or self._surface is None:
-            self._update_surface()
-            
-        if self._surface:
-            x, y = self.position
-            if self.centered:
-                x -= self._surface.get_width() // 2
-                y -= self._surface.get_height() // 2
-            screen.blit(self._surface, (x, y))
-
 class UIService:
-    """Service for game-wide UI management.
+    """Service for managing UI elements.
     
     Provides:
-    - UI element management
     - Text rendering
-    - Element positioning
-    - Visibility control
-    - Performance optimization
+    - UI element positioning
+    - Font management
     """
     
     def __init__(self, screen: pygame.Surface):
@@ -107,66 +18,53 @@ class UIService:
             screen: Pygame surface to render to
         """
         self._screen = screen
-        self._elements: Dict[str, UIElement] = {}
+        self._fonts: Dict[int, pygame.font.Font] = {}
         print("UIService initialized")
         
-    def add_element(self, id: str, element: UIElement) -> None:
-        """Add a UI element.
+    def draw_text(self, 
+                  text: str, 
+                  position: Tuple[int, int],
+                  font_size: int = 32,
+                  color: Tuple[int, int, int] = (255, 255, 255),
+                  centered: bool = False) -> None:
+        """Draw text on screen.
         
         Args:
-            id: Unique identifier for the element
-            element: UIElement to add
+            text: Text to draw
+            position: (x, y) position
+            font_size: Font size in points
+            color: RGB color tuple
+            centered: Whether to center text at position
         """
-        self._elements[id] = element
-        print(f"Added UI element: {id}")
+        font = self._get_font(font_size)
+        text_surface = font.render(text, True, color)
         
-    def remove_element(self, id: str) -> None:
-        """Remove a UI element.
-        
-        Args:
-            id: ID of element to remove
-        """
-        if id in self._elements:
-            del self._elements[id]
-            print(f"Removed UI element: {id}")
+        if centered:
+            rect = text_surface.get_rect(center=position)
+        else:
+            rect = text_surface.get_rect(topleft=position)
             
-    def get_element(self, id: str) -> Optional[UIElement]:
-        """Get a UI element by ID.
+        self._screen.blit(text_surface, rect)
+        
+    def _get_font(self, size: int) -> pygame.font.Font:
+        """Get or create font of specified size.
         
         Args:
-            id: ID of element to get
+            size: Font size in points
             
         Returns:
-            UIElement if found, None otherwise
+            Pygame font object
         """
-        return self._elements.get(id)
+        if size not in self._fonts:
+            try:
+                self._fonts[size] = pygame.font.Font(None, size)
+            except pygame.error as e:
+                print(f"Error loading font: {e}")
+                # Fallback to default font
+                self._fonts[size] = pygame.font.SysFont(None, size)
+        return self._fonts[size]
         
-    def update_text(self, id: str, text: str) -> None:
-        """Update text of an element.
-        
-        Args:
-            id: Element ID
-            text: New text
-        """
-        if element := self._elements.get(id):
-            element.set_text(text)
-            
-    def set_visible(self, id: str, visible: bool) -> None:
-        """Set visibility of an element.
-        
-        Args:
-            id: Element ID
-            visible: New visibility state
-        """
-        if element := self._elements.get(id):
-            element.set_visible(visible)
-            
-    def draw(self) -> None:
-        """Draw all visible UI elements."""
-        for element in self._elements.values():
-            element.draw(self._screen)
-            
-    def clear(self) -> None:
-        """Remove all UI elements."""
-        self._elements.clear()
-        print("UI service cleared") 
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self._fonts.clear()
+        print("UIService cleaned up") 
