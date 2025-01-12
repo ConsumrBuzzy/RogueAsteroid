@@ -14,7 +14,7 @@ from src.core.components import (
     EffectComponent,
     ScreenWrapComponent
 )
-from src.core.constants import SHIP_MAX_SPEED, SHIP_FRICTION, INVULNERABILITY_TIME
+from src.core.constants import SHIP_MAX_SPEED, SHIP_FRICTION, SHIP_INVULNERABILITY_TIME
 
 class Ship(Entity):
     """Player-controlled ship entity.
@@ -207,7 +207,7 @@ class Ship(Entity):
                 
     def make_invulnerable(self) -> None:
         """Make the ship temporarily invulnerable."""
-        self._invulnerable_timer = INVULNERABILITY_TIME
+        self._invulnerable_timer = SHIP_INVULNERABILITY_TIME
         
     def _init_thrust_effect(self, effects: EffectComponent) -> None:
         """Initialize the thrust particle effect.

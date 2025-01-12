@@ -1,293 +1,133 @@
-"""Asteroid entity for the game."""
+"""Asteroid entity class."""
+from typing import Optional, Dict, Type
 import random
 import math
-from typing import List, Tuple, Union, Optional
 import pygame
+from pygame import Vector2
 
 from src.core.entity.entity import Entity
-from src.core.components.transform import TransformComponent
-from src.core.components.render import RenderComponent
-from src.core.components.collision import CollisionComponent
-from src.core.components.physics import PhysicsComponent
-from src.core.components.screen_wrap import ScreenWrapComponent
-
-from src.core.constants import (
-    WINDOW_WIDTH, 
-    WINDOW_HEIGHT, 
-    WHITE,
-    ASTEROID_SIZES
+from src.core.components import (
+    ComponentRegistry,
+    TransformComponent,
+    RenderComponent,
+    PhysicsComponent,
+    CollisionComponent,
+    ScreenWrapComponent
 )
-from src.entities.particle import Particle
+from src.core.constants import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    ASTEROID_SPEED_MIN,
+    ASTEROID_SPEED_MAX,
+    ASTEROID_ROTATION_MIN,
+    ASTEROID_ROTATION_MAX,
+    ASTEROID_LARGE_SIZE,
+    ASTEROID_MEDIUM_SIZE,
+    ASTEROID_SMALL_SIZE,
+    ASTEROID_LARGE_POINTS,
+    ASTEROID_MEDIUM_POINTS,
+    ASTEROID_SMALL_POINTS
+)
 
 class Asteroid(Entity):
-    """Asteroid entity that can be destroyed by bullets and split into smaller pieces."""
-    
-    def __init__(self, game, size: str, position: Union[pygame.Vector2, Tuple[float, float]], velocity: Optional[pygame.Vector2] = None):
-        """Initialize the asteroid."""
-        super().__init__(game)
+    """Asteroid entity class."""
+
+    def __init__(self, size: str = "large", position: Optional[Vector2] = None, ship_pos: Optional[Vector2] = None) -> None:
+        """Initialize the asteroid.
+        
+        Args:
+            size: Size of the asteroid ("large", "medium", or "small")
+            position: Optional position to spawn at. If None, spawns at random position.
+            ship_pos: Optional ship position to avoid spawning too close.
+        """
+        super().__init__()
+        self._registry = ComponentRegistry()
         self.size = size
-        
-        # Convert position tuple to Vector2 if needed
-        if isinstance(position, tuple):
-            position = pygame.Vector2(position[0], position[1])
-        
-        # Default velocity if none provided
-        if velocity is None:
-            min_speed, max_speed = ASTEROID_SIZES[size]['speed_range']
-            speed = random.uniform(min_speed, max_speed)
-            angle = random.uniform(0, 2 * math.pi)
-            velocity = pygame.Vector2(
-                math.cos(angle) * speed,
-                math.sin(angle) * speed
-            )
-        
-        self._init_components(position, velocity)
-        print(f"Asteroid created: size={size}, pos={position}, vel={velocity}")  # Debug info
-    
-    @classmethod
-    def spawn_random(cls, game, ship_pos: pygame.Vector2) -> 'Asteroid':
-        """Create a new asteroid at a random position away from the ship."""
-        print("Creating new Asteroid")  # Debug info
-        
-        # Choose a random angle and distance from the ship
-        angle = random.uniform(0, 2 * math.pi)
-        min_distance = 150  # Increased minimum safe distance
-        max_distance = 250  # Increased maximum spawn distance
-        distance = random.uniform(min_distance, max_distance)
-        
-        # Calculate spawn position
-        spawn_x = (ship_pos.x + math.cos(angle) * distance) % WINDOW_WIDTH
-        spawn_y = (ship_pos.y + math.sin(angle) * distance) % WINDOW_HEIGHT
-        position = pygame.Vector2(spawn_x, spawn_y)
-        
-        # Calculate direction to ship
-        to_ship = pygame.Vector2(
-            ship_pos.x - spawn_x,
-            ship_pos.y - spawn_y
-        ).normalize()
-        
-        # Generate velocity angle that's not toward the ship
-        # Calculate forbidden angle range (toward ship ±45 degrees)
-        ship_angle = math.atan2(to_ship.y, to_ship.x)
-        min_allowed = ship_angle + math.pi/4  # +45 degrees
-        max_allowed = ship_angle + 7*math.pi/4  # +315 degrees
-        
-        # Choose a random angle outside the forbidden range
-        velocity_angle = random.uniform(min_allowed, max_allowed)
-        speed = random.uniform(50, 100)
-        
-        velocity = pygame.Vector2(
-            math.cos(velocity_angle) * speed,
-            math.sin(velocity_angle) * speed
-        )
-        
-        print(f"Spawning asteroid at {position} with velocity {velocity}")  # Debug info
-        return cls(game, 'large', position, velocity)
-    
-    def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):
-        """Initialize asteroid components."""
+        self._init_components(position, ship_pos)
+
+    def _init_components(self, position: Optional[Vector2], ship_pos: Optional[Vector2]) -> None:
+        """Initialize the asteroid's components."""
         # Transform component
         transform = self.add_component(TransformComponent)
-        transform.position = position
-        transform.velocity = velocity
+        
+        # Set position based on parameters
+        if position is not None:
+            transform.position = position
+        elif ship_pos is not None:
+            # Spawn at a random angle and distance from the ship
+            angle = random.uniform(0, 2 * math.pi)
+            distance = random.uniform(100, 300)  # Adjust these values as needed
+            
+            # Calculate spawn position
+            spawn_x = (ship_pos.x + math.cos(angle) * distance) % SCREEN_WIDTH
+            spawn_y = (ship_pos.y + math.sin(angle) * distance) % SCREEN_HEIGHT
+            transform.position = Vector2(spawn_x, spawn_y)
+        else:
+            # Random position
+            transform.position = Vector2(
+                random.randint(0, SCREEN_WIDTH),
+                random.randint(0, SCREEN_HEIGHT)
+            )
+
+        # Set size-based properties
+        if self.size == "large":
+            size = ASTEROID_LARGE_SIZE
+            points = ASTEROID_LARGE_POINTS
+        elif self.size == "medium":
+            size = ASTEROID_MEDIUM_SIZE
+            points = ASTEROID_MEDIUM_POINTS
+        else:  # small
+            size = ASTEROID_SMALL_SIZE
+            points = ASTEROID_SMALL_POINTS
+
+        # Random rotation and velocity
+        transform.rotation = random.uniform(0, 360)
+        angle = random.uniform(0, 2 * math.pi)
+        speed = random.uniform(ASTEROID_SPEED_MIN, ASTEROID_SPEED_MAX)
+        transform.velocity = Vector2(
+            math.cos(angle) * speed,
+            math.sin(angle) * speed
+        )
 
         # Render component
         render = self.add_component(RenderComponent)
-        render.color = WHITE
-        render.vertices = self._generate_vertices()
-        render.visible = True
+        render.radius = size
+        render.points = points
 
         # Physics component
         physics = self.add_component(PhysicsComponent)
-        physics.max_speed = ASTEROID_SIZES[self.size]['speed_range'][1]  # Use max speed from range
-        physics.friction = 0.0     # No friction for asteroids
+        physics.rotation_speed = random.uniform(ASTEROID_ROTATION_MIN, ASTEROID_ROTATION_MAX)
 
-        # Collision component with radius based on size
-        radius = ASTEROID_SIZES[self.size]['radius']
-        collision = self.add_component(CollisionComponent, radius=radius)
+        # Collision component
+        collision = self.add_component(CollisionComponent)
+        collision.radius = size
 
         # Screen wrap component
         screen_wrap = self.add_component(ScreenWrapComponent)
-        screen_wrap.width = WINDOW_WIDTH
-        screen_wrap.height = WINDOW_HEIGHT
-        
+        screen_wrap.width = SCREEN_WIDTH
+        screen_wrap.height = SCREEN_HEIGHT
+
         print(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")  # Debug info
-    
-    def _generate_vertices(self) -> List[Tuple[float, float]]:
-        """Generate vertices for the asteroid's shape."""
-        min_vertices, max_vertices = ASTEROID_SIZES[self.size]['vertices_range']
-        num_vertices = random.randint(min_vertices, max_vertices)
-        radius = ASTEROID_SIZES[self.size]['radius']
-        vertices = []
-        
-        for i in range(num_vertices):
-            angle = (i / num_vertices) * 2 * math.pi
-            # Add some randomness to the radius
-            vertex_radius = radius * random.uniform(0.8, 1.2)
-            x = math.cos(angle) * vertex_radius
-            y = math.sin(angle) * vertex_radius
-            vertices.append((x, y))
-        
-        return vertices
-    
-    def split(self):
-        """Split asteroid into smaller pieces."""
-        # Get current size and properties
-        transform = self.get_component('transform')
-        if not transform:
-            return []
-            
-        collision = self.get_component('collision')
-        if not collision:
-            return []
-            
-        current_size = collision.radius
-        
-        # Determine points based on size
-        points = 0
-        for size_name, props in ASTEROID_SIZES.items():
-            if abs(props['radius'] - current_size) < 0.1:  # Float comparison
-                points = props['points']
-                break
-        
-        # Award points
-        self.game.scoring.add_points(points)
-        print(f"Hit asteroid size {size_name}, awarded {points} points")
-        
-        if self.size == 'small':
-            # Award points for destroying small asteroid
-            self.game.scoring.add_points(100)
-            # Create small explosion for final destruction
-            self._create_destruction_particles()
-            return []
-            
-        # Create split effect particles
-        self._create_split_particles()
-            
-        # Determine new size
-        new_size = 'medium' if self.size == 'large' else 'small'
-        
-        # Create split pieces with near-opposite velocities
-        pieces = []
-        # For small pieces, use exact opposite directions with slight variation
-        if new_size == 'small':
-            base_angles = [0, 180]  # Opposite directions
-            speed_multiplier = 2.0  # Double speed for small pieces
-            angle_variation = 10  # Less variation for small pieces
-            offset_distance = 15  # Smaller offset for small pieces
-        else:
-            base_angles = [-150, 150]  # Wide but not exactly opposite for medium pieces
-            speed_multiplier = 1.5  # 50% faster for medium pieces
-            angle_variation = 20  # More variation for medium pieces
-            offset_distance = 25  # Larger offset for medium pieces
-        
-        # Get original velocity angle
-        orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
-        
-        for base_angle in base_angles:
-            # Add controlled randomness to the split angle
-            angle = orig_angle + base_angle + random.uniform(-angle_variation, angle_variation)
-            angle_rad = math.radians(angle)
-            
-            # Calculate new velocity with size-based speed scaling
-            min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
-            base_speed = random.uniform(min_speed, max_speed)
-            new_speed = base_speed * speed_multiplier
-            
-            # Create velocity vector at the split angle
-            new_velocity = pygame.Vector2(
-                math.cos(angle_rad) * new_speed,
-                math.sin(angle_rad) * new_speed
-            )
-            
-            # Offset the spawn position in the direction of travel
-            spawn_pos = pygame.Vector2(transform.position)
-            spawn_pos += pygame.Vector2(
-                math.cos(angle_rad) * offset_distance,
-                math.sin(angle_rad) * offset_distance
-            )
-            
-            # Create new asteroid with offset position and calculated velocity
-            piece = Asteroid(self.game, new_size, spawn_pos, new_velocity)
-            pieces.append(piece)
-            
-            print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}, offset={offset_distance}")  # Debug info
-        
-        return pieces
-    
-    def _create_destruction_particles(self):
-        """Create explosion particles when asteroid is destroyed."""
-        transform = self.get_component('transform')
-        if not transform:
-            return
-            
-        # Number of particles based on size
-        num_particles = 24 if self.size == 'large' else 16 if self.size == 'medium' else 12
-        
-        # Get current position as Vector2
-        pos = pygame.Vector2(transform.position.x if hasattr(transform.position, 'x') 
-                           else transform.position[0],
-                           transform.position.y if hasattr(transform.position, 'y')
-                           else transform.position[1])
-        
-        for _ in range(num_particles):
-            # Create particle with orange/yellow color for explosion
-            particle = Particle(
-                self.game,
-                lifetime=random.uniform(0.3, 0.6),
-                color=(255, random.randint(165, 220), 0)
-            )
-            
-            # Set particle position
-            particle_transform = particle.get_component('transform')
-            if particle_transform:
-                particle_transform.position = pos.copy()
-            
-            # Set particle velocity
-            physics = particle.get_component('physics')
-            if physics:
-                angle = random.uniform(0, 2 * math.pi)
-                speed = random.uniform(100, 200)
-                physics.velocity = pygame.Vector2(
-                    math.cos(angle) * speed,
-                    math.sin(angle) * speed
-                )
-            
-            # Add particle to game
-            self.game.entities.append(particle)
 
-    def _create_split_particles(self):
-        """Create particles when asteroid splits."""
-        transform = self.get_component('transform')
-        if not transform:
-            return
-            
-        # Fewer particles for splits
-        num_particles = 12 if self.size == 'large' else 8 if self.size == 'medium' else 6
+    def split(self) -> list['Asteroid']:
+        """Split the asteroid into smaller pieces.
         
-        for _ in range(num_particles):
-            # Create particle with random velocity
-            particle = Particle(self.game)
+        Returns:
+            A list of new smaller asteroids.
+        """
+        if self.size == "small":
+            return []
             
-            # Set particle properties
-            particle_transform = particle.get_component('transform')
-            if particle_transform:
-                particle_transform.position = pygame.Vector2(transform.position)
-                
-                # Random direction and speed
-                angle = random.uniform(0, 2 * math.pi)
-                speed = random.uniform(50, 150)
-                particle_transform.velocity = pygame.Vector2(
-                    math.cos(angle) * speed,
-                    math.sin(angle) * speed
-                )
+        new_size = "medium" if self.size == "large" else "small"
+        transform = self.get_component(TransformComponent)
+        
+        # Create 2-3 smaller asteroids
+        num_pieces = random.randint(2, 3)
+        new_asteroids = []
+        
+        for _ in range(num_pieces):
+            # Create new asteroid at current position
+            new_asteroid = Asteroid(size=new_size, position=transform.position.copy())
+            new_asteroids.append(new_asteroid)
             
-            # Add particle to game
-            self.game.entities.append(particle)
-
-    def update(self, dt: float):
-        """Update the asteroid's state."""
-        super().update(dt)
-        # Add any asteroid-specific update logic here
-        pass 
-        pass 
+        return new_asteroids 
