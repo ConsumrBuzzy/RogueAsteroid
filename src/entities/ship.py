@@ -156,7 +156,7 @@ class Ship(Entity):
         Returns:
             TransformComponent if found, None otherwise
         """
-        return self.get_component(TransformComponent)
+        return self.get_component('TransformComponent')
         
     def get_render(self) -> Optional[RenderComponent]:
         """Get the render component.
@@ -164,7 +164,7 @@ class Ship(Entity):
         Returns:
             RenderComponent if found, None otherwise
         """
-        return self.get_component(RenderComponent)
+        return self.get_component('RenderComponent')
         
     def get_physics(self) -> Optional[PhysicsComponent]:
         """Get the physics component.
@@ -172,7 +172,7 @@ class Ship(Entity):
         Returns:
             PhysicsComponent if found, None otherwise
         """
-        return self.get_component(PhysicsComponent)
+        return self.get_component('PhysicsComponent')
         
     def get_collision(self) -> Optional[CollisionComponent]:
         """Get the collision component.
@@ -180,7 +180,7 @@ class Ship(Entity):
         Returns:
             CollisionComponent if found, None otherwise
         """
-        return self.get_component(CollisionComponent)
+        return self.get_component('CollisionComponent')
         
     def get_input(self) -> Optional[InputComponent]:
         """Get the input component.
@@ -188,7 +188,7 @@ class Ship(Entity):
         Returns:
             InputComponent if found, None otherwise
         """
-        return self.get_component(InputComponent)
+        return self.get_component('InputComponent')
         
     def get_effects(self) -> Optional[EffectComponent]:
         """Get the effects component.
@@ -196,7 +196,7 @@ class Ship(Entity):
         Returns:
             EffectComponent if found, None otherwise
         """
-        return self.get_component(EffectComponent)
+        return self.get_component('EffectComponent')
         
     def update(self, dt: float) -> None:
         """Update the ship.

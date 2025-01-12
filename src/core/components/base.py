@@ -234,6 +234,17 @@ class InputComponent(Component):
 class ScreenWrapComponent(Component):
     """Component for wrapping entities around screen edges."""
     
+    def __init__(self, entity: Any, screen_size: Optional[Tuple[int, int]] = None):
+        """Initialize the screen wrap component.
+        
+        Args:
+            entity: The entity this component belongs to
+            screen_size: Optional (width, height) tuple for screen dimensions
+        """
+        super().__init__(entity)
+        self.screen_width = screen_size[0] if screen_size else 800
+        self.screen_height = screen_size[1] if screen_size else 600
+    
     def update(self, dt: float) -> None:
         """Update the entity's position to wrap around screen edges.
         
@@ -247,16 +258,14 @@ class ScreenWrapComponent(Component):
         if not transform:
             return
             
-        from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
-        
         # Wrap horizontally
         if transform.x < 0:
-            transform.x = SCREEN_WIDTH
-        elif transform.x > SCREEN_WIDTH:
+            transform.x = self.screen_width
+        elif transform.x > self.screen_width:
             transform.x = 0
             
         # Wrap vertically
         if transform.y < 0:
-            transform.y = SCREEN_HEIGHT
-        elif transform.y > SCREEN_HEIGHT:
+            transform.y = self.screen_height
+        elif transform.y > self.screen_height:
             transform.y = 0 
