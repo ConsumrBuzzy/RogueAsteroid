@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2025-01-11 19:05PM]
+Last Session: [2025-01-11 19:10PM]
 Current Phase: Core Gameplay Complete
 
 ## Critical Updates
@@ -13,8 +13,15 @@ Current Phase: Core Gameplay Complete
 - Ship invulnerability system fixed
 - Collision handling improved
 - Screen wrapping improved
+- Combat mechanics tuned
 
 ## Recent Log Entries
+
+[2025-01-11 19:10PM] [TUNE] Enhanced Combat Mechanics:
+- Reduced bullet lifetime from 0.6s to 0.5s for tighter combat
+- Decreased shoot cooldown from 0.25s to 0.20s for snappier response
+- Maintained bullet speed at 1200 pixels/second
+- Improved overall combat feel and responsiveness
 
 [2025-01-11 19:05PM] [FIX] Refined Screen Wrapping:
 - Reduced wrap offset to 2 pixels for minimal edge overlap

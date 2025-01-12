@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 class Ship(Entity):
     """Player controlled ship entity."""
     
-    SHOOT_COOLDOWN = 0.25  # seconds between shots
+    SHOOT_COOLDOWN = 0.20  # Reduced from 0.25 to 0.20 seconds between shots
     
     def __init__(self, game: 'Game'):
         super().__init__(game)

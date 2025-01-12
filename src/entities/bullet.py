@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 class Bullet(Entity):
     """Projectile fired by the player ship."""
     
-    SPEED = 25000.0  # pixels per second
-    LIFETIME = 2  # seconds before despawning
+    LIFETIME = 0.5  # Reduced from 0.6 to 0.5 seconds
+    SPEED = 1200  # pixels per second
     
     def __init__(self, game: 'Game', position: pygame.Vector2, direction: pygame.Vector2):
         """Initialize the bullet.
@@ -28,7 +28,7 @@ class Bullet(Entity):
             direction: Direction vector (will be normalized).
         """
         super().__init__(game)
-        self.lifetime = self.LIFETIME
+        self.lifetime = self.LIFETIME  # Time until bullet disappears
         # Normalize direction
         self.direction = direction.normalize()
         
