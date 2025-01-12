@@ -1,10 +1,12 @@
 # Development Log
 
-Last Session: [2025-01-11 21:00PM]
+Last Session: [2025-01-11 21:01PM]
 Current Phase: Service Architecture Implementation
 
 ## Critical Updates
 - Service architecture implemented
+- Service initialization fixed (ResourceManager, MenuService)
+- Service dependency handling improved
 - Sound system completely removed
 - Input system enhanced with numpad support
 - Testing infrastructure established
