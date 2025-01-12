@@ -7,6 +7,7 @@ from .input import InputComponent
 from .screen_wrap import ScreenWrapComponent
 from .particle import ParticleComponent
 from .effect import EffectComponent
+from .render import RenderComponent
 
 __all__ = [
     'Component',
@@ -17,4 +18,5 @@ __all__ = [
     'ScreenWrapComponent',
     'ParticleComponent',
     'EffectComponent',
+    'RenderComponent',
 ] 
