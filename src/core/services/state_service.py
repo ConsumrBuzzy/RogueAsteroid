@@ -231,41 +231,58 @@ class StateService:
             # Continue running but log the error
             
     def cleanup(self) -> None:
-        """Clean up the service."""
+        """Clean up the state service."""
+        # Clear subscribers
+        self._subscribers.clear()
+        
+        # Clear handlers
+        self._state_handlers.clear()
+        
+        # Clear state
         self._current_state = None
         self._previous_state = None
-        self._state_handlers.clear()
-        self._subscribers.clear()
-        print("StateService cleaned up") 
+        
+        print("StateService cleaned up")
 
-    def subscribe(self, event_type: str, callback: Callable) -> None:
-        """Subscribe to state events.
+    def subscribe(self, subscriber_id: str, callback: Callable) -> None:
+        """Subscribe to state changes.
         
         Args:
-            event_type: Type of event to subscribe to
-            callback: Function to call when event occurs
+            subscriber_id: Unique identifier for the subscriber
+            callback: Function to call on state changes
             
         Raises:
-            ValueError: If callback is not callable
+            ValueError: If subscriber_id is empty or callback is not callable
         """
+        if not subscriber_id:
+            raise ValueError("Subscriber ID cannot be empty")
         if not callable(callback):
             raise ValueError("Callback must be callable")
             
-        if event_type not in self._subscribers:
-            self._subscribers[event_type] = []
-        self._subscribers[event_type].append(callback)
-        print(f"Added subscriber for {event_type}")
-
-    def _notify_subscribers(self, event_type: str, **kwargs) -> None:
-        """Notify subscribers of an event.
+        if subscriber_id not in self._subscribers:
+            self._subscribers[subscriber_id] = []
+        self._subscribers[subscriber_id].append(callback)
+        
+    def unsubscribe(self, subscriber_id: str) -> None:
+        """Unsubscribe from state changes.
         
         Args:
-            event_type: Type of event that occurred
-            **kwargs: Event data
+            subscriber_id: Unique identifier for the subscriber
         """
-        if event_type in self._subscribers:
-            for callback in self._subscribers[event_type]:
+        if subscriber_id in self._subscribers:
+            del self._subscribers[subscriber_id]
+            
+    def _notify_subscribers(self, old_state: Optional[GameState], new_state: GameState) -> None:
+        """Notify subscribers of state changes.
+        
+        Args:
+            old_state: Previous game state
+            new_state: New game state
+        """
+        for callbacks in self._subscribers.values():
+            for callback in callbacks:
                 try:
-                    callback(**kwargs)
+                    callback(old_state, new_state)
                 except Exception as e:
-                    print(f"Error in state event subscriber: {e}") 
+                    print(f"Error in state change callback: {e}")
+                    continue 

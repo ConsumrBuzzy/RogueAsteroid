@@ -125,17 +125,39 @@ class GameService:
         self._level = 1
         
         # Create player ship
-        self.player_ship = Ship(self)
-        self.entities.append(self.player_ship)
-        
-        # Register ship with services
-        self._physics_service.register_entity(self.player_ship)
-        self._collision_service.register_entity(self.player_ship)
-        self._render_service.add_to_layer('game', self.player_ship)
+        try:
+            self.player_ship = Ship(self)
+            
+            # Verify required components
+            transform = self.player_ship.get_component('transform')
+            render = self.player_ship.get_component('render')
+            
+            if transform is None or render is None:
+                raise ValueError("Ship missing required components")
+                
+            # Add to entity list
+            self.entities.append(self.player_ship)
+            
+            # Register ship with services
+            self._physics_service.register_entity(self.player_ship)
+            self._collision_service.register_entity(self.player_ship)
+            self._render_service.add_to_layer('game', self.player_ship)
+            
+            print("Player ship initialized successfully")
+            
+        except Exception as e:
+            print(f"Error initializing player ship: {e}")
+            self.cleanup()
+            return
         
         # Spawn initial asteroids
-        self._spawn_asteroids(INITIAL_ASTEROIDS)
-        
+        try:
+            self._spawn_asteroids(INITIAL_ASTEROIDS)
+        except Exception as e:
+            print(f"Error spawning asteroids: {e}")
+            self.cleanup()
+            return
+            
         print("Game loop started")
         
     def _spawn_asteroids(self, count: int) -> None:
@@ -143,23 +165,35 @@ class GameService:
         
         Args:
             count: Number of asteroids to spawn
+            
+        Raises:
+            ValueError: If player ship is not initialized
         """
         if not self.player_ship:
-            return
+            raise ValueError("Cannot spawn asteroids: Player ship not initialized")
+            
+        transform = self.player_ship.get_component('transform')
+        if not transform:
+            raise ValueError("Cannot spawn asteroids: Player ship missing transform component")
             
         for _ in range(count):
-            # Create asteroid away from player
-            asteroid = Asteroid.spawn_random(self, self.player_ship.get_component('transform').position)
-            
-            # Add to tracking lists
-            self.asteroids.append(asteroid)
-            self.entities.append(asteroid)
-            
-            # Register with services
-            self._physics_service.register_entity(asteroid)
-            self._collision_service.register_entity(asteroid)
-            self._render_service.add_to_layer('game', asteroid)
-            
+            try:
+                # Create asteroid away from player
+                asteroid = Asteroid.spawn_random(self, transform.position)
+                
+                # Add to tracking lists
+                self.asteroids.append(asteroid)
+                self.entities.append(asteroid)
+                
+                # Register with services
+                self._physics_service.register_entity(asteroid)
+                self._collision_service.register_entity(asteroid)
+                self._render_service.add_to_layer('game', asteroid)
+                
+            except Exception as e:
+                print(f"Error spawning asteroid: {e}")
+                continue
+        
     def stop(self) -> None:
         """Stop the game loop."""
         self._running = False
