@@ -316,3 +316,15 @@ Next Steps: Test state transitions and menu navigation
 Focus Areas: Input System, Menu Navigation
 Major Changes: Input System Robustness
 Next Steps: Test menu navigation with updated key bindings 
+
+[2025-01-11 21:38PM]
+[FIX] Input Control Scheme
+- Separated game movement and menu navigation controls
+- WASD keys now exclusively for game movement
+- Arrow keys dedicated to menu navigation
+- Changed pause key to 'P' for clarity
+- Removed redundant key bindings for shooting
+
+Focus Areas: Input System, Controls
+Major Changes: Control Scheme Separation
+Next Steps: Test game movement and menu navigation independently 
