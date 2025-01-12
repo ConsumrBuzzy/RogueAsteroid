@@ -125,6 +125,10 @@ class TestStateService:
             def __init__(self):
                 self.called = False
                 
+            def __call__(self):
+                """Make the handler callable."""
+                pass
+                
             def on_enter(self):
                 self.called = True
                 
