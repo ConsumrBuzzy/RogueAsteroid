@@ -121,13 +121,20 @@ class TestStateService:
         """Test state handler registration and execution."""
         handler_called = False
         
-        def test_handler():
-            nonlocal handler_called
-            handler_called = True
-            
-        state_service.register_handler(GameState.PLAYING, test_handler)
+        class TestHandler:
+            def __init__(self):
+                self.called = False
+                
+            def on_enter(self):
+                self.called = True
+                
+            def on_exit(self):
+                pass
+                
+        handler = TestHandler()
+        state_service.register_handler(GameState.PLAYING, handler)
         state_service.change_state(GameState.PLAYING)
-        assert handler_called
+        assert handler.called
         
     def test_state_service_singleton(self):
         """Test that StateService is a singleton."""
