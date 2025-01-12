@@ -97,7 +97,14 @@ class TestParticleEffects:
         """Test thrust particle creation"""
         game.new_game()
         initial_particles = len(game.particles)
-        game.ship.thrust(1.0)
+        
+        # Get input component and simulate thrust
+        input_component = game.ship.get_component('input')
+        if input_component:
+            input_component.handle_keydown(pygame.K_UP)  # Simulate pressing UP key
+            game.update(0.016)  # Update one frame
+            input_component.handle_keyup(pygame.K_UP)  # Release key
+        
         assert len(game.particles) > initial_particles
     
     def test_explosion_particles(self, game):
@@ -112,9 +119,17 @@ class TestParticleEffects:
         game.new_game()
         game.create_explosion(400, 300)
         initial_particles = len(game.particles)
+        
         # Update for long enough to expire particles
-        for _ in range(60):  # 1 second at 60 FPS
-            game.update(0.016)
+        # Most particles have lifetime between 0.5 and 1.0 seconds
+        # Update for 1.5 seconds to ensure all particles expire
+        total_time = 1.5  # seconds
+        frame_time = 0.016  # 60 FPS
+        frames = int(total_time / frame_time)
+        
+        for _ in range(frames):
+            game.update(frame_time)
+        
         assert len(game.particles) < initial_particles
 
 class TestMenu:

@@ -9,6 +9,26 @@ from src.entities.ship import Ship
 from src.entities.bullet import Bullet
 from src.core.constants import *
 
+@pytest.fixture(scope="session", autouse=True)
+def pygame_init():
+    """Initialize pygame for all tests."""
+    pygame.init()
+    if not pygame.font.get_init():
+        pygame.font.init()
+    if not pygame.display.get_init():
+        pygame.display.init()
+    yield
+    pygame.quit()
+
+@pytest.fixture
+def game():
+    """Create a game instance for testing."""
+    game = Game()
+    yield game
+    # Clean up game resources
+    if hasattr(game, 'screen'):
+        pygame.display.quit()
+
 class TestGameplayFlow:
     def test_game_initialization_flow(self, game):
         """Test complete game initialization sequence."""
