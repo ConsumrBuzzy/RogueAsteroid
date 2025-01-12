@@ -190,6 +190,12 @@ class Game:
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
         print(f"Respawning ship with {SHIP_INVULNERABLE_TIME} seconds invulnerability")  # Debug info
+        
+        # Remove old ship from entities list if it exists
+        if self.ship in self.entities:
+            self.entities.remove(self.ship)
+        
+        # Create new ship
         self.ship = Ship(self)
         self.entities.append(self.ship)
         

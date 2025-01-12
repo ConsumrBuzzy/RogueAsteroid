@@ -1,6 +1,6 @@
 # Development Log
 
-Last Session: [2025-01-11 18:55PM]
+Last Session: [2025-01-11 19:00PM]
 Current Phase: Core Gameplay Complete
 
 ## Critical Updates
@@ -12,8 +12,15 @@ Current Phase: Core Gameplay Complete
 - Ship destruction handling improved
 - Ship invulnerability system fixed
 - Collision handling improved
+- Screen wrapping improved
 
 ## Recent Log Entries
+
+[2025-01-11 19:00PM] [FIX] Enhanced Ship Respawn and Screen Wrapping:
+- Fixed ship cleanup on respawn to prevent ghost ships
+- Added 5-pixel offset to screen wrapping for smoother transitions
+- Improved entity visibility during screen transitions
+- Added proper cleanup of old ship from entities list
 
 [2025-01-11 18:55PM] [FIX] Fixed Collision Handling:
 - Removed redundant ship-asteroid collision check
