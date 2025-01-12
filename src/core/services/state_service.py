@@ -32,6 +32,8 @@ class StateService:
         for state in GameState:
             self._state_handlers[state] = []
             
+        # Set initial state
+        self.change_state(GameState.MAIN_MENU)
         print("StateService initialized")
         
     def add_handler(self, state: GameState, handler: Callable) -> None:
