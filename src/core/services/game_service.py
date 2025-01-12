@@ -3,6 +3,7 @@ from typing import Dict, Optional, List
 import pygame
 
 from ..entity.entity import Entity
+from .state_service import GameState
 
 class GameService:
     """Service for core game management.
@@ -53,12 +54,12 @@ class GameService:
         self._event_manager.subscribe('level_complete', self._on_level_complete)
         
         print("GameService initialized")
-    
+        
     def start(self) -> None:
         """Start the game loop."""
         self._running = True
         self._event_manager.publish('game_start')
-        self._state_service.change_state('MAIN_MENU')
+        self._state_service.change_state(GameState.MAIN_MENU)
         print("Game loop started")
     
     def stop(self) -> None:
@@ -111,56 +112,26 @@ class GameService:
             self._particle_service.update(dt)
             self._state_service.update(dt)
             self._menu_service.update(dt)
-            self._achievement_service.update(dt)
-            self._statistics_service.update(dt)
             
             # Update entity factory
             self._entity_factory.update(dt)
             
             # Process events
             self._event_manager.process_events()
-    
+            
     def draw(self) -> None:
-        """Draw the current game state."""
+        """Draw the current frame."""
         # Clear screen
         self._screen.fill((0, 0, 0))
         
-        # Draw in layers
+        # Draw game elements
+        self._render_service.draw()
         self._particle_service.draw()
-        self._render_service.render()
         self._ui_service.draw()
         
         # Update display
         pygame.display.flip()
-    
-    def add_entity(self, entity_type: str, x: float = 0, y: float = 0, **kwargs) -> Optional[Entity]:
-        """Add an entity to the game.
         
-        Args:
-            entity_type: Type of entity to create
-            x: Initial x position
-            y: Initial y position
-            **kwargs: Additional entity parameters
-            
-        Returns:
-            Created entity or None if creation failed
-        """
-        entity = self._entity_factory.create_entity(entity_type, x, y, **kwargs)
-        if entity:
-            self._event_manager.publish('entity_created', entity=entity)
-            print(f"Created entity of type {entity_type}")
-        return entity
-    
-    def remove_entity(self, entity: Entity) -> None:
-        """Remove an entity from the game.
-        
-        Args:
-            entity: Entity to remove
-        """
-        self._entity_factory.remove_entity(entity)
-        self._event_manager.publish('entity_destroyed', entity=entity)
-        print(f"Removed entity {entity.id}")
-    
     def clear(self) -> None:
         """Clear all game state."""
         # Clear all entities
@@ -191,5 +162,11 @@ class GameService:
     def _on_level_complete(self, **kwargs) -> None:
         """Handle level complete event."""
         level = kwargs.get('level', 1)
-        self._statistics_service.record_level_complete(level)
-        print(f"Level {level} completed") 
+        print(f"Level {level} completed")
+        
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.clear()
+        self._running = False
+        self._paused = False
+        print("GameService cleaned up") 
