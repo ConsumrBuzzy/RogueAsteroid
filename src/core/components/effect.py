@@ -165,13 +165,13 @@ class EffectComponent(Component):
         """
         self.effects[name] = Effect(vertices, color, offset)
     
-    def emit(self, template_name: str, position: pygame.Vector2, direction: pygame.Vector2) -> None:
+    def emit(self, template_name: str, position: pygame.Vector2, direction: pygame.Vector2 | float) -> None:
         """Emit particles using a template.
         
         Args:
             template_name: Name of template to use
             position: Emission position
-            direction: Emission direction
+            direction: Emission direction (Vector2 or angle in radians)
         """
         template = self._templates.get(template_name)
         if not template:
@@ -185,7 +185,11 @@ class EffectComponent(Component):
         size_min, size_max = template['size_range']
         colors = template['colors']
         
-        base_angle = math.atan2(direction.y, direction.x)
+        # Handle direction as either Vector2 or angle
+        if isinstance(direction, pygame.Vector2):
+            base_angle = math.atan2(direction.y, direction.x)
+        else:
+            base_angle = float(direction)
         
         for _ in range(count):
             # Randomize particle properties

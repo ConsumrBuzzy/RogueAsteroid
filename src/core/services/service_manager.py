@@ -8,11 +8,16 @@ logger = logging.getLogger(__name__)
 class ServiceManager:
     """Manages game services and their dependencies."""
     
-    def __init__(self):
-        """Initialize the service manager."""
+    def __init__(self, game=None):
+        """Initialize the service manager.
+        
+        Args:
+            game: Optional game instance this service manager belongs to
+        """
         self._services: Dict[str, object] = {}
         self._service_types: Dict[str, Type] = {}
         self._initialization_order: List[Type] = []
+        self.game = game
         logger.info("ServiceManager initialized")
         
     def register_service(self, name: str, service_type: Type) -> None:

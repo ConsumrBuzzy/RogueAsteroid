@@ -54,7 +54,6 @@ class Ship(Entity):
         self._invulnerable_timer = 0
         self._thrust_timer = 0
         self._initialized_components = set()
-        self._registry = ComponentRegistry()
         
         try:
             self._init_components()

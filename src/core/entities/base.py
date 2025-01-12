@@ -5,11 +5,11 @@ from src.core.components.base import Component
 class Entity:
     """Base class for all game entities."""
     
-    def __init__(self, game):
+    def __init__(self, game=None):
         """Initialize the entity.
         
         Args:
-            game: The game instance this entity belongs to
+            game: Optional game instance this entity belongs to
         """
         self.game = game
         self.components: Dict[str, Component] = {}
