@@ -1,5 +1,5 @@
 """Score component for managing game scoring."""
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 from .base import Component
 
 class ScoreComponent(Component):

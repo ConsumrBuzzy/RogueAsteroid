@@ -1,6 +1,8 @@
 """Effect component for visual effects."""
 import pygame
-from typing import List, Tuple, Optional
+import random
+import math
+from typing import List, Tuple, Optional, Dict
 from enum import Enum, auto
 
 from .base import Component
