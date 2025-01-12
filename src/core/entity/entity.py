@@ -1,15 +1,16 @@
 """Base entity class for game objects."""
 from typing import Dict, Type, Optional, Any
 from uuid import uuid4
-import pygame
+from ..components import Component, ComponentRegistry
 
 class Entity:
     """Base class for all game entities.
     
-    Provides core functionality for:
+    Provides:
     - Component management
     - Lifecycle hooks
     - Unique identification
+    - Update/draw pipeline
     - Debug support
     """
     
@@ -17,107 +18,116 @@ class Entity:
         """Initialize entity.
         
         Args:
-            game: Reference to main game instance
+            game: Game instance this entity belongs to
             x: Initial x position
             y: Initial y position
         """
         self.game = game
-        self.id = str(uuid4())  # Unique entity identifier
-        self.x = x
-        self.y = y
-        self.components: Dict[Type, Any] = {}
-        self.is_active = True
-        self.is_destroyed = False
+        self.id = str(uuid4())
+        self._components: Dict[str, Component] = {}
+        self._is_destroyed = False
+        self._registry = ComponentRegistry()
         
-        # Debug info
         print(f"Entity {self.id} initialized at ({x}, {y})")
     
-    def add_component(self, component_type: Type, component: Any) -> None:
+    def add_component(self, component_type: str, **kwargs) -> Optional[Component]:
         """Add a component to the entity.
         
         Args:
-            component_type: Type of the component
-            component: Component instance
+            component_type: Type name of component to add
+            **kwargs: Additional arguments for component initialization
+            
+        Returns:
+            Added component instance or None if creation failed
+            
+        Raises:
+            ValueError: If component type already exists on entity
         """
-        if component_type in self.components:
-            print(f"Warning: Overwriting existing {component_type.__name__} component")
-        self.components[component_type] = component
-        print(f"Added {component_type.__name__} to entity {self.id}")
+        if component_type in self._components:
+            raise ValueError(f"Entity already has component of type {component_type}")
+            
+        component = self._registry.create_component(component_type, self, **kwargs)
+        if component:
+            self._components[component_type] = component
+            print(f"Added {component_type} to entity {self.id}")
+        return component
     
-    def get_component(self, component_type: Type) -> Optional[Any]:
+    def get_component(self, component_type: str) -> Optional[Component]:
         """Get a component by type.
         
         Args:
-            component_type: Type of component to get
+            component_type: Type name of component to get
             
         Returns:
-            Component instance if found, None otherwise
+            Component instance or None if not found
         """
-        return self.components.get(component_type)
+        return self._components.get(component_type)
     
-    def has_component(self, component_type: Type) -> bool:
-        """Check if entity has a component.
+    def has_component(self, component_type: str) -> bool:
+        """Check if entity has a component type.
         
         Args:
-            component_type: Type of component to check
+            component_type: Type name to check for
             
         Returns:
-            True if component exists, False otherwise
+            True if entity has component type
         """
-        return component_type in self.components
+        return component_type in self._components
     
-    def remove_component(self, component_type: Type) -> None:
+    def remove_component(self, component_type: str) -> None:
         """Remove a component from the entity.
         
         Args:
-            component_type: Type of component to remove
+            component_type: Type name of component to remove
         """
-        if component_type in self.components:
-            del self.components[component_type]
-            print(f"Removed {component_type.__name__} from entity {self.id}")
+        if component_type in self._components:
+            component = self._components[component_type]
+            component.enabled = False
+            del self._components[component_type]
+            print(f"Removed {component_type} from entity {self.id}")
     
     def update(self, dt: float) -> None:
-        """Update entity and all components.
+        """Update entity and all its components.
         
         Args:
             dt: Delta time in seconds
         """
-        if not self.is_active or self.is_destroyed:
+        if self._is_destroyed:
             return
             
-        for component in self.components.values():
-            if hasattr(component, 'update'):
+        for component in self._components.values():
+            if component.enabled:
                 component.update(dt)
     
-    def draw(self, screen: pygame.Surface) -> None:
+    def draw(self, screen) -> None:
         """Draw entity using its render component.
         
         Args:
             screen: Pygame surface to draw on
         """
-        if not self.is_active or self.is_destroyed:
+        if self._is_destroyed:
             return
             
-        render_component = self.get_component('RenderComponent')
-        if render_component and hasattr(render_component, 'draw'):
-            render_component.draw(screen)
+        render = self.get_component('RenderComponent')
+        if render and render.enabled:
+            render.draw(screen)
     
     def destroy(self) -> None:
-        """Mark entity for destruction and cleanup."""
-        if self.is_destroyed:
+        """Destroy the entity and clean up its components."""
+        if self._is_destroyed:
             return
             
-        self.is_destroyed = True
-        self.is_active = False
-        
-        # Cleanup components
-        for component in self.components.values():
-            if hasattr(component, 'cleanup'):
-                component.cleanup()
-        
-        self.components.clear()
+        self._is_destroyed = True
+        for component in self._components.values():
+            component.enabled = False
+        self._components.clear()
         print(f"Entity {self.id} destroyed")
     
+    @property
+    def is_destroyed(self) -> bool:
+        """Check if entity is destroyed."""
+        return self._is_destroyed
+    
     def __str__(self) -> str:
-        """String representation of entity."""
-        return f"Entity(id={self.id}, x={self.x}, y={self.y}, components={len(self.components)})" 
+        """Get string representation of entity."""
+        return f"Entity({self.id})" 
