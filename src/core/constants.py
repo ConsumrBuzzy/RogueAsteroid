@@ -17,6 +17,11 @@ YELLOW = (255, 255, 0)
 STARTING_LIVES = 3
 INVULNERABILITY_TIME = 3.0  # Seconds of invulnerability after death
 
+# Level settings
+INITIAL_ASTEROIDS = 4     # Number of asteroids in first level
+ASTEROIDS_INCREMENT = 2   # Additional asteroids per level
+MAX_ASTEROIDS = 12       # Maximum asteroids in any level
+
 # Physics settings
 SHIP_ACCELERATION = 200.0  # Pixels/second^2
 SHIP_MAX_SPEED = 300.0    # Pixels/second
