@@ -1,5 +1,22 @@
 """Game constants."""
 
+# Window dimensions
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+
+# Game settings
+FPS = 60
+BACKGROUND_COLOR = (0, 0, 0)
+
+# Physics settings
+FRICTION = 0.99
+MAX_SPEED = 400.0
+ROTATION_SPEED = 180.0
+THRUST_FORCE = 300.0
+
+# Collision settings
+COLLISION_MARGIN = 2  # pixels
+
 # Display settings
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
