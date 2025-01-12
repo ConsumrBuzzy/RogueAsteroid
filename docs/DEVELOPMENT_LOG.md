@@ -833,3 +833,19 @@ Next Steps: Begin addressing high priority tasks
 Focus Areas: Component System, Entity Framework
 Major Changes: TransformComponent Fix
 Next Steps: Test ship movement and physics integration 
+
+[2025-01-12 9:35AM] [BUG] Component System Issues
+- Identified additional component system issues:
+  1. Duplicate ComponentRegistry implementation
+  2. Ship component initialization not using registry
+  3. Hardcoded effect templates in EffectComponent
+  4. Inconsistent component creation patterns
+
+Next Steps:
+1. Consolidate ComponentRegistry implementations
+2. Update Ship to use ComponentRegistry
+3. Move effect templates to configuration
+4. Standardize component creation
+
+Focus Areas: Component System, Entity Framework
+Priority: High - Affects core system stability 
