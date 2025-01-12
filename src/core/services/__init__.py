@@ -17,6 +17,7 @@ from .physics_service import PhysicsService
 from .render_service import RenderService
 from .collision_service import CollisionService
 from .particle_service import ParticleService
+from .high_score_service import HighScoreService
 
 T = TypeVar('T')
 
@@ -126,6 +127,9 @@ class ServiceManager:
             self.register_service("game", game)
             
             # Data services
+            high_score = HighScoreService(settings, events)
+            self.register_service("high_score", high_score)
+            
             achievements = AchievementService(settings, events)
             self.register_service("achievements", achievements)
             
