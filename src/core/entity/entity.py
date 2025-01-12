@@ -1,126 +1,126 @@
 """Base entity class for game objects."""
-from typing import Dict, Type, Optional, TypeVar, Generic
-from uuid import uuid4
+from typing import Dict, Type, Optional, TypeVar, Any
+import pygame
 
-from ..components.component import Component
-
-T = TypeVar('T', bound=Component)
+T = TypeVar('T')
 
 class Entity:
-    """Base class for all game entities.
-    
-    Provides:
-    - Component management
-    - Lifecycle hooks
-    - Unique identification
-    - Debug support
-    - Game reference
-    """
+    """Base class for all game entities."""
     
     def __init__(self, game):
         """Initialize the entity.
         
         Args:
-            game: The game instance this entity belongs to
+            game: The game instance this entity belongs to.
         """
-        self.id = str(uuid4())
         self.game = game
-        self._components: Dict[Type[Component], Component] = {}
+        self._components: Dict[Type, Any] = {}
         self._initialized = False
-        self._enabled = True
+        self.active = True
         
-    def add_component(self, component: Component) -> None:
+    def add_component(self, component_type: Type[T], **kwargs) -> T:
         """Add a component to the entity.
         
         Args:
-            component: Component to add
+            component_type: The type of component to add.
+            **kwargs: Additional arguments to pass to the component constructor.
+            
+        Returns:
+            The created component instance.
             
         Raises:
-            ValueError: If component type already exists
+            ValueError: If component type is invalid or already exists.
         """
-        component_type = type(component)
+        if not component_type:
+            raise ValueError("Component type cannot be None")
+            
         if component_type in self._components:
-            raise ValueError(f"Entity already has component of type {component_type.__name__}")
+            raise ValueError(f"Component {component_type.__name__} already exists")
             
+        component = component_type(self, **kwargs)
         self._components[component_type] = component
-        if self._initialized:
-            component.initialize()
-            
-    def remove_component(self, component_type: Type[Component]) -> None:
-        """Remove a component from the entity.
+        return component
         
-        Args:
-            component_type: Type of component to remove
-        """
-        if component := self._components.get(component_type):
-            component.destroy()
-            del self._components[component_type]
-            
     def get_component(self, component_type: Type[T]) -> Optional[T]:
         """Get a component by type.
         
         Args:
-            component_type: Type of component to get
+            component_type: The type of component to get.
             
         Returns:
-            Component instance or None if not found
+            The component instance if found, None otherwise.
         """
         return self._components.get(component_type)
         
-    def has_component(self, component_type: Type[Component]) -> bool:
-        """Check if entity has a component type.
+    def has_component(self, component_type: Type) -> bool:
+        """Check if entity has a component.
         
         Args:
-            component_type: Type of component to check
+            component_type: The type of component to check for.
             
         Returns:
-            True if entity has component
+            True if the component exists, False otherwise.
         """
         return component_type in self._components
         
+    def remove_component(self, component_type: Type) -> None:
+        """Remove a component from the entity.
+        
+        Args:
+            component_type: The type of component to remove.
+        """
+        if component_type in self._components:
+            component = self._components[component_type]
+            if hasattr(component, 'cleanup'):
+                component.cleanup()
+            del self._components[component_type]
+            
     def initialize(self) -> None:
         """Initialize the entity and its components."""
-        if not self._initialized:
-            for component in self._components.values():
-                component.initialize()
-            self._initialized = True
+        if self._initialized:
+            return
             
-    def destroy(self) -> None:
-        """Destroy the entity and its components."""
-        for component in list(self._components.values()):
-            self.remove_component(type(component))
-        self._initialized = False
-        self._enabled = False
+        # Initialize all components
+        for component in self._components.values():
+            if hasattr(component, 'initialize'):
+                component.initialize()
+                
+        self._initialized = True
         
-    def enable(self) -> None:
-        """Enable the entity and its components."""
-        if not self._enabled:
-            self._enabled = True
-            for component in self._components.values():
-                component.enable()
-                
-    def disable(self) -> None:
-        """Disable the entity and its components."""
-        if self._enabled:
-            self._enabled = False
-            for component in self._components.values():
-                component.disable()
-                
     def update(self, dt: float) -> None:
         """Update the entity and its components.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time elapsed since last update in seconds.
         """
-        if self._enabled:
-            for component in self._components.values():
+        if not self.active or not self._initialized:
+            return
+            
+        # Update all components
+        for component in self._components.values():
+            if hasattr(component, 'update'):
                 component.update(dt)
                 
-    @property
-    def enabled(self) -> bool:
-        """Check if entity is enabled.
+    def draw(self, surface: pygame.Surface) -> None:
+        """Draw the entity and its components.
         
-        Returns:
-            True if entity is enabled
+        Args:
+            surface: The surface to draw on.
         """
-        return self._enabled 
+        if not self.active or not self._initialized:
+            return
+            
+        # Draw all components
+        for component in self._components.values():
+            if hasattr(component, 'draw'):
+                component.draw(surface)
+                
+    def cleanup(self) -> None:
+        """Clean up the entity and its components."""
+        # Clean up all components
+        for component in list(self._components.values()):
+            if hasattr(component, 'cleanup'):
+                component.cleanup()
+        self._components.clear()
+        self.active = False
+        self._initialized = False 

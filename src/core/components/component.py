@@ -1,106 +1,49 @@
-"""Base component class for game objects."""
-from typing import Optional, TYPE_CHECKING
+"""Base component class for entity components."""
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..entity.entity import Entity
 
 class Component:
-    """Base class for all game components.
+    """Base class for all entity components."""
     
-    Provides:
-    - Entity attachment
-    - Lifecycle hooks
-    - Component enable/disable
-    - Debug support
-    """
-    
-    def __init__(self, entity: 'Entity'):
+    def __init__(self, entity: 'Entity', **kwargs):
         """Initialize the component.
         
         Args:
-            entity: Entity this component belongs to
+            entity: The entity this component belongs to.
+            **kwargs: Additional initialization parameters.
         """
-        self._entity = entity
-        self._enabled = True
+        self.entity = entity
+        self.active = True
         self._initialized = False
         
-    @property
-    def entity(self) -> 'Entity':
-        """Get the entity this component belongs to.
-        
-        Returns:
-            Parent entity
-        """
-        return self._entity
-        
-    @property
-    def enabled(self) -> bool:
-        """Check if component is enabled.
-        
-        Returns:
-            True if component is enabled
-        """
-        return self._enabled
-        
-    def enable(self) -> None:
-        """Enable the component."""
-        if not self._enabled:
-            self._enabled = True
-            self.on_enable()
-            
-    def disable(self) -> None:
-        """Disable the component."""
-        if self._enabled:
-            self._enabled = False
-            self.on_disable()
-            
     def initialize(self) -> None:
-        """Initialize the component.
-        
-        Called when component is first added to an entity.
-        """
-        if not self._initialized:
-            self.on_initialize()
-            self._initialized = True
-            
-    def destroy(self) -> None:
-        """Destroy the component.
-        
-        Called when component is removed from an entity.
-        """
-        self.on_destroy()
-        self._enabled = False
-        self._initialized = False
+        """Initialize the component."""
+        if self._initialized:
+            return
+        self._initialized = True
         
     def update(self, dt: float) -> None:
         """Update the component.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time elapsed since last update in seconds.
         """
-        if self._enabled:
-            self.on_update(dt)
-            
-    def on_initialize(self) -> None:
-        """Called when component is initialized."""
         pass
         
-    def on_destroy(self) -> None:
-        """Called when component is destroyed."""
-        pass
+    def cleanup(self) -> None:
+        """Clean up the component."""
+        self.active = False
+        self._initialized = False
         
-    def on_enable(self) -> None:
-        """Called when component is enabled."""
-        pass
-        
-    def on_disable(self) -> None:
-        """Called when component is disabled."""
-        pass
-        
-    def on_update(self, dt: float) -> None:
-        """Called when component is updated.
+    def get_component(self, component_type: type) -> Any:
+        """Get another component from the parent entity.
         
         Args:
-            dt: Delta time in seconds
+            component_type: The type of component to get.
+            
+        Returns:
+            The component instance if found, None otherwise.
         """
-        pass 
+        return self.entity.get_component(component_type) 
