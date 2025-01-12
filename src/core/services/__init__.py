@@ -80,7 +80,7 @@ class ServiceManager:
             events = EventManagerService()
             self.register_service("events", events)
             
-            resources = ResourceManagerService(settings)
+            resources = ResourceManagerService()
             self.register_service("resources", resources)
             
             # UI services

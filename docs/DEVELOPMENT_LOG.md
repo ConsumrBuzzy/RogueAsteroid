@@ -1,5 +1,17 @@
 # Development Log
 
+[2024-03-19 16:51] [FIX] Fixed ResourceManagerService Initialization:
+- Removed settings parameter from ResourceManagerService initialization
+- Aligned service initialization with constructor signature
+- Fixed service initialization sequence
+
+[2024-03-19 16:50] [FIX] Fixed Service Initialization:
+- Removed redundant settings creation in main.py
+- Updated init_services to only pass screen parameter
+- Aligned ServiceManager.init_services signature with usage
+- Improved service initialization flow
+- Better separation of settings management
+
 Last Session: [2025-01-11 19:40PM]
 Current Phase: Modular Refactoring
 
