@@ -311,9 +311,47 @@ class GameService:
             # Continue cleanup despite errors
         
     def _on_game_start(self, **kwargs) -> None:
-        """Handle game start event."""
-        self._resource_manager.preload_resources()
-        print("Game started - resources loaded")
+        """Handle game start event.
+        
+        Initializes the game state including:
+        1. Loading resources
+        2. Creating the player ship
+        3. Spawning initial asteroids
+        4. Setting up initial game state
+        """
+        try:
+            # Clear any existing state
+            self.clear()
+            
+            # Reset game state
+            self._score = 0
+            self._lives = STARTING_LIVES
+            self._level = 1
+            
+            # Ensure resources are loaded
+            self._resource_manager.preload_resources()
+            
+            # Create player ship
+            self.player_ship = Ship(self)
+            self.entities.append(self.player_ship)
+            
+            # Register ship with services
+            self._physics_service.register_entity(self.player_ship)
+            self._collision_service.register_entity(self.player_ship)
+            self._render_service.add_to_layer('game', self.player_ship)
+            
+            # Spawn initial asteroids
+            self._spawn_asteroids(INITIAL_ASTEROIDS)
+            
+            # Change to playing state
+            self._state_service.change_state(GameState.PLAYING)
+            
+            print("Game started - player and asteroids initialized")
+            
+        except Exception as e:
+            print(f"Error in game start: {e}")
+            self._state_service.change_state(GameState.MAIN_MENU)
+            raise
         
     def _on_game_over(self, **kwargs) -> None:
         """Handle game over event."""
