@@ -23,6 +23,9 @@ class GameService:
             screen: Pygame surface to render to
             settings: Game settings dictionary
             service_manager: ServiceManager instance for accessing other services
+            
+        Raises:
+            ValueError: If required services are not available
         """
         self._screen = screen
         self._settings = settings
@@ -30,30 +33,53 @@ class GameService:
         self._paused = False
         self._dt = 0
         
-        # Get required services
-        self._input_service = service_manager.get_service('input')
-        self._physics_service = service_manager.get_service('physics')
-        self._render_service = service_manager.get_service('render')
-        self._collision_service = service_manager.get_service('collision')
-        self._particle_service = service_manager.get_service('particle')
-        self._ui_service = service_manager.get_service('ui')
-        self._state_service = service_manager.get_service('state')
-        self._menu_service = service_manager.get_service('menu')
-        self._high_score_service = service_manager.get_service('high_score')
-        self._achievement_service = service_manager.get_service('achievement')
-        self._statistics_service = service_manager.get_service('statistics')
+        try:
+            # Get required services
+            self._input_service = self._get_required_service(service_manager, 'input')
+            self._physics_service = self._get_required_service(service_manager, 'physics')
+            self._render_service = self._get_required_service(service_manager, 'render')
+            self._collision_service = self._get_required_service(service_manager, 'collision')
+            self._particle_service = self._get_required_service(service_manager, 'particle')
+            self._ui_service = self._get_required_service(service_manager, 'ui')
+            self._state_service = self._get_required_service(service_manager, 'state')
+            self._menu_service = self._get_required_service(service_manager, 'menu')
+            self._high_score_service = self._get_required_service(service_manager, 'high_score')
+            self._achievement_service = self._get_required_service(service_manager, 'achievement')
+            self._statistics_service = self._get_required_service(service_manager, 'statistics')
+            
+            # Get system services
+            self._event_manager = self._get_required_service(service_manager, 'events')
+            self._resource_manager = self._get_required_service(service_manager, 'resources')
+            self._entity_factory = self._get_required_service(service_manager, 'entity_factory')
+            
+            # Subscribe to events
+            self._event_manager.subscribe('game_start', self._on_game_start)
+            self._event_manager.subscribe('game_over', self._on_game_over)
+            self._event_manager.subscribe('level_complete', self._on_level_complete)
+            
+            print("GameService initialized")
+            
+        except Exception as e:
+            print(f"Error initializing GameService: {e}")
+            raise
+            
+    def _get_required_service(self, service_manager, name: str) -> object:
+        """Get a required service.
         
-        # Get system services
-        self._event_manager = service_manager.get_service('events')
-        self._resource_manager = service_manager.get_service('resources')
-        self._entity_factory = service_manager.get_service('entity_factory')
-        
-        # Subscribe to events
-        self._event_manager.subscribe('game_start', self._on_game_start)
-        self._event_manager.subscribe('game_over', self._on_game_over)
-        self._event_manager.subscribe('level_complete', self._on_level_complete)
-        
-        print("GameService initialized")
+        Args:
+            service_manager: ServiceManager instance
+            name: Service name
+            
+        Returns:
+            Service instance
+            
+        Raises:
+            ValueError: If service is not available
+        """
+        service = service_manager.get_service(name)
+        if service is None:
+            raise ValueError(f"Required service '{name}' not available")
+        return service
         
     def start(self) -> None:
         """Start the game loop."""
@@ -105,45 +131,66 @@ class GameService:
         Args:
             dt: Delta time in seconds
         """
+        if not self._running:
+            return
+            
         self._dt = dt
         
         if not self._paused:
-            # Update all services
-            self._input_service.update()
-            self._physics_service.update(dt)
-            self._collision_service.update()
-            self._particle_service.update(dt)
-            self._state_service.update(dt)
-            self._menu_service.update(dt)
-            
-            # Update entity factory
-            self._entity_factory.update(dt)
-            
-            # Process events
-            self._event_manager.process_events()
-            
+            try:
+                # Update all services
+                self._input_service.update()
+                self._physics_service.update(dt)
+                self._collision_service.update()
+                self._particle_service.update(dt)
+                self._state_service.update(dt)
+                self._menu_service.update(dt)
+                
+                # Update entity factory
+                self._entity_factory.update(dt)
+                
+                # Process events
+                self._event_manager.process_events()
+                
+            except Exception as e:
+                print(f"Error updating game state: {e}")
+                self.pause()  # Pause game on error
+                
     def draw(self) -> None:
         """Draw the current frame."""
-        # Draw game elements in order
-        self._render_service.draw()
-        self._particle_service.draw()
-        self._ui_service.draw()
-        
+        if not self._running:
+            return
+            
+        try:
+            # Draw game elements in order
+            self._render_service.draw()
+            self._particle_service.draw()
+            self._ui_service.draw()
+            
+        except Exception as e:
+            print(f"Error drawing game frame: {e}")
+            # Continue running but log the error
+            
     def clear(self) -> None:
         """Clear all game state."""
-        # Clear all entities
-        self._entity_factory.clear_all()
-        
-        # Clear all services
-        self._render_service.clear()
-        self._physics_service.clear()
-        self._collision_service.clear()
-        self._particle_service.clear()
-        self._ui_service.clear()
-        
-        # Publish clear event
-        self._event_manager.publish('game_clear')
-        print("Game state cleared")
+        try:
+            # Clear all entities
+            self._entity_factory.clear_all()
+            
+            # Clear all services
+            self._render_service.clear()
+            self._physics_service.clear()
+            self._collision_service.clear()
+            self._particle_service.clear()
+            self._ui_service.clear()
+            
+            # Publish clear event
+            self._event_manager.publish('game_clear')
+            print("Game state cleared")
+            
+        except Exception as e:
+            print(f"Error clearing game state: {e}")
+            # Continue cleanup despite errors
         
     def _on_game_start(self, **kwargs) -> None:
         """Handle game start event."""
