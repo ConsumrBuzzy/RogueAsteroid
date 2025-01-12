@@ -1,7 +1,7 @@
 """Player ship entity using component system."""
 import pygame
 import numpy as np
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
 from src.core.entities.components import (
     ScreenWrapComponent,
@@ -23,6 +23,9 @@ from src.core.constants import (
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
 import random
+
+# Debug flag
+DEBUG = False  # Set to True to enable debug output
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -233,13 +236,18 @@ class Ship(Entity):
         if self.shoot_timer > 0:
             self.shoot_timer -= dt
         
-        # Create thrust particles if thrusting
-        if self.input_component:
-            controls = self.game.settings.get('controls', 'arrows')
-            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            if thrust_key in self.input_component.active_keys:
-                self.create_thrust_particles()
-            
+        # Get input component
+        input_comp = self.input_component
+        if input_comp is None:
+            return
+
+        # Check for thrust key
+        thrust_key = pygame.K_UP if input_comp.control_scheme == 'arrows' else pygame.K_w
+        if thrust_key in input_comp.active_keys:
+            self.create_thrust_particles()
+            if DEBUG:
+                print(f"Rotation: {self.transform.rotation}, Thrust direction: {self.thrust_direction}, Power: {self.thrust_power}")
+        
         # Update debug info
         if DEBUG:
             self._update_debug_info()

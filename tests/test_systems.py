@@ -48,17 +48,26 @@ class TestScoreSystem:
         assert game.scoring.current_score > initial_score
     
     def test_high_score_tracking(self, game):
-        """Test high score tracking"""
-        game.new_game()  # Start a new game first
-        game.scoring.reset()  # Reset scoring to ensure clean state
-        game.scoring.add_points(10000)  # Add enough points to beat default high score
-        assert game.scoring.check_high_score()  # Should be a high score since we reset
+        """Test that adding points correctly updates high score."""
+        # Start new game and reset scoring
+        game.new_game()
+        game.scoring.reset()
         
-        # Add a high score and verify it was added
-        game.scoring.add_high_score("TEST", 1)
-        high_scores = game.scoring.get_high_scores()
-        assert len(high_scores) > 0
-        assert high_scores[0].score == 10000
+        # Clear existing high scores
+        game.scoring.high_scores = []
+        
+        # Add points and verify score
+        game.scoring.add_points(10000)
+        assert game.scoring.current_score == 10000
+        
+        # Should be a high score since we cleared the list
+        assert game.scoring.check_high_score()
+        
+        # Add high score and verify
+        assert game.scoring.add_high_score("TEST", 1)
+        assert len(game.scoring.high_scores) == 1
+        assert game.scoring.high_scores[0].score == 10000
+        assert game.scoring.high_scores[0].name == "TEST"
         
     def test_score_reset(self, game):
         """Test score reset functionality"""
