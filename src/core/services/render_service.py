@@ -35,6 +35,8 @@ class RenderService:
         """
         self._screen = screen
         self._layers: Dict[str, RenderLayer] = {}
+        self._sorted_layers: Optional[List[RenderLayer]] = None
+        self._needs_sort = False
         
         # Create default layers
         self._create_layer("background", 0)
@@ -53,7 +55,14 @@ class RenderService:
             order: Render order
         """
         self._layers[name] = RenderLayer(name, order)
+        self._needs_sort = True
         
+    def _ensure_sorted_layers(self) -> None:
+        """Ensure layers are sorted by order."""
+        if self._needs_sort or self._sorted_layers is None:
+            self._sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
+            self._needs_sort = False
+            
     def add_to_layer(self, layer_name: str, entity) -> None:
         """Add an entity to a render layer.
         
@@ -101,11 +110,11 @@ class RenderService:
             # Clear screen
             self._screen.fill((0, 0, 0))  # Black background
             
-            # Sort layers by order
-            sorted_layers = sorted(self._layers.values(), key=lambda l: l.order)
+            # Ensure layers are sorted
+            self._ensure_sorted_layers()
             
             # Draw each visible layer
-            for layer in sorted_layers:
+            for layer in self._sorted_layers:
                 if layer.visible:
                     for entity in layer.entities:
                         try:
@@ -135,4 +144,5 @@ class RenderService:
         """Clean up the service."""
         self.clear()
         self._layers.clear()
+        self._sorted_layers = None
         print("RenderService cleaned up") 
