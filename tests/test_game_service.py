@@ -198,7 +198,7 @@ class TestGameService:
         game_service._entity_factory.create_ship.return_value = mock_ship
         
         # Trigger game start to spawn ship
-        game_service.start()
+        game_service._on_game_start()
         
         # Verify ship was created and registered
         game_service._entity_factory.create_ship.assert_called_once()
@@ -221,6 +221,13 @@ class TestGameService:
                 self.size = size
                 self.position = position
                 self.ship_pos = ship_pos
+                self.transform = MagicMock()
+                self.transform.position = ship_pos or pygame.Vector2(400, 300)
+                
+            def get_component(self, component_type):
+                if component_type == 'TransformComponent':
+                    return self.transform
+                return MagicMock()
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
@@ -263,6 +270,13 @@ class TestGameService:
                 self.size = size
                 self.position = position
                 self.ship_pos = ship_pos
+                self.transform = MagicMock()
+                self.transform.position = ship_pos or pygame.Vector2(400, 300)
+                
+            def get_component(self, component_type):
+                if component_type == 'TransformComponent':
+                    return self.transform
+                return MagicMock()
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
