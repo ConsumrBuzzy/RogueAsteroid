@@ -3,7 +3,6 @@ from typing import Dict, Optional, List
 import pygame
 
 from ..entity import Entity
-from . import ServiceManager
 
 class GameService:
     """Service for core game management.
@@ -16,12 +15,13 @@ class GameService:
     - Performance monitoring
     """
     
-    def __init__(self, screen: pygame.Surface, settings: Dict):
+    def __init__(self, screen: pygame.Surface, settings: Dict, service_manager):
         """Initialize the game service.
         
         Args:
             screen: Pygame surface to render to
             settings: Game settings dictionary
+            service_manager: ServiceManager instance for accessing other services
         """
         self._screen = screen
         self._settings = settings
@@ -30,7 +30,6 @@ class GameService:
         self._dt = 0
         
         # Get required services
-        service_manager = ServiceManager()
         self._input_service = service_manager.get_service('input')
         self._physics_service = service_manager.get_service('physics')
         self._render_service = service_manager.get_service('render')

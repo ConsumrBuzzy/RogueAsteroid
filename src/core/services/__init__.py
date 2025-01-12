@@ -72,7 +72,7 @@ class ServiceManager:
         self._services['statistics'] = StatisticsService()
         
         # Initialize game service last as it depends on others
-        self._services['game'] = GameService(screen, settings)
+        self._services['game'] = GameService(screen, settings, self)
         
         print("All services initialized")
     
