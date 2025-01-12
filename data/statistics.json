@@ -278,5 +278,33 @@
     "waves_completed": 0,
     "accuracy": 0.0,
     "highest_wave": 0
+  },
+  {
+    "session_id": "20250112_111452",
+    "start_time": "2025-01-12T11:14:52.565906",
+    "end_time": "2025-01-12T11:14:56.800810",
+    "duration": 4.234904,
+    "score": 0,
+    "asteroids_destroyed": 0,
+    "shots_fired": 0,
+    "shots_hit": 0,
+    "deaths": 0,
+    "waves_completed": 0,
+    "accuracy": 0.0,
+    "highest_wave": 0
+  },
+  {
+    "session_id": "20250112_111502",
+    "start_time": "2025-01-12T11:15:02.196491",
+    "end_time": "2025-01-12T11:15:03.636505",
+    "duration": 1.440014,
+    "score": 0,
+    "asteroids_destroyed": 0,
+    "shots_fired": 0,
+    "shots_hit": 0,
+    "deaths": 0,
+    "waves_completed": 0,
+    "accuracy": 0.0,
+    "highest_wave": 0
   }
 ]

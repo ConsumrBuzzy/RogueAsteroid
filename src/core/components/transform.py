@@ -5,11 +5,12 @@ from pygame import Vector2
 import math
 
 from ..entity.entity import Entity
+from .component import Component
 
 if TYPE_CHECKING:
     from ..game import Game
 
-class TransformComponent:
+class TransformComponent(Component):
     """Component for handling position and movement.
     
     Manages an entity's position, velocity, and rotation in 2D space.
@@ -23,9 +24,24 @@ class TransformComponent:
             x: Initial x position.
             y: Initial y position.
         """
-        self._entity = entity
+        super().__init__(entity)
         self._position = Vector2(x, y)
         self._rotation = 0.0  # In degrees
+        self._velocity = Vector2(0, 0)  # Added velocity vector
+        
+    @property
+    def velocity(self) -> Vector2:
+        """Get the current velocity."""
+        return self._velocity
+        
+    @velocity.setter
+    def velocity(self, value: Vector2) -> None:
+        """Set the velocity.
+        
+        Args:
+            value: New velocity vector
+        """
+        self._velocity = Vector2(value)
         
     @property
     def entity(self) -> Entity:
@@ -115,10 +131,11 @@ class TransformComponent:
         angle_rad = math.radians(self._rotation - 90)  # -90 to align with pygame's coordinate system
         return Vector2(math.cos(angle_rad), math.sin(angle_rad))
         
-    def update(self, dt: float) -> None:
+    def on_update(self, dt: float) -> None:
         """Update the transform.
         
         Args:
             dt: Delta time in seconds
         """
-        pass  # Transform doesn't need updating 
+        if self._velocity.length() > 0:
+            self.move(self._velocity.x * dt, self._velocity.y * dt) 
