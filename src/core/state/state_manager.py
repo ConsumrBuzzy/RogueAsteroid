@@ -1,6 +1,6 @@
 """Game state management system."""
 from enum import Enum, auto
-from typing import Optional, Dict, Callable
+from typing import Optional, Dict, Callable, Set
 import pygame
 
 class GameState(Enum):
@@ -14,156 +14,249 @@ class GameState(Enum):
     GAME_OVER = auto()
 
 class StateManager:
-    """Manages game state transitions and state-specific behaviors."""
+    """Manages game states and transitions."""
     
-    def __init__(self, game):
-        """Initialize the state manager.
-        
-        Args:
-            game: Reference to the main game instance
-        """
-        self._game = game
+    def __init__(self):
+        """Initialize the state manager."""
         self._current_state: Optional[GameState] = None
         self._previous_state: Optional[GameState] = None
         self._state_handlers: Dict[GameState, Dict[str, Callable]] = {}
-        self._initialize_state_handlers()
+        self._valid_transitions: Dict[GameState, Set[GameState]] = {}
+        self._paused = False
         
-        # Debug info
+        # Set up valid state transitions
+        self._setup_valid_transitions()
+        
+        # Register default handlers
+        self.register_state(GameState.MAIN_MENU, 
+                          on_enter=self._enter_main_menu,
+                          on_exit=self._exit_main_menu,
+                          on_update=self._update_main_menu,
+                          on_draw=self._draw_main_menu,
+                          on_input=self._handle_main_menu_input)
+                          
+        self.register_state(GameState.PLAYING,
+                          on_enter=self._enter_playing,
+                          on_exit=self._exit_playing,
+                          on_update=self._update_playing,
+                          on_draw=self._draw_playing,
+                          on_input=self._handle_playing_input)
+                          
         print("StateManager initialized")
-    
-    def _initialize_state_handlers(self):
-        """Initialize state-specific handlers."""
-        # Main Menu handlers
-        self._state_handlers[GameState.MAIN_MENU] = {
-            'enter': self._enter_main_menu,
-            'exit': self._exit_main_menu,
-            'update': self._update_main_menu,
-            'draw': self._draw_main_menu,
-            'handle_input': self._handle_main_menu_input
+        
+    def _setup_valid_transitions(self) -> None:
+        """Set up valid state transitions."""
+        # From main menu
+        self._valid_transitions[GameState.MAIN_MENU] = {
+            GameState.PLAYING,
+            GameState.OPTIONS,
+            GameState.HIGH_SCORE
         }
         
-        # Playing state handlers
-        self._state_handlers[GameState.PLAYING] = {
-            'enter': self._enter_playing,
-            'exit': self._exit_playing,
-            'update': self._update_playing,
-            'draw': self._draw_playing,
-            'handle_input': self._handle_playing_input
+        # From playing
+        self._valid_transitions[GameState.PLAYING] = {
+            GameState.PAUSED,
+            GameState.GAME_OVER,
+            GameState.NEW_HIGH_SCORE
         }
         
-        # Initialize other state handlers similarly...
-    
-    @property
-    def current_state(self) -> Optional[GameState]:
-        """Get the current game state."""
-        return self._current_state
-    
-    @property
-    def previous_state(self) -> Optional[GameState]:
-        """Get the previous game state."""
-        return self._previous_state
-    
-    def change_state(self, new_state: GameState):
-        """Change to a new game state.
+        # From paused
+        self._valid_transitions[GameState.PAUSED] = {
+            GameState.PLAYING,
+            GameState.MAIN_MENU
+        }
+        
+        # From options
+        self._valid_transitions[GameState.OPTIONS] = {
+            GameState.MAIN_MENU
+        }
+        
+        # From high score
+        self._valid_transitions[GameState.HIGH_SCORE] = {
+            GameState.MAIN_MENU
+        }
+        
+        # From new high score
+        self._valid_transitions[GameState.NEW_HIGH_SCORE] = {
+            GameState.HIGH_SCORE,
+            GameState.MAIN_MENU
+        }
+        
+        # From game over
+        self._valid_transitions[GameState.GAME_OVER] = {
+            GameState.NEW_HIGH_SCORE,
+            GameState.MAIN_MENU
+        }
+        
+    def is_valid_transition(self, from_state: GameState, to_state: GameState) -> bool:
+        """Check if a state transition is valid.
         
         Args:
-            new_state: The GameState to transition to
-        """
-        # Don't transition to the same state
-        if new_state == self._current_state:
-            return
+            from_state: Current state
+            to_state: Target state
             
-        print(f"State changing from {self._current_state} to {new_state}")
+        Returns:
+            bool: True if transition is valid
+        """
+        if from_state not in self._valid_transitions:
+            return False
+        return to_state in self._valid_transitions[from_state]
         
-        # Exit current state
-        if self._current_state and self._current_state in self._state_handlers:
-            self._state_handlers[self._current_state]['exit']()
+    def change_state(self, new_state: GameState) -> bool:
+        """Change to a new state.
         
-        # Update state tracking
-        self._previous_state = self._current_state
-        self._current_state = new_state
-        
-        # Enter new state
-        if new_state in self._state_handlers:
-            self._state_handlers[new_state]['enter']()
-        
-        print(f"State changed to: {new_state}")
-    
-    def update(self, dt: float):
+        Args:
+            new_state: State to change to
+            
+        Returns:
+            bool: True if state changed successfully
+            
+        Raises:
+            ValueError: If new_state is invalid
+        """
+        if new_state not in GameState:
+            raise ValueError(f"Invalid state: {new_state}")
+            
+        # Check if transition is valid
+        if self._current_state and not self.is_valid_transition(self._current_state, new_state):
+            print(f"Invalid state transition: {self._current_state} -> {new_state}")
+            return False
+            
+        try:
+            # Exit current state
+            if self._current_state and self._current_state in self._state_handlers:
+                self._state_handlers[self._current_state]['on_exit']()
+                
+            # Update state
+            self._previous_state = self._current_state
+            self._current_state = new_state
+            
+            # Enter new state
+            if new_state in self._state_handlers:
+                self._state_handlers[new_state]['on_enter']()
+                
+            print(f"State changed: {new_state}")
+            return True
+            
+        except Exception as e:
+            print(f"Error changing state: {e}")
+            return False
+            
+    def update(self, dt: float) -> None:
         """Update the current state.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds
         """
-        if self._current_state in self._state_handlers:
-            self._state_handlers[self._current_state]['update'](dt)
-    
-    def draw(self, screen: pygame.Surface):
+        if not self._current_state:
+            return
+            
+        try:
+            if self._current_state in self._state_handlers:
+                self._state_handlers[self._current_state]['on_update'](dt)
+        except Exception as e:
+            print(f"Error updating state: {e}")
+            
+    def draw(self, screen: pygame.Surface) -> None:
         """Draw the current state.
         
         Args:
-            screen: Pygame surface to draw on
+            screen: Surface to draw on
         """
-        if self._current_state in self._state_handlers:
-            self._state_handlers[self._current_state]['draw'](screen)
-    
-    def handle_input(self, event: pygame.event.Event):
-        """Handle input for the current state.
+        if not self._current_state:
+            return
+            
+        try:
+            if self._current_state in self._state_handlers:
+                self._state_handlers[self._current_state]['on_draw'](screen)
+        except Exception as e:
+            print(f"Error drawing state: {e}")
+            
+    def handle_input(self, event: pygame.event.Event) -> None:
+        """Handle input for current state.
         
         Args:
-            event: Pygame event to handle
+            event: Event to handle
         """
-        if self._current_state in self._state_handlers:
-            self._state_handlers[self._current_state]['handle_input'](event)
-    
-    # State handler methods
-    def _enter_main_menu(self):
+        if not self._current_state:
+            return
+            
+        try:
+            if self._current_state in self._state_handlers:
+                self._state_handlers[self._current_state]['on_input'](event)
+        except Exception as e:
+            print(f"Error handling input: {e}")
+            
+    # State handler implementations
+    def _enter_main_menu(self) -> None:
         """Enter main menu state."""
-        pass
-    
-    def _exit_main_menu(self):
-        """Exit main menu state."""
-        pass
-    
-    def _update_main_menu(self, dt: float):
-        """Update main menu state."""
-        pass
-    
-    def _draw_main_menu(self, screen: pygame.Surface):
-        """Draw main menu state."""
-        pass
-    
-    def _handle_main_menu_input(self, event: pygame.event.Event):
-        """Handle main menu input."""
-        pass
-    
-    def _enter_playing(self):
-        """Enter playing state."""
-        self._game.reset_game()
-    
-    def _exit_playing(self):
-        """Exit playing state."""
-        pass
-    
-    def _update_playing(self, dt: float):
-        """Update playing state."""
-        self._game.update(dt)
-    
-    def _draw_playing(self, screen: pygame.Surface):
-        """Draw playing state."""
-        # Clear screen
-        screen.fill((0, 0, 0))
+        self._paused = False
+        # Reset game state
+        self.publish_event('menu_entered')
         
-        # Draw all entities
-        for entity in self._game.entities:
-            entity.draw(screen)
-    
-    def _handle_playing_input(self, event: pygame.event.Event):
+    def _exit_main_menu(self) -> None:
+        """Exit main menu state."""
+        self.publish_event('menu_exited')
+        
+    def _update_main_menu(self, dt: float) -> None:
+        """Update main menu state."""
+        # Update menu animations
+        pass
+        
+    def _draw_main_menu(self, screen: pygame.Surface) -> None:
+        """Draw main menu state."""
+        try:
+            # Draw menu background
+            screen.fill((0, 0, 0))  # Black background
+            
+            # Draw menu items (delegated to menu service)
+            self.publish_event('draw_menu', screen)
+            
+        except pygame.error as e:
+            print(f"Error drawing menu: {e}")
+            
+    def _handle_main_menu_input(self, event: pygame.event.Event) -> None:
+        """Handle main menu input."""
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.publish_event('quit_game')
+                
+    def _enter_playing(self) -> None:
+        """Enter playing state."""
+        self._paused = False
+        self.publish_event('game_started')
+        
+    def _exit_playing(self) -> None:
+        """Exit playing state."""
+        self.publish_event('game_exited')
+        
+    def _update_playing(self, dt: float) -> None:
+        """Update playing state."""
+        if not self._paused:
+            self.publish_event('update_game', dt)
+            
+    def _draw_playing(self, screen: pygame.Surface) -> None:
+        """Draw playing state."""
+        try:
+            self.publish_event('draw_game', screen)
+        except pygame.error as e:
+            print(f"Error drawing game: {e}")
+            
+    def _handle_playing_input(self, event: pygame.event.Event) -> None:
         """Handle playing state input."""
         if event.type == pygame.KEYDOWN:
-            if event.key in (pygame.K_ESCAPE, pygame.K_p):
+            if event.key == pygame.K_ESCAPE:
                 self.change_state(GameState.PAUSED)
-            elif event.key == pygame.K_o:
-                self.change_state(GameState.OPTIONS)
-            elif event.key == pygame.K_h:
-                self.change_state(GameState.HIGH_SCORE) 
+            else:
+                self.publish_event('game_input', event)
+                
+    def publish_event(self, event_type: str, *args) -> None:
+        """Publish a state event.
+        
+        Args:
+            event_type: Type of event
+            *args: Event arguments
+        """
+        # Delegate to event manager if available
+        if hasattr(self, '_event_manager'):
+            self._event_manager.publish(event_type, *args) 

@@ -2,14 +2,19 @@
 import os
 import sys
 import traceback
+import time
 import pygame
 
 # Add src directory to Python path for proper imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT, TARGET_FPS
 from src.core.components import ComponentRegistry
 from src.core.services import ServiceManager
+
+# Performance monitoring
+frame_times = []
+MAX_FRAME_TIMES = 60  # Store last 60 frames for averaging
 
 def init_pygame() -> bool:
     """Initialize pygame and its subsystems.
@@ -142,9 +147,31 @@ def main():
         
         # Main game loop
         clock = pygame.time.Clock()
+        last_time = time.perf_counter()
+        frame_count = 0
+        frame_time_accum = 0
+        
         while game_service.is_running():
-            # Time
-            dt = clock.tick(60) / 1000.0
+            # Time management
+            current_time = time.perf_counter()
+            raw_dt = current_time - last_time
+            last_time = current_time
+            
+            # Limit frame time to prevent spiral of death
+            dt = min(raw_dt, 0.1)  # Cap at 100ms
+            frame_times.append(dt)
+            if len(frame_times) > MAX_FRAME_TIMES:
+                frame_times.pop(0)
+            
+            # FPS tracking
+            frame_count += 1
+            frame_time_accum += dt
+            if frame_time_accum >= 1.0:  # Every second
+                fps = frame_count / frame_time_accum
+                avg_frame_time = sum(frame_times) / len(frame_times)
+                print(f"FPS: {fps:.1f}, Frame Time: {avg_frame_time*1000:.1f}ms")
+                frame_count = 0
+                frame_time_accum = 0
             
             # Process events
             for event in pygame.event.get():
@@ -159,6 +186,9 @@ def main():
             if not game_service.is_paused():
                 game_service.update(dt)
             game_service.draw()
+            
+            # Maintain target frame rate
+            clock.tick(TARGET_FPS)
             
         print("Game loop ended")
         

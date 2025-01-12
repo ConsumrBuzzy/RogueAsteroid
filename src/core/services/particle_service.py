@@ -57,15 +57,26 @@ class ParticleService:
     - Visual feedback
     """
     
+    # Resource limits
+    MAX_PARTICLES = 1000
+    MAX_PARTICLES_PER_EFFECT = 100
+    
     def __init__(self, screen: pygame.Surface):
         """Initialize the particle service.
         
         Args:
             screen: Pygame surface to render to
+            
+        Raises:
+            ValueError: If screen is None
         """
+        if screen is None:
+            raise ValueError("Screen surface cannot be None")
+            
         self._screen = screen
         self._particles: List[Particle] = []
         self._templates: Dict[str, ParticleTemplate] = {}
+        self._active_effects: Dict[str, int] = {}  # Track particles per effect
         self._setup_default_templates()
         print("ParticleService initialized")
         
@@ -106,70 +117,97 @@ class ParticleService:
         self._templates[name] = template
         print(f"Registered particle template: {name}")
         
-    def emit(self, template_name: str, x: float, y: float, 
-             count: int, direction: float = 0) -> None:
+    def emit(self, template_name: str, position: tuple, direction: float = 0, count: int = 1) -> bool:
         """Emit particles using a template.
         
         Args:
-            template_name: Name of template to use
-            x: Emission x position
-            y: Emission y position
+            template_name: Name of particle template to use
+            position: (x, y) position to emit from
+            direction: Direction in radians
             count: Number of particles to emit
-            direction: Base direction in radians
+            
+        Returns:
+            bool: True if particles were emitted, False if limits reached
+            
+        Raises:
+            ValueError: If template_name doesn't exist
         """
         if template_name not in self._templates:
-            print(f"Unknown particle template: {template_name}")
-            return
+            raise ValueError(f"Unknown particle template: {template_name}")
             
+        # Check global particle limit
+        if len(self._particles) >= self.MAX_PARTICLES:
+            print(f"Warning: Global particle limit reached ({self.MAX_PARTICLES})")
+            return False
+            
+        # Check per-effect limit
+        current_count = self._active_effects.get(template_name, 0)
+        if current_count >= self.MAX_PARTICLES_PER_EFFECT:
+            print(f"Warning: Per-effect particle limit reached for {template_name}")
+            return False
+            
+        # Create particles
         template = self._templates[template_name]
-        for _ in range(count):
-            self._particles.append(Particle(x, y, template, direction))
+        new_count = min(count, self.MAX_PARTICLES - len(self._particles))
+        new_count = min(new_count, self.MAX_PARTICLES_PER_EFFECT - current_count)
+        
+        for _ in range(new_count):
+            particle = template.create_particle(position, direction)
+            self._particles.append(particle)
             
+        # Update effect count
+        self._active_effects[template_name] = current_count + new_count
+        return True
+        
     def update(self, dt: float) -> None:
-        """Update all active particles.
+        """Update all particles.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds
         """
-        # Update particles in reverse to safely remove dead ones
-        for i in range(len(self._particles) - 1, -1, -1):
-            particle = self._particles[i]
-            
-            # Update lifetime
-            particle.time_remaining -= dt
-            if particle.time_remaining <= 0:
-                self._particles.pop(i)
-                continue
-                
-            # Update position
-            particle.x += particle.vx * dt
-            particle.y += particle.vy * dt
-            
-            # Update alpha based on remaining lifetime
-            life_fraction = particle.time_remaining / particle.lifetime
-            particle.alpha = int(255 * life_fraction)
-            
-    def draw(self) -> None:
-        """Draw all active particles."""
+        # Reset effect counts
+        self._active_effects.clear()
+        
+        # Update and filter particles
+        active_particles = []
         for particle in self._particles:
-            # Create surface for particle
-            surface = pygame.Surface((particle.size * 2, particle.size * 2), pygame.SRCALPHA)
-            
-            # Draw particle
-            pygame.draw.circle(
-                surface,
-                (*particle.color, particle.alpha),
-                (particle.size, particle.size),
-                particle.size
-            )
-            
-            # Blit to screen
-            self._screen.blit(
-                surface,
-                (particle.x - particle.size, particle.y - particle.size)
-            )
+            particle.update(dt)
+            if particle.is_alive():
+                active_particles.append(particle)
+                # Track effect counts
+                self._active_effects[particle.template_name] = \
+                    self._active_effects.get(particle.template_name, 0) + 1
+                    
+        self._particles = active_particles
+        
+    def draw(self) -> None:
+        """Draw all particles."""
+        try:
+            for particle in self._particles:
+                particle.draw(self._screen)
+        except pygame.error as e:
+            print(f"Warning: Error drawing particles: {e}")
             
     def clear(self) -> None:
-        """Clear all active particles."""
+        """Clear all particles."""
         self._particles.clear()
-        print("Particle service cleared") 
+        self._active_effects.clear()
+        
+    def cleanup(self) -> None:
+        """Clean up resources."""
+        self.clear()
+        self._templates.clear()
+        print("ParticleService cleaned up")
+        
+    def get_stats(self) -> Dict:
+        """Get particle system statistics.
+        
+        Returns:
+            Dict containing particle counts and limits
+        """
+        return {
+            "total_particles": len(self._particles),
+            "max_particles": self.MAX_PARTICLES,
+            "effects": self._active_effects.copy(),
+            "max_per_effect": self.MAX_PARTICLES_PER_EFFECT
+        } 
