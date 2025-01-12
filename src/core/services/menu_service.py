@@ -117,6 +117,10 @@ class MenuService:
         
         # Create default menus
         self._create_menus()
+        
+        # Set initial menu based on current state
+        self.set_current_menu(self._state_service.get_current_state())
+        
         print("MenuService initialized")
         
     def _create_menus(self) -> None:

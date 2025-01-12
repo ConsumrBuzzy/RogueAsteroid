@@ -65,12 +65,6 @@ class StateService:
             
         self._previous_state = self._current_state
         self._current_state = new_state
-        
-        # Get menu service and update current menu
-        from .menu_service import MenuService
-        menu_service = MenuService()
-        menu_service.set_current_menu(new_state)
-        
         print(f"Changed state from {self._previous_state} to {new_state}")
         
     def get_current_state(self) -> Optional[GameState]:
