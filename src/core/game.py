@@ -4,6 +4,8 @@ import random
 import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
+from src.core.services import AudioManager, HighScoreManager
+from src.core.systems import ParticleSystem, Spawner
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
@@ -35,6 +37,16 @@ class Game:
             'controls': 'arrows'  # Default to arrow keys
         }
         
+        # Initialize services
+        self.audio = AudioManager()
+        self.high_scores = HighScoreManager()
+        print("Services initialized")
+        
+        # Initialize systems
+        self.particle_system = ParticleSystem(self)
+        self.spawner = Spawner(self)
+        print("Systems initialized")
+        
         # Initialize scoring system
         self.scoring = ScoringSystem()
         print("Scoring system initialized")
@@ -53,7 +65,7 @@ class Game:
         self.entities = []
         self.bullets = []
         self.asteroids = []
-        self.particles = []  # Add particle list
+        print("Entity lists initialized")
         
         # Initialize state management (but don't set state yet)
         self.state_manager = StateManager(self)
@@ -101,7 +113,6 @@ class Game:
         self.entities.clear()
         self.asteroids.clear()
         self.bullets.clear()
-        self.particles.clear()
         
         # Reset game properties
         self.level = 1
@@ -122,23 +133,7 @@ class Game:
     
     def spawn_asteroid_wave(self):
         """Spawn a wave of asteroids."""
-        num_asteroids = 4 + (self.level - 1)  # Increase with level
-        for _ in range(num_asteroids):
-            # Choose spawn point on the edge of the screen
-            if random.random() < 0.5:
-                # Spawn on left/right edge
-                x = 0 if random.random() < 0.5 else self.width
-                y = random.uniform(0, self.height)
-            else:
-                # Spawn on top/bottom edge
-                x = random.uniform(0, self.width)
-                y = 0 if random.random() < 0.5 else self.height
-            
-            # Create asteroid with random size
-            size = random.choice(list(ASTEROID_SIZES.keys()))
-            asteroid = Asteroid(self, size, (x, y))
-            self.add_entity(asteroid)
-            self.asteroids.append(asteroid)
+        self.spawner.start_wave()
     
     def pause(self):
         """Pause the game."""
@@ -169,55 +164,62 @@ class Game:
         current = self.settings['controls']
         self.settings['controls'] = 'wasd' if current == 'arrows' else 'arrows'
     
-    def create_explosion(self, x, y):
-        """Create an explosion particle effect."""
-        num_particles = random.randint(8, 12)
-        for _ in range(num_particles):
-            angle = random.uniform(0, 2 * math.pi)
-            speed = random.uniform(50, 150)
-            velocity = np.array([
-                speed * math.cos(angle),
-                speed * math.sin(angle)
-            ])
-            self.particles.append({
-                'position': np.array([x, y]),
-                'velocity': velocity,
-                'lifetime': random.uniform(0.5, 1.0),
-                'color': (255, 255, 255)
-            })
+    def create_explosion(self, x: float, y: float, size: str = 'medium'):
+        """Create an explosion effect."""
+        # Play explosion sound
+        self.audio.play_explosion(size)
+        
+        # Create particles
+        position = np.array([x, y])
+        color = (255, 165, 0)  # Orange
+        
+        if size == 'large':
+            self.particle_system.emit_circular(
+                center=(x, y),
+                speed=150.0,
+                color=color,
+                size=3.0,
+                lifetime=1.0,
+                count=12
+            )
+        elif size == 'medium':
+            self.particle_system.emit_circular(
+                center=(x, y),
+                speed=100.0,
+                color=color,
+                size=2.0,
+                lifetime=0.7,
+                count=8
+            )
+        else:  # small
+            self.particle_system.emit_circular(
+                center=(x, y),
+                speed=50.0,
+                color=color,
+                size=1.0,
+                lifetime=0.5,
+                count=6
+            )
     
     def update(self, dt: float) -> None:
         """Update game state."""
-        if self.state not in [GameState.PLAYING, GameState.PAUSED]:
-            return
-            
-        # Don't update game logic if paused
-        if self.state == GameState.PAUSED:
-            return
-            
-        # Update all entities
-        for entity in self.entities:
-            entity.update(dt)
-            
-        # Update particles
-        for particle in self.particles[:]:  # Create a copy of the list to safely remove items
-            # Update particle position
-            particle['position'] = particle['position'] + particle['velocity'] * dt
-            
-            # Update lifetime and remove if expired
-            particle['lifetime'] -= dt
-            if particle['lifetime'] <= 0:
-                self.particles.remove(particle)
-                
-        # Update scoring
-        self.scoring.update(dt)
+        self.dt = dt
         
-        # Check for collisions
+        # Update systems
+        self.particle_system.update(dt)
+        self.spawner.update(dt)
+        
+        # Update entities
+        for entity in self.entities[:]:  # Copy list to allow removal during iteration
+            entity.update(dt)
+        
+        # Handle collisions
         self.handle_collisions()
         
-        # Update debug info
-        if DEBUG:
-            self._update_debug_info()
+        # Check for wave completion
+        if self.state == GameState.PLAYING and self.spawner.check_wave_complete():
+            self.level += 1
+            self.spawner.advance_wave()
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
