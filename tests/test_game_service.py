@@ -192,6 +192,9 @@ class TestGameService:
         """Test player ship spawning."""
         # Mock the ship creation
         mock_ship = MagicMock()
+        mock_transform = MagicMock()
+        mock_ship.get_component.return_value = mock_transform
+        mock_transform.position = pygame.Vector2(400, 300)
         game_service._entity_factory.create_ship.return_value = mock_ship
         
         # Trigger game start to spawn ship
@@ -214,11 +217,14 @@ class TestGameService:
         
         mock_asteroid = MagicMock()
         
-        # Mock the Asteroid.spawn_random static method
-        def mock_spawn_random(game, player_pos):
+        # Mock the Asteroid constructor
+        def mock_asteroid_init(self, size="large", position=None, ship_pos=None):
+            self.size = size
+            self.position = position
+            self.ship_pos = ship_pos
             return mock_asteroid
             
-        monkeypatch.setattr("src.entities.asteroid.Asteroid.spawn_random", mock_spawn_random)
+        monkeypatch.setattr("src.entities.asteroid.Asteroid.__init__", mock_asteroid_init)
         
         # Spawn asteroids
         count = 3
@@ -253,11 +259,15 @@ class TestGameService:
         mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
         game_service.player_ship = mock_ship
         
-        # Mock asteroid spawning
+        # Mock asteroid creation
         mock_asteroid = MagicMock()
-        def mock_spawn_random(game, player_pos):
+        def mock_asteroid_init(self, size="large", position=None, ship_pos=None):
+            self.size = size
+            self.position = position
+            self.ship_pos = ship_pos
             return mock_asteroid
-        monkeypatch.setattr("src.entities.asteroid.Asteroid.spawn_random", mock_spawn_random)
+            
+        monkeypatch.setattr("src.entities.asteroid.Asteroid.__init__", mock_asteroid_init)
         
         # Trigger level complete
         game_service._on_level_complete(level=initial_level)
