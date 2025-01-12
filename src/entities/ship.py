@@ -33,7 +33,13 @@ class Ship(Entity):
     SHOOT_COOLDOWN = 0.20  # Reduced from 0.25 to 0.20 seconds between shots
     
     def __init__(self, game: 'Game'):
-        super().__init__(game)
+        """Initialize the ship.
+        
+        Args:
+            game: Game instance
+        """
+        super().__init__()  # Call base Entity __init__ with no args
+        self.game = game  # Store game reference after super().__init__()
         print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
