@@ -2,6 +2,11 @@
 from enum import Enum, auto
 import pygame
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.entities.components import (
+    RenderComponent,
+    ParticleComponent,
+    EffectComponent
+)
 
 class GameState(Enum):
     MAIN_MENU = auto()
@@ -221,17 +226,17 @@ class StateManager:
             for entity in self.game.entities:
                 try:
                     # Draw render component
-                    render = entity.get_component('render')
+                    render = entity.get_component(RenderComponent)
                     if render and render.visible and render.vertices:
                         render.draw(screen)
                     
                     # Draw particle effects
-                    particle = entity.get_component('particle')
+                    particle = entity.get_component(ParticleComponent)
                     if particle:
                         particle.draw(screen)
                     
                     # Draw other effects
-                    effects = entity.get_component('effects')
+                    effects = entity.get_component(EffectComponent)
                     if effects:
                         effects.draw(screen)
                 except Exception as e:
@@ -248,18 +253,13 @@ class StateManager:
             score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
             screen.blit(score_text, (10, 10))
             
-            # Draw multiplier if active
-            if self.game.scoring.score_multiplier > 1.0:
-                mult_text = font.render(f"x{self.game.scoring.score_multiplier:.1f}", True, (255, 255, 0))
-                screen.blit(mult_text, (10, 30))
-            
             # Draw lives
             lives_text = font.render(f"Lives: {self.game.lives}", True, WHITE)
-            screen.blit(lives_text, (10, 50))  # Position below score
+            screen.blit(lives_text, (10, 50))
             
             # Draw level
             level_text = font.render(f"Level: {self.game.level}", True, WHITE)
-            screen.blit(level_text, (10, 90))  # Position below lives
+            screen.blit(level_text, (10, 90))
         except Exception as e:
             print(f"Error drawing HUD: {e}")  # Debug info
     
