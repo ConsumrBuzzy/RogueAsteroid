@@ -152,7 +152,12 @@ class Game:
             render = self.services.get_service(RenderService)
             
             # Process events and input
-            event_manager.process_events()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    return
+                event_manager.handle_event(event)
+            
             input_service.update()
             
             # Update game systems
@@ -161,7 +166,7 @@ class Game:
             particles.update(dt)
             
             # Render frame
-            render.clear()
+            render.draw()  # This includes clearing the screen
             entities.draw()
             particles.draw()
             render.present()
