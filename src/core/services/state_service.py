@@ -2,6 +2,7 @@
 from typing import Optional, Dict, Callable, Set, List
 import pygame
 from ..state.game_states import GameState
+from .logging_service import LoggingService
 
 class StateService:
     """Service for managing game states.
@@ -32,10 +33,11 @@ class StateService:
         self._event_manager = None  # Will be set by set_event_manager
         self._valid_transitions: Dict[GameState, Set[GameState]] = {}
         self._subscribers: Dict[str, List[Callable]] = {}
+        self._logger = LoggingService()
         
         # Set initial state
         self.change_state(GameState.MAIN_MENU)
-        print("StateService initialized")
+        self._logger.log("StateService initialized", "INFO")
         self._initialized = True
         
     def register_handler(self, state: GameState, handler: Callable) -> None:
@@ -66,10 +68,11 @@ class StateService:
                 raise RuntimeError("Handler must be callable")
                 
             self._state_handlers[state] = handler
-            print(f"Registered handler for state {state.name}")
+            self._logger.log(f"Registered handler for state {state.name}", "INFO")
             
         except Exception as e:
-            print(f"Error registering handler for state {state.name}: {e}")
+            error_msg = f"Error registering handler for state {state.name}: {e}"
+            self._logger.log(error_msg, "ERROR")
             raise
         
     def set_event_manager(self, event_manager) -> None:
@@ -155,6 +158,7 @@ class StateService:
                 self._event_manager.publish('state_changed', 
                     old_state=self._previous_state,
                     new_state=self._current_state)
+                self._logger.log(f"Published state change event: {self._previous_state} -> {new_state}", "DEBUG")
                     
             # Then notify direct subscribers
             for subscriber_id, callbacks in self._subscribers.items():
@@ -162,10 +166,11 @@ class StateService:
                     try:
                         callback(old_state=self._previous_state, new_state=self._current_state)
                     except Exception as e:
-                        print(f"Error in state change callback for {subscriber_id}: {e}")
+                        error_msg = f"Error in state change callback for {subscriber_id}: {e}"
+                        self._logger.log(error_msg, "ERROR")
                         continue
             
-            print(f"Changed state from {self._previous_state} to {new_state}")
+            self._logger.log(f"Changed state from {self._previous_state} to {new_state}", "INFO")
             
             # Call enter handler for new state if it exists
             if new_state in self._state_handlers:
@@ -174,17 +179,19 @@ class StateService:
                     try:
                         handler.on_enter()
                     except Exception as e:
-                        print(f"Error in enter handler for state {new_state.name}: {e}")
+                        error_msg = f"Error in enter handler for state {new_state.name}: {e}"
+                        self._logger.log(error_msg, "ERROR")
                         # Rollback state change
                         self._current_state = old_state
                         self._previous_state = old_previous
                         raise RuntimeError(f"Failed to enter state {new_state.name}: {e}")
                     
         except Exception as e:
-            print(f"Error during state transition: {e}")
+            error_msg = f"Error during state transition: {e}"
+            self._logger.log(error_msg, "ERROR")
             # Ensure state is valid even if transition fails
             if self._current_state is None:
-                print("Critical error: Reverting to MAIN_MENU")
+                self._logger.log("Critical error: Reverting to MAIN_MENU", "ERROR")
                 self._current_state = GameState.MAIN_MENU
             raise
             
@@ -247,6 +254,7 @@ class StateService:
         self._current_state = None
         self._previous_state = None
         
+        self._logger.log("StateService cleaned up", "INFO")
         print("StateService cleaned up")
 
     def subscribe(self, subscriber_id: str, callback: Callable) -> None:
