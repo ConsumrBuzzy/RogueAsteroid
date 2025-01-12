@@ -223,11 +223,17 @@ class TestGameService:
                 self.ship_pos = ship_pos
                 self.transform = MagicMock()
                 self.transform.position = ship_pos or pygame.Vector2(400, 300)
+                self.transform.velocity = pygame.Vector2(0, 0)
+                self.transform.rotation = 0
+                self._components = {'TransformComponent': self.transform}
                 
             def get_component(self, component_type):
-                if component_type == 'TransformComponent':
-                    return self.transform
-                return MagicMock()
+                return self._components.get(component_type, MagicMock())
+                
+            def add_component(self, component_type):
+                component = MagicMock()
+                self._components[component_type] = component
+                return component
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
@@ -272,11 +278,17 @@ class TestGameService:
                 self.ship_pos = ship_pos
                 self.transform = MagicMock()
                 self.transform.position = ship_pos or pygame.Vector2(400, 300)
+                self.transform.velocity = pygame.Vector2(0, 0)
+                self.transform.rotation = 0
+                self._components = {'TransformComponent': self.transform}
                 
             def get_component(self, component_type):
-                if component_type == 'TransformComponent':
-                    return self.transform
-                return MagicMock()
+                return self._components.get(component_type, MagicMock())
+                
+            def add_component(self, component_type):
+                component = MagicMock()
+                self._components[component_type] = component
+                return component
                 
         monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         

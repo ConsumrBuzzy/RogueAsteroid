@@ -331,8 +331,8 @@ class GameService:
             # Ensure resources are loaded
             self._resource_manager.preload_resources()
             
-            # Create player ship
-            self.player_ship = Ship(self)
+            # Create player ship using entity factory
+            self.player_ship = self._entity_factory.create_ship()
             self.entities.append(self.player_ship)
             
             # Register ship with services
