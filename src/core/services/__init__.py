@@ -48,37 +48,62 @@ class ServiceManager:
             screen: Pygame surface to render to
             settings: Game settings
         """
-        # Initialize system services first (no dependencies)
-        self._services['settings'] = SettingsService()
-        self._services['events'] = EventManagerService()
-        self._services['resources'] = ResourceManagerService()
-        self._services['audio'] = AudioService()
-        
-        # Initialize core services (depend on system services)
-        self._services['state'] = StateService()
-        self._services['input'] = InputService()
-        self._services['entity_factory'] = EntityFactoryService()
-        
-        # Initialize rendering services (depend on resources)
-        self._services['render'] = RenderService(screen)
-        self._services['particle'] = ParticleService(screen)
-        self._services['ui'] = UIService(screen)
-        
-        # Initialize gameplay services (depend on core and rendering)
-        self._services['physics'] = PhysicsService(settings['window']['width'], 
-                                                 settings['window']['height'])
-        self._services['collision'] = CollisionService()
-        self._services['menu'] = MenuService()
-        
-        # Initialize data services (depend on settings and events)
-        self._services['high_score'] = HighScoreService()
-        self._services['achievement'] = AchievementService()
-        self._services['statistics'] = StatisticsService()
-        
-        # Initialize game service last (depends on all others)
-        self._services['game'] = GameService(screen, settings, self)
-        
-        print("All services initialized")
+        try:
+            # Initialize system services first (no dependencies)
+            self._services['settings'] = SettingsService()
+            self._services['events'] = EventManagerService()
+            self._services['resources'] = ResourceManagerService()
+            self._services['audio'] = AudioService()
+            
+            # Initialize core services (depend on system services)
+            self._services['state'] = StateService()
+            self._services['input'] = InputService()
+            self._services['entity_factory'] = EntityFactoryService()
+            
+            # Initialize rendering services (depend on resources)
+            self._services['render'] = RenderService(screen)
+            self._services['particle'] = ParticleService(screen)
+            self._services['ui'] = UIService(screen)
+            
+            # Initialize gameplay services (depend on core and rendering)
+            self._services['physics'] = PhysicsService(
+                settings['window']['width'], 
+                settings['window']['height']
+            )
+            self._services['collision'] = CollisionService()
+            
+            # Menu service depends on UI service
+            ui_service = self._services['ui']
+            self._services['menu'] = MenuService(ui_service)
+            
+            # Initialize data services (depend on settings and events)
+            settings_service = self._services['settings']
+            event_manager = self._services['events']
+            
+            self._services['high_score'] = HighScoreService(
+                settings=settings_service,
+                event_manager=event_manager
+            )
+            
+            self._services['achievement'] = AchievementService(
+                settings=settings_service,
+                event_manager=event_manager
+            )
+            
+            self._services['statistics'] = StatisticsService(
+                settings=settings_service,
+                event_manager=event_manager
+            )
+            
+            # Initialize game service last (depends on all others)
+            self._services['game'] = GameService(screen, settings, self)
+            
+            print("All services initialized")
+            
+        except Exception as e:
+            print(f"Error initializing services: {e}")
+            self.cleanup()  # Clean up any services that were initialized
+            raise
     
     def get_service(self, service_name: str) -> Optional[object]:
         """Get a service by name.
