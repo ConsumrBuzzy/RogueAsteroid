@@ -112,8 +112,13 @@ class Game:
     def spawn_ship(self):
         """Spawn the player's ship."""
         if self.ship is None:
-            self.ship = Ship(self.width // 2, self.height // 2)
+            self.ship = Ship(self)
             self.add_entity(self.ship)
+            # Set initial position
+            transform = self.ship.get_component('transform')
+            if transform:
+                transform.position = np.array([self.width // 2, self.height // 2])
+                transform.rotation = 0.0
     
     def spawn_asteroid_wave(self):
         """Spawn a wave of asteroids."""
