@@ -10,12 +10,6 @@ from src.entities.bullet import Bullet
 from src.core.constants import *
 
 class TestGameplayFlow:
-    @pytest.fixture
-    def game(self):
-        """Initialize game instance for testing."""
-        pygame.init()
-        return Game()
-    
     def test_game_initialization_flow(self, game):
         """Test complete game initialization sequence."""
         # Check initial state
@@ -66,13 +60,16 @@ class TestGameplayFlow:
         game.new_game()
         
         # Create a test bullet
-        bullet_pos = np.array([400, 300])
-        bullet = Bullet(bullet_pos[0], bullet_pos[1], 0)
+        bullet_pos = pygame.Vector2(400, 300)
+        bullet_dir = pygame.Vector2(1, 0)  # Shooting right
+        bullet = Bullet(game, bullet_pos, bullet_dir)
         game.add_entity(bullet)
+        game.bullets.append(bullet)
         
         # Create a test asteroid near the bullet
-        asteroid = Asteroid(bullet_pos[0] + 5, bullet_pos[1])
+        asteroid = Asteroid(game, 'large', (bullet_pos.x + 5, bullet_pos.y))
         game.add_entity(asteroid)
+        game.asteroids.append(asteroid)
         
         # Update to check collisions
         game.update(0.016)  # One frame at 60 FPS
@@ -99,8 +96,8 @@ class TestGameplayFlow:
         game.new_game()
         
         # Record initial state
-        initial_asteroids = [a.position.copy() for a in game.asteroids]
-        initial_ship_pos = game.ship.position.copy()
+        initial_asteroids = [a.get_component('transform').position.copy() for a in game.asteroids]
+        initial_ship_pos = game.ship.get_component('transform').position.copy()
         
         # Pause game
         game.pause()
@@ -111,8 +108,8 @@ class TestGameplayFlow:
         
         # Verify nothing moved while paused
         for asteroid, initial_pos in zip(game.asteroids, initial_asteroids):
-            assert np.array_equal(asteroid.position, initial_pos)
-        assert np.array_equal(game.ship.position, initial_ship_pos)
+            assert np.array_equal(asteroid.get_component('transform').position, initial_pos)
+        assert np.array_equal(game.ship.get_component('transform').position, initial_ship_pos)
         
         # Resume game
         game.resume()
@@ -120,7 +117,7 @@ class TestGameplayFlow:
         
         # Update and verify movement resumes
         game.update(1.0)
-        assert any(not np.array_equal(a.position, i) 
+        assert any(not np.array_equal(a.get_component('transform').position, i) 
                   for a, i in zip(game.asteroids, initial_asteroids))
     
     def test_particle_effects_integration(self, game):

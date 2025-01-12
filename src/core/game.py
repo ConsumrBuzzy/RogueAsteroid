@@ -134,7 +134,9 @@ class Game:
                 x = random.uniform(0, self.width)
                 y = 0 if random.random() < 0.5 else self.height
             
-            asteroid = Asteroid(x, y)
+            # Create asteroid with random size
+            size = random.choice(list(ASTEROID_SIZES.keys()))
+            asteroid = Asteroid(self, size, (x, y))
             self.add_entity(asteroid)
             self.asteroids.append(asteroid)
     
