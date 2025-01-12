@@ -1,5 +1,5 @@
 """Base classes for entity component system."""
-from typing import Optional, Type, TypeVar, List
+from typing import Optional, Type, TypeVar, List, Union
 import pygame
 
 T = TypeVar('T', bound='Component')
@@ -46,18 +46,27 @@ class Entity:
         self.active = True
         self._initialized = False
     
-    def add_component(self, component_type: Type[T], *args, **kwargs) -> T:
+    def add_component(self, component_or_type: Union[Component, Type[T]], *args, **kwargs) -> T:
         """Add a component to the entity.
         
         Args:
-            component_type: The type of component to add
+            component_or_type: Component instance or type to add
             *args: Positional arguments for component initialization
             **kwargs: Keyword arguments for component initialization
             
         Returns:
             The added component
+            
+        Raises:
+            TypeError: If component_or_type is not a Component instance or type
         """
-        component = component_type(self, *args, **kwargs)
+        if isinstance(component_or_type, Component):
+            component = component_or_type
+        elif isinstance(component_or_type, type) and issubclass(component_or_type, Component):
+            component = component_or_type(self, *args, **kwargs)
+        else:
+            raise TypeError("component_or_type must be a Component instance or type")
+            
         self.components.append(component)
         return component
     
