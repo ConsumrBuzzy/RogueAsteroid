@@ -3,15 +3,17 @@ from typing import Optional, Dict, Type
 import pygame
 from pygame import Vector2
 
-from src.core.entity.entity import Entity
-from src.core.components import (
-    ComponentRegistry,
+from src.core.entities.base import (
+    Entity,
     TransformComponent,
     RenderComponent,
+    CollisionComponent
+)
+from src.core.components.effect import EffectComponent
+from src.core.components import (
+    ComponentRegistry,
     PhysicsComponent,
-    CollisionComponent,
     InputComponent,
-    EffectComponent,
     ScreenWrapComponent
 )
 from src.core.constants import SHIP_MAX_SPEED, SHIP_FRICTION, SHIP_INVULNERABILITY_TIME
