@@ -100,7 +100,7 @@ class Game:
             
             # Game systems
             logger.debug("Registering game systems...")
-            self.services.register_service("physics", PhysicsService)
+            self.services.register_service("physics", lambda: PhysicsService(SCREEN_WIDTH, SCREEN_HEIGHT))
             self.services.register_service("entities", EntityService)
             self.services.register_service("particles", lambda: ParticleService(self.screen))
             logger.info("All services registered successfully")
