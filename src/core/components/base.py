@@ -13,7 +13,26 @@ class Component:
             entity: The entity this component belongs to
         """
         self.entity = entity
-        self.active = True
+        self._active = True
+        self.enabled = True
+    
+    @property
+    def active(self) -> bool:
+        """Check if component is active.
+        
+        Returns:
+            True if component is active and enabled
+        """
+        return self._active and self.enabled
+        
+    @active.setter
+    def active(self, value: bool) -> None:
+        """Set component active state.
+        
+        Args:
+            value: New active state
+        """
+        self._active = value
     
     def update(self, dt: float) -> None:
         """Update the component's state.
