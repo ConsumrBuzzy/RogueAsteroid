@@ -81,7 +81,7 @@ class ServiceManager:
             event_manager = self._services['events']
             
             self._services['high_score'] = HighScoreService(
-                settings=settings_service,
+                settings_service=settings_service,
                 event_manager=event_manager
             )
             

@@ -13,17 +13,25 @@ class HighScoreService:
     - Score sorting and ranking
     """
     
-    def __init__(self, save_path: str = "data/high_scores.json"):
+    def __init__(self, settings_service, event_manager, save_path: str = "data/high_scores.json"):
         """Initialize the high score service.
         
         Args:
+            settings_service: Settings service for configuration
+            event_manager: Event manager for notifications
             save_path: Path to save high scores file
         """
+        self._settings = settings_service
+        self._event_manager = event_manager
         self._save_path = save_path
         self._high_scores: List[Dict[str, any]] = []
-        self._max_scores = 5
+        self._max_scores = self._settings.get('high_scores.max_entries', 5)
+        
         self._ensure_save_directory()
         self.load_scores()
+        
+        # Subscribe to events
+        self._event_manager.subscribe('game_over', self._on_game_over)
         print("HighScoreService initialized")
         
     def _ensure_save_directory(self) -> None:
@@ -78,6 +86,7 @@ class HighScoreService:
                 self._high_scores = self._high_scores[:self._max_scores]
                 
             self.save_scores()
+            self._event_manager.publish('high_score_added', score=score, name=name)
             print(f"Added high score: {score}")
             return True
             
@@ -95,6 +104,7 @@ class HighScoreService:
         """Clear all high scores."""
         self._high_scores = []
         self.save_scores()
+        self._event_manager.publish('high_scores_cleared')
         print("High scores cleared")
         
     def is_high_score(self, score: int) -> bool:
@@ -123,4 +133,15 @@ class HighScoreService:
                 return i + 1
         if len(self._high_scores) < self._max_scores:
             return len(self._high_scores) + 1
-        return None 
+        return None
+        
+    def _on_game_over(self, **kwargs) -> None:
+        """Handle game over event."""
+        score = kwargs.get('score', 0)
+        if self.is_high_score(score):
+            self._event_manager.publish('new_high_score', score=score)
+            
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.save_scores()
+        print("HighScoreService cleaned up") 
