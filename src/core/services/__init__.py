@@ -15,6 +15,7 @@ from .statistics_service import StatisticsService
 from .input_service import InputService
 from .physics_service import PhysicsService
 from .render_service import RenderService
+from .collision_service import CollisionService
 
 T = TypeVar('T')
 
@@ -93,6 +94,10 @@ class ServiceManager:
             # Render service
             render = RenderService(screen)
             self.register_service("render", render)
+            
+            # Collision service
+            collision = CollisionService()
+            self.register_service("collision", collision)
             
             # Input service
             input_service = InputService()
