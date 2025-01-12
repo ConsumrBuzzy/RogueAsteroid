@@ -16,6 +16,7 @@ from .input_service import InputService
 from .physics_service import PhysicsService
 from .render_service import RenderService
 from .collision_service import CollisionService
+from .particle_service import ParticleService
 
 T = TypeVar('T')
 
@@ -98,6 +99,10 @@ class ServiceManager:
             # Collision service
             collision = CollisionService()
             self.register_service("collision", collision)
+            
+            # Particle service
+            particle = ParticleService(screen)
+            self.register_service("particle", particle)
             
             # Input service
             input_service = InputService()
