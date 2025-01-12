@@ -17,5 +17,15 @@
   "graphics": {
     "particles_enabled": true,
     "debug_visuals": false
+  },
+  "high_scores": {
+    "max_entries": 5,
+    "save_path": "data/high_scores.json"
+  },
+  "statistics": {
+    "save_path": "data/statistics.json"
+  },
+  "achievements": {
+    "save_path": "data/achievements.json"
   }
 }

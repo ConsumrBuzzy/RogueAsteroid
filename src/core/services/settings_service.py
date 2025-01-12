@@ -41,8 +41,19 @@ class SettingsService:
             "graphics": {
                 "particles_enabled": True,
                 "debug_visuals": False
+            },
+            "high_scores": {
+                "max_entries": 5,
+                "save_path": "data/high_scores.json"
+            },
+            "statistics": {
+                "save_path": "data/statistics.json"
+            },
+            "achievements": {
+                "save_path": "data/achievements.json"
             }
         }
+        
         self._ensure_save_directory()
         self.load_settings()
         print("SettingsService initialized")
@@ -52,39 +63,19 @@ class SettingsService:
         os.makedirs(os.path.dirname(self._save_path), exist_ok=True)
         
     def load_settings(self) -> None:
-        """Load settings from file or create with defaults."""
+        """Load settings from file and merge with defaults."""
         try:
             if os.path.exists(self._save_path):
                 with open(self._save_path, 'r') as f:
-                    loaded = json.load(f)
-                    # Merge with defaults to ensure all settings exist
-                    self._settings = self._merge_settings(self._defaults, loaded)
-                print("Settings loaded and merged with defaults")
+                    loaded_settings = json.load(f)
+                    # Deep merge with defaults
+                    self._settings = self._deep_merge(self._defaults.copy(), loaded_settings)
             else:
                 self._settings = self._defaults.copy()
-                self.save_settings()
-                print("Created new settings with defaults")
+            print("Settings loaded and merged with defaults")
         except Exception as e:
             print(f"Error loading settings: {e}")
             self._settings = self._defaults.copy()
-            
-    def _merge_settings(self, defaults: Dict[str, Any], loaded: Dict[str, Any]) -> Dict[str, Any]:
-        """Merge loaded settings with defaults to ensure all settings exist.
-        
-        Args:
-            defaults: Default settings
-            loaded: Loaded settings to merge
-            
-        Returns:
-            Merged settings dictionary
-        """
-        result = defaults.copy()
-        for key, value in loaded.items():
-            if key in result and isinstance(value, dict) and isinstance(result[key], dict):
-                result[key] = self._merge_settings(result[key], value)
-            else:
-                result[key] = value
-        return result
             
     def save_settings(self) -> None:
         """Save current settings to file."""
@@ -95,88 +86,76 @@ class SettingsService:
         except Exception as e:
             print(f"Error saving settings: {e}")
             
-    def get_setting(self, category: str, name: str) -> Optional[Any]:
-        """Get a specific setting value.
+    def get(self, key: str, default: Any = None) -> Any:
+        """Get a setting value using dot notation.
         
         Args:
-            category: Setting category
-            name: Setting name
+            key: Setting key in dot notation (e.g. 'display.width')
+            default: Default value if key not found
             
         Returns:
-            Setting value or None if not found
+            Setting value or default if not found
         """
         try:
-            return self._settings[category][name]
-        except KeyError:
-            print(f"Setting not found: {category}.{name}")
-            return None
+            value = self._settings
+            for part in key.split('.'):
+                value = value[part]
+            return value
+        except (KeyError, TypeError):
+            return default
             
-    def set_setting(self, category: str, name: str, value: Any) -> bool:
-        """Set a specific setting value.
+    def set(self, key: str, value: Any) -> None:
+        """Set a setting value using dot notation.
         
         Args:
-            category: Setting category
-            name: Setting name
-            value: New setting value
-            
-        Returns:
-            True if setting was updated
+            key: Setting key in dot notation (e.g. 'display.width')
+            value: Value to set
         """
-        try:
-            if category in self._settings and name in self._settings[category]:
-                self._settings[category][name] = value
-                self.save_settings()
-                print(f"Updated setting: {category}.{name} = {value}")
-                return True
-            else:
-                print(f"Invalid setting: {category}.{name}")
-                return False
-        except Exception as e:
-            print(f"Error setting value: {e}")
-            return False
+        parts = key.split('.')
+        target = self._settings
+        
+        # Navigate to the correct nested dictionary
+        for part in parts[:-1]:
+            if part not in target:
+                target[part] = {}
+            target = target[part]
             
+        # Set the value
+        target[parts[-1]] = value
+        self.save_settings()
+        
     def reset_to_defaults(self) -> None:
         """Reset all settings to defaults."""
         self._settings = self._defaults.copy()
         self.save_settings()
         print("Settings reset to defaults")
         
-    def get_all_settings(self) -> Dict[str, Any]:
-        """Get all current settings.
+    def _deep_merge(self, target: Dict, source: Dict) -> Dict:
+        """Deep merge two dictionaries.
+        
+        Args:
+            target: Target dictionary
+            source: Source dictionary to merge in
+            
+        Returns:
+            Merged dictionary
+        """
+        for key, value in source.items():
+            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
+                target[key] = self._deep_merge(target[key], value)
+            else:
+                target[key] = value
+        return target
+        
+    def get_all(self) -> Dict[str, Any]:
+        """Get all settings.
         
         Returns:
-            Dictionary of all settings
+            Complete settings dictionary
         """
         return self._settings.copy()
         
-    def validate_settings(self) -> bool:
-        """Validate current settings against defaults structure.
-        
-        Returns:
-            True if settings are valid
-        """
-        try:
-            return self._validate_dict(self._defaults, self._settings)
-        except Exception as e:
-            print(f"Settings validation error: {e}")
-            return False
-            
-    def _validate_dict(self, template: Dict[str, Any], target: Dict[str, Any]) -> bool:
-        """Recursively validate dictionary structure.
-        
-        Args:
-            template: Template dictionary
-            target: Target dictionary to validate
-            
-        Returns:
-            True if target matches template structure
-        """
-        for key, value in template.items():
-            if key not in target:
-                return False
-            if isinstance(value, dict):
-                if not isinstance(target[key], dict):
-                    return False
-                if not self._validate_dict(value, target[key]):
-                    return False
-        return True 
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.save_settings()
+        print("SettingsService cleaned up") 
