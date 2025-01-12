@@ -75,12 +75,27 @@ class TestGameplayFlow:
         game.new_game()
         initial_score = game.scoring.current_score
         
-        # Simulate destroying an asteroid
-        if len(game.asteroids) > 0:
-            asteroid = game.asteroids[0]
-            game.handle_collision(asteroid, None)  # None represents bullet
-            
-            assert game.scoring.current_score > initial_score
+        # Create a test bullet and asteroid
+        bullet_pos = pygame.Vector2(400, 300)
+        bullet_dir = pygame.Vector2(1, 0)  # Shooting right
+        bullet = Bullet(game, bullet_pos, bullet_dir)
+        game.add_entity(bullet)
+        game.bullets.append(bullet)
+        
+        # Create a test asteroid near the bullet
+        asteroid = Asteroid(game, 'large', (bullet_pos.x + 5, bullet_pos.y))
+        game.add_entity(asteroid)
+        game.asteroids.append(asteroid)
+        
+        # Update to trigger collision
+        game.update(0.016)
+        
+        # Score should have increased from destroying asteroid
+        assert game.scoring.current_score > initial_score, "Score should increase when asteroid is destroyed"
+        
+        # Verify asteroid was removed
+        assert asteroid not in game.asteroids, "Asteroid should be removed after collision"
+        assert bullet not in game.bullets, "Bullet should be removed after collision"
     
     def test_collision_system(self, game):
         """Test collision detection and response."""
@@ -110,13 +125,24 @@ class TestGameplayFlow:
         game.new_game()
         initial_lives = game.lives
         
+        # Add some score first
+        game.scoring.add_points(10000)
+        
         # Simulate losing all lives
         for _ in range(initial_lives):
             game.lose_life()
             game.update(0.016)  # Update to process life loss
         
         assert game.state_manager.current_state == GameState.GAME_OVER
-        assert game.scoring.check_high_score()  # Should check for high score
+        
+        # Should be a high score since we added points
+        assert game.scoring.check_high_score()
+        
+        # Add the high score and verify
+        game.scoring.add_high_score("TEST", game.level)
+        high_scores = game.scoring.get_high_scores()
+        assert len(high_scores) > 0
+        assert high_scores[0].score == 10000
     
     def test_pause_resume_flow(self, game):
         """Test pause and resume functionality."""
