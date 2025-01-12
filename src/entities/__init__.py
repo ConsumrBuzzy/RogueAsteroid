@@ -1,1 +1,1 @@
-"""Game entities.""" 
+"""Game entities package.""" 

@@ -1,1 +1,1 @@
-"""Core game systems.""" 
+"""Core game systems package.""" 
