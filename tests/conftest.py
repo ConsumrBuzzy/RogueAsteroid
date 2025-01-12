@@ -1,38 +1,58 @@
-"""Test configuration for RogueAsteroid."""
-import os
-import sys
+"""Shared test fixtures and configuration."""
 import pytest
 import pygame
-
-# Add project root to Python path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
+from src.core.entities.base import Entity, TransformComponent
 
 @pytest.fixture(scope="session", autouse=True)
 def pygame_setup():
-    """Initialize pygame for the test session."""
-    # Initialize pygame with only the modules we need
-    pygame.display.init()
-    pygame.font.init()
-    
-    # Create a dummy display surface
-    pygame.display.set_mode((1, 1), pygame.NOFRAME)
-    
+    """Initialize pygame for all tests."""
+    pygame.init()
+    if not pygame.font.get_init():
+        pygame.font.init()
+    if not pygame.display.get_init():
+        pygame.display.init()
     yield
-    
-    # Cleanup pygame
-    pygame.display.quit()
-    pygame.font.quit()
     pygame.quit()
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_test_env():
-    """Set up test environment."""
-    # Create any necessary test directories
-    os.makedirs(os.path.join(project_root, "tests", "coverage"), exist_ok=True)
-    os.makedirs(os.path.join(project_root, "tests", "data"), exist_ok=True)
-    
-    yield
-    
-    # Cleanup any test artifacts if needed
-    pass 
+@pytest.fixture
+def mock_game():
+    """Fixture providing a mock game instance."""
+    class MockGame:
+        def __init__(self):
+            self.width = 800
+            self.height = 600
+            self.dt = 0.016  # 60 FPS
+            self.settings = {
+                'controls': {'scheme': 'arrows'},
+                'graphics': {'fullscreen': False, 'vsync': True},
+                'audio': {'music_volume': 0.7, 'sfx_volume': 1.0}
+            }
+            self.running = True
+            self.paused = False
+    return MockGame()
+
+@pytest.fixture
+def base_entity(mock_game):
+    """Fixture providing a base entity with transform component."""
+    entity = Entity(mock_game)
+    transform = entity.add_component(TransformComponent)
+    transform.position = pygame.Vector2(0.0, 0.0)
+    transform.velocity = pygame.Vector2(0.0, 0.0)
+    transform.rotation = 0.0
+    return entity, transform
+
+@pytest.fixture
+def screen():
+    """Fixture providing a pygame screen surface."""
+    return pygame.Surface((800, 600))
+
+@pytest.fixture
+def clock():
+    """Fixture providing a pygame clock."""
+    return pygame.time.Clock()
+
+@pytest.fixture
+def event_queue():
+    """Fixture providing an empty event queue."""
+    pygame.event.clear()
+    return [] 

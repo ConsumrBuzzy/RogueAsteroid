@@ -1,5 +1,6 @@
 """Unit tests for additional game components."""
 import unittest
+import pytest
 import pygame
 from src.core.entities.base import Entity, TransformComponent
 from src.core.entities.components import (
@@ -9,22 +10,32 @@ from src.core.entities.components import (
     EffectComponent
 )
 
-class MockGame:
-    """Mock game class for testing."""
-    def __init__(self):
-        self.width = 800
-        self.height = 600
-        self.dt = 0.016  # 60 FPS
-        self.settings = {'controls': {'scheme': 'arrows'}}
+@pytest.fixture
+def mock_game():
+    """Fixture providing a mock game instance."""
+    class MockGame:
+        def __init__(self):
+            self.width = 800
+            self.height = 600
+            self.dt = 0.016  # 60 FPS
+            self.settings = {'controls': {'scheme': 'arrows'}}
+    return MockGame()
 
+@pytest.fixture
+def base_entity(mock_game):
+    """Fixture providing a base entity with transform component."""
+    entity = Entity(mock_game)
+    transform = entity.add_component(TransformComponent)
+    transform.position = pygame.Vector2(0.0, 0.0)
+    return entity, transform
+
+@pytest.mark.unit
 class TestScreenWrapComponent(unittest.TestCase):
     """Test cases for ScreenWrapComponent."""
     
     def setUp(self):
-        self.game = MockGame()
-        self.entity = Entity(self.game)
-        self.transform = self.entity.add_component(TransformComponent)
-        self.transform.position = pygame.Vector2(0.0, 0.0)
+        self.game = mock_game()
+        self.entity, self.transform = base_entity(self.game)
         self.wrap = self.entity.add_component(ScreenWrapComponent, 800, 600)
     
     def test_wrap_x(self):
@@ -32,30 +43,31 @@ class TestScreenWrapComponent(unittest.TestCase):
         # Test right edge
         self.transform.position.x = 850
         self.wrap.update(0.016)
-        self.assertEqual(self.transform.position.x, 0)
+        assert self.transform.position.x == 0
         
         # Test left edge
         self.transform.position.x = -50
         self.wrap.update(0.016)
-        self.assertEqual(self.transform.position.x, 800)
+        assert self.transform.position.x == 800
     
     def test_wrap_y(self):
         """Test wrapping in y direction."""
         # Test bottom edge
         self.transform.position.y = 650
         self.wrap.update(0.016)
-        self.assertEqual(self.transform.position.y, 0)
+        assert self.transform.position.y == 0
         
         # Test top edge
         self.transform.position.y = -50
         self.wrap.update(0.016)
-        self.assertEqual(self.transform.position.y, 600)
+        assert self.transform.position.y == 600
 
+@pytest.mark.unit
 class TestInputComponent(unittest.TestCase):
     """Test cases for InputComponent."""
     
     def setUp(self):
-        self.game = MockGame()
+        self.game = mock_game()
         self.entity = Entity(self.game)
         self.input = self.entity.add_component(InputComponent)
         self.action_called = False
@@ -70,7 +82,7 @@ class TestInputComponent(unittest.TestCase):
         
         # Simulate key press
         self.input.handle_keydown(pygame.K_SPACE)
-        self.assertTrue(self.action_called)
+        assert self.action_called
     
     def test_continuous_action(self):
         """Test continuous action handling."""
@@ -87,21 +99,20 @@ class TestInputComponent(unittest.TestCase):
         self.input.update(0.016)  # One frame
         self.input.update(0.016)  # Another frame
         
-        self.assertEqual(self.continuous_count, 2)
+        assert self.continuous_count == 2
         
         # Release key
         self.input.handle_keyup(pygame.K_UP)
         self.input.update(0.016)
-        self.assertEqual(self.continuous_count, 2)  # Should not increase
+        assert self.continuous_count == 2  # Should not increase
 
+@pytest.mark.unit
 class TestPhysicsComponent(unittest.TestCase):
     """Test cases for PhysicsComponent."""
     
     def setUp(self):
-        self.game = MockGame()
-        self.entity = Entity(self.game)
-        self.transform = self.entity.add_component(TransformComponent)
-        self.transform.position = pygame.Vector2(0.0, 0.0)
+        self.game = mock_game()
+        self.entity, self.transform = base_entity(self.game)
         self.physics = self.entity.add_component(PhysicsComponent, mass=1.0, max_speed=100.0)
     
     def test_force_application(self):
@@ -112,7 +123,7 @@ class TestPhysicsComponent(unittest.TestCase):
         
         # F = ma, v = at
         expected_velocity = pygame.Vector2(force.x / self.physics.mass, force.y / self.physics.mass)
-        self.assertEqual(self.transform.velocity, expected_velocity)
+        assert self.transform.velocity == expected_velocity
     
     def test_max_speed(self):
         """Test maximum speed limit."""
@@ -122,7 +133,7 @@ class TestPhysicsComponent(unittest.TestCase):
         self.physics.update(1.0)
         
         speed = (self.transform.velocity.x ** 2 + self.transform.velocity.y ** 2) ** 0.5
-        self.assertLessEqual(speed, self.physics.max_speed)
+        assert speed <= self.physics.max_speed
     
     def test_friction(self):
         """Test friction application."""
@@ -132,16 +143,15 @@ class TestPhysicsComponent(unittest.TestCase):
         
         self.physics.update(1.0)
         expected_velocity = pygame.Vector2(5.0, 0.0)  # After 50% friction
-        self.assertEqual(self.transform.velocity, expected_velocity)
+        assert self.transform.velocity == expected_velocity
 
+@pytest.mark.unit
 class TestEffectComponent(unittest.TestCase):
     """Test cases for EffectComponent."""
     
     def setUp(self):
-        self.game = MockGame()
-        self.entity = Entity(self.game)
-        self.transform = self.entity.add_component(TransformComponent)
-        self.transform.position = pygame.Vector2(100.0, 100.0)
+        self.game = mock_game()
+        self.entity, self.transform = base_entity(self.game)
         self.effects = self.entity.add_component(EffectComponent)
     
     def test_effect_creation(self):
@@ -153,21 +163,18 @@ class TestEffectComponent(unittest.TestCase):
         self.effects.add_effect('test', vertices, color, offset)
         
         effect = self.effects.effects.get('test')
-        self.assertIsNotNone(effect)
-        self.assertEqual(effect.vertices, vertices)
-        self.assertEqual(effect.color, color)
-        self.assertEqual(effect.offset, offset)
-        self.assertFalse(effect.active)
+        assert effect is not None
+        assert effect.vertices == vertices
+        assert effect.color == color
+        assert effect.offset == offset
+        assert not effect.active
     
     def test_effect_activation(self):
         """Test effect activation state."""
         self.effects.add_effect('test', [(0, 0)], (255, 255, 255))
         
         self.effects.set_effect_active('test', True)
-        self.assertTrue(self.effects.effects['test'].active)
+        assert self.effects.effects['test'].active
         
         self.effects.set_effect_active('test', False)
-        self.assertFalse(self.effects.effects['test'].active)
-
-if __name__ == '__main__':
-    unittest.main() 
+        assert not self.effects.effects['test'].active 
