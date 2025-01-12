@@ -44,18 +44,22 @@ class StateManager:
         if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
             self.previous_state = old_state
         
+        # Set new state first to prevent recursion
+        self.current_state = new_state
+        self.selected_option = 0
+        
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
             if old_state == GameState.MAIN_MENU:
-                print("Starting new game")  # Debug info
-                self.game.new_game()
+                # Don't call new_game() here since it calls change_state again
+                self.game.reset_game()
+                self.game.spawn_ship()
+                self.game.spawn_asteroid_wave()
             elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
             print("Game Over!")  # Debug info
         
-        self.current_state = new_state
-        self.selected_option = 0
         print(f"State changed to: {self.current_state}")  # Debug info
     
     def handle_input(self, event):
