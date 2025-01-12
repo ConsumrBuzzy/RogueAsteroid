@@ -3,8 +3,7 @@ import pygame
 import random
 import numpy as np
 from src.core.game_state import StateManager, GameState
-from src.core.scoring import ScoringSystem
-from src.core.services import AudioManager, HighScoreManager
+from src.core.services import AudioManager, HighScoreManager, ScoringSystem
 from src.core.systems import ParticleSystem, Spawner
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
