@@ -42,6 +42,10 @@ class GameService:
         self._paused = False
         self._dt = 0
         
+        # Screen dimensions
+        self.width = WINDOW_WIDTH
+        self.height = WINDOW_HEIGHT
+        
         # Game state
         self._score = 0
         self._lives = STARTING_LIVES
