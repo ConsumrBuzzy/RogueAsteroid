@@ -120,17 +120,14 @@ class ScoringSystem:
         )[:limit]
     
     def check_high_score(self) -> bool:
-        """Check if current score qualifies as high score."""
-        if len(self.high_scores) < 5:  # Changed from 10 to 5
+        """Check if current score qualifies as a high score."""
+        # If we have less than 5 high scores, any score qualifies
+        if len(self.high_scores) < 5:
             return True
             
-        # If there are no high scores yet, any score qualifies
-        if not self.high_scores:
-            return True
-            
-        return self.current_score > min(
-            entry.score for entry in self.high_scores
-        )
+        # Otherwise, check if current score beats the lowest high score
+        lowest_score = min(score.score for score in self.high_scores)
+        return self.score > lowest_score
     
     def add_high_score(self, name: str, level: int) -> bool:
         """Add a new high score entry.

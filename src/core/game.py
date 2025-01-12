@@ -186,36 +186,38 @@ class Game:
                 'color': (255, 255, 255)
             })
     
-    def update(self, dt):
+    def update(self, dt: float) -> None:
         """Update game state."""
-        # Handle ship respawn timer
-        if self.ship is None and self.lives > 0:
-            self.respawn_timer -= dt
-            if self.respawn_timer <= 0:
-                print("Respawning ship...")  # Debug info
-                self.respawn_ship()
-        
+        if self.state not in [GameState.PLAYING, GameState.PAUSED]:
+            return
+            
+        # Don't update game logic if paused
+        if self.state == GameState.PAUSED:
+            return
+            
         # Update all entities
-        for entity in self.entities[:]:  # Use copy to allow removal
+        for entity in self.entities:
             entity.update(dt)
             
-        # Handle collisions
-        self.handle_collisions()
+        # Update particles
+        for particle in self.particles[:]:  # Create a copy of the list to safely remove items
+            # Update particle position
+            particle['position'] = particle['position'] + particle['velocity'] * dt
+            
+            # Update lifetime and remove if expired
+            particle['lifetime'] -= dt
+            if particle['lifetime'] <= 0:
+                self.particles.remove(particle)
+                
+        # Update scoring
+        self.scoring.update(dt)
         
-        # Check for level completion
-        if len(self.asteroids) == 0:
-            print(f"Level {self.level} complete!")  # Debug info
-            
-            # Increment level
-            self.level += 1
-            
-            # Award extra life every two levels, max 5 lives
-            if self.level % 2 == 0 and self.lives < 5:
-                self.lives += 1
-                print(f"Extra life awarded! Lives: {self.lives}")  # Debug info
-            
-            # Spawn new wave of asteroids
-            self.spawn_asteroid_wave()
+        # Check for collisions
+        self._check_collisions()
+        
+        # Update debug info
+        if DEBUG:
+            self._update_debug_info()
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""

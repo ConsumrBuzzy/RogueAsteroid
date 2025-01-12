@@ -226,11 +226,20 @@ class Ship(Entity):
             self.game.particles.append(particle)
     
     def update(self, dt: float) -> None:
-        """Update ship state."""
+        """Update the ship's state."""
         super().update(dt)
         
-        # Update shoot cooldown
-        self.shoot_timer = max(0.0, self.shoot_timer - dt)
+        # Update shoot timer
+        if self.shoot_timer > 0:
+            self.shoot_timer -= dt
+        
+        # Create thrust particles if thrusting
+        if self.input_component and self.input_component.is_key_active(pygame.K_UP):
+            self.create_thrust_particles()  # Changed from _create_thrust_particles
+            
+        # Update debug info
+        if DEBUG:
+            self._update_debug_info()
         
         # Update invulnerability
         if self.invulnerable_timer > 0:
@@ -246,20 +255,12 @@ class Ship(Entity):
             if render:
                 render.visible = True
         
-        # Create thrust particles if thrusting
-        input_component = self.get_component('input')
-        if input_component:
-            controls = self.game.settings.get('controls', 'arrows')
-            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            if thrust_key in input_component.active_keys:
-                self._create_thrust_particles()
-        
         # Deactivate thrust effect if not thrusting
         effects = self.get_component('effects')
-        if effects and input_component:
+        if effects and self.input_component:
             controls = self.game.settings.get('controls', 'arrows')
             thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in input_component.active_keys)
+            effects.set_effect_active('thrust', thrust_key in self.input_component.active_keys)
     
     def _init_thrust_effect(self, effects: 'EffectComponent') -> None:
         """Initialize the thrust visual effect."""
