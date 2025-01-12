@@ -87,7 +87,7 @@ class ServiceManager:
             ui = UIService(screen)
             self.register_service("ui", ui)
             
-            menu = MenuService(ui)
+            menu = MenuService(ui_service=ui)
             self.register_service("menu", menu)
             
             state = StateService()
