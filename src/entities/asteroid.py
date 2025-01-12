@@ -43,7 +43,6 @@ class Asteroid(Entity):
             ship_pos: Optional ship position to avoid spawning too close.
         """
         super().__init__()
-        self._registry = ComponentRegistry()
         self.size = size
         self._init_components(position, ship_pos)
 

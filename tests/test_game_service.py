@@ -198,7 +198,7 @@ class TestGameService:
         game_service._entity_factory.create_ship.return_value = mock_ship
         
         # Trigger game start to spawn ship
-        game_service._on_game_start()
+        game_service.start()
         
         # Verify ship was created and registered
         game_service._entity_factory.create_ship.assert_called_once()
@@ -215,16 +215,14 @@ class TestGameService:
         mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
         game_service.player_ship = mock_ship
         
-        mock_asteroid = MagicMock()
-        
-        # Mock the Asteroid constructor
-        def mock_asteroid_init(self, size="large", position=None, ship_pos=None):
-            self.size = size
-            self.position = position
-            self.ship_pos = ship_pos
-            return mock_asteroid
-            
-        monkeypatch.setattr("src.entities.asteroid.Asteroid.__init__", mock_asteroid_init)
+        # Mock the Asteroid class
+        class MockAsteroid:
+            def __init__(self, size="large", position=None, ship_pos=None):
+                self.size = size
+                self.position = position
+                self.ship_pos = ship_pos
+                
+        monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
         # Spawn asteroids
         count = 3
@@ -232,7 +230,7 @@ class TestGameService:
         
         # Verify asteroids were created and registered
         assert len(game_service.asteroids) == count
-        assert mock_asteroid in game_service.entities
+        assert isinstance(game_service.asteroids[0], MockAsteroid)
         assert game_service._physics_service.register_entity.call_count >= count
         assert game_service._collision_service.register_entity.call_count >= count
         
@@ -259,15 +257,14 @@ class TestGameService:
         mock_ship.get_component.return_value = MagicMock(position=pygame.Vector2(400, 300))
         game_service.player_ship = mock_ship
         
-        # Mock asteroid creation
-        mock_asteroid = MagicMock()
-        def mock_asteroid_init(self, size="large", position=None, ship_pos=None):
-            self.size = size
-            self.position = position
-            self.ship_pos = ship_pos
-            return mock_asteroid
-            
-        monkeypatch.setattr("src.entities.asteroid.Asteroid.__init__", mock_asteroid_init)
+        # Mock the Asteroid class
+        class MockAsteroid:
+            def __init__(self, size="large", position=None, ship_pos=None):
+                self.size = size
+                self.position = position
+                self.ship_pos = ship_pos
+                
+        monkeypatch.setattr("src.entities.asteroid.Asteroid", MockAsteroid)
         
         # Trigger level complete
         game_service._on_level_complete(level=initial_level)
