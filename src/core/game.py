@@ -69,7 +69,7 @@ class Game:
         self.asteroids = []
         print("Entity lists initialized")
         
-        # Initialize state management (but don't set state yet)
+        # Initialize state management
         self.state_manager = StateManager(self)
         print("StateManager initialized")
         
@@ -104,11 +104,11 @@ class Game:
         """Start a new game."""
         print("Starting new game...")  # Debug info
         self.reset_game()
-        self.state_manager.change_state(GameState.PLAYING)
         print("Spawning player ship...")  # Debug info
         self.spawn_ship()
         print("Spawning initial asteroids...")  # Debug info
         self.spawn_asteroid_wave()
+        # Don't change state here - let the state manager handle it
     
     def reset_game(self):
         """Reset the game state."""

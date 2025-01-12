@@ -94,7 +94,9 @@ class StateManager:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # New Game
-                self.change_state(GameState.PLAYING)
+                print("Starting new game from main menu")  # Debug info
+                self.game.new_game()  # First setup the game
+                self.change_state(GameState.PLAYING)  # Then change state
             elif self.selected_option == 1:  # High Scores
                 self.change_state(GameState.HIGH_SCORE)
             elif self.selected_option == 2:  # Options
