@@ -35,6 +35,7 @@ class GameService:
             
         Raises:
             ValueError: If required services are not available
+            RuntimeError: If services are not ready
         """
         self._screen = screen
         self._settings = settings
@@ -58,28 +59,41 @@ class GameService:
         self.player_ship: Optional[Ship] = None
         
         try:
-            # Get required services
-            self._input_service = self._get_required_service(service_manager, 'input')
+            # Get and verify core services first
+            self._state_service = self._get_required_service(service_manager, 'state')
+            if not self._state_service.is_ready():
+                raise RuntimeError("State service not ready")
+                
+            self._event_manager = self._get_required_service(service_manager, 'events')
+            self._resource_manager = self._get_required_service(service_manager, 'resources')
+            
+            # Get and verify game systems
             self._physics_service = self._get_required_service(service_manager, 'physics')
             self._render_service = self._get_required_service(service_manager, 'render')
             self._collision_service = self._get_required_service(service_manager, 'collision')
             self._particle_service = self._get_required_service(service_manager, 'particle')
+            self._audio_service = service_manager.get_service('audio')  # Optional
+            
+            # Get and verify UI systems
             self._ui_service = self._get_required_service(service_manager, 'ui')
-            self._state_service = self._get_required_service(service_manager, 'state')
             self._menu_service = self._get_required_service(service_manager, 'menu')
+            self._input_service = self._get_required_service(service_manager, 'input')
+            
+            # Get and verify data services
             self._high_score_service = self._get_required_service(service_manager, 'high_score')
             self._achievement_service = self._get_required_service(service_manager, 'achievement')
             self._statistics_service = self._get_required_service(service_manager, 'statistics')
             
-            # Get system services
-            self._event_manager = self._get_required_service(service_manager, 'events')
-            self._resource_manager = self._get_required_service(service_manager, 'resources')
+            # Get entity factory last since it depends on other services
             self._entity_factory = self._get_required_service(service_manager, 'entity_factory')
             
             # Subscribe to events
             self._event_manager.subscribe('game_start', self._on_game_start)
             self._event_manager.subscribe('game_over', self._on_game_over)
             self._event_manager.subscribe('level_complete', self._on_level_complete)
+            
+            # Preload resources
+            self._resource_manager.preload_resources()
             
             print("GameService initialized")
             
@@ -116,49 +130,22 @@ class GameService:
         
     def start(self) -> None:
         """Start the game loop."""
-        self._running = True
-        self._event_manager.publish('game_start')
-        
-        # Initialize game state
-        self._score = 0
-        self._lives = STARTING_LIVES
-        self._level = 1
-        
-        # Create player ship
-        try:
-            self.player_ship = Ship(self)
-            
-            # Verify required components
-            transform = self.player_ship.get_component('transform')
-            render = self.player_ship.get_component('render')
-            
-            if transform is None or render is None:
-                raise ValueError("Ship missing required components")
-                
-            # Add to entity list
-            self.entities.append(self.player_ship)
-            
-            # Register ship with services
-            self._physics_service.register_entity(self.player_ship)
-            self._collision_service.register_entity(self.player_ship)
-            self._render_service.add_to_layer('game', self.player_ship)
-            
-            print("Player ship initialized successfully")
-            
-        except Exception as e:
-            print(f"Error initializing player ship: {e}")
-            self.cleanup()
-            return
-        
-        # Spawn initial asteroids
-        try:
-            self._spawn_asteroids(INITIAL_ASTEROIDS)
-        except Exception as e:
-            print(f"Error spawning asteroids: {e}")
-            self.cleanup()
+        if self._running:
             return
             
-        print("Game loop started")
+        try:
+            # Ensure we're in a valid state
+            if self._state_service.get_current_state() not in [GameState.MAIN_MENU, GameState.PLAYING]:
+                self._state_service.change_state(GameState.MAIN_MENU)
+            
+            self._running = True
+            self._event_manager.publish('game_start')
+            print("Game loop started")
+            
+        except Exception as e:
+            print(f"Error starting game: {e}")
+            self._running = False
+            raise
         
     def _spawn_asteroids(self, count: int) -> None:
         """Spawn a number of asteroids.

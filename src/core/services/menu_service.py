@@ -77,32 +77,49 @@ class MenuService:
             ui_service: UI service for rendering
             state_service: State service for managing game state
             input_service: Optional input service for handling menu input
+            
+        Raises:
+            ValueError: If required services are not provided
+            RuntimeError: If state service is not ready
         """
+        if not ui_service:
+            raise ValueError("UI service is required")
+        if not state_service:
+            raise ValueError("State service is required")
+            
+        if not state_service.is_ready():
+            raise RuntimeError("State service must be ready")
+            
         self._ui_service = ui_service
         self._state_service = state_service
         self._input_service = input_service
         self._menus: Dict[GameState, Menu] = {}
         self._current_menu: Optional[Menu] = None
         
-        # Create menus
-        self._create_main_menu()
-        self._create_pause_menu()
-        self._create_game_over_menu()
-        self._create_options_menu()
-        self._create_high_scores_menu()
-        
-        # Subscribe to state changes instead of registering handlers
-        self._state_service.subscribe('state_changed', self._on_state_changed)
-        
-        # Register input handlers if input service is provided
-        if self._input_service:
-            self._input_service.add_handler(InputAction.MENU_UP, lambda: self.handle_input("MENU_UP"))
-            self._input_service.add_handler(InputAction.MENU_DOWN, lambda: self.handle_input("MENU_DOWN"))
-            self._input_service.add_handler(InputAction.MENU_SELECT, lambda: self.handle_input("MENU_SELECT"))
-            self._input_service.add_handler(InputAction.MENU_BACK, lambda: self.handle_input("MENU_BACK"))
-        
-        print("MenuService initialized")
-        
+        try:
+            # Create menus
+            self._create_main_menu()
+            self._create_pause_menu()
+            self._create_game_over_menu()
+            self._create_options_menu()
+            self._create_high_scores_menu()
+            
+            # Subscribe to state changes with a unique ID
+            self._state_service.subscribe('menu_service', self._on_state_changed)
+            
+            # Register input handlers if input service is provided
+            if self._input_service:
+                self._input_service.add_handler(InputAction.MENU_UP, lambda: self.handle_input("MENU_UP"))
+                self._input_service.add_handler(InputAction.MENU_DOWN, lambda: self.handle_input("MENU_DOWN"))
+                self._input_service.add_handler(InputAction.MENU_SELECT, lambda: self.handle_input("MENU_SELECT"))
+                self._input_service.add_handler(InputAction.MENU_BACK, lambda: self.handle_input("MENU_BACK"))
+            
+            print("MenuService initialized")
+            
+        except Exception as e:
+            print(f"Error initializing MenuService: {e}")
+            raise
+            
     def _create_main_menu(self) -> None:
         """Create the main menu."""
         menu = Menu("ROGUE ASTEROID")
@@ -139,34 +156,38 @@ class MenuService:
         menu.add_item("Back", lambda: self._state_service.change_state(GameState.MAIN_MENU))
         self._menus[GameState.HIGH_SCORES] = menu
         
-    def _on_state_changed(self, old_state: GameState, new_state: GameState) -> None:
+    def _on_state_changed(self, old_state: Optional[GameState], new_state: Optional[GameState]) -> None:
         """Handle state changes.
         
         Args:
             old_state: Previous game state
             new_state: New game state
         """
-        if new_state in self._menus:
-            self._current_menu = self._menus[new_state]
-            if self._current_menu.items:
-                self._current_menu.items[0].selected = True
-        else:
-            self._current_menu = None
-        
+        try:
+            # Update current menu based on new state
+            if new_state in self._menus:
+                self._current_menu = self._menus[new_state]
+                print(f"Menu changed to: {new_state}")
+            else:
+                self._current_menu = None
+                
+        except Exception as e:
+            print(f"Error handling state change: {e}")
+            
     def update(self, dt: float) -> None:
-        """Update the current menu.
+        """Update current menu.
         
         Args:
-            dt: Time delta in seconds
+            dt: Delta time in seconds
         """
         if self._current_menu:
             self._current_menu.update(dt)
-        
+            
     def draw(self) -> None:
-        """Draw the current menu."""
+        """Draw current menu."""
         if self._current_menu:
             self._current_menu.draw(self._ui_service)
-        
+            
     def handle_input(self, action: str) -> None:
         """Handle menu input.
         
@@ -189,13 +210,24 @@ class MenuService:
             
     def cleanup(self) -> None:
         """Clean up the menu service."""
-        if self._state_service:
-            self._state_service.unsubscribe('state_changed', self._on_state_changed)
-        if self._input_service:
-            self._input_service.remove_handler(InputAction.MENU_UP)
-            self._input_service.remove_handler(InputAction.MENU_DOWN)
-            self._input_service.remove_handler(InputAction.MENU_SELECT)
-            self._input_service.remove_handler(InputAction.MENU_BACK)
-        self._menus.clear()
-        self._current_menu = None
-        print("MenuService cleaned up") 
+        try:
+            # Unsubscribe from state changes
+            if hasattr(self._state_service, 'unsubscribe'):
+                self._state_service.unsubscribe('menu_service')
+            
+            # Remove input handlers
+            if self._input_service:
+                self._input_service.remove_handler(InputAction.MENU_UP)
+                self._input_service.remove_handler(InputAction.MENU_DOWN)
+                self._input_service.remove_handler(InputAction.MENU_SELECT)
+                self._input_service.remove_handler(InputAction.MENU_BACK)
+            
+            # Clear menus
+            self._menus.clear()
+            self._current_menu = None
+            
+            print("MenuService cleaned up")
+            
+        except Exception as e:
+            print(f"Error cleaning up MenuService: {e}")
+            # Continue cleanup despite errors 
