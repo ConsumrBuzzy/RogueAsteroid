@@ -149,7 +149,7 @@ class EffectComponent(Component):
             name: Template name
             template: Template parameters
         """
-        if validate_template(template):
+        if validate_template(name, template):
             self._templates[name] = template
             print(f"Added effect template: {name}")
     
