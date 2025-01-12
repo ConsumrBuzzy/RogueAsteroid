@@ -746,3 +746,14 @@ For detailed development plans and historical logs, see:
   4. Game service (coordinates all other services)
 - All systems now communicate through service interfaces
 - Added proper cleanup and error handling for all services 
+
+[2024-03-19 14:45] [IMPL] Moved EntityFactory to Service Architecture
+- Converted EntityFactory to EntityFactoryService
+- Improved entity lifecycle management:
+  * Better integration with other services
+  * Event-based entity creation/destruction
+  * Proper cleanup sequence
+  * Service-based pooling
+- Updated imports and dependencies
+- Removed old entity factory implementation
+- Fixed circular import issues 

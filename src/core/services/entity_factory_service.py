@@ -1,9 +1,9 @@
-"""Factory class for creating and managing game entities."""
-from typing import Dict, Type, Optional, List, Any, Callable
-from .entity import Entity
+"""Service for creating and managing game entities."""
+from typing import Dict, Type, Optional, List
+from ..entity import Entity
 
-class EntityFactory:
-    """Factory for creating and managing game entities.
+class EntityFactoryService:
+    """Service for creating and managing game entities.
     
     Provides:
     - Entity type registration
@@ -13,17 +13,12 @@ class EntityFactory:
     - Debug support
     """
     
-    def __init__(self, game):
-        """Initialize the entity factory.
-        
-        Args:
-            game: Game instance this factory belongs to
-        """
-        self.game = game
+    def __init__(self):
+        """Initialize the entity factory service."""
         self._entity_types: Dict[str, Type[Entity]] = {}
         self._active_entities: List[Entity] = []
         self._entity_pools: Dict[str, List[Entity]] = {}
-        print("EntityFactory initialized")
+        print("EntityFactoryService initialized")
     
     def register_entity_type(self, type_name: str, entity_class: Type[Entity]) -> None:
         """Register a new entity type.
@@ -66,7 +61,7 @@ class EntityFactory:
         else:
             # Create new entity
             entity_class = self._entity_types[type_name]
-            entity = entity_class(self.game, x, y)
+            entity = entity_class(x=x, y=y, **kwargs)
             print(f"Created new entity of type {type_name}")
             
         self._active_entities.append(entity)
@@ -125,4 +120,10 @@ class EntityFactory:
                 entity.destroy()
             pool.clear()
             
-        print("Cleared all entities and pools") 
+        print("Cleared all entities and pools")
+    
+    def cleanup(self) -> None:
+        """Clean up the service."""
+        self.clear_all()
+        self._entity_types.clear()
+        print("EntityFactoryService cleaned up") 
