@@ -150,7 +150,7 @@ class Asteroid(Entity):
         
         if self.size == 'small':
             # Award points for destroying small asteroid
-            self.game.scoring_system.add_points(100)
+            self.game.scoring.add_points(100)
             # Create small explosion for final destruction
             self._create_destruction_particles()
             return []

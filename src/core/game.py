@@ -235,7 +235,7 @@ class Game:
                 print("No safe position found, respawning at center")  # Debug info
     
     def handle_collisions(self):
-        """Handle collisions between entities."""
+        """Handle collisions between game entities."""
         if not self.ship:
             return
             
@@ -347,6 +347,20 @@ class Game:
                         spin2 = random.uniform(-45, 45)
                         transform1.rotation_speed = spin1
                         transform2.rotation_speed = spin2
+        
+        # Check ship-asteroid collisions
+        if self.ship and not self.ship.invulnerable:
+            for asteroid in self.asteroids[:]:  # Use copy of list for safe iteration
+                if self._check_collision(self.ship, asteroid):
+                    print("Ship hit by asteroid")  # Debug info
+                    self.lives -= 1
+                    # Clear all bullets when ship is destroyed
+                    self.bullets.clear()
+                    if self.lives > 0:
+                        self.respawn_ship()
+                    else:
+                        self.state_manager.change_state(GameState.GAME_OVER)
+                    break  # Exit loop since ship is destroyed
     
     def run(self):
         """Main game loop."""
