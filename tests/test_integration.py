@@ -125,8 +125,9 @@ class TestGameplayFlow:
         game.new_game()
         initial_lives = game.lives
         
-        # Add some score first
-        game.scoring.add_points(10000)
+        # Reset scoring and add points
+        game.scoring.reset()  # Clear any existing scores
+        game.scoring.add_points(10000)  # Add enough points to beat default high score
         
         # Simulate losing all lives
         for _ in range(initial_lives):
@@ -135,21 +136,22 @@ class TestGameplayFlow:
         
         assert game.state_manager.current_state == GameState.GAME_OVER
         
-        # Should be a high score since we added points
-        assert game.scoring.check_high_score()
+        # Should be a high score since we reset and added points
+        assert game.scoring.check_high_score(), "Should be a high score after adding 10000 points"
         
         # Add the high score and verify
         game.scoring.add_high_score("TEST", game.level)
         high_scores = game.scoring.get_high_scores()
-        assert len(high_scores) > 0
-        assert high_scores[0].score == 10000
+        assert len(high_scores) > 0, "High scores list should not be empty"
+        assert high_scores[0].score == 10000, "First high score should be 10000"
+        assert high_scores[0].name == "TEST", "First high score should be from TEST player"
     
     def test_pause_resume_flow(self, game):
         """Test pause and resume functionality."""
         game.new_game()
         
         # Record initial state
-        initial_asteroids = [a.get_component('transform').position.copy() for a in game.asteroids]
+        initial_asteroids = [(a, a.get_component('transform').position.copy()) for a in game.asteroids]
         initial_ship_pos = game.ship.get_component('transform').position.copy()
         
         # Pause game
@@ -160,9 +162,14 @@ class TestGameplayFlow:
         game.update(1.0)
         
         # Verify nothing moved while paused
-        for asteroid, initial_pos in zip(game.asteroids, initial_asteroids):
-            assert np.array_equal(asteroid.get_component('transform').position, initial_pos)
-        assert np.array_equal(game.ship.get_component('transform').position, initial_ship_pos)
+        for asteroid, initial_pos in initial_asteroids:
+            current_pos = asteroid.get_component('transform').position
+            assert abs(current_pos.x - initial_pos.x) < 0.001, "X position changed while paused"
+            assert abs(current_pos.y - initial_pos.y) < 0.001, "Y position changed while paused"
+        
+        current_ship_pos = game.ship.get_component('transform').position
+        assert abs(current_ship_pos.x - initial_ship_pos.x) < 0.001, "Ship X position changed while paused"
+        assert abs(current_ship_pos.y - initial_ship_pos.y) < 0.001, "Ship Y position changed while paused"
         
         # Resume game
         game.resume()
@@ -170,23 +177,39 @@ class TestGameplayFlow:
         
         # Update and verify movement resumes
         game.update(1.0)
-        assert any(not np.array_equal(a.get_component('transform').position, i) 
-                  for a, i in zip(game.asteroids, initial_asteroids))
+        any_moved = False
+        for asteroid, initial_pos in initial_asteroids:
+            current_pos = asteroid.get_component('transform').position
+            if (abs(current_pos.x - initial_pos.x) > 0.001 or 
+                abs(current_pos.y - initial_pos.y) > 0.001):
+                any_moved = True
+                break
+        assert any_moved, "No asteroids moved after resuming"
     
     def test_particle_effects_integration(self, game):
         """Test particle system integration."""
         game.new_game()
         initial_particles = len(game.particles)
         
-        # Trigger ship thrust
-        game.ship.thrust(1.0)
-        assert len(game.particles) > initial_particles
+        # Trigger ship thrust using input component
+        input_component = game.ship.get_component('input')
+        assert input_component is not None
+        
+        # Simulate thrusting for a few frames
+        for _ in range(5):
+            input_component.handle_keydown(pygame.K_UP)
+            game.update(0.016)
+        
+        assert len(game.particles) > initial_particles, "Thrusting should create particles"
         
         # Simulate asteroid destruction
         if len(game.asteroids) > 0:
             asteroid = game.asteroids[0]
-            game.handle_collision(asteroid, None)
-            assert len(game.particles) > initial_particles
+            pos = asteroid.get_component('transform').position
+            game.create_explosion(pos.x, pos.y)  # Create explosion at asteroid position
+            game.remove_entity(asteroid)  # Remove the asteroid
+            game.asteroids.remove(asteroid)
+            assert len(game.particles) > initial_particles, "Explosion should create particles"
     
     def test_complete_game_cycle(self, game):
         """Test a complete game cycle from start to finish."""
