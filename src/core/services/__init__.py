@@ -1,38 +1,40 @@
-"""Service initialization and management."""
-from typing import Dict, Optional
+"""Service management for game systems."""
+from typing import Dict, Optional, Type, TypeVar
 import pygame
 
-from .game_service import GameService
-from .input_service import InputService
-from .physics_service import PhysicsService
-from .render_service import RenderService
-from .collision_service import CollisionService
-from .particle_service import ParticleService
-from .ui_service import UIService
-from .state_service import StateService
-from .menu_service import MenuService
-from .high_score_service import HighScoreService
 from .settings_service import SettingsService
-from .achievement_service import AchievementService
-from .statistics_service import StatisticsService
-from .entity_factory_service import EntityFactoryService
 from .event_manager_service import EventManagerService
 from .resource_manager_service import ResourceManagerService
+from .state_service import StateService
+from .menu_service import MenuService
+from .ui_service import UIService
+from .entity_factory_service import EntityFactoryService
+from .game_service import GameService
+from .achievement_service import AchievementService
+from .statistics_service import StatisticsService
+
+T = TypeVar('T')
 
 class ServiceManager:
-    """Manages all game services."""
+    """Manager for game services.
+    
+    Provides:
+    - Service registration
+    - Service access
+    - Service lifecycle management
+    """
     
     _instance = None
     
     def __new__(cls):
-        """Ensure singleton instance."""
+        """Create or return singleton instance."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
         return cls._instance
-    
+        
     def __init__(self):
-        """Initialize service manager."""
+        """Initialize the service manager."""
         if self._initialized:
             return
             
@@ -40,63 +42,16 @@ class ServiceManager:
         self._initialized = True
         print("ServiceManager initialized")
         
-    def init_services(self, screen: pygame.Surface, settings: Dict) -> None:
-        """Initialize all game services.
+    def register_service(self, name: str, service: object) -> None:
+        """Register a service.
         
         Args:
-            screen: Pygame surface to render to
-            settings: Game settings
+            name: Service name
+            service: Service instance
         """
-        try:
-            # Initialize system services first (no dependencies)
-            self._services['settings'] = SettingsService()
-            self._services['events'] = EventManagerService()
-            self._services['resources'] = ResourceManagerService()
-            
-            # Get service references
-            settings_service = self._services['settings']
-            event_manager = self._services['events']
-            
-            # Initialize core services (depend on system services)
-            self._services['state'] = StateService()
-            self._services['input'] = InputService()
-            self._services['entity_factory'] = EntityFactoryService()
-            
-            # Initialize rendering services (depend on resources)
-            self._services['render'] = RenderService(screen)
-            self._services['particle'] = ParticleService(screen)
-            self._services['ui'] = UIService(screen)
-            
-            # Initialize gameplay services (depend on core and rendering)
-            self._services['physics'] = PhysicsService(
-                settings['window']['width'], 
-                settings['window']['height']
-            )
-            self._services['collision'] = CollisionService()
-            
-            # Initialize menu and data services
-            self._services['menu'] = MenuService(self._services['ui'])
-            self._services['high_score'] = HighScoreService(
-                settings_service=settings_service,
-                event_manager=event_manager
-            )
-            self._services['achievement'] = AchievementService(
-                settings_service=settings_service,
-                event_manager=event_manager
-            )
-            self._services['statistics'] = StatisticsService(
-                settings_service=settings_service,
-                event_manager=event_manager
-            )
-            
-            # Initialize game service last (depends on all others)
-            self._services['game'] = GameService(screen, settings, self)
-            
-        except Exception as e:
-            print(f"Error initializing services: {e}")
-            self.cleanup()
-            raise
-            
+        self._services[name] = service
+        print(f"Registered service: {name}")
+        
     def get_service(self, name: str) -> Optional[object]:
         """Get a service by name.
         
@@ -108,13 +63,65 @@ class ServiceManager:
         """
         return self._services.get(name)
         
+    def init_services(self, screen: pygame.Surface) -> bool:
+        """Initialize all game services.
+        
+        Args:
+            screen: Pygame surface for rendering
+            
+        Returns:
+            True if initialization successful, False otherwise
+        """
+        try:
+            # Core services
+            settings = SettingsService()
+            self.register_service("settings", settings)
+            
+            events = EventManagerService()
+            self.register_service("events", events)
+            
+            resources = ResourceManagerService(settings)
+            self.register_service("resources", resources)
+            
+            # UI services
+            ui = UIService(screen)
+            self.register_service("ui", ui)
+            
+            menu = MenuService(ui)
+            self.register_service("menu", menu)
+            
+            state = StateService()
+            self.register_service("state", state)
+            
+            # Game services
+            entity_factory = EntityFactoryService()
+            self.register_service("entity_factory", entity_factory)
+            
+            game = GameService()
+            self.register_service("game", game)
+            
+            # Data services
+            achievements = AchievementService(settings, events)
+            self.register_service("achievements", achievements)
+            
+            statistics = StatisticsService(settings, events)
+            self.register_service("statistics", statistics)
+            
+            print("All services initialized")
+            return True
+            
+        except Exception as e:
+            print(f"Error initializing services: {e}")
+            self.cleanup()
+            return False
+            
     def cleanup(self) -> None:
         """Clean up all services."""
-        # Clean up in reverse dependency order
-        for service_name in reversed(list(self._services.keys())):
-            service = self._services[service_name]
-            if hasattr(service, 'cleanup'):
+        # Clean up in reverse order of initialization
+        services = list(self._services.items())
+        for name, service in reversed(services):
+            if hasattr(service, "cleanup"):
                 service.cleanup()
-                print(f"Cleaned up {service_name} service")
+            print(f"Cleaned up {name} service")
         self._services.clear()
         print("All services cleaned up") 
