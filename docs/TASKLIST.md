@@ -2,10 +2,12 @@
 
 ## High Priority
 - [ ] Move existing logs to appropriate directories (runtime/debug)
-- [ ] Update remaining documentation with new tasklist format
 - [ ] Test ship initialization with error cases
 - [ ] Verify entity rendering with color constants
 - [ ] Run particle system stress tests in isolated environment
+- [ ] Run system-level integration tests
+- [ ] Fix any issues found in system tests
+- [ ] Add system test documentation
 
 ## Medium Priority
 - [ ] Test service retrieval functionality
@@ -16,6 +18,8 @@
 - [ ] Add benchmarks for particle rendering
 - [ ] Test effect template hot-reloading
 - [ ] Register custom pytest marks
+- [ ] Add system performance benchmarks
+- [ ] Test game state persistence
 
 ## Low Priority
 - [ ] Complete API documentation
@@ -25,10 +29,13 @@
 - [ ] Add effect template editor tool
 - [ ] Add particle system debug visualization
 - [ ] Add effect preview system
+- [ ] Add system health monitoring
+- [ ] Create test coverage reports
 
 ## Completed Tasks
 [Format: [YYYY-MM-DD HH:MM] Task Description]
 
+[2025-01-12 10:25] Add system-level integration tests
 [2025-01-12 10:20] Test particle system memory usage under load
 [2025-01-12 10:10] Add performance tests for particle system
 [2025-01-12 10:05] Address pkg_resources deprecation warning in pygame
