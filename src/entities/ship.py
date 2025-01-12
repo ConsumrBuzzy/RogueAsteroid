@@ -121,9 +121,9 @@ class Ship(Entity):
         for right_key in right_keys:
             self.input_component.bind_key(right_key, self._rotate_right, True)
             
-        # Bind shoot to both regular space and numpad enter
-        self.input_component.bind_key(pygame.K_SPACE, self._shoot)
-        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot)
+        # Bind shoot to both regular space and numpad enter with continuous=True
+        self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
+        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot, True)
         
         print(f"Controls updated to scheme: {controls}")  # Debug info
     
