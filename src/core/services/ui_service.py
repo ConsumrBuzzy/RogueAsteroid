@@ -1,5 +1,6 @@
 """UI service for rendering UI elements."""
 from typing import Dict, Tuple, Optional
+import os
 import pygame
 
 class UIService:
@@ -19,6 +20,7 @@ class UIService:
         """
         self._screen = screen
         self._fonts: Dict[int, pygame.font.Font] = {}
+        self._default_font_path = os.path.join("assets", "fonts", "default.ttf")
         print("UIService initialized")
         
     def draw_text(self, 
@@ -56,12 +58,26 @@ class UIService:
             Pygame font object
         """
         if size not in self._fonts:
+            # Try loading custom font first
             try:
-                self._fonts[size] = pygame.font.Font(None, size)
+                if os.path.exists(self._default_font_path):
+                    self._fonts[size] = pygame.font.Font(self._default_font_path, size)
+                    return self._fonts[size]
             except pygame.error as e:
-                print(f"Error loading font: {e}")
-                # Fallback to default font
-                self._fonts[size] = pygame.font.SysFont(None, size)
+                print(f"Could not load custom font: {e}")
+            
+            # Try system font next
+            try:
+                system_font = pygame.font.get_default_font()
+                self._fonts[size] = pygame.font.Font(system_font, size)
+                return self._fonts[size]
+            except pygame.error as e:
+                print(f"Could not load system font: {e}")
+            
+            # Final fallback to SysFont
+            print("Using fallback system font")
+            self._fonts[size] = pygame.font.SysFont(None, size)
+            
         return self._fonts[size]
         
     def draw(self) -> None:
