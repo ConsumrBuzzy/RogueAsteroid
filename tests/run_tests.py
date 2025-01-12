@@ -1,63 +1,70 @@
 #!/usr/bin/env python3
-"""Test runner for RogueAsteroid test suites."""
-import pytest
+"""Test runner for RogueAsteroid game."""
 import sys
 import os
+import pytest
 import pygame
 
 def init_pygame():
-    """Initialize pygame and its subsystems."""
+    """Initialize pygame and required subsystems."""
     try:
         pygame.init()
-        if pygame.get_init():
-            print("Pygame initialized successfully")
-            # Initialize required subsystems
-            if not pygame.font.get_init():
-                pygame.font.init()
-            if not pygame.display.get_init():
-                pygame.display.init()
-            return True
-        return False
+        if not pygame.font.get_init():
+            pygame.font.init()
+        if not pygame.display.get_init():
+            pygame.display.init()
+        print("Pygame initialized successfully")
+        return True
     except Exception as e:
-        print(f"Error initializing pygame: {e}", file=sys.stderr)
+        print(f"Error initializing pygame: {e}")
         return False
 
 def run_tests():
-    """Run all test suites with coverage reporting."""
-    # Add source directory to path
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    
-    # Initialize pygame first
-    if not init_pygame():
-        print("Failed to initialize pygame")
-        return 1
-    
-    # Configure pytest arguments
-    pytest_args = [
-        '--verbose',
-        '--cov=src',
-        '--cov-report=term-missing',
-        '--cov-report=html:tests/coverage',
-        'tests/test_systems.py',  # Core systems tests
-        'tests/test_integration.py',  # Integration tests
-        'tests/test_entities.py',  # Entity tests
-        'tests/test_components.py',  # Component tests
-    ]
-    
+    """Run all test suites."""
     try:
-        # Run tests
-        result = pytest.main(pytest_args)
-        return result
-    finally:
+        # Initialize pygame first
+        if not init_pygame():
+            print("Failed to initialize pygame, aborting tests")
+            return False
+            
+        # Add src directory to Python path
+        src_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'src')
+        if src_path not in sys.path:
+            sys.path.insert(0, src_path)
+            
+        # Run test suites
+        test_files = [
+            'test_game_state.py',
+            'test_scoring.py',
+            'test_particles.py',
+            'test_menu.py',
+            'test_collision.py'
+        ]
+        
+        args = [
+            '-v',  # Verbose output
+            '--tb=short',  # Shorter traceback format
+            '--capture=no'  # Show print statements
+        ]
+        
+        # Add test files to args
+        args.extend([os.path.join('tests', f) for f in test_files])
+        
+        # Run pytest
+        result = pytest.main(args)
+        
         # Clean up pygame
+        pygame.quit()
+        
+        return result == 0
+        
+    except Exception as e:
+        print(f"Error running tests: {e}")
+        return False
+    finally:
+        # Ensure pygame is quit even if there's an error
         pygame.quit()
 
 if __name__ == '__main__':
-    print("Running RogueAsteroid Test Suite")
-    print("-" * 40)
-    
-    # Run tests and get exit code
-    exit_code = run_tests()
-    
-    # Exit with test result
-    sys.exit(exit_code) 
+    success = run_tests()
+    sys.exit(0 if success else 1) 
