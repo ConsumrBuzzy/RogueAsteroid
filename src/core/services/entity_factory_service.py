@@ -13,8 +13,13 @@ class EntityFactoryService:
     - Debug support
     """
     
-    def __init__(self):
-        """Initialize the entity factory service."""
+    def __init__(self, service_manager):
+        """Initialize the entity factory service.
+        
+        Args:
+            service_manager: ServiceManager instance for accessing services
+        """
+        self._service_manager = service_manager
         self._entity_types: Dict[str, Type[Entity]] = {}
         self._active_entities: List[Entity] = []
         self._entity_pools: Dict[str, List[Entity]] = {}
