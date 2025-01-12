@@ -42,13 +42,13 @@ class InputService:
         
     def _setup_default_bindings(self) -> None:
         """Set up default key bindings."""
-        # Arrow key controls
+        # Arrow key controls (in-game)
         self._key_map[pygame.K_UP] = InputAction.MOVE_UP
         self._key_map[pygame.K_DOWN] = InputAction.MOVE_DOWN
         self._key_map[pygame.K_LEFT] = InputAction.MOVE_LEFT
         self._key_map[pygame.K_RIGHT] = InputAction.MOVE_RIGHT
         
-        # WASD controls
+        # WASD controls (in-game)
         self._key_map[pygame.K_w] = InputAction.MOVE_UP
         self._key_map[pygame.K_s] = InputAction.MOVE_DOWN
         self._key_map[pygame.K_a] = InputAction.MOVE_LEFT
@@ -59,11 +59,11 @@ class InputService:
         self._key_map[pygame.K_RETURN] = InputAction.SHOOT
         self._key_map[pygame.K_ESCAPE] = InputAction.PAUSE
         
-        # Menu controls
-        self._key_map[pygame.K_UP] = InputAction.MENU_UP
-        self._key_map[pygame.K_DOWN] = InputAction.MENU_DOWN
-        self._key_map[pygame.K_RETURN] = InputAction.MENU_SELECT
-        self._key_map[pygame.K_ESCAPE] = InputAction.MENU_BACK
+        # Menu controls (separate from movement)
+        self._key_map[pygame.K_KP8] = InputAction.MENU_UP  # Numpad 8
+        self._key_map[pygame.K_KP2] = InputAction.MENU_DOWN  # Numpad 2
+        self._key_map[pygame.K_KP_ENTER] = InputAction.MENU_SELECT  # Numpad Enter
+        self._key_map[pygame.K_BACKSPACE] = InputAction.MENU_BACK  # Backspace
         
     def add_handler(self, action: InputAction, handler: Callable) -> None:
         """Add a handler for an input action.

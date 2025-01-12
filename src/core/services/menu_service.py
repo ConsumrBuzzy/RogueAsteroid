@@ -121,6 +121,14 @@ class MenuService:
         # Set initial menu based on current state
         self.set_current_menu(self._state_service.get_current_state())
         
+        # Get input service and register handlers
+        from .input_service import InputService, InputAction
+        input_service = InputService()  # Get singleton instance
+        input_service.add_handler(InputAction.MENU_UP, self.navigate_up)
+        input_service.add_handler(InputAction.MENU_DOWN, self.navigate_down)
+        input_service.add_handler(InputAction.MENU_SELECT, self.select)
+        input_service.add_handler(InputAction.MENU_BACK, lambda: self._change_state(GameState.MAIN_MENU))
+        
         print("MenuService initialized")
         
     def _create_menus(self) -> None:
