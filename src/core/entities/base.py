@@ -1,5 +1,5 @@
 """Base entity classes for the game engine."""
-from typing import Dict, Type, Any, Optional
+from typing import Dict, Optional, Any
 from src.core.components.base import Component
 
 class Entity:
@@ -9,6 +9,7 @@ class Entity:
         """Initialize the entity."""
         self.components: Dict[str, Component] = {}
         self.active = True
+        self.id = None  # Set by EntityManager when added
     
     def add_component(self, component_type: str, *args, **kwargs) -> Optional[Component]:
         """Add a component to the entity.
@@ -55,6 +56,9 @@ class Entity:
         Args:
             dt: Time elapsed since last update in seconds
         """
+        if not self.active:
+            return
+            
         for component in self.components.values():
             if component.active:
                 component.update(dt)
@@ -65,12 +69,16 @@ class Entity:
         Args:
             surface: Surface to draw on
         """
+        if not self.active:
+            return
+            
         for component in self.components.values():
             if component.active:
                 component.draw(surface)
     
     def cleanup(self) -> None:
         """Clean up the entity and all its components."""
+        self.active = False
         for component in self.components.values():
             component.cleanup()
         self.components.clear() 

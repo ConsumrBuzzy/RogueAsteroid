@@ -4,12 +4,10 @@ from src.core.components.base import (
     Component,
     TransformComponent,
     RenderComponent,
-    CollisionComponent
+    CollisionComponent,
+    InputComponent,
+    ScreenWrapComponent
 )
-from src.core.components.effect import EffectComponent
-from src.core.components.physics import PhysicsComponent
-from src.core.components.input import InputComponent
-from src.core.components.screen_wrap import ScreenWrapComponent
 
 class ComponentRegistry:
     """Registry for component types."""
@@ -30,11 +28,8 @@ class ComponentRegistry:
         self.register_component('TransformComponent', TransformComponent)
         self.register_component('RenderComponent', RenderComponent)
         self.register_component('CollisionComponent', CollisionComponent)
-        self.register_component('EffectComponent', EffectComponent)
-        self.register_component('PhysicsComponent', PhysicsComponent)
         self.register_component('InputComponent', InputComponent)
         self.register_component('ScreenWrapComponent', ScreenWrapComponent)
-        print("ComponentRegistry initialized")
     
     def register_component(self, type_name: str, component_type: Type[Component]) -> None:
         """Register a component type.
@@ -45,7 +40,7 @@ class ComponentRegistry:
         """
         self._components[type_name] = component_type
     
-    def create_component(self, type_name: str, entity: Any, *args, **kwargs) -> Component:
+    def create_component(self, type_name: str, entity: Any, *args, **kwargs) -> Optional[Component]:
         """Create a component instance.
         
         Args:
@@ -55,29 +50,20 @@ class ComponentRegistry:
             **kwargs: Additional keyword arguments
             
         Returns:
-            The created component instance
-            
-        Raises:
-            KeyError: If the component type is not registered
+            The created component instance or None if type not found
         """
-        if type_name not in self._components:
-            raise KeyError(f"Unknown component type: {type_name}")
-        return self._components[type_name](entity, *args, **kwargs)
-    
-    def get_component_type(self, type_name: str) -> Optional[Type[Component]]:
-        """Get a registered component type.
-        
-        Args:
-            type_name: Name of the component type
-            
-        Returns:
-            The component type if registered, None otherwise
-        """
-        return self._components.get(type_name)
+        component_type = self._components.get(type_name)
+        if not component_type:
+            return None
+        return component_type(entity, *args, **kwargs)
 
+# Export component types
 __all__ = [
     'ComponentRegistry',
-    'PhysicsComponent',
+    'Component',
+    'TransformComponent', 
+    'RenderComponent',
+    'CollisionComponent',
     'InputComponent',
     'ScreenWrapComponent'
 ] 
