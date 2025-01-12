@@ -302,17 +302,10 @@ class Ship(Entity):
             thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
             effects.set_effect_active('thrust', thrust_key in input_component.active_keys)
     
-    def _init_thrust_effect(self, effects):
-        """Initialize the thrust visual effect."""
-        # Create triangular flame shape
-        thrust_vertices = [
-            (0, 15),      # Tip of flame (at back of ship)
-            (-5, 25),     # Left point
-            (0, 20),      # Middle indent
-            (5, 25),      # Right point
-        ]
-        effects.add_effect('thrust', thrust_vertices, (255, 165, 0))  # Orange flame
-        print("Thrust effect initialized")  # Debug info 
+    def _init_thrust_effect(self, effects: EffectComponent) -> None:
+        """Initialize thrust particle effect."""
+        # Thrust effect is built into EffectComponent now
+        print("Thrust effect initialized")  # Debug info
 
     @property
     def invulnerable(self):
