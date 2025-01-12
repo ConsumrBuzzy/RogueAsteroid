@@ -2,6 +2,7 @@
 import pygame
 import logging
 from typing import Dict, Type, Optional
+import random
 
 from .services import (
     ServiceManager,
@@ -14,8 +15,12 @@ from .services import (
     EntityManagerService,
     ParticleService
 )
-from .constants import TARGET_FPS, SCREEN_WIDTH, SCREEN_HEIGHT
+from .constants import (
+    TARGET_FPS, SCREEN_WIDTH, SCREEN_HEIGHT,
+    ASTEROID_LARGE_SIZE, ASTEROID_MEDIUM_SIZE, ASTEROID_SMALL_SIZE
+)
 from .components import ComponentRegistry
+from .entities import Ship, Asteroid
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +47,48 @@ class Game:
         logger.info("Setting up services...")
         self._setup_services()
         self._clock = pygame.time.Clock()
+        
+        # Create initial game entities
+        logger.info("Creating initial game entities...")
+        self._create_initial_entities()
+        
         logger.info("Game initialization complete")
         
+    def _create_initial_entities(self):
+        """Create the initial game entities."""
+        try:
+            entity_manager = self.services.get_service(EntityManagerService)
+            
+            # Create player ship
+            ship = entity_manager.create_entity(
+                Ship,
+                position=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+                rotation=0
+            )
+            
+            # Create some initial asteroids
+            for _ in range(4):
+                # Randomly position asteroids away from the center
+                while True:
+                    x = random.randint(0, SCREEN_WIDTH)
+                    y = random.randint(0, SCREEN_HEIGHT)
+                    # Keep asteroids away from ship spawn
+                    if abs(x - SCREEN_WIDTH//2) > 100 and abs(y - SCREEN_HEIGHT//2) > 100:
+                        break
+                        
+                asteroid = entity_manager.create_entity(
+                    Asteroid,
+                    position=(x, y),
+                    size=ASTEROID_LARGE_SIZE,
+                    velocity=(random.uniform(-50, 50), random.uniform(-50, 50))
+                )
+                
+            logger.info("Initial entities created successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to create initial entities: {e}", exc_info=True)
+            raise
+            
     def _init_components(self):
         """Initialize the component system."""
         try:
