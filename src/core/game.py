@@ -422,3 +422,23 @@ class Game:
             self.state_manager.change_state(GameState.OPTIONS)
         elif event.key == pygame.K_h:
             self.state_manager.change_state(GameState.HIGH_SCORE)
+
+    def add_entity(self, entity):
+        """Add an entity to the game."""
+        if entity not in self.entities:
+            self.entities.append(entity)
+            print(f"Added entity: {entity}")
+            
+    def remove_entity(self, entity):
+        """Remove an entity from the game."""
+        if entity in self.entities:
+            self.entities.remove(entity)
+            print(f"Removed entity: {entity}")
+            
+            # Also remove from specific lists if present
+            if entity in self.bullets:
+                self.bullets.remove(entity)
+            if entity in self.asteroids:
+                self.asteroids.remove(entity)
+            if entity == self.ship:
+                self.ship = None
