@@ -87,11 +87,11 @@ class ServiceManager:
             ui = UIService(screen)
             self.register_service("ui", ui)
             
-            menu = MenuService(ui_service=ui)
-            self.register_service("menu", menu)
-            
             state = StateService()
             self.register_service("state", state)
+            
+            menu = MenuService(ui_service=ui, state_service=state)
+            self.register_service("menu", menu)
             
             # Game services
             entity_factory = EntityFactoryService()

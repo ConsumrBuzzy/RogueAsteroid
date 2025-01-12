@@ -2,7 +2,7 @@
 from typing import Dict, Optional, List, Tuple, Callable
 import pygame
 from .ui_service import UIService
-from .state_service import GameState
+from .state_service import GameState, StateService
 
 class MenuItem:
     """Individual menu item with text and callback."""
@@ -103,13 +103,15 @@ class MenuService:
     - Input handling
     """
     
-    def __init__(self, ui_service: UIService):
+    def __init__(self, ui_service: UIService, state_service: StateService):
         """Initialize the menu service.
         
         Args:
             ui_service: UI service for rendering
+            state_service: State service for state management
         """
         self._ui_service = ui_service
+        self._state_service = state_service
         self._menus: Dict[GameState, Menu] = {}
         self._current_menu: Optional[Menu] = None
         
@@ -205,9 +207,7 @@ class MenuService:
         Args:
             state: State to change to
         """
-        from .state_service import StateService
-        state_service = StateService()
-        state_service.change_state(state)
+        self._state_service.change_state(state)
         
     def _quit_game(self) -> None:
         """Quit the game."""
