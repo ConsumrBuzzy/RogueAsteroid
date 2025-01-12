@@ -234,8 +234,11 @@ class Ship(Entity):
             self.shoot_timer -= dt
         
         # Create thrust particles if thrusting
-        if self.input_component and self.input_component.is_key_active(pygame.K_UP):
-            self.create_thrust_particles()  # Changed from _create_thrust_particles
+        if self.input_component:
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
+            if thrust_key in self.input_component.active_keys:
+                self.create_thrust_particles()
             
         # Update debug info
         if DEBUG:
