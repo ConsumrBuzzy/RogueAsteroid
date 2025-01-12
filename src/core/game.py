@@ -240,29 +240,26 @@ class Game:
             return
             
         # Check ship collision with asteroids
-        ship_collision = self.ship.get_component('collision')
-        if ship_collision and ship_collision.active:
-            for asteroid in self.asteroids[:]:  # Copy list to allow removal
+        if self.ship and not self.ship.invulnerable:
+            ship_collision = self.ship.get_component('collision')
+            if not ship_collision:
+                return
+                
+            for asteroid in self.asteroids[:]:  # Use copy of list for safe iteration
                 asteroid_collision = asteroid.get_component('collision')
                 if not asteroid_collision:
                     continue
                     
                 if ship_collision.check_collision(asteroid_collision):
-                    print("Ship collided with asteroid")  # Debug info
+                    print("Ship hit by asteroid")  # Debug info
                     self.lives -= 1
-                    print(f"Lives remaining: {self.lives}")  # Debug info
-                    
-                    # Remove ship from entities
-                    if self.ship in self.entities:
-                        self.entities.remove(self.ship)
-                    self.ship = None
-                    
-                    if self.lives <= 0:
-                        print("Game Over!")  # Debug info
-                        self.state = GameState.GAME_OVER  # This will use the state manager
+                    # Clear all bullets when ship is destroyed
+                    self.bullets.clear()
+                    if self.lives > 0:
+                        self.respawn_ship()
                     else:
-                        self.respawn_timer = 2.0  # Wait 2 seconds before respawning
-                    break
+                        self.state_manager.change_state(GameState.GAME_OVER)
+                    break  # Exit loop since ship is destroyed
         
         # Check bullet collisions with asteroids
         for bullet in self.bullets[:]:  # Copy list to allow removal
@@ -276,7 +273,7 @@ class Game:
                     continue
                     
                 if bullet_collision.check_collision(asteroid_collision):
-                    print(f"Bullet hit asteroid")  # Debug info
+                    print("Bullet hit asteroid")  # Debug info
                     
                     # Create new asteroids from split
                     new_asteroids = asteroid.split()
