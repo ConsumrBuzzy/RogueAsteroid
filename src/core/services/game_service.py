@@ -87,6 +87,15 @@ class GameService:
             print(f"Error initializing GameService: {e}")
             raise
             
+    @property
+    def settings(self) -> Dict:
+        """Get the game settings.
+        
+        Returns:
+            Game settings dictionary
+        """
+        return self._settings
+            
     def _get_required_service(self, service_manager, name: str) -> object:
         """Get a required service.
         
@@ -305,12 +314,3 @@ class GameService:
         self._running = False
         self._paused = False
         print("GameService cleaned up") 
-
-    @property
-    def settings(self) -> Dict:
-        """Get the game settings.
-        
-        Returns:
-            Game settings dictionary
-        """
-        return self._settings 
