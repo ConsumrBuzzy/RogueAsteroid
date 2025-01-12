@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 import pygame
 
 from ..entity import Entity
-from .service_manager import ServiceManager
+from . import ServiceManager
 from ..components import ComponentRegistry
 from ..constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class EntityManagerService:
     """Service for managing game entities."""
     
-    def __init__(self, service_manager: ServiceManager):
+    def __init__(self, service_manager: 'ServiceManager'):
         """Initialize the entity manager.
         
         Args:
