@@ -90,3 +90,6 @@ THRUST_PARTICLES = {
 # High score settings
 MAX_HIGH_SCORES = 5  # Reduced from 10 to match current implementation
 HIGH_SCORE_NAME_LENGTH = 10 
+
+# Debug settings
+DEBUG = False  # Global debug flag 
