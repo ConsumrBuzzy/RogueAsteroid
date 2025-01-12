@@ -1,6 +1,7 @@
-"""Component system initialization."""
+"""Component system for RogueAsteroid."""
 from typing import Dict, Type, Any, Optional
-from src.core.components.base import (
+
+from .base import (
     Component,
     TransformComponent,
     RenderComponent,
@@ -8,6 +9,15 @@ from src.core.components.base import (
     InputComponent,
     ScreenWrapComponent
 )
+from .physics import PhysicsComponent
+from .effect import EffectComponent
+from .wave import WaveComponent
+from .ui import UIComponent
+from .timer import TimerComponent
+from .score import ScoreComponent
+from .health import HealthComponent
+from .debug import DebugComponent
+from .audio import AudioComponent
 
 class ComponentRegistry:
     """Registry for component types."""
@@ -30,6 +40,15 @@ class ComponentRegistry:
         self.register_component('CollisionComponent', CollisionComponent)
         self.register_component('InputComponent', InputComponent)
         self.register_component('ScreenWrapComponent', ScreenWrapComponent)
+        self.register_component('PhysicsComponent', PhysicsComponent)
+        self.register_component('EffectComponent', EffectComponent)
+        self.register_component('WaveComponent', WaveComponent)
+        self.register_component('UIComponent', UIComponent)
+        self.register_component('TimerComponent', TimerComponent)
+        self.register_component('ScoreComponent', ScoreComponent)
+        self.register_component('HealthComponent', HealthComponent)
+        self.register_component('DebugComponent', DebugComponent)
+        self.register_component('AudioComponent', AudioComponent)
     
     def register_component(self, type_name: str, component_type: Type[Component]) -> None:
         """Register a component type.
@@ -57,13 +76,21 @@ class ComponentRegistry:
             return None
         return component_type(entity, *args, **kwargs)
 
-# Export component types
 __all__ = [
-    'ComponentRegistry',
     'Component',
-    'TransformComponent', 
+    'ComponentRegistry',
+    'TransformComponent',
     'RenderComponent',
     'CollisionComponent',
     'InputComponent',
-    'ScreenWrapComponent'
-] 
+    'ScreenWrapComponent',
+    'PhysicsComponent',
+    'EffectComponent',
+    'WaveComponent',
+    'UIComponent',
+    'TimerComponent',
+    'ScoreComponent',
+    'HealthComponent',
+    'DebugComponent',
+    'AudioComponent'
+]

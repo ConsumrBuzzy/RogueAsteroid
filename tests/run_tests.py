@@ -3,7 +3,6 @@
 import os
 import sys
 import pytest
-from coverage.control import Coverage
 import argparse
 from typing import List, Optional
 
@@ -24,20 +23,6 @@ def run_tests(test_paths: Optional[List[str]] = None,
     Returns:
         Exit code (0 for success, non-zero for failure)
     """
-    if coverage_enabled:
-        # Start coverage tracking
-        cov = Coverage(
-            branch=True,
-            source=['src'],
-            omit=[
-                '*/test_*.py',
-                '*/__init__.py',
-                '*/setup.py',
-                '*/conftest.py'
-            ]
-        )
-        cov.start()
-
     # Build pytest arguments
     pytest_args = []
     
@@ -59,25 +44,17 @@ def run_tests(test_paths: Optional[List[str]] = None,
         
     # Add coverage options
     if coverage_enabled:
-        pytest_args.extend(['--cov=src', '--cov-report=term-missing'])
+        pytest_args.extend([
+            '--cov=src',
+            '--cov-report=term-missing',
+            f'--cov-report=html:tests/coverage/html'
+        ])
 
     # Run tests
     result = pytest.main(pytest_args)
 
-    if coverage_enabled:
-        # Stop coverage tracking
-        cov.stop()
-        
-        # Generate reports
-        print("\nCoverage Report:")
-        cov.report(show_missing=True)
-        
-        # Generate HTML report
-        html_dir = os.path.join('tests', 'coverage', 'html')
-        os.makedirs(html_dir, exist_ok=True)
-        cov.html_report(directory=html_dir)
-        
-        print(f"\nDetailed coverage report: {os.path.join(html_dir, 'index.html')}")
+    if coverage_enabled and result == 0:
+        print(f"\nDetailed coverage report: {os.path.join('tests', 'coverage', 'html', 'index.html')}")
 
     return result
 
