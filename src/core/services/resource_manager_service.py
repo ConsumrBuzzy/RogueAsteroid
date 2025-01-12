@@ -32,15 +32,47 @@ class ResourceManagerService:
             # Ensure asset directories exist
             for path in self._resource_paths.values():
                 os.makedirs(path, exist_ok=True)
+                if not os.path.isdir(path):
+                    raise ValueError(f"Failed to create resource directory: {path}")
             
-            # Load fonts
-            self.load_font('default', 'assets/fonts/default.ttf', 32)
-            self.load_font('small', 'assets/fonts/default.ttf', 24)
-            self.load_font('large', 'assets/fonts/default.ttf', 48)
+            # Validate resource paths
+            self._validate_resource_paths()
+            
+            # Load fonts with validation
+            self._load_font_with_fallback('default', 'assets/fonts/default.ttf', 32)
+            self._load_font_with_fallback('small', 'assets/fonts/default.ttf', 24)
+            self._load_font_with_fallback('large', 'assets/fonts/default.ttf', 48)
             
             print("Resources preloaded")
         except Exception as e:
             print(f"Error preloading resources: {e}")
+            raise
+    
+    def _validate_resource_paths(self) -> None:
+        """Validate all resource paths exist and are accessible."""
+        for category, path in self._resource_paths.items():
+            if not os.path.exists(path):
+                raise ValueError(f"Resource path not found: {path}")
+            if not os.access(path, os.R_OK):
+                raise ValueError(f"Resource path not readable: {path}")
+    
+    def _load_font_with_fallback(self, name: str, path: str, size: int) -> None:
+        """Load a font with fallback to system default.
+        
+        Args:
+            name: Font identifier
+            path: Path to font file
+            size: Font size in points
+        """
+        try:
+            if os.path.exists(path):
+                self._resources[f"font_{name}"] = pygame.font.Font(path, size)
+            else:
+                print(f"Warning: Font file not found: {path}")
+                self._resources[f"font_{name}"] = pygame.font.SysFont('arial', size)
+        except Exception as e:
+            print(f"Error loading font {name}, using system font: {e}")
+            self._resources[f"font_{name}"] = pygame.font.SysFont('arial', size)
     
     def load_image(self, name: str, path: str) -> Optional[pygame.Surface]:
         """Load an image resource.
@@ -153,6 +185,12 @@ class ResourceManagerService:
         print("Resources cleared")
     
     def cleanup(self) -> None:
-        """Clean up the service."""
-        self.clear()
-        print("ResourceManagerService cleaned up") 
+        """Clean up loaded resources."""
+        for resource in self._resources.values():
+            if hasattr(resource, 'close'):
+                try:
+                    resource.close()
+                except Exception as e:
+                    print(f"Error closing resource: {e}")
+        self._resources.clear()
+        print("ResourceManager cleaned up") 

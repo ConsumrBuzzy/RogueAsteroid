@@ -58,11 +58,9 @@ class StateService:
             if hasattr(handler, 'on_exit') and not callable(handler.on_exit):
                 raise ValueError("on_exit must be callable")
                 
-            # Test handler call
-            try:
-                handler(0.0)  # Test with zero delta time
-            except Exception as e:
-                raise RuntimeError(f"Handler failed validation: {e}")
+            # Test handler call without actually executing it
+            if not hasattr(handler, '__call__'):
+                raise RuntimeError("Handler must be callable")
                 
             self._state_handlers[state] = handler
             print(f"Registered handler for state {state.name}")

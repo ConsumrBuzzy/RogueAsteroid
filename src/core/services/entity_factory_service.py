@@ -23,6 +23,7 @@ class EntityFactoryService:
         self._entity_types: Dict[str, Type[Entity]] = {}
         self._active_entities: List[Entity] = []
         self._entity_pools: Dict[str, List[Entity]] = {}
+        self._pool_limits: Dict[str, int] = {}  # Maximum pool sizes
         print("EntityFactoryService initialized")
         
     def register_entity_type(self, type_name: str, entity_class: Type[Entity]) -> None:
@@ -41,82 +42,89 @@ class EntityFactoryService:
         self._entity_pools[type_name] = []
         print(f"Registered entity type: {type_name}")
         
-    def create_entity(self, type_name: str, **kwargs) -> Optional[Entity]:
-        """Create a new entity or reuse a pooled one.
+    def set_pool_limit(self, type_name: str, limit: int) -> None:
+        """Set the maximum size for an entity pool.
+        
+        Args:
+            type_name: Entity type name
+            limit: Maximum number of pooled entities
+        """
+        if limit < 0:
+            raise ValueError("Pool limit cannot be negative")
+        self._pool_limits[type_name] = limit
+        
+    def create_entity(self, type_name: str, *args, **kwargs) -> Optional[Entity]:
+        """Create or reuse an entity from the pool.
         
         Args:
             type_name: Type of entity to create
-            **kwargs: Additional initialization arguments
+            *args: Positional arguments for entity creation
+            **kwargs: Keyword arguments for entity creation
             
         Returns:
-            Created entity instance or None if type not found
+            New or reused entity instance
             
         Raises:
-            KeyError: If type_name is not registered
+            ValueError: If entity type not registered
         """
         if type_name not in self._entity_types:
-            raise KeyError(f"Unknown entity type: {type_name}")
+            raise ValueError(f"Entity type not registered: {type_name}")
             
-        # Try to reuse a pooled entity
-        if self._entity_pools[type_name]:
+        # Try to reuse from pool
+        if type_name in self._entity_pools and self._entity_pools[type_name]:
             entity = self._entity_pools[type_name].pop()
-            entity.enable()
-            print(f"Reusing pooled entity of type {type_name}")
+            entity.reset(*args, **kwargs)  # Reset entity state
         else:
             # Create new entity
-            entity_class = self._entity_types[type_name]
-            entity = entity_class()
-            print(f"Created new entity of type {type_name}")
+            entity = self._entity_types[type_name](*args, **kwargs)
             
-        # Initialize entity
-        entity.initialize()
         self._active_entities.append(entity)
         return entity
         
-    def remove_entity(self, entity: Entity) -> None:
-        """Remove an entity and return it to the pool.
+    def recycle_entity(self, entity: Entity) -> None:
+        """Return an entity to its pool for reuse.
         
         Args:
-            entity: Entity to remove
+            entity: Entity to recycle
         """
         if entity in self._active_entities:
-            entity.disable()
             self._active_entities.remove(entity)
             
-            # Add to pool if entity type is registered
-            for type_name, entity_class in self._entity_types.items():
-                if isinstance(entity, entity_class):
-                    self._entity_pools[type_name].append(entity)
-                    print(f"Entity returned to pool: {type_name}")
-                    break
-                    
-    def clear_all(self) -> None:
-        """Clear all entities and pools."""
-        # Destroy all active entities
-        for entity in list(self._active_entities):
-            entity.destroy()
-        self._active_entities.clear()
-        
-        # Clear all pools
-        for pool in self._entity_pools.values():
-            for entity in pool:
-                entity.destroy()
-            pool.clear()
+            # Get entity type name
+            type_name = entity.__class__.__name__
             
-        print("Cleared all entities and pools")
+            # Check pool limit
+            pool_limit = self._pool_limits.get(type_name, 10)  # Default limit of 10
+            if len(self._entity_pools.get(type_name, [])) < pool_limit:
+                # Add to pool if under limit
+                if type_name not in self._entity_pools:
+                    self._entity_pools[type_name] = []
+                self._entity_pools[type_name].append(entity)
+            else:
+                # Let it be garbage collected if pool is full
+                print(f"Pool full for {type_name}, letting entity be collected")
         
-    def update(self, dt: float) -> None:
-        """Update all active entities.
-        
-        Args:
-            dt: Delta time in seconds
-        """
-        for entity in list(self._active_entities):
-            entity.update(dt)
-            
     def cleanup(self) -> None:
-        """Clean up the service."""
-        self.clear_all()
-        self._entity_types.clear()
-        self._entity_pools.clear()
-        print("EntityFactoryService cleaned up") 
+        """Clean up the entity factory service."""
+        try:
+            # Clear active entities
+            for entity in self._active_entities[:]:
+                if hasattr(entity, 'cleanup'):
+                    entity.cleanup()
+            self._active_entities.clear()
+            
+            # Clear entity pools
+            for pool in self._entity_pools.values():
+                for entity in pool:
+                    if hasattr(entity, 'cleanup'):
+                        entity.cleanup()
+                pool.clear()
+            self._entity_pools.clear()
+            
+            # Clear type registry
+            self._entity_types.clear()
+            self._pool_limits.clear()
+            
+            print("EntityFactoryService cleaned up")
+        except Exception as e:
+            print(f"Error cleaning up EntityFactoryService: {e}") 

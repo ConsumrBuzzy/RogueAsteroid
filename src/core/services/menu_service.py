@@ -91,12 +91,8 @@ class MenuService:
         self._create_options_menu()
         self._create_high_scores_menu()
         
-        # Register menu states
-        self._state_service.register_handler(GameState.MAIN_MENU, self.draw)
-        self._state_service.register_handler(GameState.PAUSED, self.draw)
-        self._state_service.register_handler(GameState.GAME_OVER, self.draw)
-        self._state_service.register_handler(GameState.OPTIONS, self.draw)
-        self._state_service.register_handler(GameState.HIGH_SCORES, self.draw)
+        # Subscribe to state changes instead of registering handlers
+        self._state_service.subscribe('state_changed', self._on_state_changed)
         
         # Register input handlers if input service is provided
         if self._input_service:
@@ -105,13 +101,6 @@ class MenuService:
             self._input_service.add_handler(InputAction.MENU_SELECT, lambda: self.handle_input("MENU_SELECT"))
             self._input_service.add_handler(InputAction.MENU_BACK, lambda: self.handle_input("MENU_BACK"))
         
-        # Set initial menu based on current state
-        current_state = self._state_service.get_current_state()
-        if current_state in self._menus:
-            self._current_menu = self._menus[current_state]
-            if self._current_menu.items:
-                self._current_menu.items[0].selected = True
-                
         print("MenuService initialized")
         
     def _create_main_menu(self) -> None:
@@ -150,55 +139,34 @@ class MenuService:
         menu.add_item("Back", lambda: self._state_service.change_state(GameState.MAIN_MENU))
         self._menus[GameState.HIGH_SCORES] = menu
         
+    def _on_state_changed(self, old_state: GameState, new_state: GameState) -> None:
+        """Handle state changes.
+        
+        Args:
+            old_state: Previous game state
+            new_state: New game state
+        """
+        if new_state in self._menus:
+            self._current_menu = self._menus[new_state]
+            if self._current_menu.items:
+                self._current_menu.items[0].selected = True
+        else:
+            self._current_menu = None
+        
     def update(self, dt: float) -> None:
-        """Update menu state.
+        """Update the current menu.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds
         """
-        # Update current menu based on state
-        current_state = self._state_service.get_current_state()
-        if current_state in self._menus:
-            self._current_menu = self._menus[current_state]
-            if self._current_menu.items and not any(item.selected for item in self._current_menu.items):
-                self._current_menu.items[0].selected = True
+        if self._current_menu:
+            self._current_menu.update(dt)
         
-    def draw(self, dt: float = 0.0) -> None:
-        """Draw the current menu.
+    def draw(self) -> None:
+        """Draw the current menu."""
+        if self._current_menu:
+            self._current_menu.draw(self._ui_service)
         
-        Args:
-            dt: Delta time in seconds (unused but required for state handler interface)
-        """
-        # Update current menu based on state
-        current_state = self._state_service.get_current_state()
-        if current_state in self._menus:
-            self._current_menu = self._menus[current_state]
-            if self._current_menu.items and not any(item.selected for item in self._current_menu.items):
-                self._current_menu.items[0].selected = True
-        
-        if not self._current_menu:
-            return
-            
-        # Draw menu title centered at y=100
-        self._ui_service.draw_text(
-            self._current_menu.title,
-            (400, 100),  # Centered horizontally
-            font_size=48,
-            color=(255, 255, 255),
-            centered=True
-        )
-        
-        # Draw menu items
-        for item in self._current_menu.items:
-            color = (255, 255, 0) if item.selected else (255, 255, 255)
-            self._ui_service.draw_text(
-                item.text,
-                item.position,
-                font_size=36,
-                color=color,
-                centered=True
-            )
-            
     def handle_input(self, action: str) -> None:
         """Handle menu input.
         
@@ -220,7 +188,14 @@ class MenuService:
                 self._state_service.change_state(GameState.MAIN_MENU)
             
     def cleanup(self) -> None:
-        """Clean up the service."""
+        """Clean up the menu service."""
+        if self._state_service:
+            self._state_service.unsubscribe('state_changed', self._on_state_changed)
+        if self._input_service:
+            self._input_service.remove_handler(InputAction.MENU_UP)
+            self._input_service.remove_handler(InputAction.MENU_DOWN)
+            self._input_service.remove_handler(InputAction.MENU_SELECT)
+            self._input_service.remove_handler(InputAction.MENU_BACK)
         self._menus.clear()
         self._current_menu = None
         print("MenuService cleaned up") 

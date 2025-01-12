@@ -2,6 +2,25 @@
 from typing import Dict, Optional, Type, TypeVar
 import pygame
 
+# Service name constants
+SERVICE_SETTINGS = "settings"
+SERVICE_EVENTS = "events"
+SERVICE_RESOURCES = "resources"
+SERVICE_INPUT = "input"
+SERVICE_STATE = "state"
+SERVICE_RENDER = "render"
+SERVICE_UI = "ui"
+SERVICE_MENU = "menu"
+SERVICE_PHYSICS = "physics"
+SERVICE_COLLISION = "collision"
+SERVICE_PARTICLE = "particle"
+SERVICE_ENTITY_FACTORY = "entity_factory"
+SERVICE_HIGH_SCORE = "high_score"
+SERVICE_ACHIEVEMENT = "achievement"
+SERVICE_STATISTICS = "statistics"
+SERVICE_GAME = "game"
+
+# Import services
 from .settings_service import SettingsService
 from .event_manager_service import EventManagerService
 from .resource_manager_service import ResourceManagerService
@@ -99,59 +118,59 @@ class ServiceManager:
         try:
             # Core services (no dependencies)
             settings = SettingsService()
-            self.register_service("settings", settings)
+            self.register_service(SERVICE_SETTINGS, settings)
             
             events = EventManagerService()
-            self.register_service("events", events)
+            self.register_service(SERVICE_EVENTS, events)
             
             resources = ResourceManagerService()
-            self.register_service("resources", resources)
+            self.register_service(SERVICE_RESOURCES, resources)
             
             # Input service (needed by many services)
             input_service = InputService()
-            self.register_service("input", input_service)
+            self.register_service(SERVICE_INPUT, input_service)
             
             # State service (needed by menu)
             state = StateService()
-            self.register_service("state", state)
+            self.register_service(SERVICE_STATE, state)
             
             # Rendering stack
             render = RenderService(screen)
-            self.register_service("render", render)
+            self.register_service(SERVICE_RENDER, render)
             
             ui = UIService(screen)
-            self.register_service("ui", ui)
+            self.register_service(SERVICE_UI, ui)
             
             menu = MenuService(ui_service=ui, state_service=state, input_service=input_service)
-            self.register_service("menu", menu)
+            self.register_service(SERVICE_MENU, menu)
             
             # Physics stack
             physics = PhysicsService(screen.get_width(), screen.get_height())
-            self.register_service("physics", physics)
+            self.register_service(SERVICE_PHYSICS, physics)
             
             collision = CollisionService()
-            self.register_service("collision", collision)
+            self.register_service(SERVICE_COLLISION, collision)
             
             particle = ParticleService(screen)
-            self.register_service("particle", particle)
+            self.register_service(SERVICE_PARTICLE, particle)
             
             # Entity system (depends on many services)
             entity_factory = EntityFactoryService(service_manager=self)
-            self.register_service("entity_factory", entity_factory)
+            self.register_service(SERVICE_ENTITY_FACTORY, entity_factory)
             
             # Data services (depend on settings and events)
             high_score = HighScoreService(settings, events)
-            self.register_service("high_score", high_score)
+            self.register_service(SERVICE_HIGH_SCORE, high_score)
             
             achievements = AchievementService(settings, events)
-            self.register_service("achievement", achievements)
+            self.register_service(SERVICE_ACHIEVEMENT, achievements)
             
             statistics = StatisticsService(settings, events)
-            self.register_service("statistics", statistics)
+            self.register_service(SERVICE_STATISTICS, statistics)
             
             # Game service (depends on everything)
             game = GameService(screen=screen, settings=settings.get_all(), service_manager=self)
-            self.register_service("game", game)
+            self.register_service(SERVICE_GAME, game)
             
             print("All services initialized")
             return True
@@ -162,12 +181,59 @@ class ServiceManager:
             return False
             
     def cleanup(self) -> None:
-        """Clean up all services."""
-        # Clean up in reverse order of initialization
+        """Clean up all services.
+        
+        Ensures each service is cleaned up properly, even if errors occur.
+        Services are cleaned up in reverse order of initialization.
+        """
+        cleanup_errors = []
         services = list(self._services.items())
+        
+        # Clean up in reverse order of initialization
         for name, service in reversed(services):
-            if hasattr(service, "cleanup"):
-                service.cleanup()
-            print(f"Cleaned up {name} service")
+            try:
+                if hasattr(service, "cleanup"):
+                    service.cleanup()
+                print(f"Cleaned up {name} service")
+            except Exception as e:
+                error_msg = f"Error cleaning up {name} service: {e}"
+                print(error_msg)
+                cleanup_errors.append(error_msg)
+                # Continue cleanup despite errors
+                continue
+                
+        # Clear service registry
         self._services.clear()
-        print("All services cleaned up") 
+        
+        # Report any cleanup errors
+        if cleanup_errors:
+            print("\nService cleanup completed with errors:")
+            for error in cleanup_errors:
+                print(f"- {error}")
+        else:
+            print("All services cleaned up successfully")
+
+    def _get_required_service(self, name: str, service_type: Optional[Type[T]] = None) -> Optional[T]:
+        """Get a required service, with proper error handling.
+        
+        Args:
+            name: Service name
+            service_type: Optional type to cast service to
+            
+        Returns:
+            Service instance
+            
+        Raises:
+            ValueError: If service not found or wrong type
+        """
+        service = self._services.get(name)
+        if service is None:
+            raise ValueError(f"Required service not found: {name}")
+            
+        if service_type is not None:
+            try:
+                return service_type(service)
+            except (TypeError, ValueError) as e:
+                raise ValueError(f"Service {name} is wrong type: {e}")
+                
+        return service 
