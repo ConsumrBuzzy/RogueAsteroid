@@ -1,5 +1,5 @@
 """Base classes for entity component system."""
-from typing import Optional, Type, TypeVar, List, Union
+from typing import Optional, Type, TypeVar, List, Union, Any
 import pygame
 
 T = TypeVar('T', bound='Component')
@@ -7,18 +7,22 @@ T = TypeVar('T', bound='Component')
 class Component:
     """Base class for all components."""
     
-    def __init__(self, entity: 'Entity'):
+    def __init__(self, entity: 'Entity', **kwargs):
         """Initialize the component.
         
         Args:
             entity: The entity this component belongs to
+            **kwargs: Additional initialization parameters
         """
         self.entity = entity
         self.active = True
+        self._initialized = False
     
     def initialize(self) -> None:
         """Initialize the component after all components are added."""
-        pass
+        if self._initialized:
+            return
+        self._initialized = True
     
     def update(self, dt: float) -> None:
         """Update the component.
@@ -30,7 +34,19 @@ class Component:
     
     def destroy(self) -> None:
         """Clean up the component."""
-        pass
+        self.active = False
+        self._initialized = False
+        
+    def get_component(self, component_type: type) -> Any:
+        """Get another component from the parent entity.
+        
+        Args:
+            component_type: The type of component to get
+            
+        Returns:
+            The component instance if found, None otherwise
+        """
+        return self.entity.get_component(component_type)
 
 class Entity:
     """Base class for all game entities."""
