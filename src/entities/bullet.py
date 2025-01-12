@@ -1,14 +1,26 @@
 """Bullet entity fired by the player ship."""
 import numpy as np
-from typing import TYPE_CHECKING
-from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
-from src.core.entities.components import PhysicsComponent, ScreenWrapComponent, ParticleComponent
-from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT, ASTEROID_SIZES
-from src.entities.asteroid import Asteroid
-from src.entities.particle import Particle
 import random
 import math
 import pygame
+from typing import TYPE_CHECKING
+from src.core.entities.base import Entity
+from src.core.entities.components import (
+    TransformComponent,
+    RenderComponent,
+    CollisionComponent,
+    PhysicsComponent,
+    ScreenWrapComponent,
+    ParticleComponent
+)
+from src.core.constants import (
+    WHITE,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    ASTEROID_SIZES
+)
+from src.entities.asteroid import Asteroid
+from src.entities.particle import Particle
 
 if TYPE_CHECKING:
     from src.core.game import Game
