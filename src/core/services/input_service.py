@@ -71,8 +71,19 @@ class InputService:
         Args:
             action: Input action to handle
             handler: Function to call when action occurs
+            
+        Raises:
+            ValueError: If action or handler is invalid
         """
+        if not isinstance(action, InputAction):
+            raise ValueError(f"Invalid action type: {type(action)}")
+        if not callable(handler):
+            raise ValueError("Handler must be callable")
+            
         if action in self._action_handlers:
+            if handler in self._action_handlers[action]:
+                print(f"Warning: Handler already registered for action {action.name}")
+                return
             self._action_handlers[action].append(handler)
             
     def remove_handler(self, action: InputAction, handler: Callable) -> None:
@@ -81,9 +92,21 @@ class InputService:
         Args:
             action: Input action to remove handler from
             handler: Handler to remove
+            
+        Raises:
+            ValueError: If action is invalid
+            KeyError: If handler not found for action
         """
-        if action in self._action_handlers and handler in self._action_handlers[action]:
-            self._action_handlers[action].remove(handler)
+        if not isinstance(action, InputAction):
+            raise ValueError(f"Invalid action type: {type(action)}")
+            
+        if action not in self._action_handlers:
+            raise KeyError(f"No handlers registered for action {action.name}")
+            
+        if handler not in self._action_handlers[action]:
+            raise KeyError(f"Handler not found for action {action.name}")
+            
+        self._action_handlers[action].remove(handler)
             
     def is_action_pressed(self, action: InputAction) -> bool:
         """Check if an action is currently pressed.
@@ -93,7 +116,13 @@ class InputService:
             
         Returns:
             True if any key for the action is pressed
+            
+        Raises:
+            ValueError: If action is invalid
         """
+        if not isinstance(action, InputAction):
+            raise ValueError(f"Invalid action type: {type(action)}")
+            
         return any(key in self._pressed_keys for key, act in self._key_map.items() if act == action)
         
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -101,7 +130,13 @@ class InputService:
         
         Args:
             event: Pygame event to handle
+            
+        Raises:
+            ValueError: If event is not a pygame event
         """
+        if not isinstance(event, pygame.event.Event):
+            raise ValueError(f"Invalid event type: {type(event)}")
+            
         try:
             if event.type == pygame.KEYDOWN:
                 self._pressed_keys.add(event.key)
@@ -113,31 +148,52 @@ class InputService:
                 
         except Exception as e:
             print(f"Error handling input event: {e}")
+            # Log the error but continue processing other events
             
     def _trigger_action(self, action: InputAction) -> None:
         """Trigger handlers for an action.
         
         Args:
             action: Input action to trigger
+            
+        Raises:
+            ValueError: If action is invalid
         """
+        if not isinstance(action, InputAction):
+            raise ValueError(f"Invalid action type: {type(action)}")
+            
         if action not in self._action_handlers:
             return
             
+        failed_handlers = []
         for handler in self._action_handlers[action]:
             try:
                 handler()
             except Exception as e:
                 print(f"Error in input handler for action {action.name}: {e}")
+                failed_handlers.append(handler)
                 continue  # Skip to next handler
+                
+        # Remove failed handlers to prevent repeated errors
+        for handler in failed_handlers:
+            print(f"Removing failed handler for action {action.name}")
+            self._action_handlers[action].remove(handler)
                 
     def update(self) -> None:
         """Update input state."""
         try:
             # Get current key states to handle continuous input
             keys = pygame.key.get_pressed()
-            
+            if not keys:
+                print("Warning: Failed to get key states")
+                return
+                
             # Check each mapped key
             for key, action in self._key_map.items():
+                if key >= len(keys):
+                    print(f"Warning: Invalid key code {key}")
+                    continue
+                    
                 if keys[key]:  # Key is currently held down
                     # Only trigger continuous actions (movement)
                     if action in {
@@ -151,6 +207,7 @@ class InputService:
                         
         except Exception as e:
             print(f"Error updating input state: {e}")
+            # Continue running but log the error
                     
     def cleanup(self) -> None:
         """Clean up the service."""
