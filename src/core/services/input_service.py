@@ -42,13 +42,7 @@ class InputService:
         
     def _setup_default_bindings(self) -> None:
         """Set up default key bindings."""
-        # Arrow key controls (in-game)
-        self._key_map[pygame.K_UP] = InputAction.MOVE_UP
-        self._key_map[pygame.K_DOWN] = InputAction.MOVE_DOWN
-        self._key_map[pygame.K_LEFT] = InputAction.MOVE_LEFT
-        self._key_map[pygame.K_RIGHT] = InputAction.MOVE_RIGHT
-        
-        # WASD controls (in-game)
+        # WASD controls (in-game movement only)
         self._key_map[pygame.K_w] = InputAction.MOVE_UP
         self._key_map[pygame.K_s] = InputAction.MOVE_DOWN
         self._key_map[pygame.K_a] = InputAction.MOVE_LEFT
@@ -56,14 +50,13 @@ class InputService:
         
         # Action keys
         self._key_map[pygame.K_SPACE] = InputAction.SHOOT
-        self._key_map[pygame.K_RETURN] = InputAction.SHOOT
-        self._key_map[pygame.K_ESCAPE] = InputAction.PAUSE
+        self._key_map[pygame.K_p] = InputAction.PAUSE
         
-        # Menu controls (separate from movement)
-        self._key_map[pygame.K_UP] = InputAction.MENU_UP  # Up arrow
-        self._key_map[pygame.K_DOWN] = InputAction.MENU_DOWN  # Down arrow
-        self._key_map[pygame.K_RETURN] = InputAction.MENU_SELECT  # Enter
-        self._key_map[pygame.K_ESCAPE] = InputAction.MENU_BACK  # Escape
+        # Menu controls (arrow keys)
+        self._key_map[pygame.K_UP] = InputAction.MENU_UP
+        self._key_map[pygame.K_DOWN] = InputAction.MENU_DOWN
+        self._key_map[pygame.K_RETURN] = InputAction.MENU_SELECT
+        self._key_map[pygame.K_ESCAPE] = InputAction.MENU_BACK
         
     def add_handler(self, action: InputAction, handler: Callable) -> None:
         """Add a handler for an input action.
