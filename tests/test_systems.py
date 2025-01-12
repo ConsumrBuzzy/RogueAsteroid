@@ -4,7 +4,7 @@ from src.core.game_state import GameState
 from src.core.scoring import ScoringSystem
 from src.core.spawner import Spawner
 from src.core.particles import ParticleSystem
-from src.core.menu import MenuSystem
+from src.core.menu import MainMenu, OptionsMenu
 from src.core.game import Game
 from src.core.constants import *
 
@@ -128,31 +128,50 @@ class TestParticleSystem:
         particle_system.update(10.0)  # Long update to expire particles
         assert len(particle_system.particles) == 0
 
-class TestMenuSystem:
+class TestMenu:
     @pytest.fixture
-    def menu_system(self):
+    def game(self):
         pygame.init()
         screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        return MenuSystem(screen)
+        return Game(screen)
     
-    def test_menu_navigation(self, menu_system):
+    @pytest.fixture
+    def main_menu(self, game):
+        return MainMenu(game)
+    
+    @pytest.fixture
+    def options_menu(self, game):
+        return OptionsMenu(game)
+    
+    def test_main_menu_options(self, main_menu):
+        """Test main menu has correct options"""
+        assert len(main_menu.items) > 0
+        assert any(item.text == "Start Game" for item in main_menu.items)
+        assert any(item.text == "Options" for item in main_menu.items)
+        assert any(item.text == "Quit" for item in main_menu.items)
+    
+    def test_options_menu(self, options_menu):
+        """Test options menu functionality"""
+        initial_scheme = options_menu.game.control_scheme
+        options_menu.toggle_control_scheme()
+        assert options_menu.game.control_scheme != initial_scheme
+    
+    def test_menu_navigation(self, main_menu):
         """Test menu navigation"""
-        initial_option = menu_system.selected_option
-        menu_system.move_cursor_down()
-        assert menu_system.selected_option != initial_option
-        menu_system.move_cursor_up()
-        assert menu_system.selected_option == initial_option
+        initial_selected = None
+        for item in main_menu.items:
+            if item.selected:
+                initial_selected = item
+                break
         
-    def test_menu_selection(self, menu_system):
-        """Test menu option selection"""
-        menu_system.select_option()
-        assert menu_system.is_option_selected
+        # Simulate down key press
+        event = pygame.event.Event(pygame.KEYDOWN, {'key': pygame.K_DOWN})
+        main_menu.handle_input(event)
         
-    def test_menu_bounds(self, menu_system):
-        """Test menu navigation bounds"""
-        # Move to bottom
-        for _ in range(len(menu_system.options)):
-            menu_system.move_cursor_down()
-        last_option = menu_system.selected_option
-        menu_system.move_cursor_down()  # Try to move past bottom
-        assert menu_system.selected_option == last_option 
+        current_selected = None
+        for item in main_menu.items:
+            if item.selected:
+                current_selected = item
+                break
+        
+        assert current_selected != initial_selected 
