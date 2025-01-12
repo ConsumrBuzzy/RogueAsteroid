@@ -1,6 +1,9 @@
 """Ship entity for the game."""
 import math
-from typing import Optional
+import random
+import numpy as np
+import pygame
+from typing import TYPE_CHECKING, Optional
 from src.core.entities.base import Entity
 from src.core.entities.components import (
     TransformComponent,
@@ -8,15 +11,18 @@ from src.core.entities.components import (
     CollisionComponent,
     PhysicsComponent,
     InputComponent,
-    EffectComponent
+    EffectComponent,
+    ScreenWrapComponent
 )
 from src.core.constants import (
     SHIP_ACCELERATION,
     SHIP_MAX_SPEED,
     SHIP_ROTATION_SPEED,
     SHIP_FRICTION,
-    WHITE
+    WHITE,
+    MAX_BULLETS
 )
+from src.entities.bullet import Bullet
 
 # Debug flag
 DEBUG = False  # Set to True to enable debug output
