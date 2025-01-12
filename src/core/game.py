@@ -13,7 +13,7 @@ from .services import (
     EntityService,
     ParticleService
 )
-from .constants import TARGET_FPS
+from .constants import TARGET_FPS, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Game:
     """Main game class that manages the game loop and services."""
@@ -22,6 +22,12 @@ class Game:
         """Initialize the game and its services."""
         self.running = False
         self.services = ServiceManager()
+        
+        # Initialize pygame and create screen
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Rogue Asteroid")
+        
         self._setup_services()
         self._clock = pygame.time.Clock()
         
@@ -34,12 +40,12 @@ class Game:
         
         # Input and rendering services
         self.services.register_service("input", InputService)
-        self.services.register_service("render", RenderService)
+        self.services.register_service("render", lambda: RenderService(self.screen))
         
         # Game systems
         self.services.register_service("physics", PhysicsService)
         self.services.register_service("entities", EntityService)
-        self.services.register_service("particles", ParticleService)
+        self.services.register_service("particles", lambda: ParticleService(self.screen))
         
     def run(self):
         """Run the main game loop."""
@@ -105,4 +111,6 @@ class Game:
         """Clean up game resources and shut down services."""
         if self.services:
             self.services.cleanup()
-            self.services = None 
+            self.services = None
+            
+        pygame.quit() 

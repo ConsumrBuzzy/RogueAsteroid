@@ -8,7 +8,7 @@ from .resource_manager_service import ResourceManagerService
 from .input_service import InputService
 from .render_service import RenderService
 from .physics_service import PhysicsService
-from .entity_factory_service import EntityService
+from .entity_factory_service import EntityFactoryService as EntityService
 from .particle_service import ParticleService
 from .audio_service import AudioService
 from .menu_service import MenuService
