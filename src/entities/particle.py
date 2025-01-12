@@ -1,6 +1,11 @@
 """Particle entity for visual effects."""
-from src.core.entities.base import Entity, TransformComponent, RenderComponent
-from src.core.entities.components import PhysicsComponent, ParticleComponent
+from src.core.entities.base import Entity
+from src.core.entities.components import (
+    TransformComponent,
+    RenderComponent,
+    PhysicsComponent,
+    ParticleComponent
+)
 
 class Particle(Entity):
     """A particle entity for visual effects."""

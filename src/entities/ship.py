@@ -1,12 +1,13 @@
-"""Player ship entity using component system."""
-import pygame
-import numpy as np
-from typing import TYPE_CHECKING, Optional
-from src.core.entities.base import Entity, TransformComponent, RenderComponent, CollisionComponent
+"""Ship entity for the game."""
+import math
+from typing import Optional
+from src.core.entities.base import Entity
 from src.core.entities.components import (
-    ScreenWrapComponent,
-    InputComponent,
+    TransformComponent,
+    RenderComponent,
+    CollisionComponent,
     PhysicsComponent,
+    InputComponent,
     EffectComponent
 )
 from src.core.constants import (
@@ -14,16 +15,8 @@ from src.core.constants import (
     SHIP_MAX_SPEED,
     SHIP_ROTATION_SPEED,
     SHIP_FRICTION,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
-    WHITE,
-    MAX_BULLETS,
-    SHIP_INVULNERABLE_TIME,
-    DEBUG
+    WHITE
 )
-from src.entities.bullet import Bullet
-from src.entities.particle import Particle
-import random
 
 # Debug flag
 DEBUG = False  # Set to True to enable debug output
