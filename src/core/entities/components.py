@@ -153,9 +153,7 @@ class EffectComponent(Component):
     def add_effect(self, name: str, vertices: List[Tuple[float, float]], 
                   color: Tuple[int, int, int],
                   offset: Tuple[float, float] = (0, 0)) -> None:
-        """Add a new visual effect."""
-        if name in self.effects:
-            raise KeyError(f"Effect '{name}' already exists")
+        """Add a new visual effect or update existing one."""
         self.effects[name] = EffectComponent.Effect(vertices, color, offset)
     
     def set_effect_active(self, name: str, active: bool) -> None:
