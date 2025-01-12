@@ -180,6 +180,30 @@ class RenderComponent(Component):
             dt: Time delta in seconds
         """
         pass
+        
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the entity on the screen.
+        
+        Args:
+            screen: The pygame surface to draw on
+        """
+        if not (self.active and self.visible):
+            return
+            
+        transform = self.entity.get_component(TransformComponent)
+        if not transform or not self.vertices:
+            return
+            
+        # Calculate transformed vertices
+        transformed_vertices = []
+        for vertex in self.vertices:
+            x = transform.position.x + vertex[0]
+            y = transform.position.y + vertex[1]
+            transformed_vertices.append((x, y))
+            
+        # Draw polygon
+        if len(transformed_vertices) >= 3:
+            pygame.draw.polygon(screen, self.color, transformed_vertices)
 
 class CollisionComponent(Component):
     """Component for collision detection."""
