@@ -4,6 +4,7 @@ import random
 import math
 import pygame
 from .component import Component
+from ..config.effects import EFFECT_TEMPLATES, validate_template
 
 class Particle:
     """Individual particle in a particle system."""
@@ -65,33 +66,12 @@ class EffectComponent(Component):
         """
         super().__init__(entity)
         self._particles: List[Particle] = []
-        self._effect_templates: Dict[str, dict] = {
-            'thrust': {
-                'count': 10,
-                'speed_range': (50, 100),
-                'angle_spread': 30,
-                'lifetime_range': (0.2, 0.4),
-                'size_range': (1, 2),
-                'colors': [(255, 200, 50), (255, 100, 0), (200, 50, 0)]
-            },
-            'explosion': {
-                'count': 20,
-                'speed_range': (100, 200),
-                'angle_spread': 360,
-                'lifetime_range': (0.5, 1.0),
-                'size_range': (1, 3),
-                'colors': [(255, 200, 50), (255, 100, 0), (200, 50, 0)]
-            },
-            'sparkle': {
-                'count': 5,
-                'speed_range': (20, 50),
-                'angle_spread': 360,
-                'lifetime_range': (0.3, 0.6),
-                'size_range': (1, 1),
-                'colors': [(255, 255, 200), (255, 255, 150), (255, 255, 100)]
-            }
-        }
+        self._effect_templates: Dict[str, dict] = {}
         
+        # Load default templates
+        for name, template in EFFECT_TEMPLATES.items():
+            self.add_effect_template(name, template)
+            
         print("EffectComponent initialized")
     
     def update(self, dt: float) -> None:
@@ -189,7 +169,12 @@ class EffectComponent(Component):
         Args:
             name: Name of the effect template
             template: Dictionary of effect parameters
+            
+        Raises:
+            ValueError: If template is invalid
         """
+        # Validate template before adding
+        validate_template(name, template)
         self._effect_templates[name] = template
         print(f"Added effect template: {name}")
     

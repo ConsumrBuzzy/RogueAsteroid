@@ -867,3 +867,30 @@ Priority: High - Affects core system stability
 Focus Areas: Component System, Entity Framework
 Major Changes: Component System Consolidation
 Next Steps: Move effect templates to configuration 
+
+[2025-01-12 9:45AM] [REFACTOR] Effect Template Configuration
+- Moved particle effect templates to dedicated configuration:
+  1. Created src/core/config/effects.py for template definitions
+  2. Added template validation with schema checking
+  3. Updated EffectComponent to use configuration
+  4. Updated ParticleService to use configuration
+  5. Added new effect templates:
+     - Impact effect for collisions
+     - Debris effect for destruction
+
+Changes Made:
+1. Configuration
+   - Centralized effect template definitions
+   - Added validation schema
+   - Added template validation function
+   - Added documentation
+
+2. Component Updates
+   - EffectComponent now loads from config
+   - ParticleService now loads from config
+   - Improved template registration
+   - Enhanced error handling
+
+Focus Areas: Configuration Management, Effect System
+Major Changes: Effect Template System
+Next Steps: Test new effect templates 

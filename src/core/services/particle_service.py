@@ -4,6 +4,7 @@ import random
 import math
 import pygame
 from ..entity import Entity
+from ..config.effects import EFFECT_TEMPLATES, validate_template
 
 class ParticleTemplate:
     """Template for particle effect configuration."""
@@ -11,15 +12,15 @@ class ParticleTemplate:
                  lifetime_range: Tuple[float, float],
                  speed_range: Tuple[float, float],
                  size_range: Tuple[float, float],
-                 color: Tuple[int, int, int],
-                 alpha_range: Tuple[int, int],
-                 spread_angle: float = math.pi * 2):
+                 colors: List[Tuple[int, int, int]],
+                 angle_spread: float = math.pi * 2,
+                 count: int = 10):
         self.lifetime_range = lifetime_range
         self.speed_range = speed_range
         self.size_range = size_range
-        self.color = color
-        self.alpha_range = alpha_range
-        self.spread_angle = spread_angle
+        self.colors = colors
+        self.angle_spread = angle_spread
+        self.count = count
 
 class Particle:
     """Individual particle with position, velocity, and properties."""
@@ -37,15 +38,15 @@ class Particle:
         self.lifetime = random.uniform(*template.lifetime_range)
         self.time_remaining = self.lifetime
         self.size = random.uniform(*template.size_range)
-        self.alpha = random.randint(*template.alpha_range)
+        self.alpha = 255
         
         # Calculate velocity
         speed = random.uniform(*template.speed_range)
-        angle = direction + random.uniform(-template.spread_angle/2, template.spread_angle/2)
+        angle = direction + random.uniform(-template.angle_spread/2, template.angle_spread/2)
         self.vx = speed * math.cos(angle)
         self.vy = speed * math.sin(angle)
         
-        self.color = template.color
+        self.color = random.choice(template.colors)
 
 class ParticleService:
     """Service for game-wide particle effect management.
@@ -82,49 +83,52 @@ class ParticleService:
         
     def _setup_default_templates(self) -> None:
         """Set up default particle effect templates."""
-        self._templates["thrust"] = ParticleTemplate(
-            lifetime_range=(0.2, 0.4),
-            speed_range=(50, 100),
-            size_range=(2, 4),
-            color=(255, 165, 0),
-            alpha_range=(128, 255),
-            spread_angle=math.pi/4
-        )
-        
-        self._templates["explosion"] = ParticleTemplate(
-            lifetime_range=(0.5, 1.0),
-            speed_range=(100, 200),
-            size_range=(3, 6),
-            color=(255, 0, 0),
-            alpha_range=(192, 255)
-        )
-        
-        self._templates["sparkle"] = ParticleTemplate(
-            lifetime_range=(0.3, 0.6),
-            speed_range=(20, 40),
-            size_range=(1, 2),
-            color=(255, 255, 255),
-            alpha_range=(128, 255)
-        )
-        
-    def register_template(self, name: str, template: ParticleTemplate) -> None:
+        for name, config in EFFECT_TEMPLATES.items():
+            template = ParticleTemplate(
+                lifetime_range=config['lifetime_range'],
+                speed_range=config['speed_range'],
+                size_range=config['size_range'],
+                colors=config['colors'],
+                angle_spread=math.radians(config['angle_spread']),
+                count=config['count']
+            )
+            self._templates[name] = template
+            print(f"Loaded template: {name}")
+    
+    def register_template(self, name: str, config: dict) -> None:
         """Register a new particle effect template.
         
         Args:
             name: Template name
-            template: ParticleTemplate to register
+            config: Template configuration dictionary
+            
+        Raises:
+            ValueError: If template configuration is invalid
         """
+        # Validate configuration
+        validate_template(name, config)
+        
+        # Create template
+        template = ParticleTemplate(
+            lifetime_range=config['lifetime_range'],
+            speed_range=config['speed_range'],
+            size_range=config['size_range'],
+            colors=config['colors'],
+            angle_spread=math.radians(config['angle_spread']),
+            count=config['count']
+        )
+        
         self._templates[name] = template
         print(f"Registered particle template: {name}")
-        
-    def emit(self, template_name: str, position: tuple, direction: float = 0, count: int = 1) -> bool:
+    
+    def emit(self, template_name: str, position: tuple, direction: float = 0, count: Optional[int] = None) -> bool:
         """Emit particles using a template.
         
         Args:
             template_name: Name of particle template to use
             position: (x, y) position to emit from
             direction: Direction in radians
-            count: Number of particles to emit
+            count: Optional override for particle count
             
         Returns:
             bool: True if particles were emitted, False if limits reached
@@ -146,68 +150,74 @@ class ParticleService:
             print(f"Warning: Per-effect particle limit reached for {template_name}")
             return False
             
-        # Create particles
+        # Get template and determine count
         template = self._templates[template_name]
-        new_count = min(count, self.MAX_PARTICLES - len(self._particles))
+        emit_count = count if count is not None else template.count
+        new_count = min(emit_count, self.MAX_PARTICLES - len(self._particles))
         new_count = min(new_count, self.MAX_PARTICLES_PER_EFFECT - current_count)
         
+        # Create particles
         for _ in range(new_count):
-            particle = template.create_particle(position, direction)
+            particle = Particle(position[0], position[1], template, direction)
             self._particles.append(particle)
             
         # Update effect count
         self._active_effects[template_name] = current_count + new_count
         return True
-        
+    
     def update(self, dt: float) -> None:
-        """Update all particles.
+        """Update all active particles.
         
         Args:
-            dt: Time delta in seconds
+            dt: Delta time in seconds
         """
-        # Reset effect counts
-        self._active_effects.clear()
-        
-        # Update and filter particles
+        # Update remaining time and remove dead particles
         active_particles = []
         for particle in self._particles:
-            particle.update(dt)
-            if particle.is_alive():
+            particle.time_remaining -= dt
+            if particle.time_remaining > 0:
+                # Update position
+                particle.x += particle.vx * dt
+                particle.y += particle.vy * dt
+                # Update alpha for fade out
+                particle.alpha = int(255 * (particle.time_remaining / particle.lifetime))
                 active_particles.append(particle)
-                # Track effect counts
-                self._active_effects[particle.template_name] = \
-                    self._active_effects.get(particle.template_name, 0) + 1
-                    
+                
+        # Update counts
+        removed = len(self._particles) - len(active_particles)
+        if removed > 0:
+            # Distribute removals across effects (approximate)
+            per_effect = removed // len(self._active_effects) if self._active_effects else 0
+            for effect in self._active_effects:
+                self._active_effects[effect] = max(0, self._active_effects[effect] - per_effect)
+                
         self._particles = active_particles
+    
+    def draw(self, screen: Optional[pygame.Surface] = None) -> None:
+        """Draw all active particles.
         
-    def draw(self) -> None:
-        """Draw all particles."""
-        try:
-            for particle in self._particles:
-                particle.draw(self._screen)
-        except pygame.error as e:
-            print(f"Warning: Error drawing particles: {e}")
+        Args:
+            screen: Optional surface to draw on (uses service screen if None)
+        """
+        surface = screen if screen is not None else self._screen
+        
+        # Create temporary surface for alpha blending
+        temp_surface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+        
+        # Draw particles
+        for particle in self._particles:
+            pygame.draw.circle(
+                temp_surface,
+                (*particle.color, particle.alpha),
+                (int(particle.x), int(particle.y)),
+                particle.size
+            )
             
+        # Blit to target surface
+        surface.blit(temp_surface, (0, 0))
+    
     def clear(self) -> None:
-        """Clear all particles."""
+        """Clear all active particles and reset counts."""
         self._particles.clear()
         self._active_effects.clear()
-        
-    def cleanup(self) -> None:
-        """Clean up resources."""
-        self.clear()
-        self._templates.clear()
-        print("ParticleService cleaned up")
-        
-    def get_stats(self) -> Dict:
-        """Get particle system statistics.
-        
-        Returns:
-            Dict containing particle counts and limits
-        """
-        return {
-            "total_particles": len(self._particles),
-            "max_particles": self.MAX_PARTICLES,
-            "effects": self._active_effects.copy(),
-            "max_per_effect": self.MAX_PARTICLES_PER_EFFECT
-        } 
+        print("Cleared all particles") 
