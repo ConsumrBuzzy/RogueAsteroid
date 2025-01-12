@@ -113,7 +113,11 @@ class ServiceManager:
             ui = UIService(screen)
             self.register_service("ui", ui)
             
-            menu = MenuService(ui_service=ui, state_service=state)
+            # Create menu service with explicit type casting
+            menu = MenuService(
+                ui_service=self.get_service("ui"),
+                state_service=self.get_service("state")
+            )
             self.register_service("menu", menu)
             
             # Game services
