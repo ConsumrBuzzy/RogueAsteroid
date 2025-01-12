@@ -305,3 +305,12 @@ class GameService:
         self._running = False
         self._paused = False
         print("GameService cleaned up") 
+
+    @property
+    def settings(self) -> Dict:
+        """Get the game settings.
+        
+        Returns:
+            Game settings dictionary
+        """
+        return self._settings 
