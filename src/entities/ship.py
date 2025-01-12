@@ -241,8 +241,9 @@ class Ship(Entity):
         if input_comp is None:
             return
 
-        # Check for thrust key
-        thrust_key = pygame.K_UP if input_comp.control_scheme == 'arrows' else pygame.K_w
+        # Check for thrust key based on control scheme from settings
+        controls = self.game.settings.get('controls', 'arrows')
+        thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
         if thrust_key in input_comp.active_keys:
             self.create_thrust_particles()
             if DEBUG:
