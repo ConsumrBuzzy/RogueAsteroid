@@ -1,7 +1,7 @@
 """Debug component for development and testing support."""
 from typing import Dict, List, Any, Optional, Callable
 import pygame
-from .component import Component
+from .base import Component
 
 class DebugComponent(Component):
     """Component for managing debug features and testing support.

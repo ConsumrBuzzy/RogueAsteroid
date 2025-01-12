@@ -5,7 +5,7 @@ Sound system was previously removed due to issues and is not a current priority.
 This file serves as a reference for future implementation.
 """
 from typing import Dict, Optional
-from .component import Component
+from .base import Component
 
 class AudioComponent(Component):
     """Placeholder component for future audio management.

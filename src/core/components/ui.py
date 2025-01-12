@@ -1,7 +1,7 @@
-"""UI component for managing game interface elements."""
-from typing import Dict, List, Tuple, Optional
+"""UI component for managing user interface elements."""
 import pygame
-from .component import Component
+from typing import Dict, Optional, Tuple, List
+from .base import Component
 
 class UIElement:
     """Individual UI element for text rendering."""

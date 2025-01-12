@@ -1,6 +1,6 @@
-"""Timer component for managing cooldowns and timed events."""
+"""Timer component for managing time-based events."""
 from typing import Dict, Optional, Callable, Any
-from .component import Component
+from .base import Component
 
 class Timer:
     """Individual timer for tracking cooldowns and events."""

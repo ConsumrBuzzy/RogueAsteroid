@@ -1,6 +1,6 @@
 """Health component for managing entity health and damage."""
 from typing import Optional, Callable
-from .component import Component
+from .base import Component
 
 class HealthComponent(Component):
     """Component for managing entity health.
