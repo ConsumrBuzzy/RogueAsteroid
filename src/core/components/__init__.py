@@ -9,6 +9,7 @@ from src.core.entities.base import (
 from src.core.components.effect import EffectComponent
 from src.core.components.physics import PhysicsComponent
 from src.core.components.input import InputComponent
+from src.core.components.screen_wrap import ScreenWrapComponent
 
 class ComponentRegistry:
     """Registry for component types."""
@@ -32,6 +33,7 @@ class ComponentRegistry:
         self.register_component('EffectComponent', EffectComponent)
         self.register_component('PhysicsComponent', PhysicsComponent)
         self.register_component('InputComponent', InputComponent)
+        self.register_component('ScreenWrapComponent', ScreenWrapComponent)
         print("ComponentRegistry initialized")
     
     def register_component(self, type_name: str, component_type: Type[Component]) -> None:
@@ -76,5 +78,6 @@ class ComponentRegistry:
 __all__ = [
     'ComponentRegistry',
     'PhysicsComponent',
-    'InputComponent'
+    'InputComponent',
+    'ScreenWrapComponent'
 ] 

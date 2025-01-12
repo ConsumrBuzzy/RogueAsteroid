@@ -1,141 +1,65 @@
-"""Screen wrap component for handling entity wrapping at screen boundaries."""
-from typing import Optional, Tuple, List
+"""Screen wrap component for keeping entities in bounds."""
+from typing import Tuple
 import pygame
-from .component import Component
+from src.core.entities.base import Component, Entity, TransformComponent
 
 class ScreenWrapComponent(Component):
-    """Component for managing entity screen wrapping.
+    """Component for wrapping entities around screen edges."""
     
-    Provides:
-    - Screen boundary detection
-    - Position wrapping
-    - Wrap offset control
-    - Smooth transitions
-    - Transform integration
-    """
-    
-    def __init__(self, entity, screen_size: Tuple[int, int], wrap_offset: float = 2.0):
-        """Initialize screen wrap component.
+    def __init__(self, entity: Entity, screen_size: Tuple[int, int]):
+        """Initialize the screen wrap component.
         
         Args:
-            entity: Entity this component belongs to
-            screen_size: (width, height) of screen
-            wrap_offset: Offset for wrapping (prevents edge sticking)
+            entity: The entity this component belongs to
+            screen_size: (width, height) of the screen
         """
         super().__init__(entity)
         self.screen_width, self.screen_height = screen_size
-        self.wrap_offset = wrap_offset
-        self._last_wrap: Optional[str] = None  # Track last wrap direction
-        
-        print(f"ScreenWrapComponent initialized with screen size {screen_size}")
+        self.margin = 0  # Extra margin before wrapping
+    
+    def initialize(self) -> None:
+        """Initialize the component."""
+        # Verify we have a transform component
+        if not self.entity.get_component(TransformComponent):
+            raise RuntimeError("ScreenWrapComponent requires TransformComponent")
     
     def update(self, dt: float) -> None:
-        """Update entity wrapping.
+        """Update screen wrapping.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds
         """
-        if not self.enabled:
+        if not self.active:
             return
             
-        # Get transform component
-        transform = self.get_sibling_component('TransformComponent')
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
             
-        # Track if we wrapped this frame
-        wrapped = False
+        # Wrap position around screen edges
+        x = transform.position.x
+        y = transform.position.y
         
-        # Check horizontal wrapping
-        if transform.x < -self.wrap_offset:
-            transform.x = self.screen_width + self.wrap_offset
-            self._last_wrap = "left"
-            wrapped = True
-        elif transform.x > self.screen_width + self.wrap_offset:
-            transform.x = -self.wrap_offset
-            self._last_wrap = "right"
-            wrapped = True
+        # Wrap horizontally
+        if x < -self.margin:
+            x = self.screen_width + self.margin
+        elif x > self.screen_width + self.margin:
+            x = -self.margin
             
-        # Check vertical wrapping
-        if transform.y < -self.wrap_offset:
-            transform.y = self.screen_height + self.wrap_offset
-            self._last_wrap = "top"
-            wrapped = True
-        elif transform.y > self.screen_height + self.wrap_offset:
-            transform.y = -self.wrap_offset
-            self._last_wrap = "bottom"
-            wrapped = True
+        # Wrap vertically
+        if y < -self.margin:
+            y = self.screen_height + self.margin
+        elif y > self.screen_height + self.margin:
+            y = -self.margin
             
-        # Clear wrap tracking if we didn't wrap this frame
-        if not wrapped:
-            self._last_wrap = None
+        # Update position if changed
+        if x != transform.position.x or y != transform.position.y:
+            transform.position = pygame.Vector2(x, y)
     
-    def get_wrap_positions(self) -> List[Tuple[float, float]]:
-        """Get list of positions where entity should be drawn when wrapping.
-        
-        Returns:
-            List of (x, y) positions for drawing
-        """
-        transform = self.get_sibling_component('TransformComponent')
-        if not transform:
-            return []
-            
-        positions = [(transform.x, transform.y)]
-        
-        # Add wrapped positions when near screen edges
-        if transform.x < self.wrap_offset:
-            positions.append((transform.x + self.screen_width, transform.y))
-        elif transform.x > self.screen_width - self.wrap_offset:
-            positions.append((transform.x - self.screen_width, transform.y))
-            
-        if transform.y < self.wrap_offset:
-            positions.append((transform.x, transform.y + self.screen_height))
-        elif transform.y > self.screen_height - self.wrap_offset:
-            positions.append((transform.x, transform.y - self.screen_height))
-            
-        # Add corner positions when wrapping both horizontally and vertically
-        if len(positions) > 2:
-            positions.append((
-                positions[1][0],  # Wrapped x
-                positions[2][1]   # Wrapped y
-            ))
-            
-        return positions
-    
-    def set_screen_size(self, width: int, height: int) -> None:
-        """Update screen size.
+    def set_margin(self, margin: float) -> None:
+        """Set the wrap margin.
         
         Args:
-            width: New screen width
-            height: New screen height
+            margin: Distance beyond screen edge before wrapping
         """
-        self.screen_width = width
-        self.screen_height = height
-        print(f"Updated screen size to {width}x{height}")
-    
-    def set_wrap_offset(self, offset: float) -> None:
-        """Set wrap offset distance.
-        
-        Args:
-            offset: New wrap offset in pixels
-        """
-        self.wrap_offset = offset
-        print(f"Updated wrap offset to {offset}")
-    
-    @property
-    def last_wrap_direction(self) -> Optional[str]:
-        """Get direction of last wrap (None if didn't wrap this frame)."""
-        return self._last_wrap
-    
-    def is_wrapping(self) -> bool:
-        """Check if entity is currently in a wrap transition."""
-        transform = self.get_sibling_component('TransformComponent')
-        if not transform:
-            return False
-            
-        return (
-            transform.x < self.wrap_offset or
-            transform.x > self.screen_width - self.wrap_offset or
-            transform.y < self.wrap_offset or
-            transform.y > self.screen_height - self.wrap_offset
-        ) 
+        self.margin = margin 
