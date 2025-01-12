@@ -1,255 +1,145 @@
-# RogueAsteroid Architecture
+# System Architecture Documentation
 
-## Modular Structure
+## Overview
+RogueAsteroid is built on a service-oriented architecture with event-driven communication between components. The system is designed for modularity, testability, and maintainability.
 
-```
-rogue_asteroid/
-├── src/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── config/                 # Configuration
-│   │   ├── __init__.py
-│   │   ├── constants.py        # Game constants
-│   │   ├── settings.py         # User settings
-│   │   └── paths.py           # File paths
-│   │
-│   ├── core/                  # Core Systems
-│   │   ├── __init__.py
-│   │   ├── game.py            # Main game loop
-│   │   ├── state.py           # State management
-│   │   └── events.py          # Event system
-│   │
-│   ├── engine/                # Game Engine
-│   │   ├── __init__.py
-│   │   ├── ecs/               # Entity Component System
-│   │   │   ├── __init__.py
-│   │   │   ├── entity.py
-│   │   │   ├── component.py
-│   │   │   └── system.py
-│   │   │
-│   │   ├── physics/           # Physics Engine
-│   │   │   ├── __init__.py
-│   │   │   ├── vector.py
-│   │   │   ├── collision.py
-│   │   │   └── forces.py
-│   │   │
-│   │   └── graphics/          # Graphics Engine
-│   │       ├── __init__.py
-│   │       ├── renderer.py
-│   │       ├── particles.py
-│   │       └── shapes.py
-│   │
-│   ├── game/                  # Game-Specific
-│   │   ├── __init__.py
-│   │   ├── components/        # Game Components
-│   │   │   ├── __init__.py
-│   │   │   ├── transform.py
-│   │   │   ├── physics.py
-│   │   │   ├── collision.py
-│   │   │   ├── render.py
-│   │   │   ├── input.py
-│   │   │   ├── effects.py
-│   │   │   └── particles.py
-│   │   │
-│   │   ├── entities/          # Game Entities
-│   │   │   ├── __init__.py
-│   │   │   ├── ship.py
-│   │   │   ├── asteroid.py
-│   │   │   └── bullet.py
-│   │   │
-│   │   ├── systems/           # Game Systems
-│   │   │   ├── __init__.py
-│   │   │   ├── spawner.py
-│   │   │   ├── scoring.py
-│   │   │   └── wave.py
-│   │   │
-│   │   └── states/           # Game States
-│   │       ├── __init__.py
-│   │       ├── menu.py
-│   │       ├── playing.py
-│   │       └── game_over.py
-│   │
-│   └── ui/                    # User Interface
-│       ├── __init__.py
-│       ├── menus/
-│       │   ├── __init__.py
-│       │   ├── main_menu.py
-│       │   └── pause_menu.py
-│       │
-│       └── hud/
-│           ├── __init__.py
-│           └── game_hud.py
-│
-├── data/                      # Game Data
-│   ├── highscores/
-│   └── settings/
-│
-├── docs/                      # Documentation
-│   ├── ARCHITECTURE.md
-│   ├── DEVELOPMENT_LOG.md
-│   └── ...
-│
-└── tests/                     # Tests
-    ├── __init__.py
-    ├── engine/
-    ├── game/
-    └── ui/
-```
+## Core Architecture
 
-## Module Dependencies
+### Service Layer
+1. ServiceManager
+   - Central service registry
+   - Dependency validation
+   - Service lifecycle management
+   - Initialization order control
 
-```
-config <── core <── engine <── game <── ui
-                             ^
-                             |
-                        main.py
-```
+2. Core Services
+   - EventManagerService: Event distribution with queue management
+   - StateService: Game state management with transition validation
+   - ResourceManagerService: Resource loading and validation
+   - EntityFactoryService: Entity creation and pooling
+   - MenuService: Menu state and UI management
+   - GameService: Core game loop and state
+   - CollisionService: Physics and collision detection
+   - StatisticsService: Game statistics tracking
+   - AchievementService: Achievement management
+   - HighScoreService: Score tracking and persistence
 
-## Core Systems
+### Component System
+1. Entity Components
+   - TransformComponent: Position and rotation
+   - RenderComponent: Visual representation
+   - PhysicsComponent: Movement and collision
+   - InputComponent: User input handling
+   - EffectComponent: Particle effects
+   - ScreenWrapComponent: Screen boundary handling
 
-### Event System (`core/events.py`)
-- Event types enum
-- Event queue
-- Event dispatcher
-- Event handlers
+2. Entity Types
+   - Ship: Player-controlled spacecraft
+   - Asteroid: Destructible obstacles
+   - Bullet: Projectile weapons
+   - Particle: Visual effects
+   - PowerUp: Game modifiers
 
-### State System (`core/state.py`)
-- State interface
-- State manager
-- State transitions
-- State stack
+## System Interactions
 
-### Game Loop (`core/game.py`)
-- Fixed timestep
-- State updates
-- System updates
-- Rendering
+### Event System
+1. Event Types
+   - GameEvents: State changes, scoring, lives
+   - InputEvents: User actions
+   - CollisionEvents: Object interactions
+   - MenuEvents: UI interactions
+   - AchievementEvents: Milestone triggers
 
-## Engine Systems
+2. Event Flow
+   - Publishers -> EventManager -> Subscribers
+   - Queue-based processing
+   - Size limits and overflow protection
+   - Error handling and recovery
 
-### ECS (`engine/ecs/`)
-- Entity management
-- Component registration
-- System execution
-- Entity queries
+### State Management
+1. Game States
+   - MAIN_MENU
+   - PLAYING
+   - PAUSED
+   - GAME_OVER
+   - OPTIONS
+   - HIGH_SCORES
 
-### Physics (`engine/physics/`)
-- Vector operations
-- Collision detection
-- Force application
-- Movement integration
+2. State Transitions
+   - Validated transitions only
+   - Event notifications
+   - Cleanup hooks
+   - Error recovery
 
-### Graphics (`engine/graphics/`)
-- Shape rendering
-- Particle system
-- Screen management
-- Debug visualization
+## Resource Management
 
-## Game Systems
+### Asset Types
+1. Graphics
+   - Sprites
+   - Particles
+   - UI elements
 
-### Components (`game/components/`)
-- Transform component
-- Physics component
-- Collision component
-- Render component
-- Input component
-- Effects component
-- Particle component
+2. Data
+   - Settings
+   - High scores
+   - Statistics
+   - Achievements
 
-### Entities (`game/entities/`)
-- Base entity class
-- Ship entity
-- Asteroid entity
-- Bullet entity
+### Resource Handling
+1. Loading
+   - Validation
+   - Error handling
+   - Fallback options
 
-### Systems (`game/systems/`)
-- Spawner system
-- Scoring system
-- Wave system
+2. Cleanup
+   - Proper disposal
+   - Memory management
+   - Error recovery
 
-### States (`game/states/`)
-- Menu state
-- Playing state
-- Game over state
+## Performance Considerations
 
-## UI System
+### Memory Management
+1. Entity Pooling
+   - Size limits
+   - Recycling
+   - Overflow protection
 
-### Menus (`ui/menus/`)
-- Main menu
-- Pause menu
-- Options menu
-- High score menu
+2. Resource Caching
+   - Asset retention
+   - Memory limits
+   - Cleanup triggers
 
-### HUD (`ui/hud/`)
-- Score display
-- Lives display
-- Level display
-- Debug overlay
+### Processing Optimization
+1. Event Queue
+   - Size limits
+   - Processing caps
+   - Priority handling
 
-## Implementation Guidelines
+2. Collision Detection
+   - Spatial partitioning
+   - Broad phase / narrow phase
+   - Performance scaling
 
-1. **Dependency Injection**
-   - Systems should receive dependencies through constructors
-   - Avoid global state
-   - Use interfaces for system communication
+## Error Handling
 
-2. **Event-Driven Communication**
-   - Systems communicate through events
-   - Loose coupling between modules
-   - Central event dispatcher
+### Recovery Mechanisms
+1. Service Layer
+   - Graceful degradation
+   - State recovery
+   - Resource cleanup
 
-3. **Configuration Management**
-   - Constants in config files
-   - User settings separate from game constants
-   - Path management for resources
+2. Event System
+   - Queue overflow protection
+   - Handler error isolation
+   - System stability
 
-4. **State Management**
-   - Clear state transitions
-   - State stack for UI
-   - State-specific update and render methods
+### Logging and Monitoring
+1. Error Tracking
+   - Service state
+   - Resource usage
+   - Performance metrics
 
-5. **Resource Management**
-   - Centralized resource loading
-   - Resource caching
-   - Proper cleanup
-
-## Testing Strategy
-
-1. **Unit Tests**
-   - Individual component testing
-   - System behavior verification
-   - State transition testing
-
-2. **Integration Tests**
-   - System interaction testing
-   - Event system verification
-   - State flow testing
-
-3. **Performance Tests**
-   - Frame rate monitoring
-   - Memory usage tracking
-   - System bottleneck identification
-
-## Extension Points
-
-1. **New Components**
-   - Add to `game/components/`
-   - Register in ECS
-   - Update relevant systems
-
-2. **New Entities**
-   - Add to `game/entities/`
-   - Compose from existing components
-   - Register in entity factory
-
-3. **New Systems**
-   - Add to `game/systems/`
-   - Register in game loop
-   - Define system dependencies
-
-4. **New States**
-   - Add to `game/states/`
-   - Register in state manager
-   - Define transitions
-
-Note: This architecture emphasizes modularity, testability, and extensibility while maintaining clear separation of concerns. 
+2. Debug Information
+   - State transitions
+   - Event processing
+   - Resource management 
