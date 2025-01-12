@@ -148,12 +148,19 @@ class TestGameService:
         
     def test_game_pause_resume(self, game_service):
         """Test game pause and resume."""
+        # Start the game and ensure we're in PLAYING state
         game_service.start()
+        game_service._state_service.current_state = GameState.PLAYING
+        
+        # Test pause
         game_service.pause()
         assert game_service.is_paused()
+        assert game_service._state_service.get_current_state() == GameState.PAUSED
         
+        # Test resume
         game_service.resume()
         assert not game_service.is_paused()
+        assert game_service._state_service.get_current_state() == GameState.PLAYING
         
     def test_game_clear(self, game_service):
         """Test game state clearing."""
