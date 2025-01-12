@@ -2,6 +2,8 @@
 import random
 import math
 from typing import Optional, Dict, Any, List, Tuple
+import pygame
+from pygame import Vector2
 
 from src.core.entities.base import Entity
 from src.core.components import (
