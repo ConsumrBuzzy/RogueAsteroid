@@ -167,10 +167,16 @@ class GameService:
             return
             
         try:
+            # Clear the screen
+            self._screen.fill((0, 0, 0))  # Black background
+            
             # Draw game elements in order
             self._render_service.draw()
             self._particle_service.draw()
             self._ui_service.draw()
+            
+            # Update the display
+            pygame.display.flip()
             
         except Exception as e:
             print(f"Error drawing game frame: {e}")

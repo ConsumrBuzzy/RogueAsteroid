@@ -30,6 +30,10 @@ class Menu:
         y = self._base_y + len(self.items) * self._spacing
         self.items.append(MenuItem(text, callback, (x, y)))
         
+        # If this is the first item, select it
+        if len(self.items) == 1:
+            self.items[0].selected = True
+        
     def select_next(self) -> None:
         """Select the next item."""
         if not self.items:
@@ -165,6 +169,13 @@ class MenuService:
         Args:
             dt: Delta time in seconds (unused but required for state handler interface)
         """
+        # Update current menu based on state
+        current_state = self._state_service.get_current_state()
+        if current_state in self._menus:
+            self._current_menu = self._menus[current_state]
+            if self._current_menu.items and not any(item.selected for item in self._current_menu.items):
+                self._current_menu.items[0].selected = True
+        
         if not self._current_menu:
             return
             
