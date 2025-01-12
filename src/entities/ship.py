@@ -181,14 +181,11 @@ class Ship(Entity):
         # Clear existing bindings
         input_component.clear_bindings()
         
-        # Add new bindings
-        input_component.bind_key(pygame.K_w, self._thrust_forward)
-        input_component.bind_key(pygame.K_UP, self._thrust_forward)
-        input_component.bind_key(pygame.K_a, self._rotate_left)
-        input_component.bind_key(pygame.K_LEFT, self._rotate_left)
-        input_component.bind_key(pygame.K_d, self._rotate_right)
-        input_component.bind_key(pygame.K_RIGHT, self._rotate_right)
-        input_component.bind_key(pygame.K_SPACE, self._fire)
+        # Add new action bindings
+        input_component.bind_action("thrust", [pygame.K_w, pygame.K_UP], self._thrust_forward)
+        input_component.bind_action("rotate_left", [pygame.K_a, pygame.K_LEFT], self._rotate_left)
+        input_component.bind_action("rotate_right", [pygame.K_d, pygame.K_RIGHT], self._rotate_right)
+        input_component.bind_action("fire", [pygame.K_SPACE], self._fire)
         
     def _thrust_forward(self) -> None:
         """Apply forward thrust to the ship."""
