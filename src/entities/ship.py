@@ -239,7 +239,7 @@ class Ship(Entity):
                     physics.velocity = -particle_vel  # Opposite of thrust direction
             
             # Add to game entities
-            self.game.entities.append(particle)
+            self.game.entity_manager.add_entity(particle)
             
             if DEBUG:
                 print(f"Created thrust particle at {pos}")  # Debug info

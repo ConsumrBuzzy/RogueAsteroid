@@ -73,7 +73,7 @@ class Spawner:
         
         # Create asteroid
         asteroid = Asteroid(self.game, 'large', position, velocity)
-        self.game.add_entity(asteroid)
+        self.game.entity_manager.add_entity(asteroid)
     
     def check_wave_complete(self) -> bool:
         """Check if current wave is complete."""
@@ -82,7 +82,7 @@ class Spawner:
             
         # Count remaining asteroids
         asteroid_count = sum(
-            1 for entity in self.game.entities
+            1 for entity in self.game.entity_manager.entities
             if isinstance(entity, Asteroid)
         )
         

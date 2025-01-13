@@ -219,7 +219,7 @@ class Asteroid(Entity):
                 )
             
             # Add particle to game
-            self.game.entities.append(particle)
+            self.game.entity_manager.add_entity(particle)
 
     def _create_split_particles(self):
         """Create particles when asteroid splits."""
@@ -248,7 +248,7 @@ class Asteroid(Entity):
                 )
             
             # Add particle to game
-            self.game.entities.append(particle)
+            self.game.entity_manager.add_entity(particle)
 
     def update(self, dt: float):
         """Update the asteroid's state."""

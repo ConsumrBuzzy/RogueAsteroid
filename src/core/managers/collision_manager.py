@@ -23,7 +23,7 @@ class CollisionManager:
         """Handle collisions between entities."""
         # Get all entities with collision components
         collidable_entities = [
-            entity for entity in self.game.entities 
+            entity for entity in self.game.entity_manager.entities 
             if entity.get_component(CollisionComponent)
         ]
         
@@ -98,12 +98,11 @@ class CollisionManager:
         
         # Add new pieces to game
         for piece in pieces:
-            self.game.asteroids.append(piece)
-            self.game.entities.append(piece)
+            self.game.entity_manager.add_entity(piece)
         
         # Remove bullet and asteroid
-        self.game.remove_entity(bullet)
-        self.game.remove_entity(asteroid)
+        self.game.entity_manager.remove_entity(bullet)
+        self.game.entity_manager.remove_entity(asteroid)
 
     def _handle_asteroid_asteroid_collision(self, asteroid1: Asteroid, asteroid2: Asteroid):
         """Handle collision between two asteroids."""
