@@ -89,4 +89,12 @@ class EntityManager:
             self.asteroids.clear()
             self.ship = None
             
-        self.logger.debug(f"Cleared {entity_count} entities") 
+        self.logger.debug(f"Cleared {entity_count} entities")
+        
+    def spawn_ship(self) -> None:
+        """Spawn a new ship at the center of the screen."""
+        if self.ship is None:
+            self.logger.debug("Spawning new ship")
+            ship = Ship(self.game)
+            self.add_entity(ship)
+            ship.invulnerable = True  # Make ship invulnerable on spawn 

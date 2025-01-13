@@ -8,7 +8,6 @@ from src.core.systems import ParticleSystem, Spawner
 from src.core.managers import (
     CollisionManager,
     EntityManager,
-    SpawnManager,
     InputManager,
     GameLoopManager
 )
@@ -60,7 +59,6 @@ class Game:
         # Initialize managers
         self.entity_manager = EntityManager(self)
         self.collision_manager = CollisionManager(self)
-        self.spawn_manager = SpawnManager(self)
         self.input_manager = InputManager(self)
         self.game_loop = GameLoopManager(self)
         self.logger.debug("Managers initialized")
@@ -103,7 +101,7 @@ class Game:
         """Start a new game."""
         self.logger.info("Starting new game")
         self.reset_game()
-        self.spawn_manager.spawn_ship()
+        self.entity_manager.spawn_ship()
         self.spawner.start_wave()
     
     def reset_game(self):
@@ -138,7 +136,7 @@ class Game:
             self.logger.info("Game over - No lives remaining")
             self.state_manager.change_state(GameState.GAME_OVER)
         else:
-            self.spawn_manager.respawn_ship()
+            self.entity_manager.spawn_ship()
     
     def toggle_control_scheme(self):
         """Toggle between arrow keys and WASD controls."""

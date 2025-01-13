@@ -45,10 +45,10 @@ class InputComponent(Component):
             
         # Define rotation functions
         def rotate_left():
-            self.rotation_direction = 1
+            self.rotation_direction = -1
             
         def rotate_right():
-            self.rotation_direction = -1
+            self.rotation_direction = 1
             
         def stop_rotation():
             self.rotation_direction = 0
