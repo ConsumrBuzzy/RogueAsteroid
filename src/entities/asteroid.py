@@ -95,6 +95,8 @@ class Asteroid(Entity):
         physics.velocity = velocity  # Set velocity in physics component
         physics.max_speed = ASTEROID_SIZES[self.size]['speed_range'][1]  # Use max speed from range
         physics.friction = 0.0     # No friction for asteroids
+        physics.mass = ASTEROID_SIZES[self.size]['mass']  # Set mass based on size
+        physics.angular_velocity = random.uniform(-math.pi/2, math.pi/2)  # Random initial spin
 
         # Render component
         render = self.add_component(RenderComponent)
@@ -135,8 +137,10 @@ class Asteroid(Entity):
         if not transform or not physics:
             return []
             
-        # Get original velocity
+        # Get original velocity (ensure non-zero)
         orig_velocity = pygame.Vector2(physics.velocity)
+        if orig_velocity.length_squared() < 0.0001:  # If almost zero velocity
+            orig_velocity = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
         orig_speed = orig_velocity.length()
         
         # Determine new size
@@ -181,18 +185,15 @@ class Asteroid(Entity):
     
     def _create_destruction_particles(self):
         """Create explosion particles when asteroid is destroyed."""
-        transform = self.get_component('transform')
+        transform = self.get_component(TransformComponent)
         if not transform:
             return
             
         # Number of particles based on size
         num_particles = 24 if self.size == 'large' else 16 if self.size == 'medium' else 12
         
-        # Get current position as Vector2
-        pos = pygame.Vector2(transform.position.x if hasattr(transform.position, 'x') 
-                           else transform.position[0],
-                           transform.position.y if hasattr(transform.position, 'y')
-                           else transform.position[1])
+        # Get current position
+        pos = pygame.Vector2(transform.position)
         
         for _ in range(num_particles):
             # Create particle with orange/yellow color for explosion
@@ -203,12 +204,12 @@ class Asteroid(Entity):
             )
             
             # Set particle position
-            particle_transform = particle.get_component('transform')
+            particle_transform = particle.get_component(TransformComponent)
             if particle_transform:
                 particle_transform.position = pos.copy()
             
             # Set particle velocity
-            physics = particle.get_component('physics')
+            physics = particle.get_component(PhysicsComponent)
             if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(100, 200)
