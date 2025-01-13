@@ -22,6 +22,7 @@ from src.core.constants import (
     MAX_BULLETS
 )
 from src.entities.bullet import Bullet
+from src.entities.particle import Particle
 
 # Debug flag
 DEBUG = False  # Set to True to enable debug output
@@ -204,32 +205,39 @@ class Ship(Entity):
         # Create 2-3 particles per thrust
         num_particles = random.randint(2, 3)
         for _ in range(num_particles):
-            # Randomize particle velocity around thrust direction
-            spread = 30  # Degrees
-            particle_angle = transform.rotation + random.uniform(-spread, spread)
-            particle_speed = random.uniform(50, 150)
-            
-            particle_angle_rad = math.radians(particle_angle)
-            particle_vel = pygame.Vector2(
-                math.sin(particle_angle_rad),
-                -math.cos(particle_angle_rad)
-            ) * particle_speed
-            
-            # Create particle at ship's position
-            pos = transform.position + thrust_dir * 20  # Offset behind ship
+            # Create particle with proper initial position and color
             particle = Particle(
                 self.game,
                 lifetime=random.uniform(0.2, 0.4),
                 color=(255, 165, 0)  # Orange color
             )
             
+            # Calculate particle spawn position behind ship
+            pos = transform.position - thrust_dir * 20  # Offset behind ship
+            
             # Set particle position and velocity
             particle_transform = particle.get_component(TransformComponent)
             if particle_transform:
                 particle_transform.position = pos
+                
+                # Randomize particle velocity around thrust direction
+                spread = 30  # Degrees
+                particle_angle = transform.rotation + random.uniform(-spread, spread)
+                particle_speed = random.uniform(50, 150)
+                
+                particle_angle_rad = math.radians(particle_angle)
+                particle_vel = pygame.Vector2(
+                    math.sin(particle_angle_rad),
+                    -math.cos(particle_angle_rad)
+                ) * particle_speed
+                
                 particle_transform.velocity = -particle_vel  # Opposite of thrust direction
             
+            # Add to game entities
             self.game.entities.append(particle)
+            
+            if DEBUG:
+                print(f"Created thrust particle at {pos} with velocity {particle_vel}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update the ship's state."""
