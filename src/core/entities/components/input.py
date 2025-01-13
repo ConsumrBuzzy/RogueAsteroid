@@ -208,8 +208,10 @@ class InputComponent(Component):
         if self.control_scheme == 'arrows':
             if pygame.K_LEFT in self.pressed_keys:
                 self._handle_rotate_left()
+                self._handle_turn_thrust('left')
             if pygame.K_RIGHT in self.pressed_keys:
                 self._handle_rotate_right()
+                self._handle_turn_thrust('right')
             if pygame.K_UP in self.pressed_keys:
                 self._handle_forward_thrust()
             if pygame.K_DOWN in self.pressed_keys:
@@ -217,8 +219,10 @@ class InputComponent(Component):
         else:  # WASD controls
             if pygame.K_a in self.pressed_keys:
                 self._handle_rotate_left()
+                self._handle_turn_thrust('left')
             if pygame.K_d in self.pressed_keys:
                 self._handle_rotate_right()
+                self._handle_turn_thrust('right')
             if pygame.K_w in self.pressed_keys:
                 self._handle_forward_thrust()
             if pygame.K_s in self.pressed_keys:
@@ -229,4 +233,35 @@ class InputComponent(Component):
             if key in self.key_bindings:
                 for action, _, continuous in self.key_bindings[key]:
                     if continuous:
-                        action() 
+                        action()
+                        
+    def _handle_turn_thrust(self, direction: str):
+        """Create turn thrust particles."""
+        transform = self.entity.get_component(TransformComponent)
+        if transform:
+            # Calculate ship direction
+            angle_rad = math.radians(transform.rotation)
+            ship_dir = pygame.Vector2(
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
+            )
+            back_offset = -ship_dir * 20  # Bottom of ship
+            
+            if direction == 'left':
+                # Position at left bottom corner for right turn
+                left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 10  # Left side
+                position = transform.position + back_offset + left_offset
+            else:  # right turn
+                # Position at right bottom corner for left turn
+                right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 10  # Right side
+                position = transform.position + back_offset + right_offset
+            
+            # Emit circular particles for thrust effect
+            self.entity.game.particle_system.emit_circular(
+                position=position,
+                color=(255, 255, 0),  # Yellow color
+                count=1,  # Single particle per frame
+                lifetime=(0.05, 0.15),  # Very short-lived particles
+                speed_range=(30, 50),  # Slower speed for smaller effect
+                size_range=(1, 1)  # Tiny particles
+            ) 

@@ -26,13 +26,12 @@ class ScoringSystem:
         self.current_score = 0
         
     def is_high_score(self) -> bool:
-        """Check if current score qualifies as a high score.
-        
-        Returns:
-            bool: True if current score is a high score
-        """
+        """Check if current score qualifies as a high score."""
+        # If we have fewer than 10 scores, any score is a high score
         if len(self.high_scores) < 10:
             return True
+            
+        # Otherwise, check if current score beats the lowest high score
         return self.current_score > min(self.high_scores)
         
     def add_high_score(self, score: int) -> None:
