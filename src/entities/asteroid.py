@@ -135,8 +135,9 @@ class Asteroid(Entity):
         if not transform or not physics:
             return []
             
-        # Get original velocity angle
-        orig_angle = math.degrees(math.atan2(physics.velocity.y, physics.velocity.x))
+        # Get original velocity
+        orig_velocity = pygame.Vector2(physics.velocity)
+        orig_speed = orig_velocity.length()
         
         # Determine new size
         if self.size == 'large':
@@ -151,32 +152,27 @@ class Asteroid(Entity):
         # Create new pieces
         pieces = []
         for i in range(num_pieces):
-            # Calculate new direction (spread pieces apart)
-            spread = 45.0  # degrees
-            new_angle = orig_angle + (spread if i == 0 else -spread)
+            # Calculate new direction (perpendicular to original velocity)
+            perpendicular = pygame.Vector2(-orig_velocity.y, orig_velocity.x).normalize()
+            spread_dir = perpendicular if i == 0 else -perpendicular
             
-            # Create new velocity vector
+            # Create new velocity vector (maintain some forward momentum plus sideways spread)
             speed_range = ASTEROID_SIZES[new_size]['speed_range']
-            speed = random.uniform(speed_range[0], speed_range[1])  # Random speed within range
-            rad_angle = math.radians(new_angle)
-            new_vel = pygame.Vector2(
-                math.cos(rad_angle) * speed,
-                math.sin(rad_angle) * speed
-            )
+            new_speed = random.uniform(speed_range[0], speed_range[1])
             
-            # Calculate offset position (move pieces apart slightly)
-            offset_distance = ASTEROID_SIZES[new_size]['radius']  # Use radius as offset
-            offset = pygame.Vector2(
-                math.cos(rad_angle) * offset_distance,
-                math.sin(rad_angle) * offset_distance
-            )
-            new_pos = pygame.Vector2(transform.position) + (offset if i == 0 else -offset)
+            # Mix original direction with perpendicular direction
+            new_vel = (orig_velocity.normalize() * (orig_speed * 0.5) + 
+                      spread_dir * new_speed)
+            
+            # Calculate offset position (move pieces apart perpendicular to velocity)
+            offset_distance = ASTEROID_SIZES[new_size]['radius'] * 2  # Double the offset
+            new_pos = pygame.Vector2(transform.position) + (spread_dir * offset_distance)
             
             # Create new asteroid with offset position and new velocity
             new_asteroid = Asteroid(
                 self.game,
                 new_size,
-                new_pos,  # Use offset position
+                new_pos,
                 new_vel
             )
             pieces.append(new_asteroid)
