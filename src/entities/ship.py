@@ -254,39 +254,4 @@ class Ship(Entity):
             self.blink_timer = 0.0
             render = self.get_component(RenderComponent)
             if render:
-                render.visible = True
-    
-    def handle_shoot(self) -> None:
-        """Handle shoot input."""
-        if self.shoot_timer > 0:
-            return
-            
-        if len(self.game.entity_manager.bullets) >= MAX_BULLETS:
-            self.logger.debug(f"Cannot fire: max bullets ({MAX_BULLETS}) reached")
-            return
-            
-        transform = self.get_component(TransformComponent)
-        if not transform:
-            self.logger.warning("Cannot shoot without transform component!")
-            return
-            
-        # Calculate bullet direction based on ship's rotation
-        angle_rad = math.radians(transform.rotation)
-        direction = pygame.Vector2(
-            math.sin(angle_rad),
-            -math.cos(angle_rad)
-        )
-        
-        # Create bullet at ship's position
-        bullet = Bullet(
-            self.game,
-            pygame.Vector2(transform.position),
-            direction
-        )
-        
-        # Add bullet to game
-        self.game.entity_manager.add_entity(bullet)
-        
-        # Reset shoot timer
-        self.shoot_timer = self.SHOOT_COOLDOWN
-        self.logger.debug("Bullet fired") 
+                render.visible = True 
