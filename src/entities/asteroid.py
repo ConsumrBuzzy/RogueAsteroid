@@ -164,12 +164,20 @@ class Asteroid(Entity):
                 math.sin(rad_angle) * speed
             )
             
-            # Create new asteroid at the same position with new velocity
+            # Calculate offset position (move pieces apart slightly)
+            offset_distance = ASTEROID_SIZES[new_size]['radius']  # Use radius as offset
+            offset = pygame.Vector2(
+                math.cos(rad_angle) * offset_distance,
+                math.sin(rad_angle) * offset_distance
+            )
+            new_pos = pygame.Vector2(transform.position) + (offset if i == 0 else -offset)
+            
+            # Create new asteroid with offset position and new velocity
             new_asteroid = Asteroid(
                 self.game,
                 new_size,
-                pygame.Vector2(transform.position),  # Copy position
-                new_vel  # Use calculated velocity
+                new_pos,  # Use offset position
+                new_vel
             )
             pieces.append(new_asteroid)
             
