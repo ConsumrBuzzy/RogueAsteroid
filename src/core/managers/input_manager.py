@@ -23,10 +23,11 @@ class InputManager:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-            
-        # Let state manager handle input first
-        self.game.state_manager.handle_input(event)
         
+        # Let state manager handle input first and check if it was consumed
+        if self.game.state_manager.handle_input(event):
+            return  # Event was consumed by state manager
+            
         # Handle game-specific input based on state
         if self.game.state == GameState.PLAYING:
             self._handle_playing_input(event)

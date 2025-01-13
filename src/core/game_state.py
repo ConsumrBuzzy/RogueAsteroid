@@ -72,27 +72,28 @@ class StateManager:
     def handle_input(self, event):
         """Handle input based on current state."""
         if event.type != pygame.KEYDOWN:
-            return
+            return False
         
         try:
             if self.current_state == GameState.MAIN_MENU:
-                self._handle_main_menu_input(event)
+                return self._handle_main_menu_input(event)
             elif self.current_state == GameState.PLAYING:
-                self._handle_playing_input(event)
+                return self._handle_playing_input(event)
             elif self.current_state == GameState.PAUSED:
-                self._handle_pause_input(event)
+                return self._handle_pause_input(event)
             elif self.current_state == GameState.OPTIONS:
-                self._handle_options_input(event)
+                return self._handle_options_input(event)
             elif self.current_state == GameState.HIGH_SCORE:
-                self._handle_high_score_input(event)
+                return self._handle_high_score_input(event)
             elif self.current_state == GameState.NEW_HIGH_SCORE:
-                self._handle_new_high_score_input(event)
+                return self._handle_new_high_score_input(event)
             elif self.current_state == GameState.GAME_OVER:
-                self._handle_game_over_input(event)
+                return self._handle_game_over_input(event)
         except Exception as e:
             self.logger.error(f"Error handling input in state {self.current_state}: {str(e)}")
             import traceback
             self.logger.error(traceback.format_exc())
+        return False
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
@@ -101,13 +102,15 @@ class StateManager:
         # Skip processing if we just came from NEW_HIGH_SCORE state
         if self.previous_state == GameState.NEW_HIGH_SCORE:
             self.previous_state = GameState.MAIN_MENU
-            return
+            return True
         
         # Handle menu navigation
         if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_KP8:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
+            return True
         elif event.key == pygame.K_DOWN or event.key == pygame.K_s or event.key == pygame.K_KP2:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
+            return True
         elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
             self.logger.debug(f"Selected menu option: {self.selected_option}")
             if self.selected_option == 0:  # New Game
@@ -119,6 +122,8 @@ class StateManager:
                 self.change_state(GameState.OPTIONS)
             elif self.selected_option == 3:  # Quit
                 self.game.running = False
+            return True
+        return False
     
     def _handle_playing_input(self, event):
         """Handle input in the playing state."""
@@ -185,10 +190,14 @@ class StateManager:
             self.change_state(GameState.MAIN_MENU)
             # Ensure we don't accidentally transition to another state
             self.previous_state = GameState.MAIN_MENU
+            return True
         elif event.key == pygame.K_BACKSPACE:
             self.high_score_name = self.high_score_name[:-1]
+            return True
         elif event.unicode.isalnum() and len(self.high_score_name) < 10:
             self.high_score_name += event.unicode.upper()
+            return True
+        return False
     
     def _handle_game_over_input(self, event):
         """Handle input in game over state."""
