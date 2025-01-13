@@ -1,95 +1,63 @@
-"""Game constants and configuration."""
+"""Game constants."""
 
-# Window settings
+# Display
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 FPS = 60
 
 # Colors
-BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
-# Game settings
-STARTING_LIVES = 3  # Number of lives player starts with
-SHIP_INVULNERABLE_TIME = 2.0  # Seconds of invulnerability after respawn
-MAX_BULLETS = 8  # Maximum number of bullets on screen
+# Explosion colors
+EXPLOSION_COLORS = [
+    (255, 69, 0),    # Red-orange
+    (255, 140, 0),   # Dark orange
+    (255, 165, 0),   # Orange
+    (255, 215, 0),   # Yellow
+]
 
-# Ship settings
-SHIP_ACCELERATION = 500  # Increased from 400 - Pixels per second squared
-SHIP_MAX_SPEED = 400  # Maximum speed in pixels per second
-SHIP_ROTATION_SPEED = 180  # Degrees per second
-SHIP_FRICTION = 0.01  # Reduced from 0.02 - Velocity reduction per frame (0-1)
+# Thrust colors
+THRUST_COLORS = [
+    (200, 200, 200),  # Light gray
+    (180, 180, 180),  # Medium gray
+    (160, 160, 160),  # Dark gray
+]
 
-# Bullet settings
-BULLET_SPEED = 1200.0  # pixels per second
-BULLET_LIFETIME = 0.5  # seconds before despawning
+# Ship
+SHIP_ACCELERATION = 300.0
+SHIP_MAX_SPEED = 300.0
+SHIP_ROTATION_SPEED = 180.0  # Degrees per second
+SHIP_FRICTION = 0.02
+SHIP_INVULNERABLE_TIME = 3.0
 
-# Asteroid settings
+# Bullets
+BULLET_SPEED = 500.0
+BULLET_LIFETIME = 1.0
+MAX_BULLETS = 4
+
+# Asteroids
+MAX_ASTEROIDS = 12
 ASTEROID_SIZES = {
     'large': {
-        'radius': 40.0,
-        'points': 3,
-        'splits': 2,
-        'speed_range': (50.0, 100.0),
-        'vertices_range': (10, 14),
-        'mass': 3.0
-    },
-    'medium': {
-        'radius': 20.0,
-        'points': 2,
-        'splits': 2,
-        'speed_range': (75.0, 150.0),
-        'vertices_range': (8, 12),
-        'mass': 2.0
-    },
-    'small': {
-        'radius': 10.0,
-        'points': 1,
-        'splits': 0,
-        'speed_range': (100.0, 200.0),
-        'vertices_range': (6, 10),
-        'mass': 1.0
-    }
-}
-
-# Level settings
-INITIAL_ASTEROIDS = 4     # Number of asteroids in first level
-ASTEROIDS_INCREMENT = 2   # Additional asteroids per level
-MAX_ASTEROIDS = 12       # Maximum asteroids in any level
-
-# Particle effects
-EXPLOSION_PARTICLES = {
-    'large': {
-        'count': 30,
-        'speed_range': (100, 200),
-        'size_range': (2, 4),
-        'lifetime_range': (0.5, 1.0)
-    },
-    'medium': {
-        'count': 20,
-        'speed_range': (75, 150),
-        'size_range': (1.5, 3),
-        'lifetime_range': (0.3, 0.8)
-    },
-    'small': {
-        'count': 15,
+        'radius': 40,
         'speed_range': (50, 100),
-        'size_range': (1, 2),
-        'lifetime_range': (0.2, 0.5)
+        'mass': 9.0,
+        'points': 3
+    },
+    'medium': {
+        'radius': 20,
+        'speed_range': (100, 150),
+        'mass': 4.0,
+        'points': 2
+    },
+    'small': {
+        'radius': 10,
+        'speed_range': (150, 200),
+        'mass': 1.0,
+        'points': 1
     }
-}
-
-THRUST_PARTICLES = {
-    'count': 5,
-    'speed_range': (100, 200),
-    'size_range': (1, 2),
-    'lifetime_range': (0.1, 0.3),
-    'spread_angle': 30.0  # Degrees
-}
-
-# High score settings
-MAX_HIGH_SCORES = 5  # Reduced from 10 to match current implementation
-HIGH_SCORE_NAME_LENGTH = 10 
-
-# Debug settings
-DEBUG = False  # Global debug flag 
+} 
