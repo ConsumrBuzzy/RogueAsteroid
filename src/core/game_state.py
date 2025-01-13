@@ -51,10 +51,8 @@ class StateManager:
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
             if old_state == GameState.MAIN_MENU:
-                # Don't call new_game() here since it calls change_state again
-                self.game.reset_game()
-                self.game.spawn_ship()
-                self.game.spawn_asteroid_wave()
+                # Game is already initialized by new_game() call
+                pass
             elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
