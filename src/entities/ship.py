@@ -45,6 +45,7 @@ class Ship(Entity):
         self.logger = get_logger()
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
+        self.blink_timer = 0.0  # Add timer for blinking
         self._invulnerable = False
         self.input_component = None
         
@@ -213,19 +214,21 @@ class Ship(Entity):
         if self.invulnerable_timer > 0:
             self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
             
-            # Create blinking effect during invulnerability
+            # Update blink timer and effect
+            self.blink_timer += dt
             render = self.get_component(RenderComponent)
             if render:
-                # Blink 3 times per second (6 changes per second)
-                blink_rate = 6
-                should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
-                render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
+                # Blink twice per second (0.25s on, 0.25s off)
+                blink_period = 0.5
+                should_show = (self.blink_timer % blink_period) < (blink_period / 2)
+                render.alpha = 255 if should_show else 64
         else:
             # Reset to normal when not invulnerable
             self._invulnerable = False
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 255  # Restore full opacity
+            self.blink_timer = 0.0  # Reset blink timer
     
     @property
     def invulnerable(self) -> bool:
@@ -237,12 +240,14 @@ class Ship(Entity):
         """Set invulnerability status."""
         if value:
             self.invulnerable_timer = SHIP_INVULNERABLE_TIME
-            # Start blinking immediately when invulnerability is set
+            self.blink_timer = 0.0  # Reset blink timer
+            # Start blinking immediately
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 64  # Start with low visibility
         else:
             self.invulnerable_timer = 0.0
+            self.blink_timer = 0.0
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 255
