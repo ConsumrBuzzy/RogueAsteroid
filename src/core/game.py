@@ -1,6 +1,7 @@
 """Main game class."""
-import pygame
 import random
+import math
+import pygame
 from src.core.game_state import StateManager, GameState
 from src.core.services import AudioManager, HighScoreManager, ScoringSystem
 from src.core.systems import ParticleSystem, Spawner

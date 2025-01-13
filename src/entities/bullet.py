@@ -89,9 +89,6 @@ class Bullet(Entity):
         if self in self.game.entity_manager.entities:
             self.game.entity_manager.remove_entity(self)
             
-        if self in self.game.bullets:
-            self.game.bullets.remove(self)
-            
     def check_collisions(self):
         """Check for collisions with asteroids."""
         for entity in self.game.entity_manager.entities[:]:  # Copy list to allow removal
