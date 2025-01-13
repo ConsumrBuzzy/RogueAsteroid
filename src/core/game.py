@@ -147,7 +147,14 @@ class Game:
         
         if self.lives <= 0:
             print("Game Over - No lives remaining")
-            self.state_manager.change_state(GameState.GAME_OVER)
+            # Save high score if eligible
+            if self.scoring.is_high_score():
+                self.high_scores.add_score(self.scoring.current_score)
+                self.state_manager.change_state(GameState.HIGH_SCORE)
+            else:
+                self.state_manager.change_state(GameState.GAME_OVER)
+            # Reset game state
+            self.reset_game()
         else:
             print(f"Respawning with {self.lives} lives remaining")
             self.spawn_manager.respawn_ship()
@@ -222,3 +229,16 @@ class Game:
         """Toggle sound on/off."""
         self.settings['sound'] = not self.settings['sound']
         self.audio.enabled = self.settings['sound']
+    
+    def _complete_level(self):
+        """Handle level completion."""
+        self.game.level += 1
+        print(f"Level {self.game.level} completed!")
+        
+        # Award extra life every level, up to maximum of 99
+        if self.lives < 99:
+            self.lives += 1
+            print(f"Extra life awarded! Lives: {self.lives}")
+            
+        # Spawn new wave of asteroids for next level
+        self.spawner.start_wave()

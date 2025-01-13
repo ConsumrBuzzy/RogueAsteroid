@@ -29,14 +29,7 @@ class EntityManager:
             
         # Check for level completion
         if self.ship and not any(isinstance(entity, Asteroid) for entity in self.entities):
-            self._complete_level()
-
-    def _complete_level(self):
-        """Handle level completion."""
-        self.game.level += 1
-        print(f"Level {self.game.level} completed!")
-        # Spawn new wave of asteroids for next level
-        self.game.spawner.start_wave()
+            self.game._complete_level()
 
     def add_entity(self, entity: Entity) -> None:
         """Add an entity to the game.
