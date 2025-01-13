@@ -345,10 +345,10 @@ class StateManager:
         
         # Draw scores
         font = pygame.font.Font(None, 36)
-        scores = self.game.scoring.get_scores()  # Changed from high_scores to scoring
+        scores = self.game.scoring.get_scores()  # Returns list of HighScoreEntry objects
         y = 200
-        for i, (name, score) in enumerate(scores):
-            text = f"{i+1}. {name}: {score}"
+        for i, entry in enumerate(scores):
+            text = f"{i+1}. {entry.name}: {entry.score}"  # Access name and score attributes
             score_surf = font.render(text, True, WHITE)
             screen.blit(score_surf, (WINDOW_WIDTH/2 - score_surf.get_width()/2, y))
             y += 40
