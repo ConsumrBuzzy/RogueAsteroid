@@ -4,6 +4,7 @@ import pygame
 from src.entities.ship import Ship
 from src.core.entities.components import (
     TransformComponent,
+    PhysicsComponent,
     CollisionComponent
 )
 from src.core.constants import (
@@ -11,6 +12,7 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     SHIP_INVULNERABLE_TIME
 )
+from src.core.logging import get_logger
 
 class SpawnManager:
     def __init__(self, game):
@@ -20,6 +22,7 @@ class SpawnManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.logger = get_logger()
         self.wave = 1
         self.asteroids_per_wave = 4
         self.spawn_timer = 0.0
@@ -96,22 +99,30 @@ class SpawnManager:
     def respawn_ship(self) -> None:
         """Respawn the ship after death."""
         self.logger.info("Respawning ship")
-        if self.ship:
-            # Reset ship position to center
-            transform = self.ship.get_component(TransformComponent)
-            if transform:
-                transform.position = pygame.Vector2(self.game.width // 2, self.game.height // 2)
-                transform.rotation = 0
+        
+        # Create new ship if none exists
+        if not self.game.entity_manager.ship:
+            self.spawn_ship(invulnerable=True)
+            return
             
-            # Reset physics
-            physics = self.ship.get_component(PhysicsComponent)
-            if physics:
-                physics.velocity = pygame.Vector2(0, 0)
-                physics.angular_velocity = 0
-            
-            # Make ship invulnerable
-            self.ship.invulnerable = True
-            self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
+        # Reset existing ship
+        ship = self.game.entity_manager.ship
+        
+        # Reset position to center
+        transform = ship.get_component(TransformComponent)
+        if transform:
+            transform.position = pygame.Vector2(self.game.width // 2, self.game.height // 2)
+            transform.rotation = 0
+        
+        # Reset physics
+        physics = ship.get_component(PhysicsComponent)
+        if physics:
+            physics.velocity = pygame.Vector2(0, 0)
+            physics.angular_velocity = 0
+        
+        # Make ship invulnerable
+        ship.invulnerable = True
+        ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
 
     def update(self, dt: float) -> None:
         """Update spawning logic.

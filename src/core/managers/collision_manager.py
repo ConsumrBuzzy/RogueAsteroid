@@ -9,6 +9,7 @@ from src.core.entities.components import (
     PhysicsComponent
 )
 from src.core.constants.asteroids import ASTEROID_SIZES
+from src.core.logging import get_logger
 
 class CollisionManager:
     def __init__(self, game):
@@ -18,6 +19,7 @@ class CollisionManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.logger = get_logger()
 
     def handle_collisions(self):
         """Handle collisions between entities."""
@@ -72,7 +74,7 @@ class CollisionManager:
     def _handle_ship_asteroid_collision(self, ship: Ship, asteroid: Asteroid):
         """Handle collision between ship and asteroid."""
         if not ship.invulnerable:
-            print("Ship hit by asteroid")  # Debug info
+            self.logger.info("Ship hit by asteroid")
             # Create explosion before losing life
             transform = ship.get_component(TransformComponent)
             if transform:
@@ -81,12 +83,12 @@ class CollisionManager:
 
     def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid):
         """Handle collision between bullet and asteroid."""
-        print(f"Bullet hit asteroid size {asteroid.size}")  # Debug info
+        self.logger.debug(f"Bullet hit asteroid size {asteroid.size}")
         
         # Award points based on asteroid size
         points = {'large': 3, 'medium': 2, 'small': 1}
         self.game.scoring.add_points(points[asteroid.size])
-        print(f"Hit asteroid size {asteroid.size}, awarded {points[asteroid.size]} points")
+        self.logger.debug(f"Hit asteroid size {asteroid.size}, awarded {points[asteroid.size]} points")
         
         # Create explosion effect
         transform = asteroid.get_component(TransformComponent)
