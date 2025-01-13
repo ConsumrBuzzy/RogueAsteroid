@@ -1,97 +1,62 @@
-"""Render component module."""
+"""Render component for drawing entities."""
 import pygame
 import math
-from typing import List, Tuple
 from .base import Component
-from .transform import TransformComponent
 
 class RenderComponent(Component):
-    """Component for rendering entities.
-    
-    Handles the visual representation of an entity, including its shape, color,
-    and visibility state. Supports both line and polygon rendering.
-    """
+    """Component for rendering entities."""
     
     def __init__(self, entity):
         super().__init__(entity)
-        self._color = (255, 255, 255)  # Default white
-        self._vertices: List[Tuple[float, float]] = []
-        self._visible = True
-    
-    @property
-    def color(self) -> Tuple[int, int, int]:
-        """Get the current color."""
-        return self._color
+        self.vertices = []  # List of (x, y) tuples defining shape
+        self.color = (255, 255, 255)  # Default white
+        self.point_size = 1.0  # Size for point particles
+        self.alpha = 255  # Transparency (0-255)
         
-    @color.setter
-    def color(self, value: Tuple[int, int, int]) -> None:
-        """Set the current color."""
-        self._color = value
-    
-    @property
-    def vertices(self) -> List[Tuple[float, float]]:
-        """Get the current vertices."""
-        return self._vertices
-        
-    @vertices.setter
-    def vertices(self, value: List[Tuple[float, float]]) -> None:
-        """Set the current vertices."""
-        self._vertices = value
-    
-    @property
-    def visible(self) -> bool:
-        """Get the current visibility state."""
-        return self._visible
-        
-    @visible.setter
-    def visible(self, value: bool) -> None:
-        """Set the current visibility state."""
-        self._visible = value
-    
-    def draw(self, screen: pygame.Surface) -> None:
-        """Draw the entity on the screen.
-        
-        Args:
-            screen: The pygame surface to draw on.
-        """
-        if not self._visible or len(self._vertices) < 2:
+    def draw(self, surface: pygame.Surface) -> None:
+        """Draw the entity on the surface."""
+        if not self.vertices:
             return
             
-        transform = self.entity.get_component(TransformComponent)
-        if not transform:
-            return
+        # If it's a single point (particle)
+        if len(self.vertices) == 1 and self.point_size > 1.0:
+            # Create a small surface for the particle
+            size = int(self.point_size * 2)
+            particle_surface = pygame.Surface((size, size), pygame.SRCALPHA)
             
-        # Convert local vertices to world space
-        world_vertices = self._get_world_vertices(transform)
-        
-        # Draw lines between vertices
-        if len(world_vertices) == 2:  # Line (for bullets)
-            pygame.draw.line(screen, self._color, world_vertices[0], world_vertices[1])
-        else:  # Polygon (for ship and asteroids)
-            pygame.draw.polygon(screen, self._color, world_vertices, 1)
-    
-    def _get_world_vertices(self, transform: TransformComponent) -> List[Tuple[float, float]]:
-        """Convert local vertices to world space.
-        
-        Args:
-            transform: The transform component to use for the conversion.
+            # Draw the particle with alpha
+            color_with_alpha = (*self.color, self.alpha)
+            pygame.draw.circle(
+                particle_surface,
+                color_with_alpha,
+                (size//2, size//2),
+                self.point_size
+            )
             
-        Returns:
-            List of vertices in world space.
-        """
-        world_vertices = []
-        rotation_rad = math.radians(transform.rotation)
-        cos_rot = math.cos(rotation_rad)
-        sin_rot = math.sin(rotation_rad)
-        
-        for vertex in self._vertices:
-            # Rotate vertex
-            x = vertex[0] * cos_rot - vertex[1] * sin_rot
-            y = vertex[0] * sin_rot + vertex[1] * cos_rot
-            
-            # Translate to world position
-            world_x = x + transform.position.x
-            world_y = y + transform.position.y
-            world_vertices.append((world_x, world_y))
-            
-        return world_vertices 
+            # Get position and blit
+            from .transform import TransformComponent
+            transform = self.entity.get_component(TransformComponent)
+            if transform:
+                pos = transform.position - pygame.Vector2(size//2, size//2)
+                surface.blit(particle_surface, pos)
+        else:
+            # Regular polygon drawing
+            from .transform import TransformComponent
+            transform = self.entity.get_component(TransformComponent)
+            if transform:
+                # Transform vertices based on entity position and rotation
+                transformed_vertices = []
+                for x, y in self.vertices:
+                    # Rotate point
+                    angle_rad = math.radians(transform.rotation)
+                    rotated_x = x * math.cos(angle_rad) - y * math.sin(angle_rad)
+                    rotated_y = x * math.sin(angle_rad) + y * math.cos(angle_rad)
+                    
+                    # Translate to position
+                    final_x = rotated_x + transform.position.x
+                    final_y = rotated_y + transform.position.y
+                    transformed_vertices.append((final_x, final_y))
+                
+                # Draw with alpha
+                color_with_alpha = (*self.color, self.alpha)
+                pygame.draw.polygon(surface, color_with_alpha, transformed_vertices) 

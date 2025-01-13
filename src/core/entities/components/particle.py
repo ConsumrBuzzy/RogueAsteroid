@@ -1,20 +1,18 @@
-"""Particle component module."""
+"""Particle component for managing particle effects."""
 import pygame
-from typing import Optional
 from .base import Component
+from .transform import TransformComponent
+from .render import RenderComponent
 
 class ParticleComponent(Component):
-    """Component for particle effects."""
+    """Component for managing particle effects."""
+    
     def __init__(self, entity):
         super().__init__(entity)
-        self.lifetime = 1.0  # Total lifetime in seconds
-        self.time_alive = 0.0  # Current time alive in seconds
-        self.color = pygame.Color(255, 255, 255)  # Particle color
-        self.alpha = 255  # Current alpha value
-        self.start_size = 1.0  # Initial size
-        self.end_size = 0.0  # Final size before death
-        self.fade_speed = 1.0  # How quickly the particle fades
-    
+        self.lifetime = 1.0
+        self.time_alive = 0.0
+        self.alpha = 255
+        
     def update(self, dt: float) -> None:
         """Update particle state."""
         self.time_alive += dt
@@ -23,17 +21,13 @@ class ParticleComponent(Component):
         life_progress = self.time_alive / self.lifetime if self.lifetime > 0 else 1
         
         # Update alpha for fade effect
-        self.alpha = max(0, 255 * (1 - life_progress * self.fade_speed))
+        self.alpha = max(0, int(255 * (1 - life_progress)))
         
-        # Update size
-        current_size = self.start_size + (self.end_size - self.start_size) * life_progress
+        # Update render component alpha
+        render = self.entity.get_component(RenderComponent)
+        if render:
+            render.alpha = self.alpha
         
-        # Disable particle when lifetime is exceeded
+        # Remove particle when lifetime is exceeded
         if self.time_alive >= self.lifetime:
-            self.disable()
-    
-    def reset(self) -> None:
-        """Reset particle to initial state."""
-        self.time_alive = 0.0
-        self.alpha = 255
-        self.enable() 
+            self.entity.game.entities.remove(self.entity) 
