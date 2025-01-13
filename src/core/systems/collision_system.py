@@ -69,10 +69,10 @@ class CollisionSystem:
     def _handle_ship_asteroid_collision(self, ship: Ship, asteroid: Asteroid) -> bool:
         """Handle collision between ship and asteroid."""
         if not ship.invulnerable:
-            # Create explosion effect
+            # Create large explosion effect for ship collision
             transform = ship.get_component(TransformComponent)
             if transform:
-                self.game.create_explosion(transform.position, 'medium')
+                self.game.create_explosion(transform.position, 'large')
             
             # Lose a life and respawn
             self.game.lose_life()
@@ -84,6 +84,7 @@ class CollisionSystem:
         # Get positions for explosion effect
         transform = asteroid.get_component(TransformComponent)
         if transform:
+            # Create explosion based on asteroid size
             self.game.create_explosion(transform.position, asteroid.size)
         
         # Split or destroy asteroid
