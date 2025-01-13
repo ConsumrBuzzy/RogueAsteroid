@@ -95,6 +95,11 @@ class StateManager:
         """Handle input in the main menu state."""
         self.logger.debug(f"Main menu input: {event.key}")
         
+        # Skip processing if we just came from NEW_HIGH_SCORE state
+        if self.previous_state == GameState.NEW_HIGH_SCORE:
+            self.previous_state = GameState.MAIN_MENU
+            return
+        
         # Handle menu navigation
         if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_KP8:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
