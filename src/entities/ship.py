@@ -182,9 +182,6 @@ class Ship(Entity):
         self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
         
-        # Play shoot sound
-        self.game.audio.play_shoot()
-        
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
         print("Bullet fired")  # Debug info
