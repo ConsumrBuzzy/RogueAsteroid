@@ -26,6 +26,7 @@ class InputComponent(Component):
         self.pressed_keys: Set[int] = set()
         self.active_keys: Set[int] = set()  # Track keys for continuous actions
         self.event_handlers: List[Callable[[pygame.event.Event], None]] = []
+        self.rotation_direction = 0  # -1 for left, 1 for right, 0 for none
         self._setup_bindings()
         self.logger.debug(f"Input component initialized with {control_scheme} controls")
     
@@ -44,10 +45,13 @@ class InputComponent(Component):
             
         # Define rotation functions
         def rotate_left():
-            transform.rotation += SHIP_ROTATION_SPEED
+            self.rotation_direction = 1
             
         def rotate_right():
-            transform.rotation -= SHIP_ROTATION_SPEED
+            self.rotation_direction = -1
+            
+        def stop_rotation():
+            self.rotation_direction = 0
             
         # Define thrust function
         def apply_thrust():
@@ -98,16 +102,18 @@ class InputComponent(Component):
         """Handle key press event."""
         if key in self.key_bindings:
             action, continuous = self.key_bindings[key]
-            if continuous:  # Track continuous actions
+            action()
+            if continuous:
                 self.active_keys.add(key)
-            else:  # Execute non-continuous actions immediately
-                action()
-    
+                
     def handle_keyup(self, key: int) -> None:
         """Handle key release event."""
         if key in self.active_keys:
             self.active_keys.remove(key)
-            
+            # Stop rotation if releasing a rotation key
+            if key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_a, pygame.K_d]:
+                self.rotation_direction = 0
+                
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle a pygame event."""
         if event.type == pygame.KEYDOWN:
@@ -116,7 +122,12 @@ class InputComponent(Component):
             self.handle_keyup(event.key)
             
     def update(self, dt: float) -> None:
-        """Update continuous actions."""
+        """Update continuous actions based on delta time."""
+        transform = self.entity.get_component(TransformComponent)
+        if transform and self.rotation_direction != 0:
+            transform.rotation += SHIP_ROTATION_SPEED * self.rotation_direction * dt
+            
+        # Handle continuous actions for active keys
         for key in self.active_keys:
             if key in self.key_bindings:
                 action, continuous = self.key_bindings[key]

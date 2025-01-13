@@ -3,6 +3,7 @@ import sys
 import pygame
 from src.core.game_state import GameState
 from src.core.entities.components import InputComponent
+from src.core.logging import get_logger
 
 class InputManager:
     def __init__(self, game):
@@ -12,6 +13,7 @@ class InputManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.logger = get_logger()
 
     def process_input(self, event: pygame.event.Event) -> None:
         """Process a single input event.
@@ -24,7 +26,13 @@ class InputManager:
             pygame.quit()
             sys.exit()
         
-        # Let state manager handle input first and check if it was consumed
+        # Pass input to ship's input component if it exists and we're in PLAYING state
+        if self.game.state == GameState.PLAYING and self.game.entity_manager.ship:
+            input_component = self.game.entity_manager.ship.get_component(InputComponent)
+            if input_component and event.type in (pygame.KEYDOWN, pygame.KEYUP):
+                input_component.handle_event(event)
+                
+        # Let state manager handle input
         if self.game.state_manager.handle_input(event):
             return  # Event was consumed by state manager
             
@@ -47,12 +55,6 @@ class InputManager:
             elif event.key == pygame.K_h:
                 self.game.state_manager.change_state(GameState.HIGH_SCORE)
                 return
-        
-        # Pass all events to ship's input component if it exists
-        if self.game.entity_manager.ship:
-            input_component = self.game.entity_manager.ship.get_component(InputComponent)
-            if input_component:
-                input_component.handle_event(event)
 
     def _handle_paused_input(self, event: pygame.event.Event) -> None:
         """Handle input in the paused state."""
@@ -65,4 +67,5 @@ class InputManager:
         if self.game.state == GameState.PLAYING and self.game.entity_manager.ship:
             input_component = self.game.entity_manager.ship.get_component(InputComponent)
             if input_component:
-                input_component.update(dt) 
+                input_component.update(dt)
+                self.logger.debug(f"Updated ship input with dt={dt}, rotation_direction={input_component.rotation_direction}") 
