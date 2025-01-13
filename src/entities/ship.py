@@ -204,10 +204,12 @@ class Ship(Entity):
         num_particles = random.randint(2, 3)
         for _ in range(num_particles):
             # Create particle with proper initial position and color
+            # Use grayscale colors for thrust
+            gray_value = random.randint(180, 255)
             particle = Particle(
                 self.game,
                 lifetime=random.uniform(0.2, 0.4),
-                color=(255, 165, 0)  # Orange color
+                color=(gray_value, gray_value, gray_value)  # Grayscale color
             )
             
             # Calculate particle spawn position behind ship
@@ -260,6 +262,13 @@ class Ship(Entity):
             effects = self.get_component(EffectComponent)
             if effects:
                 effects.set_alpha(255)
+        
+        # Check if thrust key is pressed and update effect
+        effects = self.get_component(EffectComponent)
+        if effects and self.input_component:
+            controls = self.game.settings.get('controls', 'arrows')
+            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
+            effects.set_effect_active('thrust', thrust_key in self.input_component.pressed_keys)
     
     def _init_thrust_effect(self, effects: EffectComponent) -> None:
         """Initialize the thrust visual effect."""

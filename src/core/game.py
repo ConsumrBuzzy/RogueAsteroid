@@ -206,13 +206,20 @@ class Game:
         
         # Create particles
         position = pygame.Vector2(x, y)
-        color = (255, 165, 0)  # Orange
+        
+        # Define explosion colors
+        explosion_colors = [
+            (255, 69, 0),    # Red-orange
+            (255, 140, 0),   # Dark orange
+            (255, 165, 0),   # Orange
+            (255, 215, 0),   # Yellow
+        ]
         
         if size == 'large':
             self.particle_system.emit_circular(
                 center=position,
                 speed=150.0,
-                color=color,
+                color=random.choice(explosion_colors),
                 size=3.0,
                 lifetime=1.0,
                 count=12
@@ -221,7 +228,7 @@ class Game:
             self.particle_system.emit_circular(
                 center=position,
                 speed=100.0,
-                color=color,
+                color=random.choice(explosion_colors),
                 size=2.0,
                 lifetime=0.7,
                 count=8
@@ -230,7 +237,7 @@ class Game:
             self.particle_system.emit_circular(
                 center=position,
                 speed=50.0,
-                color=color,
+                color=random.choice(explosion_colors),
                 size=1.0,
                 lifetime=0.5,
                 count=6
