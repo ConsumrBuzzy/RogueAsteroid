@@ -71,24 +71,32 @@ class InputComponent(Component):
             # Calculate thrust direction based on ship rotation
             angle_rad = math.radians(transform.rotation)
             thrust_dir = pygame.Vector2(
-                math.cos(angle_rad),
-                math.sin(angle_rad)
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
             )
             physics.apply_force(thrust_dir * SHIP_ACCELERATION)
             
-            # Create thrust particles at back of ship
+            # Create thrust particles at back corners of ship
             offset = -thrust_dir * 20  # 20 pixels behind ship
-            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 5
-            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 5
+            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 10
+            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 10
             
             # Create particles at both back corners
-            self.entity.game.particle_system.emit_thrust_particles(
-                transform.position + offset + left_offset,
-                -thrust_dir
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + offset + left_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
             )
-            self.entity.game.particle_system.emit_thrust_particles(
-                transform.position + offset + right_offset,
-                -thrust_dir
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + offset + right_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
             )
             
     def _handle_reverse_thrust(self):
@@ -99,16 +107,32 @@ class InputComponent(Component):
             # Calculate thrust direction based on ship rotation
             angle_rad = math.radians(transform.rotation)
             thrust_dir = pygame.Vector2(
-                math.cos(angle_rad),
-                math.sin(angle_rad)
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
             )
             physics.apply_force(-thrust_dir * SHIP_ACCELERATION * 0.7)  # Reverse thrust is 70% as powerful
             
-            # Create thrust particles at front of ship
+            # Create thrust particles at front corners of ship
             offset = thrust_dir * 15  # 15 pixels in front of ship
-            self.entity.game.particle_system.emit_thrust_particles(
-                transform.position + offset,
-                thrust_dir
+            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 10
+            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 10
+            
+            # Create particles at both front corners
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + offset + left_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
+            )
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + offset + right_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
             )
             
     def _handle_rotate_left(self):
@@ -117,23 +141,25 @@ class InputComponent(Component):
         if transform:
             # Calculate rotation change
             dt = self.entity.game.game_loop.dt
-            rotation_change = SHIP_ROTATION_SPEED * dt
+            rotation_change = (SHIP_ROTATION_SPEED * dt) / 2  # Halved rotation speed
             transform.rotation -= rotation_change
             print(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on right side
+            # Create thrust particles on right corner
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15  # Perpendicular to ship direction
+            # Position at back-right corner
+            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 10  # Perpendicular to ship direction
+            back_offset = -ship_dir * 15
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + right_offset,
-                color=(255, 200, 50),  # Orange-yellow color
-                count=3,  # Small number of particles per frame
+                position=transform.position + back_offset + right_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
                 speed_range=(50, 100),  # Moderate speed
                 size_range=(1, 2)  # Small particles
@@ -145,23 +171,25 @@ class InputComponent(Component):
         if transform:
             # Calculate rotation change
             dt = self.entity.game.game_loop.dt
-            rotation_change = SHIP_ROTATION_SPEED * dt
+            rotation_change = (SHIP_ROTATION_SPEED * dt) / 2  # Halved rotation speed
             transform.rotation += rotation_change
             print(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on left side
+            # Create thrust particles on left corner
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15  # Perpendicular to ship direction
+            # Position at back-left corner
+            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 10  # Perpendicular to ship direction
+            back_offset = -ship_dir * 15
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + left_offset,
-                color=(255, 200, 50),  # Orange-yellow color
-                count=3,  # Small number of particles per frame
+                position=transform.position + back_offset + left_offset,
+                color=(255, 255, 255),  # White color
+                count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
                 speed_range=(50, 100),  # Moderate speed
                 size_range=(1, 2)  # Small particles
