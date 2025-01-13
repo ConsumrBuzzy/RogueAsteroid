@@ -236,7 +236,7 @@ class Game:
             ])
             
             # Create particle
-            lifetime = random.uniform(*lifetime)
+            lifetime = random.uniform(lifetime[0], lifetime[1])
             size = random.uniform(*particle_size)
             particle = Particle(self, lifetime, color, size)
             
