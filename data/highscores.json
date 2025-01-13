@@ -1,1 +1,17 @@
-[{"name": "TEST", "score": 10000, "level": 1, "date": "2025-01-12"}, {"name": "TEST", "score": 10000, "level": 1, "date": "2025-01-12"}]
+[
+  {
+    "score": 10000,
+    "name": "TEST",
+    "date": "2025-01-12"
+  },
+  {
+    "score": 10000,
+    "name": "TEST",
+    "date": "2025-01-12"
+  },
+  {
+    "score": 19,
+    "name": "ROBERT",
+    "date": "2025-01-12"
+  }
+]

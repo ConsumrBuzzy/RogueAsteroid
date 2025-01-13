@@ -155,19 +155,17 @@ class HighScoreManager:
     def add_high_score(self, player_name: str) -> None:
         """Add a new high score entry."""
         self.logger.info(f"Adding high score: {self.current_score} by {player_name}")
-        # Create new score entry
-        new_score = {
-            'name': player_name,
-            'score': self.current_score,
-            'date': datetime.now().strftime('%Y-%m-%d %H:%M')
-        }
+        
+        # Create new score entry using HighScoreEntry class
+        entry = HighScoreEntry(self.current_score, player_name)
         
         # Add to list and sort
-        self.high_scores.append(new_score)
-        self.high_scores.sort(key=lambda x: x['score'], reverse=True)
+        self.scores.append(entry)
+        self.scores.sort(key=lambda x: x.score, reverse=True)
         
-        # Keep only top 10
-        self.high_scores = self.high_scores[:10]
+        # Keep only top scores
+        if len(self.scores) > self.max_scores:
+            self.scores = self.scores[:self.max_scores]
         
         # Save to file
         self.save_scores()
