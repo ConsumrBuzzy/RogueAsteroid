@@ -45,6 +45,9 @@ class GameLoopManager:
         
         # Update game systems
         if self.game.state == GameState.PLAYING:
+            # Update spawner
+            self.game.spawner.update(self.dt)
+            
             # Update entities
             for entity in self.game.entity_manager.entities:
                 entity.update(self.dt)
