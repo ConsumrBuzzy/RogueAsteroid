@@ -204,24 +204,23 @@ class Ship(Entity):
         # Create particles per thrust
         num_particles = random.randint(*THRUST_PARTICLE_COUNT)
         for _ in range(num_particles):
-            # Create particle with proper initial position and color
-            lifetime = random.uniform(*THRUST_PARTICLE_LIFETIME)
-            particle = Particle(
-                self.game,
-                lifetime=lifetime,
-                color=random.choice(THRUST_COLORS)
-            )
-            
             # Calculate particle spawn position behind ship
             pos = transform.position - thrust_dir * THRUST_OFFSET
             
+            # Create particle with proper initial position, color and size
+            lifetime = random.uniform(*THRUST_PARTICLE_LIFETIME)
+            size = random.uniform(*THRUST_PARTICLE_SIZE)
+            particle = Particle(
+                self.game,
+                lifetime=lifetime,
+                color=random.choice(THRUST_COLORS),
+                size=size
+            )
+            
             # Set particle position and velocity
             particle_transform = particle.get_component(TransformComponent)
-            particle_render = particle.get_component(RenderComponent)
-            if particle_transform and particle_render:
+            if particle_transform:
                 particle_transform.position = pos
-                particle_render.vertices = [(0, 0)]  # Single point for particle
-                particle_render.point_size = random.uniform(*THRUST_PARTICLE_SIZE)
                 
                 # Randomize particle velocity around thrust direction
                 spread = THRUST_PARTICLE_SPREAD / 2  # Half the spread angle

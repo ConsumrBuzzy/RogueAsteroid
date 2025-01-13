@@ -11,13 +11,14 @@ import pygame
 class Particle(Entity):
     """A particle entity for visual effects."""
     
-    def __init__(self, game, lifetime: float = 0.5, color: tuple = (255, 200, 50)):
+    def __init__(self, game, lifetime: float = 0.5, color: tuple = (255, 200, 50), size: float = 2.0):
         """Initialize the particle.
         
         Args:
             game: The game instance
             lifetime: How long the particle should exist in seconds
             color: RGB color tuple for the particle
+            size: Size of the particle in pixels
         """
         super().__init__(game)
         
@@ -37,13 +38,13 @@ class Particle(Entity):
         # Add render component for visual display
         render = self.add_component(RenderComponent)
         render.vertices = [(0, 0)]  # Single point for particle
-        render.color = color
-        render.point_size = 2.0  # Size in pixels
+        render.color = color[:3]  # Ensure only RGB values
+        render.point_size = size  # Size in pixels
+        render.alpha = 255  # Start fully opaque
         
         # Add particle component for lifetime management
         particle = self.add_component(ParticleComponent)
         particle.lifetime = lifetime
-        particle.alpha = 255  # Start fully opaque
         
     def update(self, dt: float) -> None:
         """Update particle state."""
@@ -54,14 +55,13 @@ class Particle(Entity):
         render = self.get_component(RenderComponent)
         if particle and render:
             # Update lifetime
-            particle.lifetime -= dt
+            particle.time_alive += dt
             
             # Calculate fade based on lifetime
-            life_progress = 1.0 - (particle.lifetime / self.initial_lifetime)
-            particle.alpha = int(255 * (1.0 - life_progress))
-            render.color = (*render.color[:3], particle.alpha)  # Update alpha
+            life_progress = particle.time_alive / self.initial_lifetime
+            render.alpha = max(0, int(255 * (1.0 - life_progress)))
             
             # Remove particle if lifetime is over
-            if particle.lifetime <= 0:
+            if particle.time_alive >= self.initial_lifetime:
                 if self in self.game.entities:
                     self.game.entities.remove(self) 
