@@ -212,21 +212,21 @@ class Ship(Entity):
             self.shoot_timer -= dt
             
         # Update invulnerability
-        if self._invulnerable:
-            self.invulnerable_timer -= dt
-            if self.invulnerable_timer <= 0:
-                self._invulnerable = False
-                render = self.get_component(RenderComponent)
-                if render:
-                    render.alpha = 255  # Restore full opacity
-            else:
-                # Create blinking effect during invulnerability
-                render = self.get_component(RenderComponent)
-                if render:
-                    # Blink 4 times per second (8 changes per second)
-                    blink_rate = 8
-                    should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
-                    render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            # Create blinking effect during invulnerability
+            render = self.get_component(RenderComponent)
+            if render:
+                # Blink 4 times per second (8 changes per second)
+                blink_rate = 8
+                should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
+                render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
+        elif self._invulnerable:
+            # Reset to normal when invulnerability ends
+            self._invulnerable = False
+            render = self.get_component(RenderComponent)
+            if render:
+                render.alpha = 255  # Restore full opacity
     
     @property
     def invulnerable(self) -> bool:
@@ -237,37 +237,10 @@ class Ship(Entity):
     def invulnerable(self, value: bool) -> None:
         """Set invulnerability status."""
         self._invulnerable = value
-        # Update visual effect
-        effects = self.get_component(EffectComponent)
-        if effects:
-            if value:
-                effects.set_alpha(128)  # Semi-transparent when invulnerable
-            else:
-                effects.set_alpha(255)  # Fully opaque when vulnerable
-    
-    def update(self, dt: float) -> None:
-        """Update the ship's state."""
-        super().update(dt)
-        
-        # Update shoot timer
-        if self.shoot_timer > 0:
-            self.shoot_timer -= dt
-        
-        # Update invulnerability
-        if self.invulnerable_timer > 0:
-            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
-            # Flash effect while invulnerable
-            effects = self.get_component(EffectComponent)
-            if effects:
-                flash_rate = 8  # Times per second
-                flash_alpha = 128 + (127 * math.sin(self.invulnerable_timer * flash_rate))
-                effects.set_alpha(int(flash_alpha))
-        elif self._invulnerable:
-            # Reset to normal when invulnerability ends
-            self._invulnerable = False
-            effects = self.get_component(EffectComponent)
-            if effects:
-                effects.set_alpha(255) 
+        # Reset render alpha to ensure blinking starts correctly
+        render = self.get_component(RenderComponent)
+        if render:
+            render.alpha = 255
     
     def fire_bullet(self):
         """Fire a bullet in the direction the ship is facing."""
