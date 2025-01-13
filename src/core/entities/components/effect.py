@@ -1,6 +1,8 @@
 """Effect component module."""
 from typing import Dict, Optional, Callable
 from .base import Component
+import pygame
+import math
 
 class EffectComponent(Component):
     """Component for managing visual effects on entities."""
@@ -95,3 +97,49 @@ class EffectComponent(Component):
         """Set whether an effect is active."""
         if name in self.effects:
             self.effects[name]['active'] = active 
+    
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw active effects."""
+        if not self.is_visible:
+            return
+            
+        # Get transform component for positioning
+        transform = self.entity.get_component(TransformComponent)
+        if not transform:
+            return
+            
+        # Draw each active effect
+        for name, effect in self.effects.items():
+            if not effect['active']:
+                continue
+                
+            if name == 'thrust':
+                # Draw thrust flame if ship has thrust vertices defined
+                if hasattr(self.entity, 'thrust_vertices') and hasattr(self.entity, 'thrust_color'):
+                    # Get ship's position and rotation
+                    pos = transform.position
+                    angle = transform.rotation
+                    
+                    # Rotate and position thrust vertices
+                    rotated_vertices = []
+                    for vertex in self.entity.thrust_vertices:
+                        # Rotate vertex
+                        x, y = vertex
+                        angle_rad = math.radians(angle)
+                        rotated_x = x * math.cos(angle_rad) - y * math.sin(angle_rad)
+                        rotated_y = x * math.sin(angle_rad) + y * math.cos(angle_rad)
+                        
+                        # Position behind ship
+                        world_pos = (
+                            int(pos.x + rotated_x),
+                            int(pos.y + rotated_y)
+                        )
+                        rotated_vertices.append(world_pos)
+                    
+                    # Draw thrust triangle
+                    if len(rotated_vertices) >= 3:
+                        pygame.draw.polygon(
+                            screen,
+                            self.entity.thrust_color,
+                            rotated_vertices
+                        ) 

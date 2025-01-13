@@ -49,27 +49,24 @@ class Bullet(Entity):
     
     def _init_components(self, position: pygame.Vector2, direction: pygame.Vector2) -> None:
         """Initialize bullet components."""
-        # Transform component
-        transform = self.add_component(TransformComponent, x=position.x, y=position.y)
-        transform.velocity = direction * 1200  # Fixed bullet speed
-        print(f"Bullet velocity: {transform.velocity}")  # Debug info
+        # Transform component for position and movement
+        transform = self.add_component(TransformComponent)
+        transform.position = position
+        transform.velocity = direction * self.SPEED
         
-        # Physics component
-        physics = self.add_component(PhysicsComponent)
-        physics.max_speed = 1200  # Match bullet speed
-        physics.friction = 0.0  # No friction for bullets
-        
-        # Render component
+        # Render component for drawing
         render = self.add_component(RenderComponent)
-        render.vertices = [(0, 0), (0, 2)]  # Simple 2-pixel line
-        render.color = (255, 255, 255)  # White
-        render.visible = True
+        render.vertices = [(0, -2), (0, 2)]  # Simple line shape
+        render.color = (255, 255, 255)  # White color
         
-        # Collision component
-        self.add_component(CollisionComponent, radius=1.0)
+        # Collision component for hit detection
+        collision = self.add_component(CollisionComponent, radius=2.0)
         
-        # Screen wrap component
-        self.add_component(ScreenWrapComponent, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+        # Add particle component for trail effect
+        particle = self.add_component(ParticleComponent)
+        
+        # Screen wrap component to wrap around screen edges
+        screen_wrap = self.add_component(ScreenWrapComponent)
     
     def _create_impact_particles(self, hit_pos):
         """Create particles for bullet impact effect"""
