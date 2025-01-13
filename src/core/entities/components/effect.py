@@ -1,6 +1,7 @@
 """Effect component module."""
 from typing import Dict, Optional, Callable
 from .base import Component
+from .transform import TransformComponent
 import pygame
 import math
 
