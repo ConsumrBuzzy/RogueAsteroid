@@ -20,29 +20,30 @@ class InputComponent(Component):
         """
         super().__init__(entity)
         self.control_scheme = control_scheme
-        self.key_bindings: Dict[int, List[Tuple[Callable[[], None], int, bool]]] = {}
-        self.key_combinations: Dict[Tuple[int, ...], Callable[[], None]] = {}
+        self.key_bindings: Dict[int, Tuple[Callable[[], None], bool]] = {}
         self.pressed_keys: Set[int] = set()
+        self.active_keys: Set[int] = set()  # Track keys for continuous actions
         self.event_handlers: List[Callable[[pygame.event.Event], None]] = []
     
-    def bind_key(self, key: int, action: Callable[[], None], priority: int = 0, continuous: bool = False) -> None:
-        """Bind a key to an action with optional priority and continuous action."""
-        if key not in self.key_bindings:
-            self.key_bindings[key] = []
-        self.key_bindings[key].append((action, priority, continuous))
-        self.key_bindings[key].sort(key=lambda x: x[1], reverse=True)
-    
-    def bind_key_combination(self, keys: Tuple[int, ...], action: Callable[[], None]) -> None:
-        """Bind a combination of keys to an action."""
-        self.key_combinations[keys] = action
+    def bind_key(self, key: int, action: Callable[[], None], continuous: bool = False) -> None:
+        """Bind a key to an action.
+        
+        Args:
+            key: The key to bind
+            action: The action to execute
+            continuous: Whether the action should be executed continuously while key is held
+        """
+        self.key_bindings[key] = (action, continuous)
     
     def handle_keydown(self, key: int) -> None:
         """Handle key press event."""
         if key in self.key_bindings:
             action, continuous = self.key_bindings[key]
-            if not continuous:  # Only execute non-continuous actions on keydown
+            if continuous:  # Track continuous actions
+                self.active_keys.add(key)
+            else:  # Execute non-continuous actions immediately
                 action()
-                
+    
     def handle_keyup(self, key: int) -> None:
         """Handle key release event."""
         if key in self.key_bindings:
