@@ -38,6 +38,7 @@ class HighScoreManager:
         self.max_scores = max_scores
         self.scores: List[HighScoreEntry] = []
         self.scores_file = os.path.join('data', 'highscores.json')
+        self.current_score = 0  # Track current game score
         
         # Create data directory if it doesn't exist
         os.makedirs('data', exist_ok=True)
@@ -47,8 +48,25 @@ class HighScoreManager:
         self.load_scores()
         self.logger.info(f"High score manager initialized with {len(self.scores)} scores")
     
-    def add_score(self, score: int, name: str) -> bool:
-        """Add a new score and return True if it's a high score."""
+    def add_points(self, points: int) -> None:
+        """Add points to the current score."""
+        self.current_score += points
+        self.logger.debug(f"Score updated: {self.current_score} (+{points})")
+    
+    def reset_score(self) -> None:
+        """Reset the current score to 0."""
+        old_score = self.current_score
+        self.current_score = 0
+        self.logger.debug(f"Score reset from {old_score} to 0")
+    
+    def add_score(self, name: str, score: Optional[int] = None) -> bool:
+        """Add a new score and return True if it's a high score.
+        
+        Args:
+            name: Player name
+            score: Score to add. If None, uses current_score.
+        """
+        score = score if score is not None else self.current_score
         entry = HighScoreEntry(score, name)
         
         # Check if it's a high score
@@ -77,8 +95,14 @@ class HighScoreManager:
         """Get list of high scores."""
         return self.scores.copy()
     
-    def is_high_score(self, score: int) -> bool:
-        """Check if a score would qualify as a high score."""
+    def is_high_score(self, score: Optional[int] = None) -> bool:
+        """Check if a score would qualify as a high score.
+        
+        Args:
+            score: Score to check. If None, uses current_score.
+        """
+        score = score if score is not None else self.current_score
+        
         if len(self.scores) < self.max_scores:
             self.logger.debug(f"Score {score} qualifies (fewer than {self.max_scores} scores)")
             return True
