@@ -91,3 +91,19 @@ class SpawnManager:
         """Respawn the player ship with invulnerability."""
         print(f"Respawning ship with {SHIP_INVULNERABLE_TIME} seconds invulnerability")
         self.spawn_ship(invulnerable=True) 
+
+    def update(self, dt: float) -> None:
+        """Update spawning logic.
+        
+        Args:
+            dt: Delta time in seconds
+        """
+        if self.spawning_wave:
+            self.spawn_timer += dt
+            if self.spawn_timer >= self.spawn_delay and self.asteroids_to_spawn > 0:
+                self._spawn_asteroid()
+                self.asteroids_to_spawn -= 1
+                self.spawn_timer = 0.0
+                
+                if self.asteroids_to_spawn <= 0:
+                    self.spawning_wave = False 

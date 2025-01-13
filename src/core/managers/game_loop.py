@@ -37,26 +37,21 @@ class GameLoopManager:
 
     def _update(self) -> None:
         """Update game state."""
-        # Only update gameplay elements when in PLAYING state
-        if self.game.state == GameState.PLAYING:
-            # Update systems
-            self.game.particle_system.update(self.dt)
-            self.game.spawner.update(self.dt)
-            
-            # Update entities
-            self.game.entity_manager.update(self.dt)
-            
-            # Handle collisions
-            self.game.collision_manager.handle_collisions()
-            
-            # Check for wave completion
-            if self.game.spawner.check_wave_complete():
-                self.game.level += 1
-                self.game.spawner.advance_wave()
+        # Update game systems
+        self.game.particle_system.update(self.dt)
+        self.game.spawner.update(self.dt)
         
-        # Always update particles for visual effects
-        elif self.game.state != GameState.PAUSED:
-            self.game.particle_system.update(self.dt)
+        # Update all entities
+        self.game.entity_manager.update(self.dt)
+        
+        # Update collision detection
+        self.game.collision_system.update()
+        
+        # Update scoring
+        self.game.scoring.update()
+        
+        # Update state manager
+        self.game.state_manager.update()
 
     def _draw(self) -> None:
         """Draw the current frame."""

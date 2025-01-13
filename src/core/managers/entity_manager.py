@@ -24,8 +24,7 @@ class EntityManager:
         Args:
             dt: Delta time in seconds
         """
-        # Update all entities (use a copy of the list to allow removal during iteration)
-        for entity in self.entities[:]:
+        for entity in self.entities:
             entity.update(dt)
 
     def add_entity(self, entity: Entity) -> None:
