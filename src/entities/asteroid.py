@@ -89,7 +89,12 @@ class Asteroid(Entity):
         # Transform component
         transform = self.add_component(TransformComponent)
         transform.position = position
-        transform.velocity = velocity
+        
+        # Physics component
+        physics = self.add_component(PhysicsComponent)
+        physics.velocity = velocity  # Set velocity in physics component
+        physics.max_speed = ASTEROID_SIZES[self.size]['speed_range'][1]  # Use max speed from range
+        physics.friction = 0.0     # No friction for asteroids
 
         # Render component
         render = self.add_component(RenderComponent)
@@ -97,19 +102,12 @@ class Asteroid(Entity):
         render.vertices = self._generate_vertices()
         render.visible = True
 
-        # Physics component
-        physics = self.add_component(PhysicsComponent)
-        physics.max_speed = ASTEROID_SIZES[self.size]['speed_range'][1]  # Use max speed from range
-        physics.friction = 0.0     # No friction for asteroids
-
         # Collision component with radius based on size
         radius = ASTEROID_SIZES[self.size]['radius']
         collision = self.add_component(CollisionComponent, radius=radius)
 
         # Screen wrap component
         screen_wrap = self.add_component(ScreenWrapComponent)
-        screen_wrap.width = WINDOW_WIDTH
-        screen_wrap.height = WINDOW_HEIGHT
         
         print(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")  # Debug info
     
