@@ -339,27 +339,41 @@ class Game:
                     elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
                         # Only bounce asteroids if they both have physics components
                         if physics1 and physics2:
-                            # Get velocities
+                            # Get velocities and masses
                             vel1 = pygame.Vector2(physics1.velocity)
                             vel2 = pygame.Vector2(physics2.velocity)
                             
+                            # Get masses from asteroid sizes
+                            mass1 = ASTEROID_SIZES[entity1.size]['mass']
+                            mass2 = ASTEROID_SIZES[entity2.size]['mass']
+                            total_mass = mass1 + mass2
+                            
                             # Calculate relative velocity
                             rel_vel = vel1 - vel2
-                            
-                            # Basic elastic collision response
                             vel_along_normal = rel_vel.dot(normal)
                             
                             # Only resolve if objects are moving toward each other
                             if vel_along_normal < 0:
-                                # Simple velocity reflection
-                                physics1.velocity = vel1 - 2 * vel_along_normal * normal
-                                physics2.velocity = vel2 + 2 * vel_along_normal * normal
+                                # Calculate impulse scalar
+                                restitution = 0.8  # Bouncy collisions
+                                j = -(1 + restitution) * vel_along_normal
+                                j /= 1/mass1 + 1/mass2
+                                
+                                # Apply impulse
+                                impulse = normal * j
+                                physics1.velocity = vel1 + (impulse / mass1)
+                                physics2.velocity = vel2 - (impulse / mass2)
                                 
                                 # Move apart to prevent sticking
                                 overlap = combined_radius - distance
-                                separation = normal * (overlap / 2)
-                                transform1.position -= separation
-                                transform2.position += separation
+                                percent = 0.8  # Penetration resolution percentage
+                                separation = normal * (overlap * percent)
+                                transform1.position -= separation * (mass2 / total_mass)
+                                transform2.position += separation * (mass1 / total_mass)
+                                
+                                # Add some random rotation
+                                physics1.angular_velocity = random.uniform(-90, 90)
+                                physics2.angular_velocity = random.uniform(-90, 90)
     
     def run(self):
         """Main game loop."""
