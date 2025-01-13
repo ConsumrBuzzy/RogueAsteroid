@@ -147,7 +147,11 @@ class Ship(Entity):
     
     def handle_shoot(self) -> None:
         """Handle shoot input."""
+        if self.shoot_timer > 0:
+            return
+            
         if len(self.game.entity_manager.bullets) >= MAX_BULLETS:
+            self.logger.debug(f"Cannot fire: max bullets ({MAX_BULLETS}) reached")
             return
             
         transform = self.get_component(TransformComponent)
@@ -252,21 +256,37 @@ class Ship(Entity):
             if render:
                 render.visible = True
     
-    def fire_bullet(self):
-        """Fire a bullet in the direction the ship is facing."""
+    def handle_shoot(self) -> None:
+        """Handle shoot input."""
+        if self.shoot_timer > 0:
+            return
+            
         if len(self.game.entity_manager.bullets) >= MAX_BULLETS:
+            self.logger.debug(f"Cannot fire: max bullets ({MAX_BULLETS}) reached")
             return
             
         transform = self.get_component(TransformComponent)
-        if transform:
-            # Calculate bullet direction based on ship's rotation
-            angle_rad = math.radians(transform.rotation)
-            direction = pygame.Vector2(
-                math.sin(angle_rad),
-                -math.cos(angle_rad)
-            )
+        if not transform:
+            self.logger.warning("Cannot shoot without transform component!")
+            return
             
-            # Create bullet at ship's position with calculated direction
-            bullet = Bullet(self.game, pygame.Vector2(transform.position), direction)
-            self.game.entity_manager.add_entity(bullet)
-            print("Bullet fired") 
+        # Calculate bullet direction based on ship's rotation
+        angle_rad = math.radians(transform.rotation)
+        direction = pygame.Vector2(
+            math.sin(angle_rad),
+            -math.cos(angle_rad)
+        )
+        
+        # Create bullet at ship's position
+        bullet = Bullet(
+            self.game,
+            pygame.Vector2(transform.position),
+            direction
+        )
+        
+        # Add bullet to game
+        self.game.entity_manager.add_entity(bullet)
+        
+        # Reset shoot timer
+        self.shoot_timer = self.SHOOT_COOLDOWN
+        self.logger.debug("Bullet fired") 
