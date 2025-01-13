@@ -148,7 +148,7 @@ class Game:
         if self.lives <= 0:
             print("Game Over - No lives remaining")
             # Save high score if eligible
-            if self.scoring.is_high_score():
+            if self.scoring.is_high_score(self.scoring.current_score):
                 print(f"New high score: {self.scoring.current_score}!")
                 self.scoring.add_high_score(self.scoring.current_score)
                 self.state_manager.change_state(GameState.HIGH_SCORE)
