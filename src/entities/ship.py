@@ -208,19 +208,20 @@ class Ship(Entity):
         if self.shoot_timer > 0:
             self.shoot_timer -= dt
             
-        # Update invulnerability
-        if self.invulnerable_timer > 0:
-            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+        # Update invulnerability and blinking
+        if self.invulnerable:  # Use property to check both timer and flag
+            if self.invulnerable_timer > 0:
+                self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            
             # Create blinking effect during invulnerability
             render = self.get_component(RenderComponent)
             if render:
-                # Blink 4 times per second (8 changes per second)
-                blink_rate = 8
-                should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
+                # Blink 3 times per second (6 changes per second)
+                blink_rate = 6
+                should_show = int(self.game.game_loop.dt * blink_rate) % 2 == 0
                 render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
-        elif self._invulnerable:
-            # Reset to normal when invulnerability ends
-            self._invulnerable = False
+        else:
+            # Reset to normal when not invulnerable
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 255  # Restore full opacity
@@ -234,10 +235,11 @@ class Ship(Entity):
     def invulnerable(self, value: bool) -> None:
         """Set invulnerability status."""
         self._invulnerable = value
-        # Reset render alpha to ensure blinking starts correctly
-        render = self.get_component(RenderComponent)
-        if render:
-            render.alpha = 255
+        if value:
+            # Start blinking immediately when invulnerability is set
+            render = self.get_component(RenderComponent)
+            if render:
+                render.alpha = 64  # Start with low visibility
     
     def fire_bullet(self):
         """Fire a bullet in the direction the ship is facing."""
