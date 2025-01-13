@@ -12,6 +12,7 @@ from src.entities.ship import Ship
 from src.entities.bullet import Bullet
 from src.entities.asteroid import Asteroid
 from src.core.constants import ASTEROID_SIZES
+import math
 
 class CollisionSystem:
     """Handles collision detection and response between entities."""
@@ -133,7 +134,7 @@ class CollisionSystem:
         combined_radius: float,
         normal: pygame.Vector2
     ) -> bool:
-        """Handle collision between two asteroids."""
+        """Handle collision between two asteroids using arcade-style physics."""
         physics1 = asteroid1.get_component(PhysicsComponent)
         physics2 = asteroid2.get_component(PhysicsComponent)
         transform1 = asteroid1.get_component(TransformComponent)
@@ -142,54 +143,35 @@ class CollisionSystem:
         if not (physics1 and physics2 and transform1 and transform2):
             return False
             
-        # Minimal separation to prevent overlap
+        # Simple separation - move both asteroids apart equally
         overlap = combined_radius - distance
-        separation = normal * overlap
-        transform1.position -= separation * 0.3  # Even less separation force
-        transform2.position += separation * 0.3
-        
-        # Get velocities and masses
-        vel1 = pygame.Vector2(physics1.velocity)
-        vel2 = pygame.Vector2(physics2.velocity)
-        mass1 = ASTEROID_SIZES[asteroid1.size]['mass']
-        mass2 = ASTEROID_SIZES[asteroid2.size]['mass']
-        
-        # Calculate relative velocity
-        rel_vel = vel1 - vel2
-        vel_along_normal = rel_vel.dot(normal)
-        
-        # Only resolve if objects are moving toward each other
-        if vel_along_normal > 0:
-            return False
+        if overlap > 0:
+            separation = normal * overlap * 0.5  # Split separation equally
+            transform1.position -= separation
+            transform2.position += separation
             
-        # Calculate impulse with very high elasticity
-        restitution = 0.95  # Almost perfect bounce
-        j = -(1 + restitution) * vel_along_normal
-        j /= (1/mass1 + 1/mass2)
-        
-        # Apply impulse with minimal velocity requirements
-        impulse = normal * j
-        min_velocity_change = 10  # Even lower minimum velocity
-        
-        # Calculate new velocities
-        vel1_new = vel1 + (impulse / mass1)
-        vel2_new = vel2 - (impulse / mass2)
-        
-        # Only add minimal additional velocity if really needed
-        vel_diff = (vel1_new - vel2_new).dot(normal)
-        if abs(vel_diff) < min_velocity_change:
-            additional = (min_velocity_change - abs(vel_diff)) * normal * 0.2  # Very minimal additional force
-            vel1_new += additional * (mass2 / (mass1 + mass2))
-            vel2_new -= additional * (mass1 / (mass1 + mass2))
-        
-        # Apply new velocities
-        physics1.velocity = vel1_new
-        physics2.velocity = vel2_new
-        
-        # Minimal spin effect
-        tangent = pygame.Vector2(-normal.y, normal.x)
-        spin_factor = 0.05  # Very minimal spin
-        physics1.angular_velocity = rel_vel.dot(tangent) * spin_factor
-        physics2.angular_velocity = -rel_vel.dot(tangent) * spin_factor
-        
-        return True 
+            # Get velocities
+            vel1 = pygame.Vector2(physics1.velocity)
+            vel2 = pygame.Vector2(physics2.velocity)
+            
+            # Simple velocity exchange - more arcade-like
+            # Exchange the velocity components along the collision normal
+            v1_normal = normal * vel1.dot(normal)
+            v2_normal = normal * vel2.dot(normal)
+            
+            # Keep tangential velocities
+            v1_tangent = vel1 - v1_normal
+            v2_tangent = vel2 - v2_normal
+            
+            # Exchange normal components with slight energy loss
+            damping = 0.9  # Slight energy loss on collision
+            physics1.velocity = v1_tangent + v2_normal * damping
+            physics2.velocity = v2_tangent + v1_normal * damping
+            
+            # Add a small random spin - classic arcade feel
+            physics1.angular_velocity = random.uniform(-math.pi/4, math.pi/4)
+            physics2.angular_velocity = random.uniform(-math.pi/4, math.pi/4)
+            
+            return True
+                
+        return False 
