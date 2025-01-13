@@ -195,8 +195,14 @@ class StateManager:
     def _handle_game_over_input(self, event):
         """Handle input in game over state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
-            print("Returning to main menu")  # Debug info
-            self.change_state(GameState.MAIN_MENU)
+            # Check for high score before transitioning
+            if self.game.high_scores.is_high_score(self.game.score):
+                print("New high score achieved!")  # Debug info
+                self.high_score_name = ""  # Reset name input
+                self.change_state(GameState.NEW_HIGH_SCORE)
+            else:
+                print("Returning to main menu")  # Debug info
+                self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
         """Draw the current state."""
@@ -316,10 +322,10 @@ class StateManager:
         
         # Draw scores
         font = pygame.font.Font(None, 36)
-        scores = self.game.scoring.get_high_scores()
+        scores = self.game.high_scores.get_scores()  # Changed from scoring to high_scores
         y = 200
-        for i, score in enumerate(scores):
-            text = f"{i+1}. {score.name}: {score.score} (Level {score.level})"
+        for i, (name, score) in enumerate(scores):
+            text = f"{i+1}. {name}: {score}"
             score_surf = font.render(text, True, WHITE)
             screen.blit(score_surf, (WINDOW_WIDTH/2 - score_surf.get_width()/2, y))
             y += 40
@@ -338,7 +344,7 @@ class StateManager:
         screen.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, 100))
         
         # Draw score
-        score_text = font.render(f"Score: {self.game.scoring.current_score}", True, WHITE)
+        score_text = font.render(f"Score: {self.game.score}", True, WHITE)
         screen.blit(score_text, (WINDOW_WIDTH/2 - score_text.get_width()/2, 200))
         
         # Draw name entry
