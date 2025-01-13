@@ -171,8 +171,12 @@ class StateManager:
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER) and self.high_score_name.strip():
             # Save high score and return to main menu
             self.game.scoring.add_high_score(self.high_score_name.strip())  # No score needed, uses current_score
-            print(f"Saved high score: {self.high_score_name} - {self.game.scoring.current_score}")  # Debug info
+            self.logger.info(f"Saved high score: {self.high_score_name} - {self.game.scoring.current_score}")
+            # Reset game state before changing to main menu to prevent auto-start
+            self.game.reset_game()
             self.change_state(GameState.MAIN_MENU)
+            # Ensure we don't accidentally transition to another state
+            self.previous_state = GameState.MAIN_MENU
         elif event.key == pygame.K_BACKSPACE:
             self.high_score_name = self.high_score_name[:-1]
         elif event.unicode.isalnum() and len(self.high_score_name) < 10:
