@@ -3,7 +3,7 @@ import pygame
 import random
 from src.core.game_state import StateManager, GameState
 from src.core.services import AudioManager, HighScoreManager, ScoringSystem
-from src.core.systems import ParticleSystem, Spawner
+from src.core.systems import ParticleSystem, Spawner, CollisionSystem
 from src.entities.ship import Ship
 from src.entities.bullet import Bullet
 from src.entities.asteroid import Asteroid
@@ -49,6 +49,7 @@ class Game:
         # Initialize systems
         self.particle_system = ParticleSystem(self)
         self.spawner = Spawner(self)
+        self.collision_system = CollisionSystem(self)
         print("Systems initialized")
         
         # Initialize scoring system
@@ -229,7 +230,7 @@ class Game:
                 entity.update(dt)
             
             # Handle collisions
-            self.handle_collisions()
+            self.collision_system.update()
             
             # Check for wave completion
             if self.spawner.check_wave_complete():
