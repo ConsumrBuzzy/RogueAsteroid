@@ -164,16 +164,13 @@ class Asteroid(Entity):
                 math.sin(rad_angle) * speed
             )
             
-            # Create new asteroid
-            new_asteroid = Asteroid(self.game, new_size)
-            
-            # Set position and velocity
-            new_transform = new_asteroid.get_component(TransformComponent)
-            new_physics = new_asteroid.get_component(PhysicsComponent)
-            if new_transform and new_physics:
-                new_transform.position = pygame.Vector2(transform.position)
-                new_physics.velocity = new_vel
-                
+            # Create new asteroid at the same position with new velocity
+            new_asteroid = Asteroid(
+                self.game,
+                new_size,
+                pygame.Vector2(transform.position),  # Copy position
+                new_vel  # Use calculated velocity
+            )
             pieces.append(new_asteroid)
             
         return pieces
