@@ -2,9 +2,9 @@
 import math
 import pygame
 from typing import Dict, List, Set, Callable, Any, Tuple
-from .base import Component
-from .transform import TransformComponent
-from .physics import PhysicsComponent
+from src.core.entities.components.base import Component
+from src.core.entities.components.transform import TransformComponent
+from src.core.entities.components.physics import PhysicsComponent
 from src.core.constants import SHIP_ACCELERATION, SHIP_ROTATION_SPEED
 
 class InputComponent(Component):
