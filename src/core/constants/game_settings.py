@@ -1,0 +1,5 @@
+"""Game settings constants."""
+
+STARTING_LIVES = 3
+SCORE_MULTIPLIER = 100
+HIGH_SCORE_COUNT = 10 
