@@ -2,6 +2,7 @@
 from .base import Component
 from .transform import TransformComponent
 from .render import RenderComponent
+import pygame
 
 class ParticleComponent(Component):
     """Component for managing particle lifetime and alpha."""
@@ -28,3 +29,12 @@ class ParticleComponent(Component):
         if self.time_alive >= self.lifetime:
             if self.entity in self.entity.game.entities:
                 self.entity.game.entities.remove(self.entity) 
+        
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the particle effect.
+        
+        Args:
+            screen: The pygame surface to draw on
+        """
+        # Particles are drawn through their RenderComponent
+        pass 
