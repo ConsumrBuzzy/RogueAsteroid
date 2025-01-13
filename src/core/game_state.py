@@ -57,6 +57,9 @@ class StateManager:
                 self.game.entity_manager.clear_all(keep_ship=False)
                 # Reset game state when coming from game over or new high score
                 self.game.reset_game()
+                # Skip the next input event to prevent auto-start
+                if self.current_state == GameState.NEW_HIGH_SCORE:
+                    pygame.event.clear(pygame.KEYDOWN)  # Clear any pending key events
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
         if self.current_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
