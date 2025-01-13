@@ -21,6 +21,9 @@ class Particle(Entity):
         """
         super().__init__(game)
         
+        # Store initial lifetime
+        self.initial_lifetime = lifetime
+        
         # Add transform component
         transform = self.add_component(TransformComponent)
         transform.position = pygame.Vector2(0, 0)  # Will be set by caller
@@ -50,8 +53,11 @@ class Particle(Entity):
         particle = self.get_component(ParticleComponent)
         render = self.get_component(RenderComponent)
         if particle and render:
+            # Update lifetime
+            particle.lifetime -= dt
+            
             # Calculate fade based on lifetime
-            life_progress = 1.0 - (particle.lifetime / self.lifetime)
+            life_progress = 1.0 - (particle.lifetime / self.initial_lifetime)
             particle.alpha = int(255 * (1.0 - life_progress))
             render.color = (*render.color[:3], particle.alpha)  # Update alpha
             

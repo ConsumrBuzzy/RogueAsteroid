@@ -21,7 +21,7 @@ def init_pygame():
             if not pygame.font.get_init():
                 pygame.font.init()
             if not pygame.display.get_init():
-                pygame.display.init()
+                pygame.display.init() 
             return True
         return False
     except Exception as e:

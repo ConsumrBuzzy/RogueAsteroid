@@ -1,5 +1,4 @@
 """Bullet entity fired by the player ship."""
-import numpy as np
 import random
 import math
 import pygame
@@ -10,8 +9,7 @@ from src.core.entities.components import (
     RenderComponent,
     CollisionComponent,
     PhysicsComponent,
-    ScreenWrapComponent,
-    ParticleComponent
+    ScreenWrapComponent
 )
 from src.core.constants import (
     WHITE,
@@ -20,7 +18,6 @@ from src.core.constants import (
     ASTEROID_SIZES
 )
 from src.entities.asteroid import Asteroid
-from src.entities.particle import Particle
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -57,58 +54,13 @@ class Bullet(Entity):
         # Render component for drawing
         render = self.add_component(RenderComponent)
         render.vertices = [(0, -2), (0, 2)]  # Simple line shape
-        render.color = (255, 255, 255)  # White color
+        render.color = WHITE
         
         # Collision component for hit detection
         collision = self.add_component(CollisionComponent, radius=2.0)
         
-        # Add particle component for trail effect
-        particle = self.add_component(ParticleComponent)
-        
         # Screen wrap component to wrap around screen edges
         screen_wrap = self.add_component(ScreenWrapComponent)
-    
-    def _create_impact_particles(self, hit_pos):
-        """Create particles for bullet impact effect"""
-        print(f"Creating impact particles at {hit_pos}")  # Debug info
-        num_particles = random.randint(4, 6)
-        for i in range(num_particles):
-            # Create particle with proper initial position
-            particle = Particle(
-                self.game,
-                lifetime=0.2,
-                color=(255, 220, 50)
-            )
-            
-            # Set initial position
-            transform = particle.get_component(TransformComponent)
-            if transform:
-                # Convert hit_pos to proper format if needed
-                if isinstance(hit_pos, pygame.Vector2):
-                    transform.position = pygame.Vector2(hit_pos)
-                else:
-                    transform.position = pygame.Vector2(hit_pos[0], hit_pos[1])
-                
-                # Add random offset
-                offset = pygame.Vector2(random.uniform(-2, 2), random.uniform(-2, 2))
-                transform.position += offset
-                print(f"Particle {i} position: {transform.position}")  # Debug info
-            
-            # Set velocity through physics component
-            physics = particle.get_component(PhysicsComponent)
-            if physics:
-                angle = random.uniform(0, 2 * math.pi)
-                speed = random.uniform(50, 100)
-                velocity = pygame.Vector2(
-                    math.cos(angle) * speed,
-                    math.sin(angle) * speed
-                )
-                physics.velocity = velocity
-                print(f"Particle {i} velocity: {velocity}")  # Debug info
-            
-            # Add to game entities
-            self.game.entities.append(particle)
-            print(f"Created impact particle {i}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update bullet state."""
@@ -131,14 +83,6 @@ class Bullet(Entity):
                 if isinstance(entity, Asteroid):
                     other_collision = entity.get_component(CollisionComponent)
                     if other_collision and collision.check_collision(other_collision):
-                        # Get position before removing asteroid
-                        transform = entity.get_component(TransformComponent)
-                        if transform:
-                            hit_pos = pygame.Vector2(transform.position)
-                            # Create impact particles first
-                            self._create_impact_particles(hit_pos)
-                            print(f"Created impact particles at {hit_pos}")  # Debug info
-                        
                         # Handle asteroid hit and scoring
                         points = ASTEROID_SIZES[entity.size]['points']
                         self.game.scoring.add_points(points)
