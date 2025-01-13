@@ -4,9 +4,9 @@ import pygame
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
 from src.core.entities.components import (
     RenderComponent,
-    ParticleComponent,
-    EffectComponent
+    ParticleComponent
 )
+from src.core.logging import get_logger
 
 class GameState(Enum):
     MAIN_MENU = auto()
@@ -20,7 +20,8 @@ class GameState(Enum):
 class StateManager:
     def __init__(self, game):
         """Initialize the state manager."""
-        print("Initializing StateManager")  # Debug info
+        self.logger = get_logger()
+        self.logger.info("Initializing state manager")
         self.game = game
         self.current_state = None  # Initialize to None, let Game class set initial state
         self.previous_state = None  # Track previous state for returning from menus
@@ -42,7 +43,7 @@ class StateManager:
             return
             
         old_state = self.current_state
-        print(f"Changing state from {old_state} to {new_state}")  # Debug info
+        self.logger.info(f"Changing state from {old_state} to {new_state}")
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
         if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
@@ -53,15 +54,13 @@ class StateManager:
             if old_state == GameState.MAIN_MENU:
                 # Game is already initialized by new_game() call
                 pass
-            elif old_state == GameState.PAUSED:
-                print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
-            print("Game Over - Score:", self.game.scoring.current_score)  # Debug info
+            self.logger.info(f"Game Over - Final Score: {self.game.scoring.current_score}")
             # Clear any remaining entities except the ship
             self.game.entity_manager.clear_entities(keep_ship=False)
             # Check for high score immediately
-            if self.game.scoring.is_high_score():  # No argument needed, uses current_score
-                print("New high score!")  # Debug info
+            if self.game.scoring.is_high_score():
+                self.logger.info("New high score achieved!")
                 self.high_score_name = ""  # Reset name input
                 new_state = GameState.NEW_HIGH_SCORE
         elif new_state == GameState.MAIN_MENU:
@@ -72,8 +71,6 @@ class StateManager:
         # Set new state
         self.current_state = new_state
         self.selected_option = 0
-        
-        print(f"State changed to: {self.current_state}")  # Debug info
     
     def handle_input(self, event):
         """Handle input based on current state."""
@@ -96,25 +93,22 @@ class StateManager:
             elif self.current_state == GameState.GAME_OVER:
                 self._handle_game_over_input(event)
         except Exception as e:
-            print(f"Error handling input in state {self.current_state}: {str(e)}")  # Debug info
+            self.logger.error(f"Error handling input in state {self.current_state}: {str(e)}")
             import traceback
-            traceback.print_exc()
+            self.logger.error(traceback.format_exc())
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
-        print(f"Main menu input: {event.key}")  # Debug info
+        self.logger.debug(f"Main menu input: {event.key}")
         
         # Handle menu navigation
         if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_KP8:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
-            print(f"Selected option: {self.selected_option}")  # Debug info
         elif event.key == pygame.K_DOWN or event.key == pygame.K_s or event.key == pygame.K_KP2:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
-            print(f"Selected option: {self.selected_option}")  # Debug info
         elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-            print(f"Selecting option: {self.selected_option}")  # Debug info
+            self.logger.debug(f"Selected menu option: {self.selected_option}")
             if self.selected_option == 0:  # New Game
-                print("Starting new game from main menu")  # Debug info
                 self.game.new_game()  # First setup the game
                 self.change_state(GameState.PLAYING)  # Then change state
             elif self.selected_option == 1:  # High Scores
@@ -250,11 +244,6 @@ class StateManager:
                     particle = entity.get_component(ParticleComponent)
                     if particle:
                         particle.draw(screen)
-                    
-                    # Draw other effects
-                    effects = entity.get_component(EffectComponent)
-                    if effects:
-                        effects.draw(screen)
                 except Exception as e:
                     print(f"Error drawing entity {entity}: {e}")  # Debug info
                     continue

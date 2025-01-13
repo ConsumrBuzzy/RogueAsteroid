@@ -22,10 +22,14 @@ from src.core.constants import (
     WINDOW_HEIGHT,
     STARTING_LIVES
 )
+from src.core.logging import get_logger
 
 class Game:
     def __init__(self):
         """Initialize the game."""
+        self.logger = get_logger()
+        self.logger.info("Initializing game")
+        
         # Initialize pygame and display
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
@@ -40,14 +44,17 @@ class Game:
             'controls': 'arrows',  # Default to arrow keys
             'sound': False  # Default to sound off
         }
+        self.logger.debug(f"Game settings initialized: {self.settings}")
         
         # Initialize services
         self.audio = AudioManager()
         self.high_scores = HighScoreManager()
+        self.logger.debug("Services initialized")
         
         # Initialize systems
         self.particle_system = ParticleSystem(self)
         self.spawner = Spawner(self)
+        self.logger.debug("Systems initialized")
         
         # Initialize managers
         self.entity_manager = EntityManager(self)
@@ -55,20 +62,25 @@ class Game:
         self.spawn_manager = SpawnManager(self)
         self.input_manager = InputManager(self)
         self.game_loop = GameLoopManager(self)
+        self.logger.debug("Managers initialized")
         
         # Initialize scoring system
         self.scoring = ScoringSystem()
+        self.logger.debug("Scoring system initialized")
         
         # Initialize game properties
         self.level = 1
         self.lives = STARTING_LIVES
         self.respawn_timer = 0.0
+        self.logger.debug(f"Game properties initialized with {self.lives} lives")
         
         # Initialize state management
         self.state_manager = StateManager(self)
+        self.logger.debug("State manager initialized")
         
         # Set initial state
         self.state_manager.change_state(GameState.MAIN_MENU)
+        self.logger.info("Game initialization complete")
     
     @property
     def state(self):
@@ -92,16 +104,15 @@ class Game:
     
     def new_game(self):
         """Start a new game."""
+        self.logger.info("Starting new game")
         self.reset_game()
         self.spawn_manager.spawn_ship()
         self.spawner.start_wave()
     
     def reset_game(self):
         """Reset the game state."""
-        # Clear entities
+        self.logger.info("Resetting game state")
         self.entity_manager.clear_all()
-        
-        # Reset game properties
         self.level = 1
         self.lives = STARTING_LIVES
         self.scoring.reset()
@@ -124,9 +135,10 @@ class Game:
     def lose_life(self):
         """Handle losing a life."""
         self.lives -= 1
+        self.logger.info(f"Life lost. Remaining lives: {self.lives}")
         
         if self.lives <= 0:
-            # Change to game over state - high score check happens there
+            self.logger.info("Game over - No lives remaining")
             self.state_manager.change_state(GameState.GAME_OVER)
         else:
             self.spawn_manager.respawn_ship()
@@ -205,10 +217,10 @@ class Game:
     def _complete_level(self):
         """Handle level completion."""
         self.level += 1
+        self.logger.info(f"Level {self.level} completed")
         
-        # Award extra life every level, up to maximum of 99
         if self.lives < 99:
             self.lives += 1
-            
-        # Spawn new wave of asteroids for next level
+            self.logger.debug(f"Extra life awarded. Lives: {self.lives}")
+        
         self.spawner.start_wave()
