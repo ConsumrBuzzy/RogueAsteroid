@@ -2,6 +2,7 @@
 import pygame
 from src.core.game_state import GameState
 from src.core.entities.components import InputComponent
+from src.core.logging import get_logger
 
 class GameLoopManager:
     def __init__(self, game):
@@ -11,13 +12,14 @@ class GameLoopManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.logger = get_logger()
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.running = True
 
     def run(self) -> None:
         """Run the main game loop."""
-        print("Starting game loop")
+        self.logger.info("Starting game loop")
         
         while self.running:
             # Update delta time
@@ -34,7 +36,7 @@ class GameLoopManager:
             self._draw()
         
         pygame.quit()
-        print("Game loop ended")
+        self.logger.info("Game loop ended")
 
     def _update(self) -> None:
         """Update game state."""
