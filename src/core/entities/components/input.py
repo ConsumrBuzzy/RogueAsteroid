@@ -120,8 +120,11 @@ class InputComponent(Component):
             
             # Create thrust particles on right side
             angle_rad = math.radians(transform.rotation)
-            ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
-            right_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15
+            ship_dir = pygame.Vector2(
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
+            )
+            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15  # Perpendicular to ship direction
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
@@ -145,8 +148,11 @@ class InputComponent(Component):
             
             # Create thrust particles on left side
             angle_rad = math.radians(transform.rotation)
-            ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
-            left_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15
+            ship_dir = pygame.Vector2(
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
+            )
+            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15  # Perpendicular to ship direction
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
