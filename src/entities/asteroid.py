@@ -130,87 +130,51 @@ class Asteroid(Entity):
     
     def split(self):
         """Split asteroid into smaller pieces."""
-        # Get current size and properties
-        transform = self.get_component('transform')
-        if not transform:
+        transform = self.get_component(TransformComponent)
+        physics = self.get_component(PhysicsComponent)
+        if not transform or not physics:
             return []
             
-        collision = self.get_component('collision')
-        if not collision:
-            return []
-            
-        current_size = collision.radius
-        
-        # Determine points based on size
-        points = 0
-        for size_name, props in ASTEROID_SIZES.items():
-            if abs(props['radius'] - current_size) < 0.1:  # Float comparison
-                points = props['points']
-                break
-        
-        # Award points
-        self.game.scoring.add_points(points)
-        print(f"Hit asteroid size {size_name}, awarded {points} points")
-        
-        if self.size == 'small':
-            # Award points for destroying small asteroid
-            self.game.scoring.add_points(100)
-            # Create small explosion for final destruction
-            self._create_destruction_particles()
-            return []
-            
-        # Create split effect particles
-        self._create_split_particles()
-            
-        # Determine new size
-        new_size = 'medium' if self.size == 'large' else 'small'
-        
-        # Create split pieces with near-opposite velocities
-        pieces = []
-        # For small pieces, use exact opposite directions with slight variation
-        if new_size == 'small':
-            base_angles = [0, 180]  # Opposite directions
-            speed_multiplier = 2.0  # Double speed for small pieces
-            angle_variation = 10  # Less variation for small pieces
-            offset_distance = 15  # Smaller offset for small pieces
-        else:
-            base_angles = [-150, 150]  # Wide but not exactly opposite for medium pieces
-            speed_multiplier = 1.5  # 50% faster for medium pieces
-            angle_variation = 20  # More variation for medium pieces
-            offset_distance = 25  # Larger offset for medium pieces
-        
         # Get original velocity angle
-        orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
+        orig_angle = math.degrees(math.atan2(physics.velocity.y, physics.velocity.x))
         
-        for base_angle in base_angles:
-            # Add controlled randomness to the split angle
-            angle = orig_angle + base_angle + random.uniform(-angle_variation, angle_variation)
-            angle_rad = math.radians(angle)
+        # Determine new size
+        if self.size == 'large':
+            new_size = 'medium'
+            num_pieces = 2
+        elif self.size == 'medium':
+            new_size = 'small'
+            num_pieces = 2
+        else:
+            return []  # Can't split small asteroids
             
-            # Calculate new velocity with size-based speed scaling
-            min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
-            base_speed = random.uniform(min_speed, max_speed)
-            new_speed = base_speed * speed_multiplier
+        # Create new pieces
+        pieces = []
+        for i in range(num_pieces):
+            # Calculate new direction (spread pieces apart)
+            spread = 45.0  # degrees
+            new_angle = orig_angle + (spread if i == 0 else -spread)
             
-            # Create velocity vector at the split angle
-            new_velocity = pygame.Vector2(
-                math.cos(angle_rad) * new_speed,
-                math.sin(angle_rad) * new_speed
+            # Create new velocity vector
+            speed = ASTEROID_SIZES[new_size]['speed']
+            rad_angle = math.radians(new_angle)
+            new_vel = pygame.Vector2(
+                math.cos(rad_angle) * speed,
+                math.sin(rad_angle) * speed
             )
             
-            # Offset the spawn position in the direction of travel
-            spawn_pos = pygame.Vector2(transform.position)
-            spawn_pos += pygame.Vector2(
-                math.cos(angle_rad) * offset_distance,
-                math.sin(angle_rad) * offset_distance
-            )
+            # Create new asteroid
+            new_asteroid = Asteroid(self.game, new_size)
             
-            # Create new asteroid with offset position and calculated velocity
-            piece = Asteroid(self.game, new_size, spawn_pos, new_velocity)
-            pieces.append(piece)
+            # Set position and velocity
+            new_transform = new_asteroid.get_component(TransformComponent)
+            new_physics = new_asteroid.get_component(PhysicsComponent)
+            if new_transform and new_physics:
+                new_transform.position = pygame.Vector2(transform.position)
+                new_physics.velocity = new_vel
+                
+            pieces.append(new_asteroid)
             
-            print(f"Created split piece: size={new_size}, angle={angle} (base={base_angle}), speed={new_speed}, offset={offset_distance}")  # Debug info
-        
         return pieces
     
     def _create_destruction_particles(self):
