@@ -19,7 +19,8 @@ from src.core.constants import (
     SHIP_ROTATION_SPEED,
     SHIP_FRICTION,
     WHITE,
-    MAX_BULLETS
+    MAX_BULLETS,
+    THRUST_COLORS
 )
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
@@ -204,12 +205,10 @@ class Ship(Entity):
         num_particles = random.randint(2, 3)
         for _ in range(num_particles):
             # Create particle with proper initial position and color
-            # Use grayscale colors for thrust
-            gray_value = random.randint(180, 255)
             particle = Particle(
                 self.game,
                 lifetime=random.uniform(0.2, 0.4),
-                color=(gray_value, gray_value, gray_value)  # Grayscale color
+                color=random.choice(THRUST_COLORS)  # Use predefined thrust colors
             )
             
             # Calculate particle spawn position behind ship
@@ -217,8 +216,11 @@ class Ship(Entity):
             
             # Set particle position and velocity
             particle_transform = particle.get_component(TransformComponent)
-            if particle_transform:
+            particle_render = particle.get_component(RenderComponent)
+            if particle_transform and particle_render:
                 particle_transform.position = pos
+                particle_render.vertices = [(0, 0)]  # Single point for particle
+                particle_render.point_size = random.uniform(1.0, 2.0)  # Random size
                 
                 # Randomize particle velocity around thrust direction
                 spread = 30  # Degrees
@@ -231,13 +233,16 @@ class Ship(Entity):
                     -math.cos(particle_angle_rad)
                 ) * particle_speed
                 
-                particle_transform.velocity = -particle_vel  # Opposite of thrust direction
+                # Set velocity in physics component
+                physics = particle.get_component(PhysicsComponent)
+                if physics:
+                    physics.velocity = -particle_vel  # Opposite of thrust direction
             
             # Add to game entities
             self.game.entities.append(particle)
             
             if DEBUG:
-                print(f"Created thrust particle at {pos} with velocity {particle_vel}")  # Debug info
+                print(f"Created thrust particle at {pos}")  # Debug info
     
     def update(self, dt: float) -> None:
         """Update the ship's state."""
@@ -274,7 +279,7 @@ class Ship(Entity):
         """Initialize the thrust visual effect."""
         # Store effect parameters as instance variables
         self.thrust_vertices = [(0, 10), (-5, 20), (5, 20)]  # Small triangle behind ship
-        self.thrust_color = (255, 165, 0)  # Orange color
+        self.thrust_color = random.choice(THRUST_COLORS)  # Use grayscale colors
         self.thrust_offset = pygame.Vector2(0, 15)  # Offset behind ship
         
         # Add thrust effect with proper callbacks
@@ -286,7 +291,7 @@ class Ship(Entity):
             on_end=None  # No end callback needed
         )
         print("Thrust effect initialized")  # Debug info
-        
+    
     @property
     def invulnerable(self) -> bool:
         """Get invulnerability status."""

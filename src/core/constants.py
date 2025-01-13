@@ -12,7 +12,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# Explosion colors
+# Particle Effects
 EXPLOSION_COLORS = [
     (255, 69, 0),    # Red-orange
     (255, 140, 0),   # Dark orange
@@ -20,26 +20,30 @@ EXPLOSION_COLORS = [
     (255, 215, 0),   # Yellow
 ]
 
-# Thrust colors
 THRUST_COLORS = [
     (200, 200, 200),  # Light gray
     (180, 180, 180),  # Medium gray
     (160, 160, 160),  # Dark gray
 ]
 
-# Ship
+# Game Settings
+STARTING_LIVES = 3
+SCORE_MULTIPLIER = 100
+HIGH_SCORE_COUNT = 10
+
+# Ship Settings
 SHIP_ACCELERATION = 300.0
 SHIP_MAX_SPEED = 300.0
 SHIP_ROTATION_SPEED = 180.0  # Degrees per second
 SHIP_FRICTION = 0.02
 SHIP_INVULNERABLE_TIME = 3.0
 
-# Bullets
+# Weapon Settings
 BULLET_SPEED = 500.0
 BULLET_LIFETIME = 1.0
 MAX_BULLETS = 4
 
-# Asteroids
+# Asteroid Settings
 MAX_ASTEROIDS = 12
 ASTEROID_SIZES = {
     'large': {
@@ -60,4 +64,12 @@ ASTEROID_SIZES = {
         'mass': 1.0,
         'points': 1
     }
-} 
+}
+
+# Particle Settings
+PARTICLE_MIN_LIFETIME = 0.2
+PARTICLE_MAX_LIFETIME = 0.4
+THRUST_PARTICLE_COUNT = (2, 3)  # (min, max) particles per thrust
+THRUST_PARTICLE_SPEED = (50, 150)  # (min, max) speed
+THRUST_PARTICLE_SPREAD = 30  # Degrees
+THRUST_PARTICLE_SIZE = (1.0, 2.0)  # (min, max) point size 
