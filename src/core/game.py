@@ -410,11 +410,13 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 else:
+                    # Handle state manager input first
                     self.state_manager.handle_input(event)
                     
                     # Handle ship input when playing
-                    if self.state_manager.current_state == GameState.PLAYING and self.ship:
-                        input_component = self.ship.get_component('input')
+                    if self.state == GameState.PLAYING and self.ship:
+                        from src.core.entities.components import InputComponent
+                        input_component = self.ship.get_component(InputComponent)
                         if input_component:
                             if event.type == pygame.KEYDOWN:
                                 input_component.handle_keydown(event.key)
@@ -422,8 +424,7 @@ class Game:
                                 input_component.handle_keyup(event.key)
             
             # Update game state
-            if self.state_manager.current_state == GameState.PLAYING:
-                self.update(self.dt)
+            self.update(self.dt)
             
             # Draw
             self.state_manager.draw(self.screen)

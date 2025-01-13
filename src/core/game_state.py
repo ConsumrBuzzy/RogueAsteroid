@@ -44,10 +44,6 @@ class StateManager:
         if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
             self.previous_state = old_state
         
-        # Set new state first to prevent recursion
-        self.current_state = new_state
-        self.selected_option = 0
-        
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
             if old_state == GameState.MAIN_MENU:
@@ -56,7 +52,15 @@ class StateManager:
             elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
-            print("Game Over!")  # Debug info
+            print("Game Over - Score:", self.game.score)  # Debug info
+            # Check for high score
+            if self.game.high_scores.is_high_score(self.game.score):
+                print("New high score!")  # Debug info
+                new_state = GameState.NEW_HIGH_SCORE
+        
+        # Set new state
+        self.current_state = new_state
+        self.selected_option = 0
         
         print(f"State changed to: {self.current_state}")  # Debug info
     
