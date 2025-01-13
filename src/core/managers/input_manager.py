@@ -1,4 +1,5 @@
 """Handles game input processing."""
+import sys
 import pygame
 from src.core.game_state import GameState
 from src.core.entities.components import InputComponent
@@ -18,9 +19,10 @@ class InputManager:
         Args:
             event: The pygame event to process
         """
+        # Handle quit event (window close button)
         if event.type == pygame.QUIT:
-            self.game.running = False
-            return
+            pygame.quit()
+            sys.exit()
             
         # Let state manager handle input first
         self.game.state_manager.handle_input(event)
