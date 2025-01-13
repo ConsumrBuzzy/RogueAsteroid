@@ -216,6 +216,8 @@ class InputComponent(Component):
                 self._handle_forward_thrust()
             if pygame.K_DOWN in self.pressed_keys:
                 self._handle_reverse_thrust()
+            if pygame.K_SPACE in self.pressed_keys:
+                self.entity.fire_bullet()
         else:  # WASD controls
             if pygame.K_a in self.pressed_keys:
                 self._handle_rotate_left()
@@ -227,6 +229,8 @@ class InputComponent(Component):
                 self._handle_forward_thrust()
             if pygame.K_s in self.pressed_keys:
                 self._handle_reverse_thrust()
+            if pygame.K_SPACE in self.pressed_keys:
+                self.entity.fire_bullet()
                 
         # Handle other continuous actions from key bindings
         for key in self.pressed_keys:

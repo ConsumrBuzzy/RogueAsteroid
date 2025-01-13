@@ -29,10 +29,15 @@ class ScoringSystem:
         """Check if current score qualifies as a high score."""
         # If we have fewer than 10 scores, any score is a high score
         if len(self.high_scores) < 10:
+            print(f"New high score {self.current_score} (fewer than 10 scores)")
             return True
             
         # Otherwise, check if current score beats the lowest high score
-        return self.current_score > min(self.high_scores)
+        lowest_high_score = min(self.high_scores) if self.high_scores else 0
+        is_high = self.current_score > lowest_high_score
+        if is_high:
+            print(f"New high score {self.current_score} (beats {lowest_high_score})")
+        return is_high
         
     def add_high_score(self, score: int) -> None:
         """Add a new high score to the list.
