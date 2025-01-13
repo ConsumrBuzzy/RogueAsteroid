@@ -113,7 +113,7 @@ class InputComponent(Component):
         transform = self.entity.get_component(TransformComponent)
         if transform:
             # Calculate rotation change
-            dt = self.entity.game.game_loop_manager.dt
+            dt = self.entity.game.game_loop.dt
             rotation_change = SHIP_ROTATION_SPEED * dt
             transform.rotation -= rotation_change
             print(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
@@ -132,7 +132,7 @@ class InputComponent(Component):
         transform = self.entity.get_component(TransformComponent)
         if transform:
             # Calculate rotation change
-            dt = self.entity.game.game_loop_manager.dt
+            dt = self.entity.game.game_loop.dt
             rotation_change = SHIP_ROTATION_SPEED * dt
             transform.rotation += rotation_change
             print(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
