@@ -5,6 +5,7 @@ from src.core.game_state import StateManager, GameState
 from src.core.services import AudioManager, HighScoreManager, ScoringSystem
 from src.core.systems import ParticleSystem, Spawner
 from src.entities.ship import Ship
+from src.entities.bullet import Bullet
 from src.entities.asteroid import Asteroid
 from src.core.entities.components import (
     TransformComponent,
