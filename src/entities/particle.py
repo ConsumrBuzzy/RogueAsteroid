@@ -6,6 +6,7 @@ from src.core.entities.components import (
     PhysicsComponent,
     ParticleComponent
 )
+import pygame
 
 class Particle(Entity):
     """A particle entity for visual effects."""
@@ -20,14 +21,20 @@ class Particle(Entity):
         """
         super().__init__(game)
         
-        # Add transform at origin
-        self.add_component(TransformComponent, 0, 0)
+        # Add transform component
+        transform = self.add_component(TransformComponent)
+        transform.position = pygame.Vector2(0, 0)  # Will be set by caller
         
         # Add physics with no friction and very light mass
         physics = self.add_component(PhysicsComponent)
         physics.friction = 0.0
         physics.mass = 0.1
         physics.max_speed = 1000.0  # Allow high speeds for particles
+        
+        # Add render component for visual display
+        render = self.add_component(RenderComponent)
+        render.vertices = [(0, 0), (1, 1)]  # Simple point shape
+        render.color = color
         
         # Add particle component with lifetime and color
         particle = self.add_component(ParticleComponent)
