@@ -260,12 +260,18 @@ class Ship(Entity):
     
     def _init_thrust_effect(self, effects: EffectComponent) -> None:
         """Initialize the thrust visual effect."""
-        # Add thrust effect
+        # Store effect parameters as instance variables
+        self.thrust_vertices = [(0, 10), (-5, 20), (5, 20)]  # Small triangle behind ship
+        self.thrust_color = (255, 165, 0)  # Orange color
+        self.thrust_offset = pygame.Vector2(0, 15)  # Offset behind ship
+        
+        # Add thrust effect with proper callbacks
         effects.add_effect(
-            'thrust',
-            [(0, 10), (-5, 20), (5, 20)],  # Small triangle behind ship
-            (255, 165, 0),  # Orange color
-            pygame.Vector2(0, 15)  # Offset behind ship
+            name='thrust',
+            duration=float('inf'),  # Permanent effect until removed
+            on_start=None,  # No start callback needed
+            on_update=None,  # Update handled in ship's update method
+            on_end=None  # No end callback needed
         )
         print("Thrust effect initialized")  # Debug info
         

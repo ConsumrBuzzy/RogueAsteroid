@@ -19,21 +19,32 @@ class EffectComponent(Component):
         
         Args:
             name: Unique identifier for the effect
-            duration: Duration in seconds
-            on_start: Callback when effect starts
-            on_update: Callback during effect update
-            on_end: Callback when effect ends
+            duration: Duration in seconds (use float('inf') for permanent effects)
+            on_start: Optional callback when effect starts
+            on_update: Optional callback during effect update
+            on_end: Optional callback when effect ends
         """
+        # Validate callbacks are actually callable if provided
+        if on_start is not None and not callable(on_start):
+            raise TypeError(f"on_start must be callable or None, got {type(on_start)}")
+        if on_update is not None and not callable(on_update):
+            raise TypeError(f"on_update must be callable or None, got {type(on_update)}")
+        if on_end is not None and not callable(on_end):
+            raise TypeError(f"on_end must be callable or None, got {type(on_end)}")
+            
         self.effects[name] = {
             'duration': duration,
             'time_remaining': duration,
             'on_start': on_start,
             'on_update': on_update,
-            'on_end': on_end
+            'on_end': on_end,
+            'active': True
         }
-        if on_start:
+        
+        # Only call on_start if it's a valid callback
+        if on_start and callable(on_start):
             on_start()
-    
+            
     def remove_effect(self, name: str) -> None:
         """Remove an effect by name."""
         if name in self.effects:
@@ -79,3 +90,8 @@ class EffectComponent(Component):
     def set_alpha(self, alpha: int) -> None:
         """Set entity alpha/transparency."""
         self.current_alpha = max(0, min(255, alpha)) 
+    
+    def set_effect_active(self, name: str, active: bool) -> None:
+        """Set whether an effect is active."""
+        if name in self.effects:
+            self.effects[name]['active'] = active 
