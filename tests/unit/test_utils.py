@@ -18,61 +18,47 @@ class GameConfig:
 class MockGame:
     """Mock game class for testing."""
     def __init__(self):
-        # Window dimensions
+        """Initialize mock game."""
         self.width = 800
         self.height = 600
-        self.dt = 1.0 / 60  # 60 FPS
-        
-        # Game settings
+        self.screen = None
+        self.scoring = MockHighScoreManager()
         self.settings = {
-            'controls': {'scheme': 'arrows'},
-            'sound': {'enabled': False, 'volume': 0.5},
-            'window': {'width': self.width, 'height': self.height}
+            'window': {
+                'width': self.width,
+                'height': self.height
+            },
+            'controls': 'arrows'
         }
-        
-        # Entity lists
-        self.entities = []
-        self.bullets = []
-        self.asteroids = []
-        self.particles = []
-        
-        # Game state
-        self.state = GameState.PLAYING
-        self.score = 0
-        self.high_scores = []
-        
-        # Systems
-        self.sound = MockSound()
-        self.scoring_system = MockScoringSystem()
 
-    def add_entity(self, entity):
-        """Add entity to game."""
-        self.entities.append(entity)
-        
-    def remove_entity(self, entity):
-        """Remove entity from game."""
-        if entity in self.entities:
-            self.entities.remove(entity)
-
-class MockSound:
-    """Mock sound system for testing."""
-    def play_sound(self, sound_name):
-        """Mock playing a sound."""
-        pass
-
-class MockScoringSystem:
-    """Mock scoring system for testing."""
+class MockHighScoreManager:
+    """Mock high score manager for testing."""
+    
     def __init__(self):
-        self.score = 0
-        self.high_scores = []
-        
-    def add_points(self, points):
-        """Add points to score."""
-        self.score += points
-        
-    def reset(self):
-        """Reset score."""
-        self.score = 0
+        """Initialize mock scoring."""
+        self.current_score = 0
+        self.scores = []
+    
+    def add_points(self, points: int) -> None:
+        """Add points to current score."""
+        self.current_score += points
+    
+    def reset_score(self) -> None:
+        """Reset current score."""
+        self.current_score = 0
+    
+    def add_score(self, name: str) -> bool:
+        """Add a high score entry."""
+        self.scores.append((name, self.current_score))
+        return True
+    
+    def get_scores(self):
+        """Get list of high scores."""
+        return self.scores.copy()
+    
+    def is_high_score(self) -> bool:
+        """Check if current score is a high score."""
+        return True  # Always return True for testing
 
 class MockEntity(Entity):
     """Mock entity for testing."""

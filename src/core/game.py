@@ -3,7 +3,7 @@ import random
 import math
 import pygame
 from src.core.game_state import StateManager, GameState
-from src.core.services import AudioManager, HighScoreManager, ScoringSystem
+from src.core.services import AudioManager, HighScoreManager
 from src.core.systems import ParticleSystem, Spawner
 from src.core.managers import (
     CollisionManager,
@@ -48,8 +48,8 @@ class Game:
         
         # Initialize services
         self.audio = AudioManager()
-        self.high_scores = HighScoreManager()
-        self.logger.debug("Services initialized")
+        self.scoring = HighScoreManager()  # Use consolidated scoring system
+        self.logger.debug("Game services initialized")
         
         # Initialize systems
         self.particle_system = ParticleSystem(self)
@@ -63,10 +63,6 @@ class Game:
         self.input_manager = InputManager(self)
         self.game_loop = GameLoopManager(self)
         self.logger.debug("Managers initialized")
-        
-        # Initialize scoring system
-        self.scoring = ScoringSystem()
-        self.logger.debug("Scoring system initialized")
         
         # Initialize game properties
         self.level = 1
