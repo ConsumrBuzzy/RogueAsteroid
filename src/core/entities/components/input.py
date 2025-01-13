@@ -141,12 +141,13 @@ class InputComponent(Component):
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at right side
+            # Position at right side, slightly lower
             right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15  # Perpendicular to ship direction
+            down_offset = pygame.Vector2(ship_dir.x, ship_dir.y) * 5  # Slightly downward
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + right_offset,
+                position=transform.position + right_offset + down_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
@@ -170,12 +171,13 @@ class InputComponent(Component):
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at left side
+            # Position at left side, slightly lower
             left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15  # Perpendicular to ship direction
+            down_offset = pygame.Vector2(ship_dir.x, ship_dir.y) * 5  # Slightly downward
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + left_offset,
+                position=transform.position + left_offset + down_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
@@ -208,17 +210,25 @@ class InputComponent(Component):
     
     def update(self, dt: float) -> None:
         """Handle continuous actions for held keys."""
-        # Handle continuous rotation
+        # Handle continuous rotation and thrust
         if self.control_scheme == 'arrows':
             if pygame.K_LEFT in self.pressed_keys:
                 self._handle_rotate_left()
             if pygame.K_RIGHT in self.pressed_keys:
                 self._handle_rotate_right()
+            if pygame.K_UP in self.pressed_keys:
+                self._handle_forward_thrust()
+            if pygame.K_DOWN in self.pressed_keys:
+                self._handle_reverse_thrust()
         else:  # WASD controls
             if pygame.K_a in self.pressed_keys:
                 self._handle_rotate_left()
             if pygame.K_d in self.pressed_keys:
                 self._handle_rotate_right()
+            if pygame.K_w in self.pressed_keys:
+                self._handle_forward_thrust()
+            if pygame.K_s in self.pressed_keys:
+                self._handle_reverse_thrust()
                 
         # Handle other continuous actions from key bindings
         for key in self.pressed_keys:
