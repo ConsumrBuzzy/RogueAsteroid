@@ -1,6 +1,7 @@
 """Input component for handling entity input."""
 import math
 import pygame
+import random
 from typing import Dict, List, Set, Callable, Any, Tuple
 from src.core.entities.components.base import Component
 from src.core.entities.components.transform import TransformComponent
@@ -79,15 +80,18 @@ class InputComponent(Component):
             # Create thrust particles at center bottom of ship
             offset = -thrust_dir * 20  # 20 pixels behind ship
             
-            # Create particles at center bottom
-            self.entity.game.particle_system.emit_circular(
-                position=transform.position + offset,
-                color=(255, 255, 255),  # White color
-                count=3,  # Slightly more particles for center thrust
-                lifetime=(0.1, 0.3),  # Short-lived particles
-                speed_range=(50, 100),  # Moderate speed
-                size_range=(1, 2)  # Small particles
-            )
+            # Create particles at center bottom with grayscale colors
+            for _ in range(3):
+                # Random grayscale value between 200 and 255
+                gray = random.randint(200, 255)
+                self.entity.game.particle_system.emit_circular(
+                    position=transform.position + offset,
+                    color=(gray, gray, gray),  # Grayscale color
+                    count=1,  # Single particle per emission
+                    lifetime=(0.1, 0.2),  # Shorter lifetime for more focused thrust
+                    speed_range=(80, 120),  # Faster speed for more focused thrust
+                    size_range=(1, 2)  # Small particles
+                )
             
     def _handle_reverse_thrust(self):
         """Apply reverse thrust and create particle effects."""
@@ -138,11 +142,11 @@ class InputComponent(Component):
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
                 position=transform.position + back_offset + left_offset,
-                color=(255, 255, 255),  # White color
-                count=2,  # Small number of particles per frame
-                lifetime=(0.1, 0.3),  # Short-lived particles
-                speed_range=(50, 100),  # Moderate speed
-                size_range=(1, 2)  # Small particles
+                color=(255, 255, 0),  # Yellow color
+                count=1,  # Single particle per frame
+                lifetime=(0.05, 0.15),  # Very short-lived particles
+                speed_range=(30, 50),  # Slower speed for smaller effect
+                size_range=(1, 1)  # Tiny particles
             )
             
     def _handle_rotate_right(self):
@@ -168,11 +172,11 @@ class InputComponent(Component):
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
                 position=transform.position + back_offset + right_offset,
-                color=(255, 255, 255),  # White color
-                count=2,  # Small number of particles per frame
-                lifetime=(0.1, 0.3),  # Short-lived particles
-                speed_range=(50, 100),  # Moderate speed
-                size_range=(1, 2)  # Small particles
+                color=(255, 255, 0),  # Yellow color
+                count=1,  # Single particle per frame
+                lifetime=(0.05, 0.15),  # Very short-lived particles
+                speed_range=(30, 50),  # Slower speed for smaller effect
+                size_range=(1, 1)  # Tiny particles
             )
     
     def handle_keyup(self, key: int) -> None:

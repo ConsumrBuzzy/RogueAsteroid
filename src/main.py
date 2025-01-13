@@ -4,7 +4,7 @@ import sys
 import traceback
 import pygame
 
-# Add src directory to Python path for proper imports
+  # Add src directory to Python path for proper imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.core.game import Game
