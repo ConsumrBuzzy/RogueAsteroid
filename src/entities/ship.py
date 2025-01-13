@@ -40,6 +40,7 @@ class Ship(Entity):
         print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
+        self._invulnerable = False
         self.input_component = None
         
         # Add components
@@ -247,24 +248,18 @@ class Ship(Entity):
         # Update invulnerability
         if self.invulnerable_timer > 0:
             self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
-            
-            # Flash the ship while invulnerable
-            render = self.get_component(RenderComponent)
-            if render:
-                render.visible = int(self.invulnerable_timer * 10) % 2 == 0  # Flash 5 times per second
-        else:
-            # Ensure ship is visible when not invulnerable
-            render = self.get_component(RenderComponent)
-            if render:
-                render.visible = True
-        
-        # Deactivate thrust effect if not thrusting
-        effects = self.get_component(EffectComponent)
-        input_comp = self.input_component
-        if effects and input_comp:
-            controls = self.game.settings.get('controls', 'arrows')
-            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in input_comp.pressed_keys)
+            # Flash effect while invulnerable
+            effects = self.get_component(EffectComponent)
+            if effects:
+                flash_rate = 8  # Times per second
+                flash_alpha = 128 + (127 * math.sin(self.invulnerable_timer * flash_rate))
+                effects.set_alpha(int(flash_alpha))
+        elif self._invulnerable:
+            # Reset to normal when invulnerability ends
+            self._invulnerable = False
+            effects = self.get_component(EffectComponent)
+            if effects:
+                effects.set_alpha(255)
     
     def _init_thrust_effect(self, effects: EffectComponent) -> None:
         """Initialize the thrust visual effect."""
@@ -285,5 +280,41 @@ class Ship(Entity):
         
     @property
     def invulnerable(self) -> bool:
-        """Check if ship is currently invulnerable."""
-        return self.invulnerable_timer > 0 
+        """Get invulnerability status."""
+        return self._invulnerable or self.invulnerable_timer > 0
+    
+    @invulnerable.setter
+    def invulnerable(self, value: bool) -> None:
+        """Set invulnerability status."""
+        self._invulnerable = value
+        # Update visual effect
+        effects = self.get_component(EffectComponent)
+        if effects:
+            if value:
+                effects.set_alpha(128)  # Semi-transparent when invulnerable
+            else:
+                effects.set_alpha(255)  # Fully opaque when vulnerable
+    
+    def update(self, dt: float) -> None:
+        """Update the ship's state."""
+        super().update(dt)
+        
+        # Update shoot timer
+        if self.shoot_timer > 0:
+            self.shoot_timer -= dt
+        
+        # Update invulnerability
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+            # Flash effect while invulnerable
+            effects = self.get_component(EffectComponent)
+            if effects:
+                flash_rate = 8  # Times per second
+                flash_alpha = 128 + (127 * math.sin(self.invulnerable_timer * flash_rate))
+                effects.set_alpha(int(flash_alpha))
+        elif self._invulnerable:
+            # Reset to normal when invulnerability ends
+            self._invulnerable = False
+            effects = self.get_component(EffectComponent)
+            if effects:
+                effects.set_alpha(255) 

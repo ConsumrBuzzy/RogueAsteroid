@@ -167,12 +167,32 @@ class Game:
     
     def lose_life(self):
         """Handle losing a life."""
+        print(f"Losing life. Lives remaining: {self.lives - 1}")  # Debug info
         self.lives -= 1
+        
         if self.lives <= 0:
+            print("Game Over - No lives remaining")  # Debug info
             self.state_manager.change_state(GameState.GAME_OVER)
         else:
+            print(f"Respawning with {self.lives} lives remaining")  # Debug info
+            # Remove the old ship
+            if self.ship in self.entities:
+                self.entities.remove(self.ship)
+                self.ship = None
+            
+            # Set respawn timer
             self.respawn_timer = SHIP_INVULNERABLE_TIME
-            self.spawn_ship()
+            
+            # Respawn ship with invulnerability
+            self.respawn_ship()
+            
+            # Ensure ship is properly initialized
+            if self.ship:
+                self.ship.invulnerable = True
+                self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
+                print("Ship respawned with invulnerability")  # Debug info
+            else:
+                print("Error: Failed to respawn ship!")  # Debug info
     
     def toggle_control_scheme(self):
         """Toggle between arrow keys and WASD controls."""
@@ -294,10 +314,11 @@ class Game:
         """Handle collision between ship and asteroid."""
         if not ship.invulnerable:
             print("Ship hit by asteroid")  # Debug info
+            # Create explosion before losing life
+            transform = ship.get_component(TransformComponent)
+            if transform:
+                self.create_explosion(transform.position.x, transform.position.y, 'medium')
             self.lose_life()
-            self.create_explosion(ship.get_component(TransformComponent).position.x,
-                                ship.get_component(TransformComponent).position.y,
-                                'medium')
     
     def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid):
         """Handle collision between bullet and asteroid."""
