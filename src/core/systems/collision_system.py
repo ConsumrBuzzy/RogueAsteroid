@@ -1,177 +1,134 @@
-"""Collision handling system."""
+"""Collision system for handling entity collisions."""
 import pygame
 import random
-from typing import List, Tuple
-from src.core.entities.base import Entity
+import math
+from src.entities.asteroid import Asteroid
+from src.entities.bullet import Bullet
+from src.entities.ship import Ship
 from src.core.entities.components import (
     TransformComponent,
-    CollisionComponent,
-    PhysicsComponent
+    PhysicsComponent,
+    CollisionComponent
 )
-from src.entities.ship import Ship
-from src.entities.bullet import Bullet
-from src.entities.asteroid import Asteroid
-from src.core.constants import ASTEROID_SIZES
-import math
 
 class CollisionSystem:
-    """Handles collision detection and response between entities."""
+    """System for handling collisions between entities."""
     
     def __init__(self, game):
-        """Initialize the collision system."""
         self.game = game
     
-    def update(self):
-        """Update collision detection and response."""
-        # Get all entities with collision components
-        collidable_entities = [
-            entity for entity in self.game.entities 
-            if entity.get_component(CollisionComponent)
-        ]
-        
-        # Check each pair of entities
-        for i, entity1 in enumerate(collidable_entities):
-            for entity2 in collidable_entities[i + 1:]:
+    def update(self) -> None:
+        """Update collision checks for all entities."""
+        # Check collisions between all pairs of entities
+        entities = self.game.entities
+        for i in range(len(entities)):
+            for j in range(i + 1, len(entities)):
+                entity1 = entities[i]
+                entity2 = entities[j]
                 if self._check_and_handle_collision(entity1, entity2):
-                    # If collision was handled, move to next entity1
+                    # If collision was handled, continue to next entity
                     break
     
-    def _check_and_handle_collision(self, entity1: Entity, entity2: Entity) -> bool:
-        """Check and handle collision between two entities."""
-        # Get required components
+    def _check_and_handle_collision(self, entity1, entity2) -> bool:
+        """Check and handle collision between two entities.
+        
+        Returns:
+            bool: True if collision was handled, False otherwise
+        """
+        # Skip if either entity doesn't have collision component
         collision1 = entity1.get_component(CollisionComponent)
         collision2 = entity2.get_component(CollisionComponent)
-        transform1 = entity1.get_component(TransformComponent)
-        transform2 = entity2.get_component(TransformComponent)
-        
-        if not (collision1 and collision2 and transform1 and transform2):
+        if not collision1 or not collision2:
             return False
             
         # Get positions
-        pos1 = pygame.Vector2(transform1.position)
-        pos2 = pygame.Vector2(transform2.position)
-        
-        # Calculate distance and check for collision
-        distance = pos1.distance_to(pos2)
-        combined_radius = collision1.radius + collision2.radius
-        
-        if distance >= combined_radius:
+        transform1 = entity1.get_component(TransformComponent)
+        transform2 = entity2.get_component(TransformComponent)
+        if not transform1 or not transform2:
             return False
             
-        # Calculate collision normal
-        diff = pos2 - pos1
-        if diff.length() > 0:
-            normal = diff.normalize()
-        else:
-            normal = pygame.Vector2(1, 0)
+        # Calculate distance between entities
+        distance = transform1.position.distance_to(transform2.position)
         
-        # Handle different collision types
-        if isinstance(entity1, Ship) and isinstance(entity2, Asteroid):
-            return self._handle_ship_asteroid_collision(entity1, entity2)
-        elif isinstance(entity1, Asteroid) and isinstance(entity2, Ship):
-            return self._handle_ship_asteroid_collision(entity2, entity1)
-        elif isinstance(entity1, Bullet) and isinstance(entity2, Asteroid):
-            return self._handle_bullet_asteroid_collision(entity1, entity2)
-        elif isinstance(entity1, Asteroid) and isinstance(entity2, Bullet):
-            return self._handle_bullet_asteroid_collision(entity2, entity1)
-        elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
-            return self._handle_asteroid_asteroid_collision(
-                entity1, entity2, pos1, pos2, distance, combined_radius, normal
-            )
+        # Check if collision occurred
+        if distance < collision1.radius + collision2.radius:
+            # Handle based on entity types
+            if isinstance(entity1, Ship) and isinstance(entity2, Asteroid):
+                return self._handle_ship_asteroid_collision(entity1, entity2)
+            elif isinstance(entity2, Ship) and isinstance(entity1, Asteroid):
+                return self._handle_ship_asteroid_collision(entity2, entity1)
+            elif isinstance(entity1, Bullet) and isinstance(entity2, Asteroid):
+                return self._handle_bullet_asteroid_collision(entity1, entity2)
+            elif isinstance(entity2, Bullet) and isinstance(entity1, Asteroid):
+                return self._handle_bullet_asteroid_collision(entity2, entity1)
+            elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
+                return self._handle_asteroid_asteroid_collision(entity1, entity2)
         
         return False
     
     def _handle_ship_asteroid_collision(self, ship: Ship, asteroid: Asteroid) -> bool:
         """Handle collision between ship and asteroid."""
         if not ship.invulnerable:
-            print("Ship hit by asteroid")
-            self.game.lose_life()
+            # Create explosion effect
             transform = ship.get_component(TransformComponent)
             if transform:
-                self.game.create_explosion(
-                    transform.position.x,
-                    transform.position.y,
-                    'medium'
-                )
+                self.game.create_explosion(transform.position, 'medium')
+            
+            # Lose a life and respawn
+            self.game.lose_life()
             return True
         return False
     
     def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid) -> bool:
         """Handle collision between bullet and asteroid."""
-        print(f"Bullet hit asteroid size {asteroid.size}")
-        
-        # Award points
-        points = {'large': 3, 'medium': 2, 'small': 1}
-        self.game.scoring.add_points(points[asteroid.size])
-        
-        # Create explosion
+        # Get positions for explosion effect
         transform = asteroid.get_component(TransformComponent)
         if transform:
-            self.game.create_explosion(
-                transform.position.x,
-                transform.position.y,
-                asteroid.size
-            )
+            self.game.create_explosion(transform.position, asteroid.size)
         
-        # Split asteroid
-        pieces = asteroid.split()
-        for piece in pieces:
-            self.game.asteroids.append(piece)
-            self.game.entities.append(piece)
+        # Split or destroy asteroid
+        asteroid.split()
         
-        # Remove bullet and asteroid
-        self.game.remove_entity(bullet)
-        self.game.remove_entity(asteroid)
+        # Remove bullet
+        if bullet in self.game.bullets:
+            self.game.bullets.remove(bullet)
+        if bullet in self.game.entities:
+            self.game.entities.remove(bullet)
+            
         return True
     
-    def _handle_asteroid_asteroid_collision(
-        self,
-        asteroid1: Asteroid,
-        asteroid2: Asteroid,
-        pos1: pygame.Vector2,
-        pos2: pygame.Vector2,
-        distance: float,
-        combined_radius: float,
-        normal: pygame.Vector2
-    ) -> bool:
-        """Handle collision between two asteroids using arcade-style physics."""
-        physics1 = asteroid1.get_component(PhysicsComponent)
-        physics2 = asteroid2.get_component(PhysicsComponent)
+    def _handle_asteroid_asteroid_collision(self, asteroid1: Asteroid, asteroid2: Asteroid) -> bool:
+        """Handle collision between two asteroids."""
+        # Get components
         transform1 = asteroid1.get_component(TransformComponent)
         transform2 = asteroid2.get_component(TransformComponent)
+        physics1 = asteroid1.get_component(PhysicsComponent)
+        physics2 = asteroid2.get_component(PhysicsComponent)
         
-        if not (physics1 and physics2 and transform1 and transform2):
+        if not transform1 or not transform2 or not physics1 or not physics2:
             return False
             
-        # Simple separation - move both asteroids apart equally
-        overlap = combined_radius - distance
-        if overlap > 0:
-            separation = normal * overlap * 0.5  # Split separation equally
-            transform1.position -= separation
-            transform2.position += separation
-            
-            # Get velocities
-            vel1 = pygame.Vector2(physics1.velocity)
-            vel2 = pygame.Vector2(physics2.velocity)
-            
-            # Simple velocity exchange - more arcade-like
-            # Exchange the velocity components along the collision normal
-            v1_normal = normal * vel1.dot(normal)
-            v2_normal = normal * vel2.dot(normal)
-            
-            # Keep tangential velocities
-            v1_tangent = vel1 - v1_normal
-            v2_tangent = vel2 - v2_normal
-            
-            # Exchange normal components with slight energy loss
-            damping = 0.9  # Slight energy loss on collision
-            physics1.velocity = v1_tangent + v2_normal * damping
-            physics2.velocity = v2_tangent + v1_normal * damping
-            
-            # Add a small random spin - classic arcade feel
-            physics1.angular_velocity = random.uniform(-math.pi/4, math.pi/4)
-            physics2.angular_velocity = random.uniform(-math.pi/4, math.pi/4)
-            
-            return True
-                
-        return False 
+        # Calculate collision normal
+        normal = transform2.position - transform1.position
+        if normal.length() == 0:
+            # If positions are identical, use a random normal
+            normal = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
+        normal = normal.normalize()
+        
+        # Calculate relative velocity
+        relative_velocity = physics2.velocity - physics1.velocity
+        
+        # Calculate impulse
+        restitution = 0.8  # Bounciness
+        impulse = -(1 + restitution) * relative_velocity.dot(normal)
+        impulse /= (1/physics1.mass + 1/physics2.mass)
+        
+        # Apply impulse
+        physics1.velocity -= (impulse / physics1.mass) * normal
+        physics2.velocity += (impulse / physics2.mass) * normal
+        
+        # Add some random spin
+        physics1.angular_velocity += random.uniform(-30, 30)
+        physics2.angular_velocity += random.uniform(-30, 30)
+        
+        return True 
