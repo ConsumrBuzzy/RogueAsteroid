@@ -71,49 +71,18 @@ class Bullet(Entity):
         """Update bullet state."""
         super().update(dt)
         
-        # Update lifetime and despawn if expired
+        # Update lifetime
         self.lifetime -= dt
         if self.lifetime <= 0:
-            # Remove bullet from tracking lists
-            if self in self.game.bullets:
-                self.game.bullets.remove(self)
-            if self in self.game.entities:
-                self.game.entities.remove(self)
+            self.game.entity_manager.remove_entity(self)
             return
-        
+            
         # Check for collisions with asteroids
-        collision = self.get_component(CollisionComponent)
-        if collision:
-            for entity in self.game.entities[:]:  # Copy list to allow removal
-                if isinstance(entity, Asteroid):
-                    other_collision = entity.get_component(CollisionComponent)
-                    if other_collision and collision.check_collision(other_collision):
-                        # Handle asteroid hit and scoring
-                        points = ASTEROID_SIZES[entity.size]['points']
-                        self.game.scoring.add_points(points)
-                        print(f"Hit asteroid size {entity.size}, awarded {points} points")  # Debug info
-                        
-                        # Split asteroid if not smallest size
-                        if entity.size in ['large', 'medium']:
-                            pieces = entity.split()
-                            # Add new pieces to game
-                            for piece in pieces:
-                                self.game.asteroids.append(piece)
-                                self.game.entities.append(piece)
-                                print(f"Created new asteroid piece size {piece.size}")  # Debug info
-                        
-                        # Remove asteroid from tracking lists
-                        if entity in self.game.asteroids:
-                            self.game.asteroids.remove(entity)
-                        if entity in self.game.entities:
-                            self.game.entities.remove(entity)
-                            
-                        # Remove bullet from tracking lists
-                        if self in self.game.bullets:
-                            self.game.bullets.remove(self)
-                        if self in self.game.entities:
-                            self.game.entities.remove(self)
-                        return 
+        for entity in self.game.entity_manager.entities[:]:  # Copy list to allow removal
+            if isinstance(entity, Asteroid):
+                if self._check_collision(entity):
+                    self._handle_collision(entity)
+                    break
     
     def destroy(self):
         """Remove the bullet from the game."""
@@ -131,21 +100,35 @@ class Bullet(Entity):
                     self._handle_collision(entity)
                     break
                     
+    def _check_collision(self, asteroid):
+        """Check if bullet collides with asteroid."""
+        collision = self.get_component(CollisionComponent)
+        if collision:
+            other_collision = asteroid.get_component(CollisionComponent)
+            if other_collision:
+                return collision.check_collision(other_collision)
+        return False
+        
     def _handle_collision(self, asteroid):
-        """Handle collision with an asteroid."""
+        """Handle collision with asteroid."""
         # Create explosion effect
         transform = asteroid.get_component(TransformComponent)
         if transform:
             self.game.create_explosion(transform.position, asteroid.size)
             
-        # Split asteroid into pieces
-        pieces = asteroid.split()
-        for piece in pieces:
-            self.game.entity_manager.add_entity(piece)
-            
+        # Award points
+        points = ASTEROID_SIZES[asteroid.size]['points']
+        self.game.scoring.add_points(points)
+        print(f"Hit asteroid size {asteroid.size}, awarded {points} points")  # Debug info
+        
+        # Split asteroid if not smallest size
+        if asteroid.size in ['large', 'medium']:
+            pieces = asteroid.split()
+            # Add new pieces to game
+            for piece in pieces:
+                self.game.entity_manager.add_entity(piece)
+                print(f"Created new asteroid piece size {piece.size}")  # Debug info
+        
         # Remove asteroid and bullet
-        if entity in self.game.entity_manager.entities:
-            self.game.entity_manager.remove_entity(entity)
-            
-        if self in self.game.entity_manager.entities:
-            self.game.entity_manager.remove_entity(self) 
+        self.game.entity_manager.remove_entity(asteroid)
+        self.game.entity_manager.remove_entity(self) 
