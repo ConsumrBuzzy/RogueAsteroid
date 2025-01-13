@@ -26,16 +26,16 @@ class InputManager:
             pygame.quit()
             sys.exit()
         
+        # Let state manager handle input first
+        if self.game.state_manager.handle_input(event):
+            return  # Event was consumed by state manager
+            
         # Pass input to ship's input component if it exists and we're in PLAYING state
         if self.game.state == GameState.PLAYING and self.game.entity_manager.ship:
             input_component = self.game.entity_manager.ship.get_component(InputComponent)
             if input_component and event.type in (pygame.KEYDOWN, pygame.KEYUP):
                 input_component.handle_event(event)
                 
-        # Let state manager handle input
-        if self.game.state_manager.handle_input(event):
-            return  # Event was consumed by state manager
-            
         # Handle game-specific input based on state
         if self.game.state == GameState.PLAYING:
             self._handle_playing_input(event)
@@ -58,9 +58,8 @@ class InputManager:
 
     def _handle_paused_input(self, event: pygame.event.Event) -> None:
         """Handle input in the paused state."""
-        if event.type == pygame.KEYDOWN:
-            # Let state manager handle all pause menu input
-            self.game.state_manager.handle_input(event) 
+        # Let state manager handle all pause menu input
+        self.game.state_manager.handle_input(event) 
 
     def update(self, dt: float) -> None:
         """Update input state for continuous actions."""
