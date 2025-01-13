@@ -216,21 +216,27 @@ class Game:
         """Update game state."""
         self.dt = dt
         
-        # Update systems
-        self.particle_system.update(dt)
-        self.spawner.update(dt)
+        # Only update gameplay elements when in PLAYING state
+        if self.state == GameState.PLAYING:
+            # Update systems
+            self.particle_system.update(dt)
+            self.spawner.update(dt)
+            
+            # Update entities
+            for entity in self.entities[:]:  # Copy list to allow removal during iteration
+                entity.update(dt)
+            
+            # Handle collisions
+            self.handle_collisions()
+            
+            # Check for wave completion
+            if self.spawner.check_wave_complete():
+                self.level += 1
+                self.spawner.advance_wave()
         
-        # Update entities
-        for entity in self.entities[:]:  # Copy list to allow removal during iteration
-            entity.update(dt)
-        
-        # Handle collisions
-        self.handle_collisions()
-        
-        # Check for wave completion
-        if self.state == GameState.PLAYING and self.spawner.check_wave_complete():
-            self.level += 1
-            self.spawner.advance_wave()
+        # Always update particles for visual effects
+        elif self.state != GameState.PAUSED:
+            self.particle_system.update(dt)
     
     def respawn_ship(self):
         """Respawn the player ship with invulnerability."""
