@@ -40,9 +40,11 @@ def mock_audio():
 @pytest.fixture
 def mock_scoring(temp_data_dir):
     """Create a mock scoring system for testing."""
-    from src.core.services import ScoringSystem
-    save_file = temp_data_dir / "test_scores.json"
-    return ScoringSystem(str(save_file))
+    from src.core.services import HighScoreManager
+    save_file = temp_data_dir / "test_highscores.json"
+    scoring = HighScoreManager()
+    scoring.scores_file = str(save_file)
+    return scoring
 
 @pytest.fixture
 def mock_particle_system(mock_game):
