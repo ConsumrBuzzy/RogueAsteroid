@@ -27,8 +27,7 @@ class ParticleComponent(Component):
         
         # Remove particle if lifetime is over
         if self.time_alive >= self.lifetime:
-            if self.entity in self.entity.game.entities:
-                self.entity.game.entities.remove(self.entity) 
+            self.entity.game.entity_manager.remove_entity(self.entity)
         
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the particle effect.
