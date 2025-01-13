@@ -1,9 +1,8 @@
-class HighScores:
+class HighScoreManager:
     """Manages high scores for the game."""
     
-    def __init__(self, game):
+    def __init__(self):
         """Initialize the high scores system."""
-        self.game = game
         self.scores = []  # List of (name, score) tuples
         self.max_scores = 10
         self.load_scores()

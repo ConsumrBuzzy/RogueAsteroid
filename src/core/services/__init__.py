@@ -1,12 +1,10 @@
 """Core game services."""
 from .audio import AudioManager
-from .highscores import HighScoreEntry, HighScoreManager
-from .scoring import ScoreEntry, ScoringSystem
+from .high_scores import HighScoreManager
+from .scoring import ScoringSystem
 
 __all__ = [
     'AudioManager',
-    'HighScoreEntry',
     'HighScoreManager',
-    'ScoreEntry',
     'ScoringSystem'
 ] 
