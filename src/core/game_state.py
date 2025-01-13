@@ -56,11 +56,11 @@ class StateManager:
             elif old_state == GameState.PAUSED:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
-            print("Game Over - Score:", self.game.score)  # Debug info
+            print("Game Over - Score:", self.game.scoring.current_score)  # Debug info
             # Clear any remaining entities except the ship
             self.game.entity_manager.clear_entities(keep_ship=False)
             # Check for high score immediately
-            if self.game.high_scores.is_high_score(self.game.score):
+            if self.game.scoring.is_high_score():  # No argument needed, uses current_score
                 print("New high score!")  # Debug info
                 self.high_score_name = ""  # Reset name input
                 new_state = GameState.NEW_HIGH_SCORE
@@ -182,8 +182,8 @@ class StateManager:
         """Handle input in new high score state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER) and self.high_score_name.strip():
             # Save high score and return to main menu
-            self.game.high_scores.add_score(self.high_score_name.strip(), self.game.score)
-            print(f"Saved high score: {self.high_score_name} - {self.game.score}")  # Debug info
+            self.game.scoring.add_high_score(self.high_score_name.strip())  # No score needed, uses current_score
+            print(f"Saved high score: {self.high_score_name} - {self.game.scoring.current_score}")  # Debug info
             self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_BACKSPACE:
             self.high_score_name = self.high_score_name[:-1]
@@ -194,7 +194,7 @@ class StateManager:
         """Handle input in game over state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             # Check for high score before transitioning
-            if self.game.high_scores.is_high_score(self.game.score):
+            if self.game.scoring.is_high_score():  # No argument needed, uses current_score
                 print("New high score achieved!")  # Debug info
                 self.high_score_name = ""  # Reset name input
                 self.change_state(GameState.NEW_HIGH_SCORE)

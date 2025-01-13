@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+from typing import List, Tuple
 
 class ScoringSystem:
     def __init__(self, save_file: str = None):
@@ -11,7 +12,7 @@ class ScoringSystem:
             save_file: Optional path to high scores save file
         """
         self.current_score = 0
-        self.high_scores = []
+        self.high_scores: List[Tuple[str, int]] = []  # List of (name, score) tuples
         self.save_file = save_file or str(Path(__file__).parent / '../../data/highscores.json')
         print(f"Scoring system initialized with save file: {self.save_file}")
         self._load_high_scores()
@@ -25,40 +26,62 @@ class ScoringSystem:
         """Reset the current score to 0."""
         self.current_score = 0
         
-    def is_high_score(self) -> bool:
-        """Check if current score qualifies as a high score."""
+    def is_high_score(self, score: int = None) -> bool:
+        """Check if score qualifies as a high score.
+        
+        Args:
+            score: Score to check. If None, uses current_score.
+        """
+        score = score if score is not None else self.current_score
+        
         # If we have fewer than 10 scores, any score is a high score
         if len(self.high_scores) < 10:
-            print(f"New high score {self.current_score} (fewer than 10 scores)")
+            print(f"New high score {score} (fewer than 10 scores)")
             return True
             
-        # Otherwise, check if current score beats the lowest high score
-        lowest_high_score = min(self.high_scores) if self.high_scores else 0
-        is_high = self.current_score > lowest_high_score
+        # Otherwise, check if score beats the lowest high score
+        lowest_high_score = min(score for _, score in self.high_scores) if self.high_scores else 0
+        is_high = score > lowest_high_score
         if is_high:
-            print(f"New high score {self.current_score} (beats {lowest_high_score})")
+            print(f"New high score {score} (beats {lowest_high_score})")
         return is_high
         
-    def add_high_score(self, score: int) -> None:
+    def add_high_score(self, name: str, score: int = None) -> None:
         """Add a new high score to the list.
         
         Args:
-            score: The score to add
+            name: Player name
+            score: Score to add. If None, uses current_score.
         """
-        self.high_scores.append(score)
-        self.high_scores.sort(reverse=True)  # Sort in descending order
+        score = score if score is not None else self.current_score
+        self.high_scores.append((name, score))
+        # Sort by score in descending order
+        self.high_scores.sort(key=lambda x: x[1], reverse=True)
         if len(self.high_scores) > 10:
             self.high_scores = self.high_scores[:10]  # Keep only top 10
         self.save_high_scores()
+        
+    def get_scores(self) -> List[Tuple[str, int]]:
+        """Get list of high scores.
+        
+        Returns:
+            List of (name, score) tuples, sorted by score descending.
+        """
+        return self.high_scores
         
     def _load_high_scores(self) -> None:
         """Load high scores from file."""
         try:
             if os.path.exists(self.save_file):
                 with open(self.save_file, 'r') as f:
-                    self.high_scores = json.load(f)
+                    data = json.load(f)
+                    # Convert to list of tuples if old format
+                    if isinstance(data, list) and (not data or isinstance(data[0], (int, float))):
+                        self.high_scores = [("???", score) for score in data]
+                    else:
+                        self.high_scores = data
                     # Ensure scores are sorted
-                    self.high_scores.sort(reverse=True)
+                    self.high_scores.sort(key=lambda x: x[1], reverse=True)
             else:
                 print("No high scores file found, starting fresh")
                 self.high_scores = []

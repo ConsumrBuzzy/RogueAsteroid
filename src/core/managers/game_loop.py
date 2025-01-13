@@ -1,6 +1,7 @@
 """Handles the main game loop and timing."""
 import pygame
 from src.core.game_state import GameState
+from src.core.entities.components import InputComponent
 
 class GameLoopManager:
     def __init__(self, game):
@@ -37,6 +38,13 @@ class GameLoopManager:
 
     def _update(self) -> None:
         """Update game state."""
+        # Update input components for continuous input
+        if self.game.state_manager.current_state == GameState.PLAYING:
+            for entity in self.game.entity_manager.entities:
+                input_comp = entity.get_component(InputComponent)
+                if input_comp:
+                    input_comp.update(self.dt)
+        
         # Update game systems
         self.game.particle_system.update(self.dt)
         self.game.spawner.update(self.dt)
