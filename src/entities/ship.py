@@ -325,8 +325,8 @@ class Ship(Entity):
             # Calculate bullet direction based on ship's rotation
             angle_rad = math.radians(transform.rotation)
             direction = pygame.Vector2(
-                math.cos(angle_rad),
-                math.sin(angle_rad)
+                math.sin(angle_rad),
+                -math.cos(angle_rad)
             )
             
             # Create bullet at ship's position with calculated direction

@@ -122,9 +122,15 @@ class InputComponent(Component):
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
             right_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15
-            self.entity.game.particle_system.emit_thrust_particles(
-                transform.position + right_offset,
-                right_offset.normalize()
+            
+            # Emit circular particles for thrust effect
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + right_offset,
+                color=(255, 200, 50),  # Orange-yellow color
+                count=3,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
             )
             
     def _handle_rotate_right(self):
@@ -141,9 +147,15 @@ class InputComponent(Component):
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
             left_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15
-            self.entity.game.particle_system.emit_thrust_particles(
-                transform.position + left_offset,
-                left_offset.normalize()
+            
+            # Emit circular particles for thrust effect
+            self.entity.game.particle_system.emit_circular(
+                position=transform.position + left_offset,
+                color=(255, 200, 50),  # Orange-yellow color
+                count=3,  # Small number of particles per frame
+                lifetime=(0.1, 0.3),  # Short-lived particles
+                speed_range=(50, 100),  # Moderate speed
+                size_range=(1, 2)  # Small particles
             )
     
     def handle_keyup(self, key: int) -> None:
