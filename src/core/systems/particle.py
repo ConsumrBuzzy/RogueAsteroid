@@ -9,6 +9,16 @@ class ParticleSystem:
     
     def __init__(self, game):
         self.game = game
+        self.particles = []  # Track active particles
+    
+    def update(self, dt: float) -> None:
+        """Update all active particles.
+        
+        Args:
+            dt: Delta time in seconds
+        """
+        # Let particles update themselves - they will remove themselves when done
+        pass  # No need to do anything since particles handle their own updates
     
     def emit_circular(self, center: pygame.Vector2, speed: float, color: tuple,
                      size: float, lifetime: float, count: int,
@@ -29,7 +39,7 @@ class ParticleSystem:
             particle = Particle(self.game, lifetime, color, size)
             
             # Set position
-            transform = particle.get_component('transform')
+            transform = particle.get_component(TransformComponent)
             if transform:
                 transform.position = pygame.Vector2(center)
                 
@@ -41,7 +51,7 @@ class ParticleSystem:
                 actual_speed = speed * random.uniform(0.8, 1.2)
                 
                 # Set velocity based on angle
-                physics = particle.get_component('physics')
+                physics = particle.get_component(PhysicsComponent)
                 if physics:
                     physics.velocity = pygame.Vector2(
                         math.cos(angle_rad) * actual_speed,
@@ -72,7 +82,7 @@ class ParticleSystem:
             particle = Particle(self.game, lifetime, color, size)
             
             # Set position
-            transform = particle.get_component('transform')
+            transform = particle.get_component(TransformComponent)
             if transform:
                 transform.position = pygame.Vector2(pos)
                 
@@ -84,7 +94,7 @@ class ParticleSystem:
                 actual_speed = speed * random.uniform(0.8, 1.2)
                 
                 # Set velocity based on angle
-                physics = particle.get_component('physics')
+                physics = particle.get_component(PhysicsComponent)
                 if physics:
                     physics.velocity = pygame.Vector2(
                         math.cos(angle_rad) * actual_speed,
