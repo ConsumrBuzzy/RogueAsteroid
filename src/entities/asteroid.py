@@ -156,7 +156,8 @@ class Asteroid(Entity):
             new_angle = orig_angle + (spread if i == 0 else -spread)
             
             # Create new velocity vector
-            speed = ASTEROID_SIZES[new_size]['speed']
+            speed_range = ASTEROID_SIZES[new_size]['speed_range']
+            speed = random.uniform(speed_range[0], speed_range[1])  # Random speed within range
             rad_angle = math.radians(new_angle)
             new_vel = pygame.Vector2(
                 math.cos(rad_angle) * speed,
