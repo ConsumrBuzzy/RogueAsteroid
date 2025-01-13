@@ -24,7 +24,59 @@ class InputComponent(Component):
         self.pressed_keys: Set[int] = set()
         self.active_keys: Set[int] = set()  # Track keys for continuous actions
         self.event_handlers: List[Callable[[pygame.event.Event], None]] = []
+        self._setup_bindings()
     
+    def _setup_bindings(self) -> None:
+        """Set up the key bindings based on control scheme."""
+        self.key_bindings.clear()
+        self.active_keys.clear()
+        
+        # Get the transform and physics components
+        transform = self.entity.get_component(TransformComponent)
+        physics = self.entity.get_component(PhysicsComponent)
+        
+        if not transform or not physics:
+            return
+            
+        # Define rotation functions
+        def rotate_left():
+            transform.rotation += SHIP_ROTATION_SPEED
+            
+        def rotate_right():
+            transform.rotation -= SHIP_ROTATION_SPEED
+            
+        # Define thrust function
+        def apply_thrust():
+            # Calculate thrust direction based on ship rotation
+            angle = math.radians(transform.rotation)
+            thrust_dir = pygame.Vector2(-math.sin(angle), -math.cos(angle))
+            physics.apply_force(thrust_dir * SHIP_ACCELERATION)
+            
+        # Define shoot function
+        def shoot():
+            self.entity.handle_shoot()
+            
+        # Bind keys based on control scheme
+        if self.control_scheme == 'arrows':
+            self.bind_key(pygame.K_LEFT, rotate_left, True)
+            self.bind_key(pygame.K_RIGHT, rotate_right, True)
+            self.bind_key(pygame.K_UP, apply_thrust, True)
+            self.bind_key(pygame.K_SPACE, shoot, False)
+        else:  # WASD
+            self.bind_key(pygame.K_a, rotate_left, True)
+            self.bind_key(pygame.K_d, rotate_right, True)
+            self.bind_key(pygame.K_w, apply_thrust, True)
+            self.bind_key(pygame.K_SPACE, shoot, False)
+            
+    def update_control_scheme(self, new_scheme: str) -> None:
+        """Update the control scheme and rebind keys.
+        
+        Args:
+            new_scheme: The new control scheme to use ('arrows' or 'wasd')
+        """
+        self.control_scheme = new_scheme
+        self._setup_bindings()
+        
     def bind_key(self, key: int, action: Callable[[], None], continuous: bool = False) -> None:
         """Bind a key to an action.
         

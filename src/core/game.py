@@ -15,7 +15,8 @@ from src.core.managers import (
 from src.entities.particle import Particle
 from src.core.entities.components import (
     TransformComponent,
-    PhysicsComponent
+    PhysicsComponent,
+    InputComponent
 )
 from src.core.constants import (
     WINDOW_WIDTH, 
@@ -142,7 +143,15 @@ class Game:
     def toggle_control_scheme(self):
         """Toggle between arrow keys and WASD controls."""
         current = self.settings['controls']
-        self.settings['controls'] = 'wasd' if current == 'arrows' else 'arrows'
+        new_scheme = 'wasd' if current == 'arrows' else 'arrows'
+        self.settings['controls'] = new_scheme
+        
+        # Update ship's input component if it exists
+        if self.entity_manager.ship:
+            input_component = self.entity_manager.ship.get_component(InputComponent)
+            if input_component:
+                input_component.update_control_scheme(new_scheme)
+                self.logger.debug(f"Updated control scheme to {new_scheme}")
     
     def create_explosion(self, pos: pygame.Vector2, size: str = 'large') -> None:
         """Create an explosion effect.
