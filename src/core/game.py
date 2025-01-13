@@ -8,7 +8,8 @@ from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.entities.components import (
     TransformComponent,
-    CollisionComponent
+    CollisionComponent,
+    PhysicsComponent
 )
 from src.core.constants import (
     WINDOW_WIDTH, 
@@ -287,115 +288,77 @@ class Game:
                 print("No safe position found, respawning at center")  # Debug info
     
     def handle_collisions(self):
-        """Handle collisions between game entities."""
-        if not self.ship:
-            return
-            
-        # Check ship collision with asteroids
-        if self.ship and not self.ship.invulnerable:
-            ship_collision = self.ship.get_component(CollisionComponent)
-            if not ship_collision:
-                return
-                
-            for asteroid in self.asteroids[:]:  # Use copy of list for safe iteration
-                asteroid_collision = asteroid.get_component(CollisionComponent)
-                if not asteroid_collision:
-                    continue
-                    
-                if ship_collision.check_collision(asteroid_collision):
-                    print("Ship hit by asteroid")  # Debug info
-                    self.lives -= 1
-                    # Clear all bullets when ship is destroyed
-                    self.bullets.clear()
-                    if self.lives > 0:
-                        self.respawn_ship()
-                    else:
-                        self.state_manager.change_state(GameState.GAME_OVER)
-                    break  # Exit loop since ship is destroyed
+        """Handle collisions between entities."""
+        # Get all entities with collision components
+        collidable_entities = [
+            entity for entity in self.entities 
+            if entity.get_component(CollisionComponent)
+        ]
         
-        # Check bullet collisions with asteroids
-        for bullet in self.bullets[:]:  # Copy list to allow removal
-            bullet_collision = bullet.get_component(CollisionComponent)
-            if not bullet_collision:
-                continue
+        # Check each pair of entities
+        for i, entity1 in enumerate(collidable_entities):
+            for entity2 in collidable_entities[i + 1:]:
+                # Get collision components
+                collision1 = entity1.get_component(CollisionComponent)
+                collision2 = entity2.get_component(CollisionComponent)
                 
-            for asteroid in self.asteroids[:]:  # Copy list to allow removal
-                asteroid_collision = asteroid.get_component(CollisionComponent)
-                if not asteroid_collision:
+                # Get transform components
+                transform1 = entity1.get_component(TransformComponent)
+                transform2 = entity2.get_component(TransformComponent)
+                
+                # Get physics components
+                physics1 = entity1.get_component(PhysicsComponent)
+                physics2 = entity2.get_component(PhysicsComponent)
+                
+                if not (collision1 and collision2 and transform1 and transform2):
                     continue
                     
-                if bullet_collision.check_collision(asteroid_collision):
-                    print("Bullet hit asteroid")  # Debug info
-                    
-                    # Create new asteroids from split
-                    new_asteroids = asteroid.split()
-                    
-                    # Remove bullet and original asteroid
-                    if bullet in self.entities:
-                        self.entities.remove(bullet)
-                    if bullet in self.bullets:
-                        self.bullets.remove(bullet)
-                    if asteroid in self.entities:
-                        self.entities.remove(asteroid)
-                    if asteroid in self.asteroids:
-                        self.asteroids.remove(asteroid)
-                    
-                    # Add new asteroids from split
-                    for new_asteroid in new_asteroids:
-                        self.asteroids.append(new_asteroid)
-                        self.entities.append(new_asteroid)
-                    
-                    break  # Bullet can only hit one asteroid
-        
-        # Check asteroid-asteroid collisions
-        for i, asteroid1 in enumerate(self.asteroids[:-1]):
-            collision1 = asteroid1.get_component(CollisionComponent)
-            transform1 = asteroid1.get_component(TransformComponent)
-            if not collision1 or not transform1:
-                continue
+                # Get positions
+                pos1 = pygame.Vector2(transform1.position)
+                pos2 = pygame.Vector2(transform2.position)
                 
-            for asteroid2 in self.asteroids[i+1:]:
-                collision2 = asteroid2.get_component(CollisionComponent)
-                transform2 = asteroid2.get_component(TransformComponent)
-                if not collision2 or not transform2:
-                    continue
-                    
-                if collision1.check_collision(collision2):
-                    # Calculate collision normal and depth
-                    pos1 = pygame.Vector2(transform1.position)
-                    pos2 = pygame.Vector2(transform2.position)
+                # Calculate distance
+                distance = pos1.distance_to(pos2)
+                combined_radius = collision1.radius + collision2.radius
+                
+                # Check for collision
+                if distance < combined_radius:
+                    # Calculate collision normal
                     normal = (pos2 - pos1).normalize()
-                    overlap = (collision1.radius + collision2.radius) - (pos2 - pos1).length()
                     
-                    if overlap > 0:
-                        # Separate asteroids
-                        separation = normal * (overlap * 0.5)
-                        transform1.position -= separation
-                        transform2.position += separation
-                        
-                        # Get velocities
-                        vel1 = pygame.Vector2(transform1.velocity)
-                        vel2 = pygame.Vector2(transform2.velocity)
-                        
-                        # Calculate relative velocity
-                        rel_vel = vel2 - vel1
-                        
-                        # Calculate impulse (elastic collision)
-                        restitution = 0.8  # Bouncy collisions
-                        impulse = -(1 + restitution) * rel_vel.dot(normal) / 2
-                        
-                        # Apply impulse
-                        mass1 = ASTEROID_SIZES[asteroid1.size]['mass']
-                        mass2 = ASTEROID_SIZES[asteroid2.size]['mass']
-                        
-                        transform1.velocity = vel1 - (normal * impulse / mass1)
-                        transform2.velocity = vel2 + (normal * impulse / mass2)
-                        
-                        # Add some random spin
-                        spin1 = random.uniform(-45, 45)
-                        spin2 = random.uniform(-45, 45)
-                        transform1.rotation_speed = spin1
-                        transform2.rotation_speed = spin2
+                    # Handle collision based on entity types
+                    if isinstance(entity1, Ship) and isinstance(entity2, Asteroid):
+                        self._handle_ship_asteroid_collision(entity1, entity2)
+                    elif isinstance(entity1, Asteroid) and isinstance(entity2, Ship):
+                        self._handle_ship_asteroid_collision(entity2, entity1)
+                    elif isinstance(entity1, Bullet) and isinstance(entity2, Asteroid):
+                        self._handle_bullet_asteroid_collision(entity1, entity2)
+                    elif isinstance(entity1, Asteroid) and isinstance(entity2, Bullet):
+                        self._handle_bullet_asteroid_collision(entity2, entity1)
+                    elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
+                        # Only bounce asteroids if they both have physics components
+                        if physics1 and physics2:
+                            # Get velocities
+                            vel1 = pygame.Vector2(physics1.velocity)
+                            vel2 = pygame.Vector2(physics2.velocity)
+                            
+                            # Calculate relative velocity
+                            rel_vel = vel1 - vel2
+                            
+                            # Basic elastic collision response
+                            vel_along_normal = rel_vel.dot(normal)
+                            
+                            # Only resolve if objects are moving toward each other
+                            if vel_along_normal < 0:
+                                # Simple velocity reflection
+                                physics1.velocity = vel1 - 2 * vel_along_normal * normal
+                                physics2.velocity = vel2 + 2 * vel_along_normal * normal
+                                
+                                # Move apart to prevent sticking
+                                overlap = combined_radius - distance
+                                separation = normal * (overlap / 2)
+                                transform1.position -= separation
+                                transform2.position += separation
     
     def run(self):
         """Main game loop."""
