@@ -20,6 +20,12 @@ class SpawnManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.wave = 1
+        self.asteroids_per_wave = 4
+        self.spawn_timer = 0.0
+        self.spawn_delay = 0.5  # seconds between asteroid spawns
+        self.spawning_wave = False
+        self.asteroids_to_spawn = 0
 
     def spawn_ship(self, invulnerable: bool = False) -> None:
         """Spawn the player's ship.

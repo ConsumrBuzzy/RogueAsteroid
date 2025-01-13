@@ -158,7 +158,7 @@ class Ship(Entity):
     
     def handle_shoot(self) -> None:
         """Handle shoot input."""
-        if len(self.game.bullets) >= MAX_BULLETS:
+        if len(self.game.entity_manager.bullets) >= MAX_BULLETS:
             return
             
         transform = self.get_component(TransformComponent)
@@ -180,8 +180,7 @@ class Ship(Entity):
             direction
         )
         
-        # Add to tracking lists
-        self.game.bullets.append(bullet)
+        # Add bullet to game
         self.game.entity_manager.add_entity(bullet)
         
         # Reset shoot timer
