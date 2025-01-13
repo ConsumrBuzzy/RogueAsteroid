@@ -88,8 +88,8 @@ class Ship(Entity):
             print("Warning: No input component found!")  # Debug info
             return
             
-        # Clear existing bindings
-        self.input_component.clear_bindings()
+        # Clear existing bindings by creating a new empty dict
+        self.input_component.key_bindings = {}
         
         # Get current control scheme
         controls = self.game.settings.get('controls', 'arrows')
@@ -256,7 +256,7 @@ class Ship(Entity):
         if effects and input_comp:
             controls = self.game.settings.get('controls', 'arrows')
             thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in input_comp.active_keys)
+            effects.set_effect_active('thrust', thrust_key in input_comp.pressed_keys)
     
     def _init_thrust_effect(self, effects: EffectComponent) -> None:
         """Initialize the thrust visual effect."""
