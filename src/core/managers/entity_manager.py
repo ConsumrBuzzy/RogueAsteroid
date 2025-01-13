@@ -69,11 +69,24 @@ class EntityManager:
             if entity == self.ship:
                 self.ship = None
 
-    def clear_all(self) -> None:
-        """Clear all entities."""
+    def clear_all(self, keep_ship: bool = False) -> None:
+        """Clear all entities.
+        
+        Args:
+            keep_ship: If True, the ship entity will not be cleared
+        """
         entity_count = len(self.entities)
-        self.entities.clear()
-        self.bullets.clear()
-        self.asteroids.clear()
-        self.ship = None
+        
+        if keep_ship and self.ship:
+            # Remove all entities except the ship
+            self.entities = [self.ship] if self.ship in self.entities else []
+            self.bullets.clear()
+            self.asteroids.clear()
+        else:
+            # Clear everything
+            self.entities.clear()
+            self.bullets.clear()
+            self.asteroids.clear()
+            self.ship = None
+            
         self.logger.debug(f"Cleared {entity_count} entities") 
