@@ -94,9 +94,24 @@ class SpawnManager:
         print("No safe position found, spawning ship at center")
 
     def respawn_ship(self) -> None:
-        """Respawn the player ship with invulnerability."""
-        print(f"Respawning ship with {SHIP_INVULNERABLE_TIME} seconds invulnerability")
-        self.spawn_ship(invulnerable=True) 
+        """Respawn the ship after death."""
+        self.logger.info("Respawning ship")
+        if self.ship:
+            # Reset ship position to center
+            transform = self.ship.get_component(TransformComponent)
+            if transform:
+                transform.position = pygame.Vector2(self.game.width // 2, self.game.height // 2)
+                transform.rotation = 0
+            
+            # Reset physics
+            physics = self.ship.get_component(PhysicsComponent)
+            if physics:
+                physics.velocity = pygame.Vector2(0, 0)
+                physics.angular_velocity = 0
+            
+            # Make ship invulnerable
+            self.ship.invulnerable = True
+            self.ship.invulnerable_timer = SHIP_INVULNERABLE_TIME
 
     def update(self, dt: float) -> None:
         """Update spawning logic.

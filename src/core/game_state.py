@@ -37,21 +37,27 @@ class StateManager:
         }
         self.high_score_name = ""  # For new high score entry
     
-    def change_state(self, new_state):
+    def change_state(self, new_state: GameState) -> None:
         """Change the current game state."""
-        if new_state == self.current_state:
-            return
+        self.logger.info(f"Changing state from {self.current_state} to {new_state}")
+        
+        # Handle cleanup for old state
+        if new_state == GameState.GAME_OVER:
+            self.game.entity_manager.clear_all(keep_ship=False)
+            self.logger.info(f"Game Over - Final Score: {self.game.scoring.current_score}")
             
-        old_state = self.current_state
-        self.logger.info(f"Changing state from {old_state} to {new_state}")
+        elif new_state == GameState.MAIN_MENU:
+            if self.current_state in [GameState.GAME_OVER, GameState.NEW_HIGH_SCORE]:
+                # Clear all entities when returning to main menu from game over
+                self.game.entity_manager.clear_all(keep_ship=False)
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
-        if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
-            self.previous_state = old_state
+        if self.current_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
+            self.previous_state = self.current_state
         
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
-            if old_state == GameState.MAIN_MENU:
+            if self.current_state == GameState.MAIN_MENU:
                 # Game is already initialized by new_game() call
                 pass
         elif new_state == GameState.GAME_OVER:
@@ -64,9 +70,9 @@ class StateManager:
                 self.high_score_name = ""  # Reset name input
                 new_state = GameState.NEW_HIGH_SCORE
         elif new_state == GameState.MAIN_MENU:
-            if old_state in [GameState.GAME_OVER, GameState.NEW_HIGH_SCORE]:
+            if self.current_state in [GameState.GAME_OVER, GameState.NEW_HIGH_SCORE]:
                 # Clear all entities when returning to main menu from game over
-                self.game.entity_manager.clear_entities(keep_ship=False)
+                self.game.entity_manager.clear_all(keep_ship=False)
         
         # Set new state
         self.current_state = new_state

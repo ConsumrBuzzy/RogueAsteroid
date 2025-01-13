@@ -204,35 +204,29 @@ class Ship(Entity):
         )
     
     def update(self, dt: float) -> None:
-        """Update the ship's state."""
+        """Update ship state."""
         super().update(dt)
         
-        # Update shoot timer
+        # Update shoot cooldown
         if self.shoot_timer > 0:
             self.shoot_timer -= dt
-        
+            
         # Update invulnerability
-        if self.invulnerable_timer > 0:
-            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
-            # Flash effect while invulnerable
-            effects = self.get_component(EffectComponent)
-            if effects:
-                flash_rate = 8  # Times per second
-                flash_alpha = 128 + (127 * math.sin(self.invulnerable_timer * flash_rate))
-                effects.set_alpha(int(flash_alpha))
-        elif self._invulnerable:
-            # Reset to normal when invulnerability ends
-            self._invulnerable = False
-            effects = self.get_component(EffectComponent)
-            if effects:
-                effects.set_alpha(255)
-        
-        # Check if thrust key is pressed and update effect
-        effects = self.get_component(EffectComponent)
-        if effects and self.input_component:
-            controls = self.game.settings.get('controls', 'arrows')
-            thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
-            effects.set_effect_active('thrust', thrust_key in self.input_component.pressed_keys)
+        if self._invulnerable:
+            self.invulnerable_timer -= dt
+            if self.invulnerable_timer <= 0:
+                self._invulnerable = False
+                render = self.get_component(RenderComponent)
+                if render:
+                    render.alpha = 255  # Restore full opacity
+            else:
+                # Create blinking effect during invulnerability
+                render = self.get_component(RenderComponent)
+                if render:
+                    # Blink 4 times per second (8 changes per second)
+                    blink_rate = 8
+                    should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
+                    render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
     
     @property
     def invulnerable(self) -> bool:
