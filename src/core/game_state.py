@@ -324,7 +324,7 @@ class StateManager:
         
         # Draw scores
         font = pygame.font.Font(None, 36)
-        scores = self.game.high_scores.get_scores()  # Changed from scoring to high_scores
+        scores = self.game.scoring.get_scores()  # Changed from high_scores to scoring
         y = 200
         for i, (name, score) in enumerate(scores):
             text = f"{i+1}. {name}: {score}"
