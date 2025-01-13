@@ -68,13 +68,10 @@ class Ship(Entity):
         physics.friction = SHIP_FRICTION
         
         # Collision component for hit detection
-        collision = self.add_component(CollisionComponent, radius=15)
+        collision = self.add_component(CollisionComponent, radius=12)
         
         # Screen wrap component to wrap around screen edges
         screen_wrap = self.add_component(ScreenWrapComponent)
-        
-        # Effects component for invulnerability flash
-        effects = self.add_component(EffectComponent)
         
         # Input component for controls
         self.input_component = self.add_component(InputComponent)
