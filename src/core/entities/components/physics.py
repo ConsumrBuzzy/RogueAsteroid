@@ -5,41 +5,51 @@ from .transform import TransformComponent
 
 class PhysicsComponent(Component):
     """Component for physics simulation."""
-    def __init__(self, entity, velocity=None, friction=0.0):
-        """Initialize the physics component.
-        
-        Args:
-            entity: The entity this component belongs to
-            velocity: Initial velocity vector (pygame.Vector2)
-            friction: Friction coefficient (0.0 to 1.0)
-        """
-        self.entity = entity
-        self.velocity = velocity or pygame.Vector2(0, 0)
-        self.friction = friction
+    def __init__(self, entity):
+        """Initialize the physics component."""
+        super().__init__(entity)
+        self.mass = 1.0
+        self.max_speed = 500.0
+        self.velocity = pygame.Vector2(0, 0)
+        self.acceleration = pygame.Vector2(0, 0)
+        self.angular_velocity = 0.0
+        self.friction = 0.0
+        self.gravity = pygame.Vector2(0, 0)
         self.paused = False  # Add paused state
     
-    def update(self, dt):
-        """Update the physics component.
-        
-        Args:
-            dt: Time delta in seconds
-        """
+    def apply_force(self, force: pygame.Vector2) -> None:
+        """Apply a force to the entity."""
+        self.acceleration += force / self.mass
+    
+    def apply_impulse(self, impulse: pygame.Vector2) -> None:
+        """Apply an instantaneous force."""
+        self.velocity += impulse / self.mass
+    
+    def update(self, dt: float) -> None:
+        """Update physics state."""
         if self.paused:  # Skip update if paused
             return
             
-        # Get transform component
         transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
         
+        # Update velocity
+        self.velocity += (self.acceleration + self.gravity) * dt
+        
         # Apply friction
-        if self.friction > 0 and self.velocity.length() > 0:
-            friction_force = self.velocity.normalize() * -self.friction
+        if self.friction > 0:
+            friction_force = -self.velocity * self.friction
             self.velocity += friction_force * dt
             
-            # Stop if velocity is very small
-            if self.velocity.length() < 0.1:
-                self.velocity = pygame.Vector2(0, 0)
+        # Enforce speed limit
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
         
-        # Update position
-        transform.position += self.velocity * dt 
+        # Update transform
+        transform.position += self.velocity * dt
+        transform.rotation += self.angular_velocity * dt
+        
+        # Reset acceleration
+        self.acceleration.x = 0
+        self.acceleration.y = 0 
