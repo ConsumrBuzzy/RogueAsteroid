@@ -248,25 +248,16 @@ class Game:
             if transform and physics and render:
                 transform.position = pygame.Vector2(pos)
                 
-                # Random direction
-                angle = random.uniform(0, 360)
-                angle_rad = math.radians(angle)
-                
-                # Random speed
-                speed_var = random.uniform(0.8, 1.2) * speed
+                # Calculate random velocity direction
+                angle = random.uniform(0, 2 * math.pi)
                 velocity = pygame.Vector2(
-                    math.cos(angle_rad) * speed_var,
-                    math.sin(angle_rad) * speed_var
+                    math.cos(angle) * speed,
+                    math.sin(angle) * speed
                 )
                 physics.velocity = velocity
                 
-                # Set render properties
-                render.color = color
-                render.vertices = [(0, 0)]  # Single point for particle
-                render.point_size = size
-            
-            # Add to game
-            self.entities.append(particle)
+                # Add particle to game
+                self.entities.append(particle)
     
     def update(self, dt: float) -> None:
         """Update game state."""
