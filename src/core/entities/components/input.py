@@ -76,24 +76,14 @@ class InputComponent(Component):
             )
             physics.apply_force(thrust_dir * SHIP_ACCELERATION)
             
-            # Create thrust particles at back corners of ship
+            # Create thrust particles at center bottom of ship
             offset = -thrust_dir * 20  # 20 pixels behind ship
-            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 10
-            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 10
             
-            # Create particles at both back corners
+            # Create particles at center bottom
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + offset + left_offset,
+                position=transform.position + offset,
                 color=(255, 255, 255),  # White color
-                count=2,  # Small number of particles per frame
-                lifetime=(0.1, 0.3),  # Short-lived particles
-                speed_range=(50, 100),  # Moderate speed
-                size_range=(1, 2)  # Small particles
-            )
-            self.entity.game.particle_system.emit_circular(
-                position=transform.position + offset + right_offset,
-                color=(255, 255, 255),  # White color
-                count=2,  # Small number of particles per frame
+                count=3,  # Slightly more particles for center thrust
                 lifetime=(0.1, 0.3),  # Short-lived particles
                 speed_range=(50, 100),  # Moderate speed
                 size_range=(1, 2)  # Small particles
@@ -135,19 +125,19 @@ class InputComponent(Component):
             transform.rotation -= rotation_change
             print(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on right side
+            # Create thrust particles on left bottom corner (opposite to turn direction)
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at right side, slightly lower
-            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15  # Perpendicular to ship direction
-            down_offset = pygame.Vector2(ship_dir.x, ship_dir.y) * 5  # Slightly downward
+            # Position at left bottom corner
+            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 10  # Left side
+            back_offset = -ship_dir * 20  # Bottom of ship
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + right_offset + down_offset,
+                position=transform.position + back_offset + left_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
@@ -165,19 +155,19 @@ class InputComponent(Component):
             transform.rotation += rotation_change
             print(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on left side
+            # Create thrust particles on right bottom corner (opposite to turn direction)
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at left side, slightly lower
-            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15  # Perpendicular to ship direction
-            down_offset = pygame.Vector2(ship_dir.x, ship_dir.y) * 5  # Slightly downward
+            # Position at right bottom corner
+            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 10  # Right side
+            back_offset = -ship_dir * 20  # Bottom of ship
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + left_offset + down_offset,
+                position=transform.position + back_offset + right_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
