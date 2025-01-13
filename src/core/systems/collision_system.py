@@ -17,17 +17,21 @@ class CollisionSystem:
     def __init__(self, game):
         self.game = game
     
-    def update(self) -> None:
-        """Update collision checks for all entities."""
-        # Check collisions between all pairs of entities
-        entities = self.game.entities
-        for i in range(len(entities)):
-            for j in range(i + 1, len(entities)):
-                entity1 = entities[i]
-                entity2 = entities[j]
-                if self._check_and_handle_collision(entity1, entity2):
-                    # If collision was handled, continue to next entity
-                    break
+    def update(self):
+        """Update collision detection."""
+        entities = self.game.entity_manager.entities
+        
+        # Check each pair of entities
+        for i, entity1 in enumerate(entities):
+            for entity2 in entities[i + 1:]:
+                if self._check_collision(entity1, entity2):
+                    self._handle_collision(entity1, entity2)
+                    
+    def _handle_bullet_asteroid_collision(self, bullet, asteroid):
+        """Handle collision between bullet and asteroid."""
+        # Remove bullet
+        if bullet in self.game.entity_manager.entities:
+            self.game.entity_manager.remove_entity(bullet)
     
     def _check_and_handle_collision(self, entity1, entity2) -> bool:
         """Check and handle collision between two entities.
@@ -78,25 +82,6 @@ class CollisionSystem:
             self.game.lose_life()
             return True
         return False
-    
-    def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid) -> bool:
-        """Handle collision between bullet and asteroid."""
-        # Get positions for explosion effect
-        transform = asteroid.get_component(TransformComponent)
-        if transform:
-            # Create explosion based on asteroid size
-            self.game.create_explosion(transform.position, asteroid.size)
-        
-        # Split or destroy asteroid
-        asteroid.split()
-        
-        # Remove bullet
-        if bullet in self.game.bullets:
-            self.game.bullets.remove(bullet)
-        if bullet in self.game.entities:
-            self.game.entities.remove(bullet)
-            
-        return True
     
     def _handle_asteroid_asteroid_collision(self, asteroid1: Asteroid, asteroid2: Asteroid) -> bool:
         """Handle collision between two asteroids."""

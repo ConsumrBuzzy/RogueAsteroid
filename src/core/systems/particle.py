@@ -51,36 +51,36 @@ class ParticleSystem:
             spread=360.0
         )
     
-    def emit_circular(self, center: pygame.Vector2, speed: float, color: tuple,
-                     size: float, lifetime: float, count: int,
-                     spread: float = 360.0) -> None:
+    def emit_circular(self, position, color, count, lifetime, speed_range, size_range=(1, 3)):
         """Emit particles in a circular pattern."""
         for _ in range(count):
             # Create particle
-            particle = Particle(self.game, lifetime, color, size)
+            particle = Particle(
+                self.game,
+                lifetime=random.uniform(*lifetime),
+                color=color,
+                size=random.uniform(*size_range)
+            )
             
             # Set position
             transform = particle.get_component(TransformComponent)
             if transform:
-                transform.position = pygame.Vector2(center)
+                transform.position = pygame.Vector2(position)
                 
-                # Calculate random angle within spread
-                base_angle = random.uniform(0, spread)
-                angle_rad = math.radians(base_angle)
+                # Random direction and speed
+                angle = random.uniform(0, 2 * math.pi)
+                speed = random.uniform(*speed_range)
                 
-                # Add some speed variation
-                actual_speed = speed * random.uniform(0.8, 1.2)
-                
-                # Set velocity based on angle
+                # Set velocity in physics component
                 physics = particle.get_component(PhysicsComponent)
                 if physics:
                     physics.velocity = pygame.Vector2(
-                        math.cos(angle_rad) * actual_speed,
-                        math.sin(angle_rad) * actual_speed
+                        math.cos(angle) * speed,
+                        math.sin(angle) * speed
                     )
             
             # Add to game
-            self.game.entities.append(particle)
+            self.game.entity_manager.add_entity(particle)
     
     def emit_cone(self, pos: pygame.Vector2, direction: float, speed: float,
                   color: tuple, size: float, lifetime: float, count: int,

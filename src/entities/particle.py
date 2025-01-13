@@ -65,3 +65,8 @@ class Particle(Entity):
             if particle.time_alive >= self.initial_lifetime:
                 if self in self.game.entities:
                     self.game.entities.remove(self) 
+        
+    def destroy(self):
+        """Remove the particle from the game."""
+        if self in self.game.entity_manager.entities:
+            self.game.entity_manager.remove_entity(self) 

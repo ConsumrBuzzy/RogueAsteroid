@@ -233,7 +233,7 @@ class StateManager:
         
         try:
             # Draw all game entities
-            for entity in self.game.entities:
+            for entity in self.game.entity_manager.entities:
                 try:
                     # Draw render component
                     render = entity.get_component(RenderComponent)

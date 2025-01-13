@@ -114,3 +114,38 @@ class Bullet(Entity):
                         if self in self.game.entities:
                             self.game.entities.remove(self)
                         return 
+    
+    def destroy(self):
+        """Remove the bullet from the game."""
+        if self in self.game.entity_manager.entities:
+            self.game.entity_manager.remove_entity(self)
+            
+        if self in self.game.bullets:
+            self.game.bullets.remove(self)
+            
+    def check_collisions(self):
+        """Check for collisions with asteroids."""
+        for entity in self.game.entity_manager.entities[:]:  # Copy list to allow removal
+            if isinstance(entity, Asteroid):
+                if self._check_collision(entity):
+                    self._handle_collision(entity)
+                    break
+                    
+    def _handle_collision(self, asteroid):
+        """Handle collision with an asteroid."""
+        # Create explosion effect
+        transform = asteroid.get_component(TransformComponent)
+        if transform:
+            self.game.create_explosion(transform.position, asteroid.size)
+            
+        # Split asteroid into pieces
+        pieces = asteroid.split()
+        for piece in pieces:
+            self.game.entity_manager.add_entity(piece)
+            
+        # Remove asteroid and bullet
+        if entity in self.game.entity_manager.entities:
+            self.game.entity_manager.remove_entity(entity)
+            
+        if self in self.game.entity_manager.entities:
+            self.game.entity_manager.remove_entity(self) 

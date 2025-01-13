@@ -182,7 +182,7 @@ class Ship(Entity):
         
         # Add to tracking lists
         self.game.bullets.append(bullet)
-        self.game.entities.append(bullet)
+        self.game.entity_manager.add_entity(bullet)
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
