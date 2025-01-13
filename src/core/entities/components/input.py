@@ -1,12 +1,24 @@
-"""Input component module."""
+"""Input component for handling entity input."""
+import math
 import pygame
 from typing import Dict, List, Set, Callable, Any, Tuple
 from .base import Component
+from .transform import TransformComponent
+from .physics import PhysicsComponent
+from src.core.constants import SHIP_ACCELERATION, SHIP_ROTATION_SPEED
 
 class InputComponent(Component):
-    """Component for handling input."""
-    def __init__(self, entity):
+    """Component for handling input for an entity."""
+    
+    def __init__(self, entity, control_scheme: str = 'arrows'):
+        """Initialize the input component.
+        
+        Args:
+            entity: The entity this component belongs to
+            control_scheme: The control scheme to use ('arrows' or 'wasd')
+        """
         super().__init__(entity)
+        self.control_scheme = control_scheme
         self.key_bindings: Dict[int, List[Tuple[Callable[[], None], int, bool]]] = {}
         self.key_combinations: Dict[Tuple[int, ...], Callable[[], None]] = {}
         self.pressed_keys: Set[int] = set()
@@ -24,18 +36,115 @@ class InputComponent(Component):
         self.key_combinations[keys] = action
     
     def handle_keydown(self, key: int) -> None:
-        """Handle key press."""
-        self.pressed_keys.add(key)
-        
-        # Check key combinations
-        for combo, action in self.key_combinations.items():
-            if all(k in self.pressed_keys for k in combo):
-                action()
-        
-        # Execute single key actions
-        if key in self.key_bindings:
-            for action, _, _ in self.key_bindings[key]:
-                action()
+        """Handle key press events."""
+        if self.control_scheme == 'arrows':
+            if key == pygame.K_UP:
+                self._handle_forward_thrust()
+            elif key == pygame.K_DOWN:
+                self._handle_reverse_thrust()
+            elif key == pygame.K_LEFT:
+                self._handle_rotate_left()
+            elif key == pygame.K_RIGHT:
+                self._handle_rotate_right()
+            elif key == pygame.K_SPACE:
+                self.entity.fire_bullet()
+        else:  # WASD controls
+            if key == pygame.K_w:
+                self._handle_forward_thrust()
+            elif key == pygame.K_s:
+                self._handle_reverse_thrust()
+            elif key == pygame.K_a:
+                self._handle_rotate_left()
+            elif key == pygame.K_d:
+                self._handle_rotate_right()
+            elif key == pygame.K_SPACE:
+                self.entity.fire_bullet()
+                
+    def _handle_forward_thrust(self):
+        """Apply forward thrust and create particle effects."""
+        physics = self.entity.get_component(PhysicsComponent)
+        transform = self.entity.get_component(TransformComponent)
+        if physics and transform:
+            # Calculate thrust direction based on ship rotation
+            angle_rad = math.radians(transform.rotation)
+            thrust_dir = pygame.Vector2(
+                math.cos(angle_rad),
+                math.sin(angle_rad)
+            )
+            physics.apply_force(thrust_dir * SHIP_ACCELERATION)
+            
+            # Create thrust particles at back of ship
+            offset = -thrust_dir * 20  # 20 pixels behind ship
+            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 5
+            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 5
+            
+            # Create particles at both back corners
+            self.entity.game.particle_system.emit_thrust_particles(
+                transform.position + offset + left_offset,
+                -thrust_dir
+            )
+            self.entity.game.particle_system.emit_thrust_particles(
+                transform.position + offset + right_offset,
+                -thrust_dir
+            )
+            
+    def _handle_reverse_thrust(self):
+        """Apply reverse thrust and create particle effects."""
+        physics = self.entity.get_component(PhysicsComponent)
+        transform = self.entity.get_component(TransformComponent)
+        if physics and transform:
+            # Calculate thrust direction based on ship rotation
+            angle_rad = math.radians(transform.rotation)
+            thrust_dir = pygame.Vector2(
+                math.cos(angle_rad),
+                math.sin(angle_rad)
+            )
+            physics.apply_force(-thrust_dir * SHIP_ACCELERATION * 0.7)  # Reverse thrust is 70% as powerful
+            
+            # Create thrust particles at front of ship
+            offset = thrust_dir * 15  # 15 pixels in front of ship
+            self.entity.game.particle_system.emit_thrust_particles(
+                transform.position + offset,
+                thrust_dir
+            )
+            
+    def _handle_rotate_left(self):
+        """Rotate ship left and create side thrust particles."""
+        transform = self.entity.get_component(TransformComponent)
+        if transform:
+            # Calculate rotation change
+            dt = self.entity.game.game_loop_manager.dt
+            rotation_change = SHIP_ROTATION_SPEED * dt
+            transform.rotation -= rotation_change
+            print(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
+            
+            # Create thrust particles on right side
+            angle_rad = math.radians(transform.rotation)
+            ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
+            right_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15
+            self.entity.game.particle_system.emit_thrust_particles(
+                transform.position + right_offset,
+                right_offset.normalize()
+            )
+            
+    def _handle_rotate_right(self):
+        """Rotate ship right and create side thrust particles."""
+        transform = self.entity.get_component(TransformComponent)
+        if transform:
+            # Calculate rotation change
+            dt = self.entity.game.game_loop_manager.dt
+            rotation_change = SHIP_ROTATION_SPEED * dt
+            transform.rotation += rotation_change
+            print(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
+            
+            # Create thrust particles on left side
+            angle_rad = math.radians(transform.rotation)
+            ship_dir = pygame.Vector2(math.cos(angle_rad), math.sin(angle_rad))
+            left_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15
+            self.entity.game.particle_system.emit_thrust_particles(
+                transform.position + left_offset,
+                left_offset.normalize()
+            )
     
     def handle_keyup(self, key: int) -> None:
         """Handle key release."""

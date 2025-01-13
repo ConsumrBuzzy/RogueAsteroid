@@ -314,3 +314,22 @@ class Ship(Entity):
             effects = self.get_component(EffectComponent)
             if effects:
                 effects.set_alpha(255) 
+    
+    def fire_bullet(self):
+        """Fire a bullet in the direction the ship is facing."""
+        if len(self.game.entity_manager.bullets) >= MAX_BULLETS:
+            return
+            
+        transform = self.get_component(TransformComponent)
+        if transform:
+            # Calculate bullet direction based on ship's rotation
+            angle_rad = math.radians(transform.rotation)
+            direction = pygame.Vector2(
+                math.cos(angle_rad),
+                math.sin(angle_rad)
+            )
+            
+            # Create bullet at ship's position with calculated direction
+            bullet = Bullet(self.game, pygame.Vector2(transform.position), direction)
+            self.game.entity_manager.add_entity(bullet)
+            print("Bullet fired") 
