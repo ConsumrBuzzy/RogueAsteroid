@@ -49,9 +49,6 @@ class GameLoopManager:
         
         # Update scoring
         self.game.scoring.update(self.dt)
-        
-        # Update state manager
-        self.game.state_manager.update()
 
     def _draw(self) -> None:
         """Draw the current frame."""
