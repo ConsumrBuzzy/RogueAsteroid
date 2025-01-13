@@ -143,7 +143,7 @@ class Ship(Entity):
         transform = self.get_component(TransformComponent)
         if transform:
             # Apply rotation speed based on delta time
-            rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop_manager.dt
+            rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop.dt
             transform.rotation = (transform.rotation - rotation_change) % 360
             print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
@@ -152,7 +152,7 @@ class Ship(Entity):
         transform = self.get_component(TransformComponent)
         if transform:
             # Apply rotation speed based on delta time
-            rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop_manager.dt
+            rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop.dt
             transform.rotation = (transform.rotation + rotation_change) % 360
             print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
     
