@@ -15,7 +15,8 @@ from src.core.managers import (
 from src.entities.particle import Particle
 from src.core.entities.components import (
     TransformComponent,
-    RenderComponent
+    RenderComponent,
+    PhysicsComponent
 )
 from src.core.constants import (
     WINDOW_WIDTH, 
@@ -191,9 +192,9 @@ class Game:
             ])
             
             # Create particle
-            lifetime = random.uniform(lifetime[0], lifetime[1])
-            size = random.uniform(*particle_size)
-            particle = Particle(self, lifetime, color, size)
+            lifetime_value = random.uniform(lifetime[0], lifetime[1])
+            size_value = random.uniform(particle_size[0], particle_size[1])
+            particle = Particle(self, lifetime_value, color, size_value)
             
             # Set position and random velocity
             transform = particle.get_component(TransformComponent)

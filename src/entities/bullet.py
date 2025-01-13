@@ -1,4 +1,4 @@
-"""Bullet entity fired by the player ship."""
+"""Projectile fired by the player ship."""
 import random
 import math
 import pygame
