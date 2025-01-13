@@ -7,10 +7,12 @@ from src.core.systems import ParticleSystem, Spawner, CollisionSystem
 from src.entities.ship import Ship
 from src.entities.bullet import Bullet
 from src.entities.asteroid import Asteroid
+from src.entities.particle import Particle
 from src.core.entities.components import (
     TransformComponent,
     CollisionComponent,
-    PhysicsComponent
+    PhysicsComponent,
+    RenderComponent
 )
 from src.core.constants import (
     WINDOW_WIDTH, 
@@ -236,12 +238,14 @@ class Game:
             # Create particle
             lifetime = random.uniform(*lifetime)
             size = random.uniform(*particle_size)
-            particle = Particle(self.game, lifetime, color, size)
+            particle = Particle(self, lifetime, color, size)
             
             # Set position and random velocity
             transform = particle.get_component(TransformComponent)
             physics = particle.get_component(PhysicsComponent)
-            if transform and physics:
+            render = particle.get_component(RenderComponent)
+            
+            if transform and physics and render:
                 transform.position = pygame.Vector2(pos)
                 
                 # Random direction
@@ -255,6 +259,11 @@ class Game:
                     math.sin(angle_rad) * speed_var
                 )
                 physics.velocity = velocity
+                
+                # Set render properties
+                render.color = color
+                render.vertices = [(0, 0)]  # Single point for particle
+                render.point_size = size
             
             # Add to game
             self.entities.append(particle)
