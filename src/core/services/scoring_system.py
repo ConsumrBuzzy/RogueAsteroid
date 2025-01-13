@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 from typing import List, Tuple
+from src.core.logging import get_logger
 
 class ScoringSystem:
     def __init__(self, save_file: str = None):
@@ -11,20 +12,23 @@ class ScoringSystem:
         Args:
             save_file: Optional path to high scores save file
         """
+        self.logger = get_logger()
         self.current_score = 0
         self.high_scores: List[Tuple[str, int]] = []  # List of (name, score) tuples
         self.save_file = save_file or str(Path(__file__).parent / '../../data/highscores.json')
-        print(f"Scoring system initialized with save file: {self.save_file}")
+        self.logger.info(f"Scoring system initialized with save file: {self.save_file}")
         self._load_high_scores()
         
     def add_points(self, points: int) -> None:
         """Add points to the current score."""
         self.current_score += points
-        print(f"Score: {self.current_score}")
+        self.logger.debug(f"Score updated: {self.current_score} (+{points})")
         
     def reset(self) -> None:
         """Reset the current score to 0."""
+        old_score = self.current_score
         self.current_score = 0
+        self.logger.debug(f"Score reset from {old_score} to 0")
         
     def is_high_score(self, score: int = None) -> bool:
         """Check if score qualifies as a high score.
@@ -36,14 +40,14 @@ class ScoringSystem:
         
         # If we have fewer than 10 scores, any score is a high score
         if len(self.high_scores) < 10:
-            print(f"New high score {score} (fewer than 10 scores)")
+            self.logger.info(f"New high score {score} (fewer than 10 scores)")
             return True
             
         # Otherwise, check if score beats the lowest high score
         lowest_high_score = min(score for _, score in self.high_scores) if self.high_scores else 0
         is_high = score > lowest_high_score
         if is_high:
-            print(f"New high score {score} (beats {lowest_high_score})")
+            self.logger.info(f"New high score {score} (beats {lowest_high_score})")
         return is_high
         
     def add_high_score(self, name: str, score: int = None) -> None:
@@ -59,6 +63,7 @@ class ScoringSystem:
         self.high_scores.sort(key=lambda x: x[1], reverse=True)
         if len(self.high_scores) > 10:
             self.high_scores = self.high_scores[:10]  # Keep only top 10
+        self.logger.info(f"Added high score: {name} - {score}")
         self.save_high_scores()
         
     def get_scores(self) -> List[Tuple[str, int]]:
@@ -82,11 +87,12 @@ class ScoringSystem:
                         self.high_scores = data
                     # Ensure scores are sorted
                     self.high_scores.sort(key=lambda x: x[1], reverse=True)
+                    self.logger.info(f"Loaded {len(self.high_scores)} high scores")
             else:
-                print("No high scores file found, starting fresh")
+                self.logger.info("No high scores file found, starting fresh")
                 self.high_scores = []
         except Exception as e:
-            print(f"Error loading high scores: {e}")
+            self.logger.error(f"Error loading high scores: {e}")
             self.high_scores = []
             
     def save_high_scores(self) -> None:
@@ -97,6 +103,6 @@ class ScoringSystem:
             
             with open(self.save_file, 'w') as f:
                 json.dump(self.high_scores, f)
-            print(f"High scores saved: {self.high_scores}")
+            self.logger.debug(f"High scores saved: {self.high_scores}")
         except Exception as e:
-            print(f"Error saving high scores: {e}") 
+            self.logger.error(f"Error saving high scores: {e}") 

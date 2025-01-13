@@ -3,6 +3,7 @@ import os
 import json
 from typing import List, Dict, Optional
 from datetime import datetime
+from src.core.logging import get_logger
 
 class HighScoreEntry:
     """Individual high score entry."""
@@ -33,15 +34,18 @@ class HighScoreManager:
     """Manages high score tracking and persistence."""
     
     def __init__(self, max_scores: int = 10):
+        self.logger = get_logger()
         self.max_scores = max_scores
         self.scores: List[HighScoreEntry] = []
         self.scores_file = os.path.join('data', 'highscores.json')
         
         # Create data directory if it doesn't exist
         os.makedirs('data', exist_ok=True)
+        self.logger.debug("Ensured data directory exists")
         
         # Load existing scores
         self.load_scores()
+        self.logger.info(f"High score manager initialized with {len(self.scores)} scores")
     
     def add_score(self, score: int, name: str) -> bool:
         """Add a new score and return True if it's a high score."""
@@ -63,6 +67,9 @@ class HighScoreManager:
             
             # Save updated scores
             self.save_scores()
+            self.logger.info(f"Added high score: {name} - {score} ({entry.date})")
+        else:
+            self.logger.debug(f"Score not high enough: {name} - {score}")
         
         return is_high_score
     
@@ -72,10 +79,14 @@ class HighScoreManager:
     
     def is_high_score(self, score: int) -> bool:
         """Check if a score would qualify as a high score."""
-        return (
-            len(self.scores) < self.max_scores or
-            score > min(s.score for s in self.scores)
-        )
+        if len(self.scores) < self.max_scores:
+            self.logger.debug(f"Score {score} qualifies (fewer than {self.max_scores} scores)")
+            return True
+        min_score = min(s.score for s in self.scores)
+        is_high = score > min_score
+        if is_high:
+            self.logger.debug(f"Score {score} qualifies (beats lowest score {min_score})")
+        return is_high
     
     def load_scores(self) -> None:
         """Load scores from file."""
@@ -89,8 +100,12 @@ class HighScoreManager:
                     ]
                     # Sort scores in case file was modified
                     self.scores.sort(key=lambda x: x.score, reverse=True)
-        except (json.JSONDecodeError, KeyError):
-            print("Warning: Could not load high scores file")
+                    self.logger.info(f"Loaded {len(self.scores)} high scores from {self.scores_file}")
+            else:
+                self.logger.info(f"No high scores file found at {self.scores_file}")
+                self.scores = []
+        except (json.JSONDecodeError, KeyError) as e:
+            self.logger.error(f"Could not load high scores file: {e}")
             self.scores = []
     
     def save_scores(self) -> None:
@@ -102,10 +117,13 @@ class HighScoreManager:
                     f,
                     indent=2
                 )
-        except IOError:
-            print("Warning: Could not save high scores file")
+            self.logger.debug(f"Saved {len(self.scores)} high scores to {self.scores_file}")
+        except IOError as e:
+            self.logger.error(f"Could not save high scores file: {e}")
     
     def clear_scores(self) -> None:
         """Clear all high scores."""
+        count = len(self.scores)
         self.scores.clear()
-        self.save_scores() 
+        self.save_scores()
+        self.logger.info(f"Cleared {count} high scores") 
