@@ -132,11 +132,6 @@ class Ship(Entity):
         
         # Create thrust particles
         self.create_thrust_particles()
-        
-        # Update thrust effect
-        effects = self.get_component(EffectComponent)
-        if effects:
-            effects.set_effect_active('thrust', True)
     
     def handle_rotate_left(self) -> None:
         """Handle rotate left input."""
@@ -201,18 +196,19 @@ class Ship(Entity):
             -math.cos(angle_rad)
         )
         
-        # Create 2-3 particles per thrust
-        num_particles = random.randint(2, 3)
+        # Create particles per thrust
+        num_particles = random.randint(*THRUST_PARTICLE_COUNT)
         for _ in range(num_particles):
             # Create particle with proper initial position and color
+            lifetime = random.uniform(*THRUST_PARTICLE_LIFETIME)
             particle = Particle(
                 self.game,
-                lifetime=random.uniform(0.2, 0.4),
-                color=random.choice(THRUST_COLORS)  # Use predefined thrust colors
+                lifetime=lifetime,
+                color=random.choice(THRUST_COLORS)
             )
             
             # Calculate particle spawn position behind ship
-            pos = transform.position - thrust_dir * 20  # Offset behind ship
+            pos = transform.position - thrust_dir * THRUST_OFFSET
             
             # Set particle position and velocity
             particle_transform = particle.get_component(TransformComponent)
@@ -220,12 +216,12 @@ class Ship(Entity):
             if particle_transform and particle_render:
                 particle_transform.position = pos
                 particle_render.vertices = [(0, 0)]  # Single point for particle
-                particle_render.point_size = random.uniform(1.0, 2.0)  # Random size
+                particle_render.point_size = random.uniform(*THRUST_PARTICLE_SIZE)
                 
                 # Randomize particle velocity around thrust direction
-                spread = 30  # Degrees
+                spread = THRUST_PARTICLE_SPREAD / 2  # Half the spread angle
                 particle_angle = transform.rotation + random.uniform(-spread, spread)
-                particle_speed = random.uniform(50, 150)
+                particle_speed = random.uniform(*THRUST_PARTICLE_SPEED)
                 
                 particle_angle_rad = math.radians(particle_angle)
                 particle_vel = pygame.Vector2(
