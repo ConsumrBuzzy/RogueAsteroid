@@ -232,8 +232,8 @@ class Game:
     
     def _complete_level(self):
         """Handle level completion."""
-        self.game.level += 1
-        print(f"Level {self.game.level} completed!")
+        self.level += 1
+        print(f"Level {self.level} completed!")
         
         # Award extra life every level, up to maximum of 99
         if self.lives < 99:
