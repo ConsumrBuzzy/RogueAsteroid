@@ -56,9 +56,6 @@ class GameLoopManager:
         
         # Update collision detection
         self.game.collision_manager.handle_collisions()
-        
-        # Update scoring
-        self.game.scoring.update(self.dt)
 
     def _draw(self) -> None:
         """Draw the current frame."""

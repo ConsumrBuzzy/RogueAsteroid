@@ -111,7 +111,7 @@ class Game:
         self.entity_manager.clear_all()
         self.level = 1
         self.lives = STARTING_LIVES
-        self.scoring.reset()
+        self.scoring.reset_score()
     
     def pause(self):
         """Pause the game."""
