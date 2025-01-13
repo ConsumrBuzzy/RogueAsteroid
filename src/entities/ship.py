@@ -20,7 +20,13 @@ from src.core.constants import (
     SHIP_FRICTION,
     WHITE,
     MAX_BULLETS,
-    THRUST_COLORS
+    THRUST_COLORS,
+    THRUST_PARTICLE_COUNT,
+    THRUST_PARTICLE_LIFETIME,
+    THRUST_PARTICLE_SPEED,
+    THRUST_PARTICLE_SPREAD,
+    THRUST_PARTICLE_SIZE,
+    THRUST_OFFSET
 )
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
@@ -75,9 +81,8 @@ class Ship(Entity):
         screen_wrap = self.add_component(ScreenWrapComponent)
         print(f"Screen wrap component added: {screen_wrap}")  # Debug info
         
-        # Effects component for visual effects
+        # Effects component for invulnerability flash
         effects = self.add_component(EffectComponent)
-        self._init_thrust_effect(effects)
         print(f"Effects component added: {effects}")  # Debug info
         
         # Input component for controls
@@ -270,23 +275,6 @@ class Ship(Entity):
             controls = self.game.settings.get('controls', 'arrows')
             thrust_key = pygame.K_UP if controls == 'arrows' else pygame.K_w
             effects.set_effect_active('thrust', thrust_key in self.input_component.pressed_keys)
-    
-    def _init_thrust_effect(self, effects: EffectComponent) -> None:
-        """Initialize the thrust visual effect."""
-        # Store effect parameters as instance variables
-        self.thrust_vertices = [(0, 10), (-5, 20), (5, 20)]  # Small triangle behind ship
-        self.thrust_color = random.choice(THRUST_COLORS)  # Use grayscale colors
-        self.thrust_offset = pygame.Vector2(0, 15)  # Offset behind ship
-        
-        # Add thrust effect with proper callbacks
-        effects.add_effect(
-            name='thrust',
-            duration=float('inf'),  # Permanent effect until removed
-            on_start=None,  # No start callback needed
-            on_update=None,  # Update handled in ship's update method
-            on_end=None  # No end callback needed
-        )
-        print("Thrust effect initialized")  # Debug info
     
     @property
     def invulnerable(self) -> bool:
