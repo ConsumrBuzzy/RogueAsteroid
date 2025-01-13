@@ -7,6 +7,7 @@ from src.core.entities.components.base import Component
 from src.core.entities.components.transform import TransformComponent
 from src.core.entities.components.physics import PhysicsComponent
 from src.core.constants import SHIP_ACCELERATION, SHIP_ROTATION_SPEED
+from src.core.logging import get_logger
 
 class InputComponent(Component):
     """Component for handling input for an entity."""
@@ -19,12 +20,14 @@ class InputComponent(Component):
             control_scheme: The control scheme to use ('arrows' or 'wasd')
         """
         super().__init__(entity)
+        self.logger = get_logger()
         self.control_scheme = control_scheme
         self.key_bindings: Dict[int, Tuple[Callable[[], None], bool]] = {}
         self.pressed_keys: Set[int] = set()
         self.active_keys: Set[int] = set()  # Track keys for continuous actions
         self.event_handlers: List[Callable[[pygame.event.Event], None]] = []
         self._setup_bindings()
+        self.logger.debug(f"Input component initialized with {control_scheme} controls")
     
     def _setup_bindings(self) -> None:
         """Set up the key bindings based on control scheme."""
@@ -36,6 +39,7 @@ class InputComponent(Component):
         physics = self.entity.get_component(PhysicsComponent)
         
         if not transform or not physics:
+            self.logger.warning("Missing required components for input setup")
             return
             
         # Define rotation functions
@@ -67,6 +71,8 @@ class InputComponent(Component):
             self.bind_key(pygame.K_d, rotate_right, True)
             self.bind_key(pygame.K_w, apply_thrust, True)
             self.bind_key(pygame.K_SPACE, shoot, False)
+        
+        self.logger.debug(f"Key bindings set up for {self.control_scheme} scheme")
             
     def update_control_scheme(self, new_scheme: str) -> None:
         """Update the control scheme and rebind keys.
@@ -74,6 +80,7 @@ class InputComponent(Component):
         Args:
             new_scheme: The new control scheme to use ('arrows' or 'wasd')
         """
+        self.logger.info(f"Updating control scheme from {self.control_scheme} to {new_scheme}")
         self.control_scheme = new_scheme
         self._setup_bindings()
         
@@ -98,36 +105,22 @@ class InputComponent(Component):
     
     def handle_keyup(self, key: int) -> None:
         """Handle key release event."""
-        if key in self.key_bindings:
-            action, continuous = self.key_bindings[key]
-            if continuous:  # Only track continuous actions
-                self.active_keys.discard(key)
-                
+        if key in self.active_keys:
+            self.active_keys.remove(key)
+            
     def handle_event(self, event: pygame.event.Event) -> None:
-        """Handle input event."""
+        """Handle a pygame event."""
         if event.type == pygame.KEYDOWN:
             self.handle_keydown(event.key)
         elif event.type == pygame.KEYUP:
             self.handle_keyup(event.key)
-        
-        # Execute custom event handlers
-        for handler in self.event_handlers:
-            handler(event)
-    
-    def add_event_handler(self, handler: Callable[[pygame.event.Event], None]) -> None:
-        """Add custom event handler."""
-        self.event_handlers.append(handler)
-    
-    def is_key_pressed(self, key: int) -> bool:
-        """Check if a key is currently pressed."""
-        return key in self.pressed_keys
-    
+            
     def update(self, dt: float) -> None:
         """Update continuous actions."""
         for key in self.active_keys:
             if key in self.key_bindings:
                 action, continuous = self.key_bindings[key]
-                if continuous:  # Only execute continuous actions during update
+                if continuous:
                     action()
     
     def _handle_turn_thrust(self, direction: str):

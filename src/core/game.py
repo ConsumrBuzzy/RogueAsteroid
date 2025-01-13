@@ -142,16 +142,18 @@ class Game:
     
     def toggle_control_scheme(self):
         """Toggle between arrow keys and WASD controls."""
-        current = self.settings['controls']
-        new_scheme = 'wasd' if current == 'arrows' else 'arrows'
+        new_scheme = 'wasd' if self.settings['controls'] == 'arrows' else 'arrows'
         self.settings['controls'] = new_scheme
+        self.logger.info(f"Control scheme changed to {new_scheme}")
         
         # Update ship's input component if it exists
         if self.entity_manager.ship:
             input_component = self.entity_manager.ship.get_component(InputComponent)
             if input_component:
                 input_component.update_control_scheme(new_scheme)
-                self.logger.debug(f"Updated control scheme to {new_scheme}")
+                self.logger.debug("Ship input component updated with new control scheme")
+            else:
+                self.logger.warning("Ship exists but has no input component")
     
     def create_explosion(self, pos: pygame.Vector2, size: str = 'large') -> None:
         """Create an explosion effect.
