@@ -1,8 +1,10 @@
 """Core game systems."""
-from .particle import ParticleSystem
+from .particle_system import ParticleSystem
 from .spawner import Spawner
+from .collision_system import CollisionSystem
 
 __all__ = [
     'ParticleSystem',
-    'Spawner'
+    'Spawner',
+    'CollisionSystem'
 ] 
