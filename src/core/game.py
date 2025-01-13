@@ -288,6 +288,41 @@ class Game:
                 ship_transform.position = pygame.Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
                 print("No safe position found, respawning at center")  # Debug info
     
+    def _handle_ship_asteroid_collision(self, ship: Ship, asteroid: Asteroid):
+        """Handle collision between ship and asteroid."""
+        if not ship.invulnerable:
+            print("Ship hit by asteroid")  # Debug info
+            self.lose_life()
+            self.create_explosion(ship.get_component(TransformComponent).position.x,
+                                ship.get_component(TransformComponent).position.y,
+                                'medium')
+    
+    def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid):
+        """Handle collision between bullet and asteroid."""
+        print(f"Bullet hit asteroid size {asteroid.size}")  # Debug info
+        
+        # Award points based on asteroid size
+        points = {'large': 3, 'medium': 2, 'small': 1}
+        self.scoring.add_points(points[asteroid.size])
+        print(f"Hit asteroid size {asteroid.size}, awarded {points[asteroid.size]} points")
+        
+        # Create explosion effect
+        transform = asteroid.get_component(TransformComponent)
+        if transform:
+            self.create_explosion(transform.position.x, transform.position.y, asteroid.size)
+        
+        # Split asteroid
+        pieces = asteroid.split()
+        
+        # Add new pieces to game
+        for piece in pieces:
+            self.asteroids.append(piece)
+            self.entities.append(piece)
+        
+        # Remove bullet and asteroid
+        self.remove_entity(bullet)
+        self.remove_entity(asteroid)
+    
     def handle_collisions(self):
         """Handle collisions between entities."""
         # Get all entities with collision components
@@ -325,7 +360,11 @@ class Game:
                 # Check for collision
                 if distance < combined_radius:
                     # Calculate collision normal
-                    normal = (pos2 - pos1).normalize()
+                    diff = pos2 - pos1
+                    if diff.length() > 0:  # Prevent division by zero
+                        normal = diff.normalize()
+                    else:
+                        normal = pygame.Vector2(1, 0)  # Default direction if positions are identical
                     
                     # Handle collision based on entity types
                     if isinstance(entity1, Ship) and isinstance(entity2, Asteroid):
@@ -339,6 +378,12 @@ class Game:
                     elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
                         # Only bounce asteroids if they both have physics components
                         if physics1 and physics2:
+                            # First separate the asteroids
+                            overlap = combined_radius - distance
+                            separation = normal * overlap
+                            transform1.position -= separation * 0.5
+                            transform2.position += separation * 0.5
+                            
                             # Get velocities and masses
                             vel1 = pygame.Vector2(physics1.velocity)
                             vel2 = pygame.Vector2(physics2.velocity)
@@ -346,7 +391,6 @@ class Game:
                             # Get masses from asteroid sizes
                             mass1 = ASTEROID_SIZES[entity1.size]['mass']
                             mass2 = ASTEROID_SIZES[entity2.size]['mass']
-                            total_mass = mass1 + mass2
                             
                             # Calculate relative velocity
                             rel_vel = vel1 - vel2
@@ -355,7 +399,7 @@ class Game:
                             # Only resolve if objects are moving toward each other
                             if vel_along_normal < 0:
                                 # Calculate impulse scalar
-                                restitution = 0.8  # Bouncy collisions
+                                restitution = 0.5  # Less bouncy collisions
                                 j = -(1 + restitution) * vel_along_normal
                                 j /= 1/mass1 + 1/mass2
                                 
@@ -364,16 +408,9 @@ class Game:
                                 physics1.velocity = vel1 + (impulse / mass1)
                                 physics2.velocity = vel2 - (impulse / mass2)
                                 
-                                # Move apart to prevent sticking
-                                overlap = combined_radius - distance
-                                percent = 0.8  # Penetration resolution percentage
-                                separation = normal * (overlap * percent)
-                                transform1.position -= separation * (mass2 / total_mass)
-                                transform2.position += separation * (mass1 / total_mass)
-                                
-                                # Add some random rotation
-                                physics1.angular_velocity = random.uniform(-90, 90)
-                                physics2.angular_velocity = random.uniform(-90, 90)
+                                # Add some random spin
+                                physics1.angular_velocity = random.uniform(-45, 45)
+                                physics2.angular_velocity = random.uniform(-45, 45)
     
     def run(self):
         """Main game loop."""
