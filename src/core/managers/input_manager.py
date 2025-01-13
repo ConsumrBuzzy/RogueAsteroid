@@ -36,28 +36,33 @@ class InputManager:
 
     def _handle_playing_input(self, event: pygame.event.Event) -> None:
         """Handle input in the playing state."""
+        # Handle global game controls first
         if event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_ESCAPE, pygame.K_p):
                 self.game.state_manager.change_state(GameState.PAUSED)
+                return
             elif event.key == pygame.K_o:
                 self.game.state_manager.change_state(GameState.OPTIONS)
+                return
             elif event.key == pygame.K_h:
                 self.game.state_manager.change_state(GameState.HIGH_SCORE)
-            
-            # Handle ship input if it exists
-            if self.game.entity_manager.ship:
-                input_component = self.game.entity_manager.ship.get_component(InputComponent)
-                if input_component:
-                    input_component.handle_keydown(event.key)
+                return
         
-        elif event.type == pygame.KEYUP and self.game.entity_manager.ship:
-            # Handle ship input release
+        # Pass all events to ship's input component if it exists
+        if self.game.entity_manager.ship:
             input_component = self.game.entity_manager.ship.get_component(InputComponent)
             if input_component:
-                input_component.handle_keyup(event.key)
+                input_component.handle_event(event)
 
     def _handle_paused_input(self, event: pygame.event.Event) -> None:
         """Handle input in the paused state."""
         if event.type == pygame.KEYDOWN:
             # Let state manager handle all pause menu input
             self.game.state_manager.handle_input(event) 
+
+    def update(self, dt: float) -> None:
+        """Update input state for continuous actions."""
+        if self.game.state == GameState.PLAYING and self.game.entity_manager.ship:
+            input_component = self.game.entity_manager.ship.get_component(InputComponent)
+            if input_component:
+                input_component.update(dt) 

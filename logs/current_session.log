@@ -1,1331 +1,669 @@
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Logging system initialized
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Log directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Runtime logs directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs\runtime
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Initializing game
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Game settings initialized: {'window': {'width': 800, 'height': 600}, 'controls': 'arrows', 'sound': False}
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Audio manager initialized (sound disabled by default)
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Ensured data directory exists
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Loaded 8 high scores from data\highscores.json
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - High score manager initialized with 8 scores
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Game services initialized
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Systems initialized
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Managers initialized
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - Game properties initialized with 3 lives
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Initializing state manager
-2025-01-12 23:31:33 -    DEBUG -           logging.py:  54 - State manager initialized
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Changing state from None to GameState.MAIN_MENU
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Game initialization complete
-2025-01-12 23:31:33 -     INFO -           logging.py:  58 - Starting game loop
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Main menu input: 13
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Selected menu option: 0
-2025-01-12 23:31:34 -     INFO -           logging.py:  58 - Starting new game
-2025-01-12 23:31:34 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Controls updated to scheme: arrows
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Added entity: Ship
-2025-01-12 23:31:34 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.PLAYING
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE15723C0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28A6390>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28A63C0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28A63F0>
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[608.228, 600], vel=[-15.2797, 98.6537]
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=4.32
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=8.64
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=13.23
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=17.82
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=22.41
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=27.00
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=31.32
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=35.64
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=39.96
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=44.28
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=48.87
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=53.46
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=57.78
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28A6C60>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28A6D80>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28A6DB0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28A6DE0>
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[0, 410.461], vel=[52.4076, 20.397]
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=62.10
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=66.69
-2025-01-12 23:31:34 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=71.28
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=66.96
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=62.64
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=58.05
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=53.46
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=49.14
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=44.82
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=40.23
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=35.64
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=31.05
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=26.46
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28A74A0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28A75C0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28A75F0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28A7620>
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[314.213, 600], vel=[-22.3288, 49.2205]
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Score updated: 3 (+3)
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C2870>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C29C0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C29F0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C2A20>
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[550.516, 109.598], vel=[-91.2635, -97.2864]
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C2A50>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C2C00>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C2C30>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C2C60>
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[629.573, 121.843], vel=[125.351, 69.9248]
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28A5A60>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C2CF0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C2D20>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C2D50>
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[0, 411.594], vel=[57.8848, -7.00706]
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=22.14
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=17.82
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=13.50
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=9.18
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=4.86
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=0.54
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=356.22
-2025-01-12 23:31:35 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=351.90
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Score updated: 5 (+2)
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C16A0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C1520>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C14F0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C14C0>
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[442.901, 567.054], vel=[176.393, -16.3254]
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C1460>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C1280>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C11C0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C1250>
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[413.728, 594.421], vel=[-177.213, 74.7918]
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=347.58
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=343.26
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=338.67
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=334.08
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=329.76
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=325.44
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=320.85
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=316.26
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=311.67
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=307.08
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=302.76
-2025-01-12 23:31:36 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=298.44
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=294.12
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=289.80
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=285.48
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=281.16
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:37 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Score updated: 8 (+3)
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28D7530>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28D7680>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28D76B0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28D76E0>
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[199.3, 155.648], vel=[-144.51, -35.8817]
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28D7770>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28D7920>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28D7950>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28D7980>
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[272.154, 188.698], vel=[-12.3634, 150.88]
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:38 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=276.84
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=272.52
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=267.93
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=263.34
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=259.02
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=254.70
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=250.38
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=246.06
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=241.74
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=237.42
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Score updated: 11 (+3)
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28E36B0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28E3800>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28E3830>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28E3860>
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[190.177, 391.641], vel=[-116.789, 51.7538]
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28E38F0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28E3AA0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28E3AD0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28E3B30>
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[269.578, 381.866], vel=[44.2492, 120.293]
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:39 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:40 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Score updated: 13 (+2)
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28E27E0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28E2630>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28E2690>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28E21E0>
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[439.133, 295.696], vel=[97.0356, 131.404]
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28E25A0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28E23F0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28E25D0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28E20C0>
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[426.69, 257.681], vel=[-8.45465, -190.881]
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:41 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=241.74
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=246.06
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=250.38
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=254.70
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=259.02
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=263.34
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=267.66
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=271.98
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=276.30
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=280.62
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=284.94
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=289.26
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=293.58
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=297.90
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=302.22
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=306.54
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=311.13
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=315.72
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=320.31
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=324.90
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:42 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=329.22
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=333.54
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=337.86
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=342.18
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=346.50
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=350.82
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=355.41
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=0.00
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=4.32
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=8.64
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:43 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:31:43 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:31:44 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:31:44 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:31:44 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:31:44 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:31:47 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=4.32
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=0.00
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=355.41
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=350.82
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=346.50
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=342.18
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=337.86
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=333.54
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=329.22
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=324.90
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=320.58
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=316.26
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Score updated: 16 (+3)
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28A77A0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28A76B0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28A7C50>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28A77D0>
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[387.115, 147.28], vel=[-150.723, 8.32412]
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28A7A70>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28A7C80>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28A7E90>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28A6EA0>
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[466.638, 156.004], vel=[25.6072, 119.606]
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:47 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Score updated: 18 (+2)
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28F4230>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28F4050>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28F40B0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28F4080>
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[459.962, 220.353], vel=[-148.498, 94.3372]
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28F6A50>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28F6C00>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28F6C30>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28F6C90>
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[499.076, 211.979], vel=[194.171, 20.9733]
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:48 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Score updated: 20 (+2)
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28FDA60>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28FDBB0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28FDBE0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28FDC40>
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[422.786, 170.575], vel=[-156.234, -46.0574]
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28FDCD0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28FDE80>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28FDEB0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28FDF10>
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[455.124, 194.117], vel=[-74.2259, 181.002]
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=311.67
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=307.08
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=302.76
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=298.44
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=294.12
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=289.80
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=285.48
-2025-01-12 23:31:49 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=281.16
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=276.57
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=271.98
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=267.39
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=262.80
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=258.21
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=253.62
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=249.03
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=244.44
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=239.85
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=235.26
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=230.67
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=226.08
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=221.49
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=216.90
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=212.31
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=207.72
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=203.40
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=199.08
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=194.76
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=190.44
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=185.85
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=181.26
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=176.94
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=172.62
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Score updated: 22 (+2)
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28FE000>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28FD6D0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28FD8E0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28FD8B0>
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[781.524, 149.668], vel=[92.6704, -150.143]
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28FD850>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28FD640>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28FD670>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28FD5E0>
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[783.729, 189.607], vel=[-191.936, 35.8223]
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=168.03
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=163.44
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=159.12
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=154.80
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=150.21
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=145.62
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=141.30
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=136.98
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=132.66
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=128.34
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=124.02
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=119.70
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=124.29
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=128.88
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=133.20
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=137.52
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=141.84
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=146.16
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=150.48
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=154.80
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=159.12
-2025-01-12 23:31:50 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=163.44
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=168.03
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=172.62
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=176.94
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=181.26
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Score updated: 24 (+2)
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C1EB0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C1AF0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C1D00>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C1D90>
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[554.213, 395.899], vel=[-11.1182, 167.25]
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE28C18B0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE28C1B20>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE28C1C40>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE28C1A00>
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[573.699, 360.967], vel=[199.73, 68.8266]
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=185.85
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=190.44
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=195.03
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=199.62
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=204.21
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=208.80
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=213.39
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=217.98
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=222.30
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=226.62
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=231.21
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=235.80
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=240.12
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=244.44
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=249.03
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=253.62
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=258.21
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=262.80
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=267.39
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=271.98
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=276.30
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=280.62
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=285.21
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=289.80
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=294.39
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=298.98
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=303.57
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=308.16
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=312.75
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=317.34
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:51 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:51 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 2
-2025-01-12 23:31:51 -     INFO -           logging.py:  58 - Respawning ship
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Score updated: 25 (+1)
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Hit asteroid size small, awarded 1 points
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Score updated: 26 (+1)
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Hit asteroid size small, awarded 1 points
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:52 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=355.68
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=351.36
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=346.77
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=342.18
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=337.59
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=333.00
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Score updated: 28 (+2)
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE2907050>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE29071A0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE29071D0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE2907230>
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[437.282, 478.203], vel=[138.652, 74.7804]
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE2907350>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE29074A0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE29074D0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE2907530>
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[398.792, 489.089], vel=[-180.337, 6.24427]
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:53 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:31:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:54 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:31:54 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:31:54 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:54 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=337.59
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=342.18
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=346.50
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=350.82
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=355.14
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=359.46
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=3.78
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=8.10
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=12.69
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=17.28
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=21.87
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=26.46
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.86, new rotation=31.32
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.86, new rotation=36.18
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=40.50
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=44.82
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.86, new rotation=49.68
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.86, new rotation=54.54
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=59.13
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=63.72
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=68.04
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=72.36
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=76.68
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=81.00
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=85.32
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=89.64
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=93.96
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=98.28
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=102.87
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=107.46
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=111.78
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=116.10
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=120.42
-2025-01-12 23:31:55 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=124.74
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=129.06
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=133.38
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=137.97
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=142.56
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=147.15
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=151.74
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=156.33
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=160.92
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=165.51
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=170.10
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=174.69
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=179.28
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Score updated: 30 (+2)
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE29076E0>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE2906DB0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE2907560>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE2906B10>
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[412.294, 545.081], vel=[120.368, -137.976]
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x0000026BE2906D80>, render=<src.core.entities.components.render.RenderComponent object at 0x0000026BE2906F00>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x0000026BE2906870>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x0000026BE2906C00>
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[420.38, 584.255], vel=[8.95056, 157.472]
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=174.96
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=170.64
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=166.05
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=161.46
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=156.87
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=152.28
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=147.96
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=143.64
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=139.05
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=134.46
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:57 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:58 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:31:58 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:31:58 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:58 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:31:58 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Score updated: 31 (+1)
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Hit asteroid size small, awarded 1 points
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:31:59 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:00 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 1
-2025-01-12 23:32:00 -     INFO -           logging.py:  58 - Respawning ship
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:00 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:01 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:32:01 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:32:02 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
-2025-01-12 23:32:02 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:32:03 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.OPTIONS
-2025-01-12 23:32:04 -     INFO -           logging.py:  58 - Changing state from GameState.OPTIONS to GameState.PAUSED
-2025-01-12 23:32:04 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
-2025-01-12 23:32:05 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
-2025-01-12 23:32:05 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=4.59
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=9.18
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=13.77
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=18.36
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=22.68
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=27.00
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=31.32
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=35.64
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=40.23
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=44.82
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=49.41
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=54.00
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=58.32
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=62.64
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=67.23
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=71.82
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=76.41
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=81.00
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=85.59
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=90.18
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=94.50
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=98.82
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=103.41
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=108.00
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=112.32
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=116.64
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=121.23
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=125.82
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=130.14
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=134.46
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=138.78
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=143.10
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=147.42
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=151.74
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=156.06
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=160.38
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=164.97
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=169.56
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=164.97
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=160.38
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=155.79
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=151.20
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=146.61
-2025-01-12 23:32:07 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=142.02
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=137.70
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=133.38
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=129.06
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=124.74
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=120.42
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=116.10
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=111.78
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=107.46
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=103.14
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=98.82
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=94.50
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=90.18
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=85.86
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=81.54
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Score updated: 32 (+1)
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Hit asteroid size small, awarded 1 points
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 0
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - Game over - No lives remaining
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.GAME_OVER
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - Game Over - Final Score: 32
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Cleared 29 entities
-2025-01-12 23:32:08 -    DEBUG -           logging.py:  54 - Score 32 qualifies (fewer than 10 scores)
-2025-01-12 23:32:08 -     INFO -           logging.py:  58 - New high score achieved!
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - Adding high score: 32 by RRR
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Saved 9 high scores to data\highscores.json
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - High score saved successfully
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - Saved high score: RRR - 32
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Score reset from 32 to 0
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - Changing state from GameState.NEW_HIGH_SCORE to GameState.MAIN_MENU
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:32:10 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:32:10 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
-2025-01-12 23:32:11 -    DEBUG -           logging.py:  54 - Main menu input: 1073741905
-2025-01-12 23:32:11 -    DEBUG -           logging.py:  54 - Main menu input: 1073741905
-2025-01-12 23:32:11 -    DEBUG -           logging.py:  54 - Main menu input: 13
-2025-01-12 23:32:11 -    DEBUG -           logging.py:  54 - Selected menu option: 2
-2025-01-12 23:32:11 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.OPTIONS
-2025-01-12 23:32:12 -     INFO -           logging.py:  58 - Changing state from GameState.OPTIONS to GameState.MAIN_MENU
-2025-01-12 23:32:13 -    DEBUG -           logging.py:  54 - Main menu input: 27
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Logging system initialized
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Log directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Runtime logs directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs\runtime
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Initializing game
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Game settings initialized: {'window': {'width': 800, 'height': 600}, 'controls': 'arrows', 'sound': False}
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Audio manager initialized (sound disabled by default)
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Ensured data directory exists
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Loaded 9 high scores from data\highscores.json
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - High score manager initialized with 9 scores
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Game services initialized
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Systems initialized
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Managers initialized
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - Game properties initialized with 3 lives
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Initializing state manager
+2025-01-12 23:33:43 -    DEBUG -           logging.py:  54 - State manager initialized
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Changing state from None to GameState.MAIN_MENU
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Game initialization complete
+2025-01-12 23:33:43 -     INFO -           logging.py:  58 - Starting game loop
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Main menu input: 13
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Selected menu option: 0
+2025-01-12 23:33:44 -     INFO -           logging.py:  58 - Starting new game
+2025-01-12 23:33:44 -     INFO -           logging.py:  58 - Resetting game state
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Controls updated to scheme: arrows
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Added entity: Ship
+2025-01-12 23:33:44 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.PLAYING
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5425A0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5426F0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A542720>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A542750>
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[299.827, 0], vel=[43.0622, -40.3453]
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A542AE0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A542C00>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A542C30>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A542C60>
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[800, 379.795], vel=[-44.5251, 65.9519]
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=4.59
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=9.18
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=13.50
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=17.82
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=22.41
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=27.00
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=31.32
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=35.64
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=39.96
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=44.28
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=48.87
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=53.46
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=57.78
+2025-01-12 23:33:44 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=62.10
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=66.69
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=71.28
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=75.87
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.59, new rotation=80.46
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=84.78
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Rotating right: change=4.32, new rotation=89.10
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5435C0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5436E0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A543710>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A543740>
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[800, 404.008], vel=[-44.8854, 73.3635]
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Score updated: 3 (+3)
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A567290>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5673E0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A567410>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A567440>
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[706.481, 417.79], vel=[-30.8667, -114.257]
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5674D0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A567680>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A5676B0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A5676E0>
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[771.924, 463.804], vel=[65.1981, 95.868]
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A567D10>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A567E90>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A567EC0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A567EF0>
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[10.1551, 0], vel=[67.603, -55.5238]
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:45 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=84.78
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=80.46
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=76.14
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=71.82
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=67.50
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=63.18
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=58.59
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=54.00
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=49.68
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.32, new rotation=45.36
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=40.77
+2025-01-12 23:33:46 -    DEBUG -           logging.py:  54 - Rotating left: change=4.59, new rotation=36.18
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:47 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.PAUSED
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
+2025-01-12 23:33:47 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:48 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.OPTIONS
+2025-01-12 23:33:49 -    DEBUG -           logging.py:  54 - Updated control scheme to wasd
+2025-01-12 23:33:49 -     INFO -           logging.py:  58 - Changing state from GameState.OPTIONS to GameState.PAUSED
+2025-01-12 23:33:49 -    DEBUG -           logging.py:  54 - Game paused - all entities frozen
+2025-01-12 23:33:50 -     INFO -           logging.py:  58 - Changing state from GameState.PAUSED to GameState.PLAYING
+2025-01-12 23:33:50 -    DEBUG -           logging.py:  54 - Game resumed - all entities unfrozen
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Score updated: 6 (+3)
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5896A0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5895E0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A589580>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A589550>
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[288.075, 55.9016], vel=[-90.6301, 92.3758]
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5894F0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A589340>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A5892E0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A5892B0>
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[298.076, -23.4707], vel=[65.9742, -123.629]
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Score updated: 9 (+3)
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A554C50>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5555B0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A554A40>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A5540E0>
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[560.185, 411.567], vel=[116.975, 81.6983]
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5549E0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A554C20>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A557EF0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A554260>
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[505.488, 353.187], vel=[60.2407, -97.0089]
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Score updated: 11 (+2)
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A5668A0>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A566930>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A566720>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A5665A0>
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[78.3119, 30.1376], vel=[-168.727, -22.9611]
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000001619A566B10>, render=<src.core.entities.components.render.RenderComponent object at 0x000001619A5669C0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000001619A566C90>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000001619A566ED0>
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[106.571, 1.8285], vel=[151.614, -121.671]
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:33:54 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:33:55 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:33:55 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 2
+2025-01-12 23:33:55 -     INFO -           logging.py:  58 - Respawning ship
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:55 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:33:56 -    DEBUG -           logging.py:  54 - Removed entity: Particle

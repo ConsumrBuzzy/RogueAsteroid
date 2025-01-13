@@ -75,9 +75,10 @@ class Ship(Entity):
         # Screen wrap component to wrap around screen edges
         screen_wrap = self.add_component(ScreenWrapComponent)
         
-        # Input component for controls
-        self.input_component = self.add_component(InputComponent)
-        self.update_controls()  # Initialize controls
+        # Input component for controls - initialize with current control scheme
+        current_scheme = self.game.settings.get('controls', 'arrows')
+        self.input_component = self.add_component(InputComponent, control_scheme=current_scheme)
+        self.logger.debug(f"Initialized ship with control scheme: {current_scheme}")
     
     def update_controls(self) -> None:
         """Update control bindings based on current control scheme."""
@@ -85,25 +86,10 @@ class Ship(Entity):
             self.logger.warning("No input component found!")
             return
             
-        # Clear existing bindings by creating a new empty dict
-        self.input_component.key_bindings = {}
-        
-        # Get current control scheme
-        controls = self.game.settings.get('controls', 'arrows')
-        self.logger.debug(f"Controls updated to scheme: {controls}")
-        
-        if controls == 'arrows':
-            # Arrow key controls
-            self.input_component.bind_key(pygame.K_UP, self.handle_thrust, continuous=True)
-            self.input_component.bind_key(pygame.K_LEFT, self.handle_rotate_left, continuous=True)
-            self.input_component.bind_key(pygame.K_RIGHT, self.handle_rotate_right, continuous=True)
-            self.input_component.bind_key(pygame.K_SPACE, self.handle_shoot)
-        else:
-            # WASD controls
-            self.input_component.bind_key(pygame.K_w, self.handle_thrust, continuous=True)
-            self.input_component.bind_key(pygame.K_a, self.handle_rotate_left, continuous=True)
-            self.input_component.bind_key(pygame.K_d, self.handle_rotate_right, continuous=True)
-            self.input_component.bind_key(pygame.K_SPACE, self.handle_shoot)
+        # Get current control scheme and update the input component
+        current_scheme = self.game.settings.get('controls', 'arrows')
+        self.input_component.update_control_scheme(current_scheme)
+        self.logger.debug(f"Updated ship controls to scheme: {current_scheme}")
     
     def handle_thrust(self) -> None:
         """Handle thrust input."""

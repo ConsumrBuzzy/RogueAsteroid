@@ -40,22 +40,17 @@ class GameLoopManager:
 
     def _update(self) -> None:
         """Update game state."""
-        # Update input components for continuous input
-        if self.game.state_manager.current_state == GameState.PLAYING:
-            for entity in self.game.entity_manager.entities:
-                input_comp = entity.get_component(InputComponent)
-                if input_comp:
-                    input_comp.update(self.dt)
+        # Update input manager for continuous input
+        self.game.input_manager.update(self.dt)
         
         # Update game systems
-        self.game.particle_system.update(self.dt)
-        self.game.spawner.update(self.dt)
-        
-        # Update all entities
-        self.game.entity_manager.update(self.dt)
-        
-        # Update collision detection
-        self.game.collision_manager.handle_collisions()
+        if self.game.state == GameState.PLAYING:
+            # Update entities
+            for entity in self.game.entity_manager.entities:
+                entity.update(self.dt)
+            
+            # Update collision detection
+            self.game.collision_manager.handle_collisions()
 
     def _draw(self) -> None:
         """Draw the current frame."""
