@@ -378,12 +378,6 @@ class Game:
                     elif isinstance(entity1, Asteroid) and isinstance(entity2, Asteroid):
                         # Only bounce asteroids if they both have physics components
                         if physics1 and physics2:
-                            # First separate the asteroids
-                            overlap = combined_radius - distance
-                            separation = normal * overlap
-                            transform1.position -= separation * 0.5
-                            transform2.position += separation * 0.5
-                            
                             # Get velocities and masses
                             vel1 = pygame.Vector2(physics1.velocity)
                             vel2 = pygame.Vector2(physics2.velocity)
@@ -394,23 +388,36 @@ class Game:
                             
                             # Calculate relative velocity
                             rel_vel = vel1 - vel2
-                            vel_along_normal = rel_vel.dot(normal)
                             
-                            # Only resolve if objects are moving toward each other
-                            if vel_along_normal < 0:
-                                # Calculate impulse scalar
-                                restitution = 0.5  # Less bouncy collisions
-                                j = -(1 + restitution) * vel_along_normal
-                                j /= 1/mass1 + 1/mass2
+                            # Calculate collision response
+                            restitution = 0.8  # More bouncy
+                            
+                            # Calculate impulse magnitude
+                            vel_along_normal = rel_vel.dot(normal)
+                            if vel_along_normal > 0:
+                                continue  # Skip if asteroids are moving apart
                                 
-                                # Apply impulse
-                                impulse = normal * j
-                                physics1.velocity = vel1 + (impulse / mass1)
-                                physics2.velocity = vel2 - (impulse / mass2)
-                                
-                                # Add some random spin
-                                physics1.angular_velocity = random.uniform(-45, 45)
-                                physics2.angular_velocity = random.uniform(-45, 45)
+                            # Calculate impulse scalar
+                            j = -(1 + restitution) * vel_along_normal
+                            j /= (1/mass1 + 1/mass2)
+                            
+                            # Apply impulse
+                            impulse = normal * j
+                            physics1.velocity = vel1 + (impulse / mass1)
+                            physics2.velocity = vel2 - (impulse / mass2)
+                            
+                            # Separate the asteroids (prevent overlap)
+                            overlap = combined_radius - distance
+                            percent = 0.5  # Penetration resolution percentage
+                            separation = normal * (overlap * percent)
+                            transform1.position -= separation
+                            transform2.position += separation
+                            
+                            # Add some spin based on collision angle and impulse magnitude
+                            spin_factor = 0.5
+                            tangent = pygame.Vector2(-normal.y, normal.x)
+                            physics1.angular_velocity = rel_vel.dot(tangent) * spin_factor
+                            physics2.angular_velocity = -rel_vel.dot(tangent) * spin_factor
     
     def run(self):
         """Main game loop."""
