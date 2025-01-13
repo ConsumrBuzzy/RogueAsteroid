@@ -1,0 +1,7 @@
+"""Ship settings constants."""
+
+SHIP_ACCELERATION = 300.0
+SHIP_MAX_SPEED = 300.0
+SHIP_ROTATION_SPEED = 180.0  # Degrees per second
+SHIP_FRICTION = 0.02
+SHIP_INVULNERABLE_TIME = 3.0 
