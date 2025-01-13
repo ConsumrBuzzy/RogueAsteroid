@@ -49,6 +49,8 @@ class Bullet(Entity):
         # Transform component for position and movement
         transform = self.add_component(TransformComponent)
         transform.position = position
+        # Set rotation based on direction vector
+        transform.rotation = math.degrees(math.atan2(direction.x, -direction.y))
         
         # Physics component for movement
         physics = self.add_component(PhysicsComponent)

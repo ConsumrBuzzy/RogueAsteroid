@@ -57,11 +57,17 @@ class StateManager:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
             print("Game Over - Score:", self.game.score)  # Debug info
+            # Clear any remaining entities except the ship
+            self.game.entity_manager.clear_entities(keep_ship=False)
             # Check for high score immediately
             if self.game.high_scores.is_high_score(self.game.score):
                 print("New high score!")  # Debug info
                 self.high_score_name = ""  # Reset name input
                 new_state = GameState.NEW_HIGH_SCORE
+        elif new_state == GameState.MAIN_MENU:
+            if old_state in [GameState.GAME_OVER, GameState.NEW_HIGH_SCORE]:
+                # Clear all entities when returning to main menu from game over
+                self.game.entity_manager.clear_entities(keep_ship=False)
         
         # Set new state
         self.current_state = new_state

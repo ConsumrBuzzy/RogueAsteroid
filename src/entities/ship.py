@@ -200,48 +200,18 @@ class Ship(Entity):
             -math.cos(angle_rad)
         )
         
-        # Create particles per thrust
-        num_particles = random.randint(*THRUST_PARTICLE_COUNT)
-        for _ in range(num_particles):
-            # Calculate particle spawn position behind ship
-            pos = transform.position - thrust_dir * THRUST_OFFSET
-            
-            # Create particle with proper initial position, color and size
-            lifetime = random.uniform(*THRUST_PARTICLE_LIFETIME)
-            size = random.uniform(*THRUST_PARTICLE_SIZE)
-            particle = Particle(
-                self.game,
-                lifetime=lifetime,
-                color=random.choice(THRUST_COLORS),
-                size=size
-            )
-            
-            # Set particle position and velocity
-            particle_transform = particle.get_component(TransformComponent)
-            if particle_transform:
-                particle_transform.position = pos
-                
-                # Randomize particle velocity around thrust direction
-                spread = THRUST_PARTICLE_SPREAD / 2  # Half the spread angle
-                particle_angle = transform.rotation + random.uniform(-spread, spread)
-                particle_speed = random.uniform(*THRUST_PARTICLE_SPEED)
-                
-                particle_angle_rad = math.radians(particle_angle)
-                particle_vel = pygame.Vector2(
-                    math.sin(particle_angle_rad),
-                    -math.cos(particle_angle_rad)
-                ) * particle_speed
-                
-                # Set velocity in physics component
-                physics = particle.get_component(PhysicsComponent)
-                if physics:
-                    physics.velocity = -particle_vel  # Opposite of thrust direction
-            
-            # Add to game entities
-            self.game.entity_manager.add_entity(particle)
-            
-            if DEBUG:
-                print(f"Created thrust particle at {pos}")  # Debug info
+        # Calculate particle spawn position behind ship
+        pos = transform.position - thrust_dir * THRUST_OFFSET
+        
+        # Use particle system to create thrust effect
+        self.game.particle_system.emit_circular(
+            position=pos,
+            color=random.choice(THRUST_COLORS),
+            count=random.randint(*THRUST_PARTICLE_COUNT),
+            lifetime=(THRUST_PARTICLE_LIFETIME[0], THRUST_PARTICLE_LIFETIME[1]),
+            speed_range=(THRUST_PARTICLE_SPEED[0], THRUST_PARTICLE_SPEED[1]),
+            size_range=(THRUST_PARTICLE_SIZE[0], THRUST_PARTICLE_SIZE[1])
+        )
     
     def update(self, dt: float) -> None:
         """Update the ship's state."""
