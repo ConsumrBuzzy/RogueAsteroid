@@ -142,11 +142,11 @@ class CollisionSystem:
         if not (physics1 and physics2 and transform1 and transform2):
             return False
             
-        # First separate the asteroids
+        # First separate the asteroids just enough to prevent overlap
         overlap = combined_radius - distance
         separation = normal * overlap
-        transform1.position -= separation * 0.6  # Move them apart more aggressively
-        transform2.position += separation * 0.6
+        transform1.position -= separation * 0.5  # Reduced separation force
+        transform2.position += separation * 0.5
         
         # Get velocities and masses
         vel1 = pygame.Vector2(physics1.velocity)
@@ -162,19 +162,34 @@ class CollisionSystem:
         if vel_along_normal > 0:
             return False
             
-        # Calculate impulse
-        restitution = 0.8  # Bouncy collisions
+        # Calculate impulse with higher elasticity
+        restitution = 0.8  # More bouncy
         j = -(1 + restitution) * vel_along_normal
         j /= (1/mass1 + 1/mass2)
         
-        # Apply impulse
+        # Apply impulse with lower minimum velocity
         impulse = normal * j
-        physics1.velocity = vel1 + (impulse / mass1)
-        physics2.velocity = vel2 - (impulse / mass2)
+        min_velocity_change = 20  # Reduced minimum velocity
+        
+        # Calculate new velocities
+        vel1_new = vel1 + (impulse / mass1)
+        vel2_new = vel2 - (impulse / mass2)
+        
+        # Ensure minimum velocity difference along normal
+        vel_diff = (vel1_new - vel2_new).dot(normal)
+        if abs(vel_diff) < min_velocity_change:
+            # Add minimal additional velocity along normal
+            additional = (min_velocity_change - abs(vel_diff)) * normal * 0.5  # Reduced additional force
+            vel1_new += additional * (mass2 / (mass1 + mass2))
+            vel2_new -= additional * (mass1 / (mass1 + mass2))
+        
+        # Apply new velocities
+        physics1.velocity = vel1_new
+        physics2.velocity = vel2_new
         
         # Calculate spin based on collision
         tangent = pygame.Vector2(-normal.y, normal.x)
-        spin_factor = 0.3  # Reduced spin factor
+        spin_factor = 0.1  # Minimal spin
         physics1.angular_velocity = rel_vel.dot(tangent) * spin_factor
         physics2.angular_velocity = -rel_vel.dot(tangent) * spin_factor
         
