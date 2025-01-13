@@ -82,7 +82,7 @@ class Ship(Entity):
     def update_controls(self) -> None:
         """Update control bindings based on current control scheme."""
         if not self.input_component:
-            print("Warning: No input component found!")  # Debug info
+            self.logger.warning("No input component found!")
             return
             
         # Clear existing bindings by creating a new empty dict
@@ -90,7 +90,7 @@ class Ship(Entity):
         
         # Get current control scheme
         controls = self.game.settings.get('controls', 'arrows')
-        print(f"Controls updated to scheme: {controls}")  # Debug info
+        self.logger.debug(f"Controls updated to scheme: {controls}")
         
         if controls == 'arrows':
             # Arrow key controls
@@ -110,7 +110,7 @@ class Ship(Entity):
         transform = self.get_component(TransformComponent)
         physics = self.get_component(PhysicsComponent)
         if not transform or not physics:
-            print("Warning: Missing required components for thrust!")  # Debug info
+            self.logger.warning("Missing required components for thrust!")
             return
             
         # Calculate thrust direction based on rotation
@@ -134,7 +134,7 @@ class Ship(Entity):
             # Apply rotation speed based on delta time
             rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop.dt
             transform.rotation = (transform.rotation - rotation_change) % 360
-            print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
+            self.logger.debug(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
     
     def handle_rotate_right(self) -> None:
         """Handle rotate right input."""
@@ -143,7 +143,7 @@ class Ship(Entity):
             # Apply rotation speed based on delta time
             rotation_change = SHIP_ROTATION_SPEED * self.game.game_loop.dt
             transform.rotation = (transform.rotation + rotation_change) % 360
-            print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
+            self.logger.debug(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
     
     def handle_shoot(self) -> None:
         """Handle shoot input."""
@@ -152,7 +152,7 @@ class Ship(Entity):
             
         transform = self.get_component(TransformComponent)
         if not transform:
-            print("Warning: Cannot shoot without transform component!")  # Debug info
+            self.logger.warning("Cannot shoot without transform component!")
             return
             
         # Calculate bullet direction based on ship's rotation
@@ -174,7 +174,7 @@ class Ship(Entity):
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
-        print("Bullet fired")  # Debug info
+        self.logger.debug("Bullet fired")
     
     def create_thrust_particles(self) -> None:
         """Create particles for thrust effect."""

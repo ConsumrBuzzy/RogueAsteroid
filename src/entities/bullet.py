@@ -118,7 +118,7 @@ class Bullet(Entity):
         # Award points
         points = ASTEROID_SIZES[asteroid.size]['points']
         self.game.scoring.add_points(points)
-        print(f"Hit asteroid size {asteroid.size}, awarded {points} points")  # Debug info
+        self.logger.debug(f"Hit asteroid size {asteroid.size}, awarded {points} points")
         
         # Split asteroid if not smallest size
         if asteroid.size in ['large', 'medium']:
@@ -126,7 +126,7 @@ class Bullet(Entity):
             # Add new pieces to game
             for piece in pieces:
                 self.game.entity_manager.add_entity(piece)
-                print(f"Created new asteroid piece size {piece.size}")  # Debug info
+                self.logger.debug(f"Created new asteroid piece size {piece.size}")
         
         # Remove asteroid and bullet
         self.game.entity_manager.remove_entity(asteroid)

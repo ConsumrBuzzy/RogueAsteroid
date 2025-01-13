@@ -48,7 +48,8 @@ class Asteroid(Entity):
     @classmethod
     def spawn_random(cls, game, ship_pos: pygame.Vector2) -> 'Asteroid':
         """Create a new asteroid at a random position away from the ship."""
-        print("Creating new Asteroid")  # Debug info
+        logger = get_logger()
+        logger.debug("Creating new Asteroid")
         
         # Choose a random angle and distance from the ship
         angle = random.uniform(0, 2 * math.pi)
@@ -82,7 +83,7 @@ class Asteroid(Entity):
             math.sin(velocity_angle) * speed
         )
         
-        print(f"Spawning asteroid at {position} with velocity {velocity}")  # Debug info
+        logger.debug(f"Spawning asteroid at {position} with velocity {velocity}")
         return cls(game, 'large', position, velocity)
     
     def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):
@@ -112,7 +113,7 @@ class Asteroid(Entity):
         # Screen wrap component
         screen_wrap = self.add_component(ScreenWrapComponent)
         
-        print(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")  # Debug info
+        self.logger.debug(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")
     
     def _generate_vertices(self) -> List[Tuple[float, float]]:
         """Generate vertices for the asteroid's shape."""
