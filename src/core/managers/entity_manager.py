@@ -4,6 +4,7 @@ from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.entities.bullet import Bullet
 from src.core.entities.base import Entity
+from src.core.logging import get_logger
 
 class EntityManager:
     def __init__(self, game):
@@ -13,6 +14,7 @@ class EntityManager:
             game: Reference to the main game instance
         """
         self.game = game
+        self.logger = get_logger()
         self.entities: List[Entity] = []
         self.bullets: List[Bullet] = []
         self.asteroids: List[Asteroid] = []
@@ -39,7 +41,7 @@ class EntityManager:
         """
         if entity not in self.entities:
             self.entities.append(entity)
-            print(f"Added entity: {entity}")
+            self.logger.debug(f"Added entity: {entity.__class__.__name__}")
             
             # Add to specific lists based on type
             if isinstance(entity, Bullet):
@@ -57,7 +59,7 @@ class EntityManager:
         """
         if entity in self.entities:
             self.entities.remove(entity)
-            print(f"Removed entity: {entity}")
+            self.logger.debug(f"Removed entity: {entity.__class__.__name__}")
             
             # Remove from specific lists if present
             if entity in self.bullets:
@@ -69,7 +71,9 @@ class EntityManager:
 
     def clear_all(self) -> None:
         """Clear all entities."""
+        entity_count = len(self.entities)
         self.entities.clear()
         self.bullets.clear()
         self.asteroids.clear()
-        self.ship = None 
+        self.ship = None
+        self.logger.debug(f"Cleared {entity_count} entities") 
