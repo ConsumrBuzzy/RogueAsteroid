@@ -83,16 +83,23 @@ class StateManager:
             elif self.current_state == GameState.GAME_OVER:
                 self._handle_game_over_input(event)
         except Exception as e:
-            print(f"Error handling input in state {self.current_state}: {e}")  # Debug info
+            print(f"Error handling input in state {self.current_state}: {str(e)}")  # Debug info
+            import traceback
+            traceback.print_exc()
     
     def _handle_main_menu_input(self, event):
         """Handle input in the main menu state."""
         print(f"Main menu input: {event.key}")  # Debug info
-        if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
+        
+        # Handle menu navigation
+        if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_KP8:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
-        elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
+            print(f"Selected option: {self.selected_option}")  # Debug info
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s or event.key == pygame.K_KP2:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
-        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            print(f"Selected option: {self.selected_option}")  # Debug info
+        elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+            print(f"Selecting option: {self.selected_option}")  # Debug info
             if self.selected_option == 0:  # New Game
                 print("Starting new game from main menu")  # Debug info
                 self.game.new_game()  # First setup the game
