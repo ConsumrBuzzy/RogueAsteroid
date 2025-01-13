@@ -33,8 +33,6 @@ class InputManager:
             self._handle_playing_input(event)
         elif self.game.state == GameState.PAUSED:
             self._handle_paused_input(event)
-        elif self.game.state == GameState.MAIN_MENU:
-            self._handle_menu_input(event)
 
     def _handle_playing_input(self, event: pygame.event.Event) -> None:
         """Handle input in the playing state."""
@@ -64,16 +62,4 @@ class InputManager:
             if event.key in (pygame.K_ESCAPE, pygame.K_p):
                 self.game.state_manager.change_state(GameState.PLAYING)
             elif event.key == pygame.K_q:
-                self.game.state_manager.change_state(GameState.MAIN_MENU)
-
-    def _handle_menu_input(self, event: pygame.event.Event) -> None:
-        """Handle input in the menu state."""
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                self.game.state_manager.change_state(GameState.PLAYING)
-            elif event.key == pygame.K_h:
-                self.game.state_manager.change_state(GameState.HIGH_SCORE)
-            elif event.key == pygame.K_o:
-                self.game.state_manager.change_state(GameState.OPTIONS)
-            elif event.key == pygame.K_q:
-                self.game.running = False 
+                self.game.state_manager.change_state(GameState.MAIN_MENU) 

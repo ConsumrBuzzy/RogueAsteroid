@@ -203,13 +203,15 @@ class StateManager:
         """Handle input in game over state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             # Check for high score before transitioning
-            if self.game.scoring.is_high_score():  # No argument needed, uses current_score
-                print("New high score achieved!")  # Debug info
+            if self.game.scoring.is_high_score():  # Consistent method name
+                self.logger.info("New high score achieved!")
                 self.high_score_name = ""  # Reset name input
                 self.change_state(GameState.NEW_HIGH_SCORE)
             else:
-                print("Returning to main menu")  # Debug info
+                self.logger.info("Returning to main menu")
                 self.change_state(GameState.MAIN_MENU)
+            return True
+        return False
     
     def draw(self, screen):
         """Draw the current state."""
@@ -387,7 +389,7 @@ class StateManager:
         
         # Draw high score message if applicable
         font = pygame.font.Font(None, 36)
-        if self.game.scoring.check_high_score():
+        if self.game.scoring.is_high_score():  # Consistent method name
             high_score_text = font.render("NEW HIGH SCORE!", True, (255, 255, 0))  # Yellow for emphasis
             screen.blit(high_score_text, (WINDOW_WIDTH/2 - high_score_text.get_width()/2, 400))
             prompt = font.render("Press ENTER to save your score", True, WHITE)
