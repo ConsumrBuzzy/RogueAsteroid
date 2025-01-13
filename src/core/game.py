@@ -199,49 +199,65 @@ class Game:
         current = self.settings['controls']
         self.settings['controls'] = 'wasd' if current == 'arrows' else 'arrows'
     
-    def create_explosion(self, x: float, y: float, size: str = 'medium'):
-        """Create an explosion effect."""
-        # Play explosion sound
-        self.audio.play_explosion(size)
+    def create_explosion(self, pos: pygame.Vector2, size: str = 'large') -> None:
+        """Create an explosion effect.
         
-        # Create particles
-        position = pygame.Vector2(x, y)
-        
-        # Define explosion colors
-        explosion_colors = [
-            (255, 69, 0),    # Red-orange
-            (255, 140, 0),   # Dark orange
-            (255, 165, 0),   # Orange
-            (255, 215, 0),   # Yellow
-        ]
-        
+        Args:
+            pos: Position of the explosion
+            size: Size of explosion ('small', 'medium', or 'large')
+        """
+        # Configure explosion based on size
         if size == 'large':
-            self.particle_system.emit_circular(
-                center=position,
-                speed=150.0,
-                color=random.choice(explosion_colors),
-                size=3.0,
-                lifetime=1.0,
-                count=12
-            )
+            count = 20  # More particles for large explosions
+            speed = 250
+            lifetime = (0.6, 0.8)
+            particle_size = (3.0, 4.0)
         elif size == 'medium':
-            self.particle_system.emit_circular(
-                center=position,
-                speed=100.0,
-                color=random.choice(explosion_colors),
-                size=2.0,
-                lifetime=0.7,
-                count=8
-            )
+            count = 15  # More particles for medium explosions
+            speed = 200
+            lifetime = (0.4, 0.6)
+            particle_size = (2.0, 3.0)
         else:  # small
-            self.particle_system.emit_circular(
-                center=position,
-                speed=50.0,
-                color=random.choice(explosion_colors),
-                size=1.0,
-                lifetime=0.5,
-                count=6
-            )
+            count = 10  # More particles for small explosions
+            speed = 150
+            lifetime = (0.2, 0.4)
+            particle_size = (1.0, 2.0)
+            
+        # Create explosion particles
+        for _ in range(count):
+            # Create particle with random color from explosion palette
+            color = random.choice([
+                (255, 69, 0),   # Red-orange
+                (255, 140, 0),  # Dark orange
+                (255, 165, 0),  # Orange
+                (255, 215, 0)   # Yellow
+            ])
+            
+            # Create particle
+            lifetime = random.uniform(*lifetime)
+            size = random.uniform(*particle_size)
+            particle = Particle(self.game, lifetime, color, size)
+            
+            # Set position and random velocity
+            transform = particle.get_component(TransformComponent)
+            physics = particle.get_component(PhysicsComponent)
+            if transform and physics:
+                transform.position = pygame.Vector2(pos)
+                
+                # Random direction
+                angle = random.uniform(0, 360)
+                angle_rad = math.radians(angle)
+                
+                # Random speed
+                speed_var = random.uniform(0.8, 1.2) * speed
+                velocity = pygame.Vector2(
+                    math.cos(angle_rad) * speed_var,
+                    math.sin(angle_rad) * speed_var
+                )
+                physics.velocity = velocity
+            
+            # Add to game
+            self.entities.append(particle)
     
     def update(self, dt: float) -> None:
         """Update game state."""
@@ -324,7 +340,7 @@ class Game:
             # Create explosion before losing life
             transform = ship.get_component(TransformComponent)
             if transform:
-                self.create_explosion(transform.position.x, transform.position.y, 'medium')
+                self.create_explosion(transform.position, 'medium')
             self.lose_life()
     
     def _handle_bullet_asteroid_collision(self, bullet: Bullet, asteroid: Asteroid):
@@ -339,7 +355,7 @@ class Game:
         # Create explosion effect
         transform = asteroid.get_component(TransformComponent)
         if transform:
-            self.create_explosion(transform.position.x, transform.position.y, asteroid.size)
+            self.create_explosion(transform.position, asteroid.size)
         
         # Split asteroid
         pieces = asteroid.split()
