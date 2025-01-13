@@ -3,6 +3,7 @@ import pygame
 import random
 import math
 from src.entities.particle import Particle
+from src.core.entities.components import TransformComponent, PhysicsComponent
 
 class ParticleSystem:
     """System for managing particle effects."""
@@ -12,28 +13,48 @@ class ParticleSystem:
         self.particles = []  # Track active particles
     
     def update(self, dt: float) -> None:
-        """Update all active particles.
+        """Update all active particles."""
+        pass  # Particles handle their own updates
+    
+    def create_explosion(self, pos: pygame.Vector2, size: str = 'large') -> None:
+        """Create an explosion effect.
         
         Args:
-            dt: Delta time in seconds
+            pos: Position of the explosion
+            size: Size of explosion ('small', 'medium', or 'large')
         """
-        # Let particles update themselves - they will remove themselves when done
-        pass  # No need to do anything since particles handle their own updates
+        # Configure explosion based on size
+        if size == 'large':
+            count = 12
+            speed = 200
+            lifetime = (0.6, 0.8)
+            particle_size = (3.0, 4.0)
+        elif size == 'medium':
+            count = 8
+            speed = 150
+            lifetime = (0.4, 0.6)
+            particle_size = (2.0, 3.0)
+        else:  # small
+            count = 5
+            speed = 100
+            lifetime = (0.2, 0.4)
+            particle_size = (1.0, 2.0)
+            
+        # Emit particles in a circle
+        self.emit_circular(
+            center=pos,
+            speed=speed,
+            color=(255, 165, 0),  # Orange
+            size=random.uniform(*particle_size),
+            lifetime=random.uniform(*lifetime),
+            count=count,
+            spread=360.0
+        )
     
     def emit_circular(self, center: pygame.Vector2, speed: float, color: tuple,
                      size: float, lifetime: float, count: int,
                      spread: float = 360.0) -> None:
-        """Emit particles in a circular pattern.
-        
-        Args:
-            center: Center position to emit from
-            speed: Base speed of particles
-            color: RGB color tuple
-            size: Size of particles
-            lifetime: How long particles should live
-            count: Number of particles to emit
-            spread: Angle in degrees to spread particles over (360 for full circle)
-        """
+        """Emit particles in a circular pattern."""
         for _ in range(count):
             # Create particle
             particle = Particle(self.game, lifetime, color, size)
@@ -64,18 +85,7 @@ class ParticleSystem:
     def emit_cone(self, pos: pygame.Vector2, direction: float, speed: float,
                   color: tuple, size: float, lifetime: float, count: int,
                   spread: float = 30.0) -> None:
-        """Emit particles in a cone pattern.
-        
-        Args:
-            pos: Position to emit from
-            direction: Base angle in degrees
-            speed: Base speed of particles
-            color: RGB color tuple
-            size: Size of particles
-            lifetime: How long particles should live
-            count: Number of particles to emit
-            spread: Total spread angle of cone in degrees
-        """
+        """Emit particles in a cone pattern."""
         half_spread = spread / 2
         for _ in range(count):
             # Create particle
