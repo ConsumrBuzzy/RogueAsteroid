@@ -112,22 +112,12 @@ class InputComponent(Component):
             )
             physics.apply_force(-thrust_dir * SHIP_ACCELERATION * 0.7)  # Reverse thrust is 70% as powerful
             
-            # Create thrust particles at front corners of ship
-            offset = thrust_dir * 15  # 15 pixels in front of ship
-            left_offset = pygame.Vector2(-thrust_dir.y, thrust_dir.x) * 10
-            right_offset = pygame.Vector2(thrust_dir.y, -thrust_dir.x) * 10
+            # Create thrust particles at front tip of ship
+            offset = thrust_dir * 20  # 20 pixels in front of ship
             
-            # Create particles at both front corners
+            # Create particles at front tip
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + offset + left_offset,
-                color=(255, 255, 255),  # White color
-                count=2,  # Small number of particles per frame
-                lifetime=(0.1, 0.3),  # Short-lived particles
-                speed_range=(50, 100),  # Moderate speed
-                size_range=(1, 2)  # Small particles
-            )
-            self.entity.game.particle_system.emit_circular(
-                position=transform.position + offset + right_offset,
+                position=transform.position + offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
@@ -145,19 +135,18 @@ class InputComponent(Component):
             transform.rotation -= rotation_change
             print(f"Rotating left: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on right corner
+            # Create thrust particles on right side
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at back-right corner
-            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 10  # Perpendicular to ship direction
-            back_offset = -ship_dir * 15
+            # Position at right side
+            right_offset = pygame.Vector2(-ship_dir.y, ship_dir.x) * 15  # Perpendicular to ship direction
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + back_offset + right_offset,
+                position=transform.position + right_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
@@ -175,19 +164,18 @@ class InputComponent(Component):
             transform.rotation += rotation_change
             print(f"Rotating right: change={rotation_change:.2f}, new rotation={transform.rotation:.2f}")
             
-            # Create thrust particles on left corner
+            # Create thrust particles on left side
             angle_rad = math.radians(transform.rotation)
             ship_dir = pygame.Vector2(
                 math.sin(angle_rad),
                 -math.cos(angle_rad)
             )
-            # Position at back-left corner
-            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 10  # Perpendicular to ship direction
-            back_offset = -ship_dir * 15
+            # Position at left side
+            left_offset = pygame.Vector2(ship_dir.y, -ship_dir.x) * 15  # Perpendicular to ship direction
             
             # Emit circular particles for thrust effect
             self.entity.game.particle_system.emit_circular(
-                position=transform.position + back_offset + left_offset,
+                position=transform.position + left_offset,
                 color=(255, 255, 255),  # White color
                 count=2,  # Small number of particles per frame
                 lifetime=(0.1, 0.3),  # Short-lived particles
