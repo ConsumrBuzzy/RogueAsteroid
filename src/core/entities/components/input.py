@@ -37,6 +37,9 @@ class InputComponent(Component):
     
     def handle_keydown(self, key: int) -> None:
         """Handle key press events."""
+        # Add key to pressed keys set
+        self.pressed_keys.add(key)
+        
         if self.control_scheme == 'arrows':
             if key == pygame.K_UP:
                 self._handle_forward_thrust()
@@ -189,6 +192,19 @@ class InputComponent(Component):
     
     def update(self, dt: float) -> None:
         """Handle continuous actions for held keys."""
+        # Handle continuous rotation
+        if self.control_scheme == 'arrows':
+            if pygame.K_LEFT in self.pressed_keys:
+                self._handle_rotate_left()
+            if pygame.K_RIGHT in self.pressed_keys:
+                self._handle_rotate_right()
+        else:  # WASD controls
+            if pygame.K_a in self.pressed_keys:
+                self._handle_rotate_left()
+            if pygame.K_d in self.pressed_keys:
+                self._handle_rotate_right()
+                
+        # Handle other continuous actions from key bindings
         for key in self.pressed_keys:
             if key in self.key_bindings:
                 for action, _, continuous in self.key_bindings[key]:
