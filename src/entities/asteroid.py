@@ -17,7 +17,7 @@ from src.core.constants import (
     WHITE,
     ASTEROID_SIZES
 )
-from src.entities.particle import Particle
+from src.core.logging import get_logger
 
 class Asteroid(Entity):
     """Asteroid entity that can be destroyed by bullets and split into smaller pieces."""
@@ -25,6 +25,7 @@ class Asteroid(Entity):
     def __init__(self, game, size: str, position: Union[pygame.Vector2, Tuple[float, float]], velocity: Optional[pygame.Vector2] = None):
         """Initialize the asteroid."""
         super().__init__(game)
+        self.logger = get_logger()
         self.size = size
         
         # Convert position tuple to Vector2 if needed
@@ -42,7 +43,7 @@ class Asteroid(Entity):
             )
         
         self._init_components(position, velocity)
-        print(f"Asteroid created: size={size}, pos={position}, vel={velocity}")  # Debug info
+        self.logger.debug(f"Asteroid created: size={size}, pos={position}, vel={velocity}")
     
     @classmethod
     def spawn_random(cls, game, ship_pos: pygame.Vector2) -> 'Asteroid':

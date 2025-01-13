@@ -1,6 +1,5 @@
 """Ship entity for the game."""
 import math
-import random
 import pygame
 from typing import TYPE_CHECKING, Optional
 from src.core.entities.base import Entity
@@ -29,10 +28,7 @@ from src.core.constants import (
     THRUST_OFFSET
 )
 from src.entities.bullet import Bullet
-from src.entities.particle import Particle
-
-# Debug flag
-DEBUG = False  # Set to True to enable debug output
+from src.core.logging import get_logger
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -44,7 +40,7 @@ class Ship(Entity):
     
     def __init__(self, game: 'Game'):
         super().__init__(game)
-        print("Initializing ship...")  # Debug info
+        self.logger = get_logger()
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
         self._invulnerable = False
@@ -59,36 +55,29 @@ class Ship(Entity):
         transform = self.add_component(TransformComponent)
         transform.position = pygame.Vector2(self.game.width / 2, self.game.height / 2)
         transform.rotation = 0.0
-        print(f"Transform component added: {transform}")  # Debug info
         
         # Render component for drawing
         render = self.add_component(RenderComponent)
         render.vertices = [(0, -20), (-10, 10), (10, 10)]  # Triangle shape
         render.color = WHITE
-        print(f"Render component added: {render}")  # Debug info
         
         # Physics component for thrust and momentum
         physics = self.add_component(PhysicsComponent)
         physics.max_speed = SHIP_MAX_SPEED
         physics.friction = SHIP_FRICTION
-        print(f"Physics component added: {physics}")  # Debug info
         
         # Collision component for hit detection
         collision = self.add_component(CollisionComponent, radius=15)
-        print(f"Collision component added: {collision}")  # Debug info
         
         # Screen wrap component to wrap around screen edges
         screen_wrap = self.add_component(ScreenWrapComponent)
-        print(f"Screen wrap component added: {screen_wrap}")  # Debug info
         
         # Effects component for invulnerability flash
         effects = self.add_component(EffectComponent)
-        print(f"Effects component added: {effects}")  # Debug info
         
         # Input component for controls
         self.input_component = self.add_component(InputComponent)
         self.update_controls()  # Initialize controls
-        print(f"Input component added: {self.input_component}")  # Debug info
     
     def update_controls(self) -> None:
         """Update control bindings based on current control scheme."""

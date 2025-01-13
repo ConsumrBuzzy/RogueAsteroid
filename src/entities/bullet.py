@@ -13,11 +13,10 @@ from src.core.entities.components import (
 )
 from src.core.constants import (
     WHITE,
-    WINDOW_WIDTH,
-    WINDOW_HEIGHT,
     ASTEROID_SIZES
 )
 from src.entities.asteroid import Asteroid
+from src.core.logging import get_logger
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -37,6 +36,7 @@ class Bullet(Entity):
             direction: Direction vector (will be normalized).
         """
         super().__init__(game)
+        self.logger = get_logger()
         self.lifetime = self.LIFETIME  # Time until bullet disappears
         # Normalize direction
         self.direction = direction.normalize()
