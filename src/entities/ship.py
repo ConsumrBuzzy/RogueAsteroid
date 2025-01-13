@@ -1,5 +1,6 @@
 """Ship entity for the game."""
 import math
+import random
 import pygame
 from typing import TYPE_CHECKING, Optional
 from src.core.entities.base import Entity
