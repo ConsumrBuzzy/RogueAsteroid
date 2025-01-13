@@ -48,7 +48,7 @@ class GameLoopManager:
         self.game.collision_manager.handle_collisions()
         
         # Update scoring
-        self.game.scoring.update()
+        self.game.scoring.update(self.dt)
         
         # Update state manager
         self.game.state_manager.update()
