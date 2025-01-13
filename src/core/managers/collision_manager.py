@@ -104,44 +104,44 @@ class CollisionManager:
         self.game.entity_manager.remove_entity(bullet)
         self.game.entity_manager.remove_entity(asteroid)
 
-    def _handle_asteroid_asteroid_collision(self, asteroid1: Asteroid, asteroid2: Asteroid):
+    def _handle_asteroid_asteroid_collision(self, asteroid1: 'Asteroid', asteroid2: 'Asteroid'):
         """Handle collision between two asteroids."""
-        physics1 = asteroid1.get_component(PhysicsComponent)
-        physics2 = asteroid2.get_component(PhysicsComponent)
+        # Get components
         transform1 = asteroid1.get_component(TransformComponent)
         transform2 = asteroid2.get_component(TransformComponent)
+        physics1 = asteroid1.get_component(PhysicsComponent)
+        physics2 = asteroid2.get_component(PhysicsComponent)
         
-        if not (physics1 and physics2 and transform1 and transform2):
+        if not all([transform1, transform2, physics1, physics2]):
             return
             
-        # Get positions for collision normal
+        # Get positions and velocities
         pos1 = pygame.Vector2(transform1.position)
         pos2 = pygame.Vector2(transform2.position)
-        diff = pos2 - pos1
-        
-        if diff.length() == 0:  # Prevent division by zero
-            normal = pygame.Vector2(1, 0)
-        else:
-            normal = diff.normalize()
-            
-        # Get velocities and masses
         vel1 = pygame.Vector2(physics1.velocity)
         vel2 = pygame.Vector2(physics2.velocity)
+        
+        # Calculate collision normal and relative velocity
+        normal = (pos1 - pos2)
+        distance = normal.length()
+        if distance == 0:  # Prevent division by zero
+            normal = pygame.Vector2(1, 0)
+        else:
+            normal = normal / distance
+            
+        rel_vel = vel1 - vel2
         
         # Get masses from asteroid sizes
         mass1 = ASTEROID_SIZES[asteroid1.size]['mass']
         mass2 = ASTEROID_SIZES[asteroid2.size]['mass']
         
-        # Calculate relative velocity
-        rel_vel = vel1 - vel2
-        
-        # Calculate collision response
-        restitution = 0.8  # More bouncy
-        
-        # Calculate impulse magnitude
+        # Calculate impulse
+        restitution = 0.8  # Bouncy collisions
         vel_along_normal = rel_vel.dot(normal)
+        
+        # Only resolve if objects are moving toward each other
         if vel_along_normal > 0:
-            return  # Skip if asteroids are moving apart
+            return
             
         # Calculate impulse scalar
         j = -(1 + restitution) * vel_along_normal
@@ -153,19 +153,18 @@ class CollisionManager:
         physics2.velocity = vel2 - (impulse / mass2)
         
         # Separate the asteroids (prevent overlap)
-        distance = pos1.distance_to(pos2)
-        combined_radius = (
-            asteroid1.get_component(CollisionComponent).radius +
-            asteroid2.get_component(CollisionComponent).radius
-        )
-        overlap = combined_radius - distance
-        percent = 0.5  # Penetration resolution percentage
-        separation = normal * (overlap * percent)
-        transform1.position -= separation
-        transform2.position += separation
+        collision1 = asteroid1.get_component(CollisionComponent)
+        collision2 = asteroid2.get_component(CollisionComponent)
+        if collision1 and collision2:
+            combined_radius = collision1.radius + collision2.radius
+            overlap = combined_radius - distance
+            if overlap > 0:
+                separation = normal * (overlap * 0.5)  # Move each asteroid half the overlap
+                transform1.position += separation
+                transform2.position -= separation
         
         # Add some spin based on collision angle and impulse magnitude
-        spin_factor = 0.5
+        spin_factor = 0.1  # Reduced spin factor for more stable rotations
         tangent = pygame.Vector2(-normal.y, normal.x)
-        physics1.angular_velocity = rel_vel.dot(tangent) * spin_factor
-        physics2.angular_velocity = -rel_vel.dot(tangent) * spin_factor 
+        physics1.angular_velocity += rel_vel.dot(tangent) * spin_factor
+        physics2.angular_velocity -= rel_vel.dot(tangent) * spin_factor 

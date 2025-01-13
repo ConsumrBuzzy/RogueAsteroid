@@ -51,8 +51,8 @@ class Asteroid(Entity):
         
         # Choose a random angle and distance from the ship
         angle = random.uniform(0, 2 * math.pi)
-        min_distance = 150  # Increased minimum safe distance
-        max_distance = 250  # Increased maximum spawn distance
+        min_distance = 200  # Increased minimum safe distance
+        max_distance = 300  # Increased maximum spawn distance
         distance = random.uniform(min_distance, max_distance)
         
         # Calculate spawn position
@@ -67,10 +67,10 @@ class Asteroid(Entity):
         ).normalize()
         
         # Generate velocity angle that's not toward the ship
-        # Calculate forbidden angle range (toward ship ±45 degrees)
+        # Calculate forbidden angle range (toward ship ±60 degrees)
         ship_angle = math.atan2(to_ship.y, to_ship.x)
-        min_allowed = ship_angle + math.pi/4  # +45 degrees
-        max_allowed = ship_angle + 7*math.pi/4  # +315 degrees
+        min_allowed = ship_angle + math.pi/3  # +60 degrees
+        max_allowed = ship_angle + 5*math.pi/3  # +300 degrees
         
         # Choose a random angle outside the forbidden range
         velocity_angle = random.uniform(min_allowed, max_allowed)
@@ -143,6 +143,13 @@ class Asteroid(Entity):
             orig_velocity = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
         orig_speed = orig_velocity.length()
         
+        # Get ship position for avoiding player
+        ship_pos = None
+        if self.game.entity_manager.ship:
+            ship_transform = self.game.entity_manager.ship.get_component(TransformComponent)
+            if ship_transform:
+                ship_pos = ship_transform.position
+        
         # Determine new size
         if self.size == 'large':
             new_size = 'medium'
@@ -172,6 +179,17 @@ class Asteroid(Entity):
             offset_distance = ASTEROID_SIZES[new_size]['radius'] * 2  # Double the offset
             new_pos = pygame.Vector2(transform.position) + (spread_dir * offset_distance)
             
+            # If ship exists, adjust velocity to avoid it
+            if ship_pos:
+                to_ship = (ship_pos - new_pos).normalize()
+                # If moving too much toward ship, rotate velocity away
+                if new_vel.dot(to_ship) > 0.5:  # If moving more than 45° toward ship
+                    angle = math.pi/3  # 60 degrees
+                    new_vel = pygame.Vector2(
+                        new_vel.x * math.cos(angle) - new_vel.y * math.sin(angle),
+                        new_vel.x * math.sin(angle) + new_vel.y * math.cos(angle)
+                    )
+            
             # Create new asteroid with offset position and new velocity
             new_asteroid = Asteroid(
                 self.game,
@@ -180,7 +198,7 @@ class Asteroid(Entity):
                 new_vel
             )
             pieces.append(new_asteroid)
-            
+        
         return pieces
     
     def _create_destruction_particles(self):
