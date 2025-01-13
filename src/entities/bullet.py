@@ -81,7 +81,7 @@ class Bullet(Entity):
             )
             
             # Set initial position
-            transform = particle.get_component('transform')
+            transform = particle.get_component(TransformComponent)
             if transform:
                 # Convert hit_pos to proper format if needed
                 if isinstance(hit_pos, pygame.Vector2):
@@ -95,7 +95,7 @@ class Bullet(Entity):
                 print(f"Particle {i} position: {transform.position}")  # Debug info
             
             # Set velocity through physics component
-            physics = particle.get_component('physics')
+            physics = particle.get_component(PhysicsComponent)
             if physics:
                 angle = random.uniform(0, 2 * math.pi)
                 speed = random.uniform(50, 100)
@@ -125,14 +125,14 @@ class Bullet(Entity):
             return
         
         # Check for collisions with asteroids
-        collision = self.get_component('collision')
+        collision = self.get_component(CollisionComponent)
         if collision:
             for entity in self.game.entities[:]:  # Copy list to allow removal
                 if isinstance(entity, Asteroid):
-                    other_collision = entity.get_component('collision')
+                    other_collision = entity.get_component(CollisionComponent)
                     if other_collision and collision.check_collision(other_collision):
                         # Get position before removing asteroid
-                        transform = entity.get_component('transform')
+                        transform = entity.get_component(TransformComponent)
                         if transform:
                             hit_pos = pygame.Vector2(transform.position)
                             # Create impact particles first

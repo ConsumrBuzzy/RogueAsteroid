@@ -155,7 +155,7 @@ class Ship(Entity):
     
     def handle_shoot(self) -> None:
         """Handle shoot input."""
-        if len(self.game.bullets) >= MAX_BULLETS or self.shoot_timer > 0:
+        if len(self.game.bullets) >= MAX_BULLETS:
             return
             
         transform = self.get_component(TransformComponent)
@@ -164,10 +164,10 @@ class Ship(Entity):
             return
             
         # Calculate bullet direction based on ship's rotation
-        angle_rad = math.radians(transform.rotation - 90)  # -90 because ship points up at 0 degrees
+        angle_rad = math.radians(transform.rotation)
         direction = pygame.Vector2(
-            math.cos(angle_rad),
-            math.sin(angle_rad)
+            math.sin(angle_rad),
+            -math.cos(angle_rad)
         )
         
         # Create bullet at ship's position
@@ -180,6 +180,9 @@ class Ship(Entity):
         # Add to tracking lists
         self.game.bullets.append(bullet)
         self.game.entities.append(bullet)
+        
+        # Play shoot sound
+        self.game.audio.play_shoot()
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
