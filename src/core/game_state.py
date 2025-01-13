@@ -4,7 +4,8 @@ import pygame
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
 from src.core.entities.components import (
     RenderComponent,
-    ParticleComponent
+    ParticleComponent,
+    PhysicsComponent
 )
 from src.core.logging import get_logger
 
@@ -60,6 +61,20 @@ class StateManager:
                 # Skip the next input event to prevent auto-start
                 if self.current_state == GameState.NEW_HIGH_SCORE:
                     pygame.event.clear(pygame.KEYDOWN)  # Clear any pending key events
+        elif new_state == GameState.PAUSED:
+            # Store current velocities and pause all entities
+            for entity in self.game.entity_manager.entities:
+                physics = entity.get_component(PhysicsComponent)
+                if physics:
+                    physics.paused = True
+            self.logger.debug("Game paused - all entities frozen")
+        elif new_state == GameState.PLAYING and self.current_state == GameState.PAUSED:
+            # Restore velocities and unpause all entities
+            for entity in self.game.entity_manager.entities:
+                physics = entity.get_component(PhysicsComponent)
+                if physics:
+                    physics.paused = False
+            self.logger.debug("Game resumed - all entities unfrozen")
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
         if self.current_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
