@@ -59,7 +59,5 @@ class InputManager:
     def _handle_paused_input(self, event: pygame.event.Event) -> None:
         """Handle input in the paused state."""
         if event.type == pygame.KEYDOWN:
-            if event.key in (pygame.K_ESCAPE, pygame.K_p):
-                self.game.state_manager.change_state(GameState.PLAYING)
-            elif event.key == pygame.K_q:
-                self.game.state_manager.change_state(GameState.MAIN_MENU) 
+            # Let state manager handle all pause menu input
+            self.game.state_manager.handle_input(event) 

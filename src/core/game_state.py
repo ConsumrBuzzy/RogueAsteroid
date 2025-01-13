@@ -129,17 +129,23 @@ class StateManager:
         """Handle input in the playing state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_p):
             self.change_state(GameState.PAUSED)
+            return True
         elif event.key == pygame.K_o:
             self.change_state(GameState.OPTIONS)
+            return True
         elif event.key == pygame.K_h:
             self.change_state(GameState.HIGH_SCORE)
+            return True
+        return False
     
     def _handle_pause_input(self, event):
         """Handle input in the pause state."""
         if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.PAUSED])
+            return True
         elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.PAUSED])
+            return True
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # Resume
                 self.change_state(GameState.PLAYING)
@@ -147,21 +153,29 @@ class StateManager:
                 self.change_state(GameState.OPTIONS)
             elif self.selected_option == 2:  # Main Menu
                 self.change_state(GameState.MAIN_MENU)
+            return True
         elif event.key in (pygame.K_ESCAPE, pygame.K_p, pygame.K_r):  # Added R for resume
             self.change_state(GameState.PLAYING)
+            return True
         elif event.key == pygame.K_o:  # O for options
             self.change_state(GameState.OPTIONS)
+            return True
         elif event.key == pygame.K_m:  # M for main menu
             self.change_state(GameState.MAIN_MENU)
+            return True
         elif event.key == pygame.K_h:  # H for high scores
             self.change_state(GameState.HIGH_SCORE)
+            return True
+        return False
     
     def _handle_options_input(self, event):
         """Handle input in the options menu."""
         if event.key == pygame.K_UP:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
+            return True
         elif event.key == pygame.K_DOWN:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.OPTIONS])
+            return True
         elif event.key == pygame.K_RETURN:
             if self.selected_option == 0:  # Controls
                 self.game.toggle_control_scheme()
@@ -171,13 +185,18 @@ class StateManager:
                 self.menu_options[GameState.OPTIONS][1] = f'Sound: {"ON" if self.game.settings["sound"] else "OFF"}'
             elif self.selected_option == 2:  # Back
                 self.change_state(self.previous_state or GameState.MAIN_MENU)
+            return True
         elif event.key == pygame.K_ESCAPE:
             self.change_state(self.previous_state or GameState.MAIN_MENU)
+            return True
+        return False
     
     def _handle_high_score_input(self, event):
         """Handle input in the high score state."""
         if event.key in (pygame.K_ESCAPE, pygame.K_RETURN, pygame.K_KP_ENTER):
             self.change_state(GameState.MAIN_MENU)
+            return True
+        return False
     
     def _handle_new_high_score_input(self, event):
         """Handle input in new high score state."""
@@ -262,10 +281,10 @@ class StateManager:
                     if particle:
                         particle.draw(screen)
                 except Exception as e:
-                    print(f"Error drawing entity {entity}: {e}")  # Debug info
+                    self.logger.error(f"Error drawing entity {entity}: {str(e)}")
                     continue
         except Exception as e:
-            print(f"Error drawing game entities: {e}")  # Debug info
+            self.logger.error(f"Error drawing game entities: {str(e)}")
         
         try:
             # Draw HUD
@@ -283,7 +302,7 @@ class StateManager:
             level_text = font.render(f"Level: {self.game.level}", True, WHITE)
             screen.blit(level_text, (10, 90))
         except Exception as e:
-            print(f"Error drawing HUD: {e}")  # Debug info
+            self.logger.error(f"Error drawing HUD: {str(e)}")
     
     def _draw_pause_overlay(self, screen):
         """Draw the pause menu overlay."""
