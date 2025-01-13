@@ -15,7 +15,6 @@ from src.core.managers import (
 from src.entities.particle import Particle
 from src.core.entities.components import (
     TransformComponent,
-    RenderComponent,
     PhysicsComponent
 )
 from src.core.constants import (
@@ -27,8 +26,6 @@ from src.core.constants import (
 class Game:
     def __init__(self):
         """Initialize the game."""
-        print("Game initialized")
-        
         # Initialize pygame and display
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
@@ -47,12 +44,10 @@ class Game:
         # Initialize services
         self.audio = AudioManager()
         self.high_scores = HighScoreManager()
-        print("Services initialized")
         
         # Initialize systems
         self.particle_system = ParticleSystem(self)
         self.spawner = Spawner(self)
-        print("Systems initialized")
         
         # Initialize managers
         self.entity_manager = EntityManager(self)
@@ -60,28 +55,20 @@ class Game:
         self.spawn_manager = SpawnManager(self)
         self.input_manager = InputManager(self)
         self.game_loop = GameLoopManager(self)
-        print("Managers initialized")
         
         # Initialize scoring system
         self.scoring = ScoringSystem()
-        print("Scoring system initialized")
         
         # Initialize game properties
         self.level = 1
         self.lives = STARTING_LIVES
         self.respawn_timer = 0.0
-        print(f"Game initialized with {self.lives} lives")
         
         # Initialize state management
         self.state_manager = StateManager(self)
-        print("StateManager initialized")
         
-        print("Game initialization complete")
-        print(f"Game initialized with settings: {self.settings}")
-        
-        # Now set initial state
+        # Set initial state
         self.state_manager.change_state(GameState.MAIN_MENU)
-        print(f"Initial state set to: {self.state_manager.current_state}")
     
     @property
     def state(self):
@@ -105,17 +92,12 @@ class Game:
     
     def new_game(self):
         """Start a new game."""
-        print("Starting new game...")
         self.reset_game()
-        print("Spawning player ship...")
         self.spawn_manager.spawn_ship()
-        print("Spawning initial asteroids...")
         self.spawner.start_wave()
     
     def reset_game(self):
         """Reset the game state."""
-        print("Resetting game...")
-        
         # Clear entities
         self.entity_manager.clear_all()
         
@@ -123,7 +105,6 @@ class Game:
         self.level = 1
         self.lives = STARTING_LIVES
         self.scoring.reset()
-        print("Game state reset complete")
     
     def pause(self):
         """Pause the game."""
@@ -142,15 +123,12 @@ class Game:
     
     def lose_life(self):
         """Handle losing a life."""
-        print(f"Losing life. Lives remaining: {self.lives - 1}")
         self.lives -= 1
         
         if self.lives <= 0:
-            print("Game Over - No lives remaining")
             # Change to game over state - high score check happens there
             self.state_manager.change_state(GameState.GAME_OVER)
         else:
-            print(f"Respawning with {self.lives} lives remaining")
             self.spawn_manager.respawn_ship()
     
     def toggle_control_scheme(self):
@@ -227,12 +205,10 @@ class Game:
     def _complete_level(self):
         """Handle level completion."""
         self.level += 1
-        print(f"Level {self.level} completed!")
         
         # Award extra life every level, up to maximum of 99
         if self.lives < 99:
             self.lives += 1
-            print(f"Extra life awarded! Lives: {self.lives}")
             
         # Spawn new wave of asteroids for next level
         self.spawner.start_wave()
