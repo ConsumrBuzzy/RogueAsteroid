@@ -49,7 +49,12 @@ class Bullet(Entity):
         # Transform component for position and movement
         transform = self.add_component(TransformComponent)
         transform.position = position
-        transform.velocity = direction * self.SPEED
+        
+        # Physics component for movement
+        physics = self.add_component(PhysicsComponent)
+        physics.velocity = direction * self.SPEED
+        physics.friction = 0.0  # No friction for bullets
+        physics.max_speed = self.SPEED  # Don't let bullets slow down
         
         # Render component for drawing
         render = self.add_component(RenderComponent)
