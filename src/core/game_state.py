@@ -53,9 +53,10 @@ class StateManager:
                 print("Resuming game")  # Debug info
         elif new_state == GameState.GAME_OVER:
             print("Game Over - Score:", self.game.score)  # Debug info
-            # Check for high score
+            # Check for high score immediately
             if self.game.high_scores.is_high_score(self.game.score):
                 print("New high score!")  # Debug info
+                self.high_score_name = ""  # Reset name input
                 new_state = GameState.NEW_HIGH_SCORE
         
         # Set new state
@@ -183,7 +184,8 @@ class StateManager:
         """Handle input in new high score state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER) and self.high_score_name.strip():
             # Save high score and return to main menu
-            self.game.scoring.add_high_score(self.high_score_name.strip(), self.game.level)
+            self.game.high_scores.add_score(self.high_score_name.strip(), self.game.score)
+            print(f"Saved high score: {self.high_score_name} - {self.game.score}")  # Debug info
             self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_BACKSPACE:
             self.high_score_name = self.high_score_name[:-1]
@@ -193,13 +195,8 @@ class StateManager:
     def _handle_game_over_input(self, event):
         """Handle input in game over state."""
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
-            if self.game.scoring.check_high_score():
-                print("New high score achieved!")  # Debug info
-                self.high_score_name = ""  # Reset name input
-                self.change_state(GameState.NEW_HIGH_SCORE)
-            else:
-                print("Returning to main menu")  # Debug info
-                self.change_state(GameState.MAIN_MENU)
+            print("Returning to main menu")  # Debug info
+            self.change_state(GameState.MAIN_MENU)
     
     def draw(self, screen):
         """Draw the current state."""
