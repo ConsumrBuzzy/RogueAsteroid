@@ -43,9 +43,14 @@ class StateManager:
         
         # Handle cleanup for old state
         if new_state == GameState.GAME_OVER:
-            self.game.entity_manager.clear_all(keep_ship=False)
             self.logger.info(f"Game Over - Final Score: {self.game.scoring.current_score}")
-            
+            # Clear any remaining entities except the ship
+            self.game.entity_manager.clear_all(keep_ship=False)
+            # Check for high score immediately
+            if self.game.scoring.is_high_score():
+                self.logger.info("New high score achieved!")
+                self.high_score_name = ""  # Reset name input
+                new_state = GameState.NEW_HIGH_SCORE
         elif new_state == GameState.MAIN_MENU:
             if self.current_state in [GameState.GAME_OVER, GameState.NEW_HIGH_SCORE]:
                 # Clear all entities when returning to main menu from game over
