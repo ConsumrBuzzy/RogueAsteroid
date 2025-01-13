@@ -38,7 +38,8 @@ class Game:
                 'width': self.width,
                 'height': self.height
             },
-            'controls': 'arrows'  # Default to arrow keys
+            'controls': 'arrows',  # Default to arrow keys
+            'sound': False  # Default to sound off
         }
         
         # Initialize services
@@ -484,3 +485,8 @@ class Game:
                 self.asteroids.remove(entity)
             if entity == self.ship:
                 self.ship = None
+    
+    def toggle_sound(self):
+        """Toggle sound on/off."""
+        self.settings['sound'] = not self.settings['sound']
+        self.audio.enabled = self.settings['sound']

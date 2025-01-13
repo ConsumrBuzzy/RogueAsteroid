@@ -27,7 +27,11 @@ class StateManager:
         self.selected_option = 0
         self.menu_options = {
             GameState.MAIN_MENU: ['New Game', 'High Scores', 'Options', 'Quit'],
-            GameState.OPTIONS: [f'Control Scheme: {self.game.settings["controls"].upper()}', 'Back'],
+            GameState.OPTIONS: [
+                f'Control Scheme: {self.game.settings["controls"].upper()}',
+                f'Sound: {"ON" if self.game.settings["sound"] else "OFF"}',
+                'Back'
+            ],
             GameState.PAUSED: ['Resume', 'Options', 'Main Menu']
         }
         self.high_score_name = ""  # For new high score entry
@@ -146,34 +150,22 @@ class StateManager:
             self.change_state(GameState.HIGH_SCORE)
     
     def _handle_options_input(self, event):
-        """Handle input in the options state."""
-        if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
+        """Handle input in the options menu."""
+        if event.key == pygame.K_UP:
             self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
-        elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
+        elif event.key == pygame.K_DOWN:
             self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.OPTIONS])
-        elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
-            if self.selected_option == 0:  # Control scheme toggle
-                # Toggle between arrows and wasd
-                new_scheme = 'wasd' if self.game.settings['controls'] == 'arrows' else 'arrows'
-                self.game.settings['controls'] = new_scheme
-                # Update menu text
-                self.menu_options[GameState.OPTIONS][0] = f'Control Scheme: {new_scheme.upper()}'
-                # Update ship controls if it exists
-                if self.game.ship and hasattr(self.game.ship, 'update_controls'):
-                    self.game.ship.update_controls()
-                    print(f"Updated ship controls to {new_scheme}")  # Debug info
-            else:  # Back
-                # Return to previous state (MAIN_MENU or PLAYING)
-                if self.previous_state == GameState.PLAYING:
-                    self.change_state(GameState.PLAYING)
-                else:
-                    self.change_state(GameState.MAIN_MENU)
+        elif event.key == pygame.K_RETURN:
+            if self.selected_option == 0:  # Controls
+                self.game.toggle_control_scheme()
+                self.menu_options[GameState.OPTIONS][0] = f'Control Scheme: {self.game.settings["controls"].upper()}'
+            elif self.selected_option == 1:  # Sound
+                self.game.toggle_sound()
+                self.menu_options[GameState.OPTIONS][1] = f'Sound: {"ON" if self.game.settings["sound"] else "OFF"}'
+            elif self.selected_option == 2:  # Back
+                self.change_state(self.previous_state or GameState.MAIN_MENU)
         elif event.key == pygame.K_ESCAPE:
-            # Return to previous state (MAIN_MENU or PLAYING)
-            if self.previous_state == GameState.PLAYING:
-                self.change_state(GameState.PLAYING)
-            else:
-                self.change_state(GameState.MAIN_MENU)
+            self.change_state(self.previous_state or GameState.MAIN_MENU)
     
     def _handle_high_score_input(self, event):
         """Handle input in the high score state."""
