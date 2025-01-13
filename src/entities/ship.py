@@ -218,16 +218,16 @@ class Ship(Entity):
             self.blink_timer += dt
             render = self.get_component(RenderComponent)
             if render:
-                # Blink twice per second (0.25s on, 0.25s off)
-                blink_period = 0.5
+                # Blink 5 times per second
+                blink_period = 0.2
                 should_show = (self.blink_timer % blink_period) < (blink_period / 2)
-                render.alpha = 255 if should_show else 64
+                render.visible = should_show
         else:
             # Reset to normal when not invulnerable
             self._invulnerable = False
             render = self.get_component(RenderComponent)
             if render:
-                render.alpha = 255  # Restore full opacity
+                render.visible = True  # Make sure ship is visible
             self.blink_timer = 0.0  # Reset blink timer
     
     @property
@@ -241,16 +241,16 @@ class Ship(Entity):
         if value:
             self.invulnerable_timer = SHIP_INVULNERABLE_TIME
             self.blink_timer = 0.0  # Reset blink timer
-            # Start blinking immediately
+            # Start with ship invisible
             render = self.get_component(RenderComponent)
             if render:
-                render.alpha = 64  # Start with low visibility
+                render.visible = False
         else:
             self.invulnerable_timer = 0.0
             self.blink_timer = 0.0
             render = self.get_component(RenderComponent)
             if render:
-                render.alpha = 255
+                render.visible = True
     
     def fire_bullet(self):
         """Fire a bullet in the direction the ship is facing."""
