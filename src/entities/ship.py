@@ -18,6 +18,7 @@ from src.core.constants import (
     SHIP_MAX_SPEED,
     SHIP_ROTATION_SPEED,
     SHIP_FRICTION,
+    SHIP_INVULNERABLE_TIME,
     WHITE,
     MAX_BULLETS,
     THRUST_COLORS,
@@ -209,19 +210,19 @@ class Ship(Entity):
             self.shoot_timer -= dt
             
         # Update invulnerability and blinking
-        if self.invulnerable:  # Use property to check both timer and flag
-            if self.invulnerable_timer > 0:
-                self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
             
             # Create blinking effect during invulnerability
             render = self.get_component(RenderComponent)
             if render:
                 # Blink 3 times per second (6 changes per second)
                 blink_rate = 6
-                should_show = int(self.game.game_loop.dt * blink_rate) % 2 == 0
+                should_show = int(self.invulnerable_timer * blink_rate) % 2 == 0
                 render.alpha = 255 if should_show else 64  # Alternate between visible and mostly transparent
         else:
             # Reset to normal when not invulnerable
+            self._invulnerable = False
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 255  # Restore full opacity
@@ -229,17 +230,22 @@ class Ship(Entity):
     @property
     def invulnerable(self) -> bool:
         """Get invulnerability status."""
-        return self._invulnerable or self.invulnerable_timer > 0
+        return self.invulnerable_timer > 0
     
     @invulnerable.setter
     def invulnerable(self, value: bool) -> None:
         """Set invulnerability status."""
-        self._invulnerable = value
         if value:
+            self.invulnerable_timer = SHIP_INVULNERABLE_TIME
             # Start blinking immediately when invulnerability is set
             render = self.get_component(RenderComponent)
             if render:
                 render.alpha = 64  # Start with low visibility
+        else:
+            self.invulnerable_timer = 0.0
+            render = self.get_component(RenderComponent)
+            if render:
+                render.alpha = 255
     
     def fire_bullet(self):
         """Fire a bullet in the direction the ship is facing."""
