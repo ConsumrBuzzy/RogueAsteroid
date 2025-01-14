@@ -1,417 +1,1011 @@
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Logging system initialized
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Log directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Runtime logs directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs\runtime
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Initializing game
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Game settings initialized: {'window': {'width': 800, 'height': 600}, 'controls': 'arrows', 'sound': False}
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Audio manager initialized (sound disabled by default)
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Ensured data directory exists
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Loaded 9 high scores from data\highscores.json
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - High score manager initialized with 9 scores
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Game services initialized
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Systems initialized
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Managers initialized
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Game properties initialized with 3 lives
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Initializing state manager
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - State manager initialized
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Changing state from None to GameState.MAIN_MENU
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Game initialization complete
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Starting game loop
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Main menu input: 13
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Selected menu option: 0
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Starting new game
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Spawning new ship
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Key bindings set up for arrows scheme
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Input component initialized with arrows controls
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Initialized ship with control scheme: arrows
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Added entity: Ship
-2025-01-12 23:45:30 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.PLAYING
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB305D00>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB305DC0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB305640>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB305E50>
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[786.516, 600], vel=[-93.6409, -3.02615]
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:30 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB3062A0>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB306600>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB306630>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB306660>
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[438.332, 600], vel=[-66.7731, 72.0528]
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.092, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB306E70>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB307020>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB307050>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB307080>
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[289.499, 600], vel=[5.85256, 78.2227]
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:31 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB307860>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB3079E0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB307A10>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB307A40>
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[800, 206.154], vel=[-63.2624, -48.2245]
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:32 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Score updated: 3 (+3)
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB32EE70>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB32EFC0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB32EFF0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB32F020>
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[313.919, 165.968], vel=[-154.233, 31.8319]
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB32F0B0>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB32F260>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB32F290>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB32F2C0>
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[393.365, 175.371], vel=[-3.49523, 117.868]
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Bullet fired
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Score updated: 5 (+2)
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB32D700>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB32D580>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB32D610>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB32D5E0>
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[370.958, 256.225], vel=[-164.595, 54.1051]
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x000002A8FB32D4C0>, render=<src.core.entities.components.render.RenderComponent object at 0x000002A8FB32D3A0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x000002A8FB32D310>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x000002A8FB32D2B0>
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[410.941, 257.411], vel=[32.2968, 184.337]
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 2
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 1
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Ship hit by asteroid
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Added entity: Particle
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 0
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Game over - No lives remaining
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.GAME_OVER
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - Game Over - Final Score: 5
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Cleared 68 entities
-2025-01-12 23:45:33 -    DEBUG -           logging.py:  54 - Score 5 qualifies (fewer than 10 scores)
-2025-01-12 23:45:33 -     INFO -           logging.py:  58 - New high score achieved!
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Adding high score: 5 by R
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Saved 10 high scores to data\highscores.json
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - High score saved successfully
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Saved high score: R - 5
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Score reset from 5 to 0
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Changing state from GameState.NEW_HIGH_SCORE to GameState.MAIN_MENU
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Resetting game state
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Cleared 0 entities
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Main menu input: 1073741905
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Main menu input: 13
-2025-01-12 23:45:35 -    DEBUG -           logging.py:  54 - Selected menu option: 1
-2025-01-12 23:45:35 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.HIGH_SCORE
-2025-01-12 23:45:37 -     INFO -           logging.py:  58 - Changing state from GameState.HIGH_SCORE to GameState.MAIN_MENU
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Logging system initialized
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Log directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Runtime logs directory: c:\Users\Admin\OneDrive\Documents\GitHub\RogueAsteroid\logs\runtime
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Initializing game
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Game settings initialized: {'window': {'width': 800, 'height': 600}, 'controls': 'arrows', 'sound': False}
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Audio manager initialized (sound disabled by default)
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Ensured data directory exists
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Loaded 10 high scores from data\highscores.json
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - High score manager initialized with 10 scores
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Game services initialized
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Systems initialized
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Managers initialized
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Game properties initialized with 3 lives
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Initializing state manager
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - State manager initialized
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Changing state from None to GameState.MAIN_MENU
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Game initialization complete
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Starting game loop
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Main menu input: 13
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Selected menu option: 0
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Starting new game
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Resetting game state
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Spawning new ship
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Key bindings set up for arrows scheme
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Input component initialized with arrows controls
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Initialized ship with control scheme: arrows
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Added entity: Ship
+2025-01-12 23:46:49 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.PLAYING
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14A94F0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14A9F10>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C1476AB0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14A9F40>
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[0, 410.371], vel=[94.9087, -10.529]
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:49 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14AA7B0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14AA960>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14AA990>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14AA9C0>
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[583.964, 0], vel=[-13.1426, -67.3296]
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14AB1D0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14AB410>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14AB440>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14AB470>
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[19.6148, 600], vel=[55.5228, 49.6863]
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:50 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14C4620>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14C4710>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14C4740>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14C4770>
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[800, 99.9845], vel=[-27.5692, -53.1801]
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Score updated: 3 (+3)
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14C7A10>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14C7B60>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14C7B90>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14C7BC0>
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[829.143, 69.2902], vel=[108.527, -89.9977]
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14C7C50>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14C7E00>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14C7E30>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14C7E60>
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[758.12, 106.11], vel=[-93.8252, -95.5481]
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Score updated: 6 (+3)
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14D66C0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14D6810>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14D6840>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14D6870>
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[188.344, 429.722], vel=[63.9301, 143.248]
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14D6900>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14D6AB0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14D6AE0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14D6B10>
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[179.523, 350.209], vel=[131.81, -37.6658]
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:51 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Score updated: 8 (+2)
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14E1DC0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14E1F10>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14E1F40>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14E1F70>
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[256.722, 348.949], vel=[-78.2477, 179.459]
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14E2000>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14E21B0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14E21E0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14E2210>
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[245.732, 310.489], vel=[164.14, -71.083]
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.018, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=1
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:52 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Score updated: 9 (+1)
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Hit asteroid size small, awarded 1 points
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Score updated: 12 (+3)
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Hit asteroid size large, awarded 3 points
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14E3470>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14E3320>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14E32C0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14E3290>
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[578.801, 365.907], vel=[98.0097, -54.0788]
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14E2E40>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14E3080>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14E3020>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14E2FF0>
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=medium, pos=[500.283, 381.234], vel=[-40.0159, -98.1946]
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size medium
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Score updated: 14 (+2)
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Hit asteroid size medium, awarded 2 points
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14D77D0>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14D7920>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14D7890>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14D7800>
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[504.078, 337.551], vel=[152.968, -119.588]
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C14D6C30>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C14D74D0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C14D7530>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C14D75F0>
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Asteroid created: size=small, pos=[467.036, 352.646], vel=[-125.29, -164.408]
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Created new asteroid piece size small
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Asteroid
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:53 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Removed entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 2
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 1
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 0
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Game over - No lives remaining
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.GAME_OVER
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - Game Over - Final Score: 14
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Cleared 55 entities
+2025-01-12 23:46:54 -    DEBUG -           logging.py:  54 - Score 14 qualifies (beats lowest score 5)
+2025-01-12 23:46:54 -     INFO -           logging.py:  58 - New high score achieved!
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - Adding high score: 14 by RRR
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Saved 10 high scores to data\highscores.json
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - High score saved successfully
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - Saved high score: RRR - 14
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - Resetting game state
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Score reset from 14 to 0
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - Changing state from GameState.NEW_HIGH_SCORE to GameState.MAIN_MENU
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:46:55 -     INFO -           logging.py:  58 - Resetting game state
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:46:55 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Main menu input: 13
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Selected menu option: 0
+2025-01-12 23:46:56 -     INFO -           logging.py:  58 - Starting new game
+2025-01-12 23:46:56 -     INFO -           logging.py:  58 - Resetting game state
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Cleared 0 entities
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Score reset from 0 to 0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Spawning new ship
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Key bindings set up for arrows scheme
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Input component initialized with arrows controls
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Initialized ship with control scheme: arrows
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Added entity: Ship
+2025-01-12 23:46:56 -     INFO -           logging.py:  58 - Changing state from GameState.MAIN_MENU to GameState.PLAYING
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C1500290>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C15003E0>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C1500410>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C1500470>
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[0, 303.586], vel=[40.5934, 35.019]
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C1500A10>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C1500B30>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C1500B60>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C1500BC0>
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[606.329, 600], vel=[2.34934, 73.7898]
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:56 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=-1
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C1501010>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C1501130>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C1501160>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C15011C0>
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[46.7599, 600], vel=[72.6316, -0.983103]
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Asteroid components initialized: transform=<src.core.entities.components.transform.TransformComponent object at 0x00000267C1501520>, render=<src.core.entities.components.render.RenderComponent object at 0x00000267C1501670>, collision=<src.core.entities.components.collision.CollisionComponent object at 0x00000267C15016A0>, screen_wrap=<src.core.entities.components.screen_wrap.ScreenWrapComponent object at 0x00000267C1501700>
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Asteroid created: size=large, pos=[0, 542.936], vel=[96.4725, 23.9181]
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Added entity: Asteroid
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:57 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:58 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Added entity: Bullet
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Bullet fired
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:46:59 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.016, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Removed entity: Bullet
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 2
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 1
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Updated ship input with dt=0.017, rotation_direction=0
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Ship hit by asteroid
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Added entity: Particle
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Life lost. Remaining lives: 0
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Game over - No lives remaining
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Changing state from GameState.PLAYING to GameState.GAME_OVER
+2025-01-12 23:47:00 -     INFO -           logging.py:  58 - Game Over - Final Score: 0
+2025-01-12 23:47:00 -    DEBUG -           logging.py:  54 - Cleared 51 entities

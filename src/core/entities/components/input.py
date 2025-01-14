@@ -57,7 +57,7 @@ class InputComponent(Component):
         def apply_thrust():
             # Calculate thrust direction based on ship rotation
             angle = math.radians(transform.rotation)
-            thrust_dir = pygame.Vector2(-math.sin(angle), -math.cos(angle))
+            thrust_dir = pygame.Vector2(math.sin(angle), math.cos(angle))
             physics.apply_force(thrust_dir * SHIP_ACCELERATION)
             
         # Define shoot function
