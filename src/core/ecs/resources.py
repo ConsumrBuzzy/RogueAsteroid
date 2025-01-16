@@ -30,6 +30,8 @@ class GameState:
     level: int = 1
     lives: int = 3
     paused: bool = False
+    quit: bool = False
+    game_over: bool = False
 
 @dataclass
 class SpriteResource:
@@ -42,6 +44,31 @@ class AudioResource:
     """Resource for managing game audio."""
     sounds: Dict[str, pygame.mixer.Sound] = field(default_factory=dict)
     music: Dict[str, str] = field(default_factory=dict)  # Music paths
+
+@dataclass
+class MenuResource:
+    """Resource for managing menu state."""
+    active: bool = True
+    current_menu: str = "main"  # main, pause, game_over
+    selected_item: int = 0
+    menu_items: Dict[str, list] = field(default_factory=lambda: {
+        "main": [
+            ("Start Game", "start"),
+            ("High Scores", "scores"),
+            ("Settings", "settings"),
+            ("Quit", "quit")
+        ],
+        "pause": [
+            ("Resume", "resume"),
+            ("Settings", "settings"),
+            ("Quit to Menu", "menu")
+        ],
+        "game_over": [
+            ("Play Again", "start"),
+            ("High Scores", "scores"),
+            ("Quit to Menu", "menu")
+        ]
+    })
 
 class Resources:
     """

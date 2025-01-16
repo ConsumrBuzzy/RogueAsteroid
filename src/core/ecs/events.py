@@ -30,7 +30,7 @@ class ScoreEvent(Event):
 
 T = TypeVar('T', bound=Event)
 
-class EventEmitter:
+class EventManager:
     """
     Handles event subscription and emission.
     Allows for decoupled communication between systems.

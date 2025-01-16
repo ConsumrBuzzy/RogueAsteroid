@@ -14,7 +14,7 @@ from .resources import WindowInfo, GameState
 from .events import CollisionEvent, ScoreEvent
 from .systems import System
 from src.core.constants import (
-    PLAYER_ACCELERATION, PLAYER_MAX_SPEED, PLAYER_ROTATION_SPEED,
+    SHIP_ACCELERATION, SHIP_MAX_SPEED, SHIP_ROTATION_SPEED,
     BULLET_SPEED, BULLET_LIFETIME,
     ASTEROID_RADIUS, ASTEROID_SPEED, ASTEROID_POINTS,
     PARTICLE_COLORS, EXPLOSION_PARTICLE_COUNT, EXPLOSION_PARTICLE_LIFETIME
@@ -30,16 +30,16 @@ class PlayerControlSystem(System):
         ):
             # Handle rotation
             if input_comp.left:
-                pos.rotation += PLAYER_ROTATION_SPEED * dt
+                pos.rotation += SHIP_ROTATION_SPEED * dt
             if input_comp.right:
-                pos.rotation -= PLAYER_ROTATION_SPEED * dt
+                pos.rotation -= SHIP_ROTATION_SPEED * dt
             
             # Handle thrust
             if input_comp.up:
                 # Calculate thrust vector
                 angle = math.radians(pos.rotation)
-                thrust_x = math.cos(angle) * PLAYER_ACCELERATION
-                thrust_y = -math.sin(angle) * PLAYER_ACCELERATION
+                thrust_x = math.cos(angle) * SHIP_ACCELERATION
+                thrust_y = -math.sin(angle) * SHIP_ACCELERATION
                 
                 # Apply thrust
                 vel.x += thrust_x * dt
