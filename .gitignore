@@ -11,3 +11,7 @@ tests/coverage/
 # Virtual Environment
 .venv/
 venv/
+
+# Logs
+logs/
+*.log
