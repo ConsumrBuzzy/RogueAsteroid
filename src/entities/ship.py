@@ -77,7 +77,8 @@ class Ship(Entity):
         print(f"Collision component added: {collision}")  # Debug info
         
         # Screen wrap component to wrap around screen edges
-        screen_wrap = self.add_component(ScreenWrapComponent)
+        screen_wrap = self.add_component(ScreenWrapComponent, width=self.game.width, height=self.game.height)
+        print(f"ScreenWrap initialized with width={self.game.width}, height={self.game.height}")
         
         # Effects component for visual effects
         effects = self.add_component(EffectComponent)
@@ -304,4 +305,4 @@ class Ship(Entity):
     @property
     def invulnerable(self):
         """Check if ship is currently invulnerable."""
-        return self.invulnerable_timer > 0 
+        return self.invulnerable_timer > 0

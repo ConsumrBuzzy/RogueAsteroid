@@ -106,23 +106,49 @@ class Component:
 class TransformComponent(Component):
     """Component that handles position, rotation, and scale of an entity."""
 
-    def __init__(self, entity: Entity) -> None:
-        """Initialize transform component."""
+    def __init__(self, entity: Entity, x: float = 0, y: float = 0) -> None:
+        """Initialize transform component.
+        
+        Args:
+            entity: Entity this component belongs to
+            x: Initial x position
+            y: Initial y position
+        """
         super().__init__(entity)
-        self.position = pygame.Vector2(0, 0)
+        self.position = pygame.Vector2(x, y)
+        self.velocity = pygame.Vector2(0, 0)  # For compatibility with older tests
         self.rotation = 0.0  # In degrees
         self.rotation_speed = 0.0  # Degrees per second
         self.scale = pygame.Vector2(1, 1)
 
     def update(self, dt: float) -> None:
-        """Update transform based on rotation speed.
+        """Update transform based on velocity and rotation speed.
         
         Args:
             dt: Delta time in seconds
         """
-        self.rotation += self.rotation_speed * dt
-        # Keep rotation between 0 and 360 degrees
-        self.rotation = self.rotation % 360
+        self.position += self.velocity * dt
+        self.rotation = (self.rotation + self.rotation_speed * dt) % 360.0
+
+    def set_position(self, x: float, y: float) -> None:
+        """Set position directly.
+        
+        Args:
+            x: New x position
+            y: New y position
+        """
+        self.position.x = x
+        self.position.y = y
+
+    def set_velocity(self, x: float, y: float) -> None:
+        """Set velocity directly.
+        
+        Args:
+            x: New x velocity
+            y: New y velocity
+        """
+        self.velocity.x = x
+        self.velocity.y = y
 
 class PhysicsComponent(Component):
     """Component that handles physics simulation for an entity."""

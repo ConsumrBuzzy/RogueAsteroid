@@ -8,21 +8,26 @@ from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 class ScreenWrapComponent(Component):
     """Component that handles screen wrapping for entities."""
 
-    def __init__(self, width: int, height: int):
+    def __init__(self, entity: Entity, width: int, height: int):
         """Initialize screen wrap component.
         
         Args:
+            entity: Entity this component belongs to
             width: Screen width
             height: Screen height
         """
-        super().__init__()
+        super().__init__(entity)
         self.width = width
         self.height = height
         print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
 
-    def update(self):
-        """Update entity position to wrap around screen edges."""
-        transform = self.entity.get_component('transform')
+    def update(self, dt: float) -> None:
+        """Update entity position to wrap around screen edges.
+        
+        Args:
+            dt: Delta time in seconds
+        """
+        transform = self.entity.get_component(TransformComponent)
         if not transform:
             return
         
