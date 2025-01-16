@@ -3,15 +3,85 @@ Sprite and asset management for the ECS game.
 """
 
 import os
+import math
 import pygame
-from typing import Dict, Optional
+from typing import Dict, Optional, List, Tuple
 from dataclasses import dataclass
 from .resources import Resources
 
 @dataclass
 class SpriteResource:
-    """Resource for storing game sprites."""
+    """Resource for storing game sprites and default shapes."""
     sprites: Dict[str, pygame.Surface]
+    shapes: Dict[str, List[Tuple[float, float]]]
+
+def create_default_shapes() -> Dict[str, List[Tuple[float, float]]]:
+    """Create default vector shapes for entities."""
+    shapes = {}
+    
+    # Ship shape (triangle)
+    shapes["ship"] = [(0, -20), (-10, 10), (10, 10)]
+    
+    # Bullet shape (small triangle)
+    shapes["bullet"] = [(0, -4), (-2, 2), (2, 2)]
+    
+    # Asteroid shapes
+    # Large asteroids
+    shapes["asteroid_large_1"] = [
+        (0, -40), (28, -28), (40, 0), 
+        (28, 28), (0, 40), (-28, 28),
+        (-40, 0), (-28, -28)
+    ]
+    
+    shapes["asteroid_large_2"] = [
+        (0, -35), (35, -15), (35, 15),
+        (0, 35), (-35, 15), (-35, -15)
+    ]
+    
+    shapes["asteroid_large_3"] = [
+        (0, -40), (40, 0), (0, 40),
+        (-40, 20), (-40, -20)
+    ]
+    
+    # Medium asteroids
+    shapes["asteroid_medium_1"] = [
+        (0, -25), (18, -18), (25, 0),
+        (18, 18), (0, 25), (-18, 18),
+        (-25, 0), (-18, -18)
+    ]
+    
+    shapes["asteroid_medium_2"] = [
+        (0, -20), (20, -10), (20, 10),
+        (0, 20), (-20, 10), (-20, -10)
+    ]
+    
+    shapes["asteroid_medium_3"] = [
+        (0, -25), (25, 0), (0, 25),
+        (-25, 12), (-25, -12)
+    ]
+    
+    # Small asteroids
+    shapes["asteroid_small_1"] = [
+        (0, -15), (10, -10), (15, 0),
+        (10, 10), (0, 15), (-10, 10),
+        (-15, 0), (-10, -10)
+    ]
+    
+    shapes["asteroid_small_2"] = [
+        (0, -12), (12, -6), (12, 6),
+        (0, 12), (-12, 6), (-12, -6)
+    ]
+    
+    shapes["asteroid_small_3"] = [
+        (0, -15), (15, 0), (0, 15),
+        (-15, 8), (-15, -8)
+    ]
+    
+    # Particle shapes (single point)
+    shapes["particle_explosion"] = [(0, 0)]
+    shapes["particle_thrust"] = [(0, 0)]
+    
+    return shapes
 
 def load_sprite(name: str, colorkey: Optional[tuple] = None) -> Optional[pygame.Surface]:
     """Load a sprite from the assets directory."""
@@ -60,5 +130,8 @@ def init_sprites(resources: Resources) -> None:
         if particle:
             sprites[f"particle_{effect}"] = particle
     
-    # Store sprites in resources
-    resources.add(SpriteResource(sprites=sprites))
+    # Create default shapes for when sprites are not available
+    shapes = create_default_shapes()
+    
+    # Store sprites and shapes in resources
+    resources.add(SpriteResource(sprites=sprites, shapes=shapes))

@@ -40,27 +40,26 @@ class ECSGame:
         # Initialize pygame
         pygame.init()
         
-        # Create world and resources
+        # Create world
         self.world = World()
-        self.resources = Resources()
         
         # Initialize window
-        self.resources.add(WindowInfo(
+        self.world.resources.add(WindowInfo(
             width=WINDOW_WIDTH,
             height=WINDOW_HEIGHT,
             title="Rogue Asteroid"
         ))
-        window_info = self.resources.get(WindowInfo)
+        window_info = self.world.resources.get(WindowInfo)
         self.screen = pygame.display.set_mode((window_info.width, window_info.height))
         pygame.display.set_caption(window_info.title)
         
         # Initialize game settings and state
-        self.resources.add(GameSettings())
-        self.resources.add(GameState())
+        self.world.resources.add(GameSettings())
+        self.world.resources.add(GameState())
         
         # Initialize assets
-        init_sprites(self.resources)
-        init_audio(self.resources)
+        init_sprites(self.world.resources)
+        init_audio(self.world.resources)
         
         # Initialize high scores
         high_score_system = HighScoreSystem()
@@ -91,7 +90,7 @@ class ECSGame:
         create_main_menu(self.world)
         
         # Start menu music
-        play_music(self.resources, "menu")
+        play_music(self.world.resources, "menu")
         
         self.logger.info("ECS game initialization complete")
     
@@ -122,11 +121,11 @@ class ECSGame:
             asteroid = event.entity1 if entity1_tag.type == EntityType.ASTEROID else event.entity2
             asteroid_size = self.world.get_component(asteroid, Asteroid)
             if asteroid_size:
-                play_sound(self.resources, f"explosion_{asteroid_size.size}")
+                play_sound(self.world.resources, f"explosion_{asteroid_size.size}")
         
         elif (entity1_tag.type == EntityType.PLAYER and entity2_tag.type == EntityType.ASTEROID or
               entity2_tag.type == EntityType.PLAYER and entity1_tag.type == EntityType.ASTEROID):
-            play_sound(self.resources, "explosion_large")
+            play_sound(self.world.resources, "explosion_large")
 
         # Handle collision based on entity types
         # This will be expanded based on game logic
@@ -134,7 +133,7 @@ class ECSGame:
     
     def _handle_score(self, event: ScoreEvent):
         """Handle score events."""
-        game_state = self.resources.get(GameState)
+        game_state = self.world.resources.get(GameState)
         if game_state:
             game_state.score += event.points
     
@@ -204,7 +203,7 @@ class ECSGame:
     
     def spawn_player(self) -> int:
         """Spawn the player ship."""
-        window_info = self.resources.get(WindowInfo)
+        window_info = self.world.resources.get(WindowInfo)
         if not window_info:
             return -1
             
@@ -227,7 +226,7 @@ class ECSGame:
         self.world.add_component(player, EntityTag(type=EntityType.PLAYER))
         
         # Add renderable when sprites are loaded
-        sprites = self.resources.get(SpriteResource)
+        sprites = self.world.resources.get(SpriteResource)
         if sprites and "ship" in sprites.sprites:
             self.world.add_component(player, Renderable(
                 texture=sprites.sprites["ship"],
@@ -240,7 +239,7 @@ class ECSGame:
     
     def spawn_asteroid(self, size: str = "large") -> int:
         """Spawn an asteroid."""
-        window_info = self.resources.get(WindowInfo)
+        window_info = self.world.resources.get(WindowInfo)
         if not window_info:
             return -1
             
