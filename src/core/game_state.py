@@ -61,6 +61,14 @@ class StateManager:
         self._current_state = new_state
         print(f"State changed to: {new_state}")
     
+    def select_next_option(self):
+        """Select the next menu option."""
+        self.selected_option = (self.selected_option + 1) % len(self.menu_options[self._current_state])
+        
+    def select_previous_option(self):
+        """Select the previous menu option."""
+        self.selected_option = (self.selected_option - 1) % len(self.menu_options[self._current_state])
+    
     def handle_input(self, event):
         """Handle input based on current state."""
         if event.type != pygame.KEYDOWN:
@@ -88,9 +96,9 @@ class StateManager:
         """Handle input in the main menu state."""
         print(f"Main menu input: {event.key}")  # Debug info
         if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
-            self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.MAIN_MENU])
+            self.select_previous_option()
         elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
-            self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.MAIN_MENU])
+            self.select_next_option()
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # New Game
                 self.change_state(GameState.PLAYING)
@@ -113,9 +121,9 @@ class StateManager:
     def _handle_pause_input(self, event):
         """Handle input in the pause state."""
         if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
-            self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.PAUSED])
+            self.select_previous_option()
         elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
-            self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.PAUSED])
+            self.select_next_option()
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # Resume
                 self.change_state(GameState.PLAYING)
@@ -135,9 +143,9 @@ class StateManager:
     def _handle_options_input(self, event):
         """Handle input in the options state."""
         if event.key in (pygame.K_UP, pygame.K_w, pygame.K_KP8):
-            self.selected_option = (self.selected_option - 1) % len(self.menu_options[GameState.OPTIONS])
+            self.select_previous_option()
         elif event.key in (pygame.K_DOWN, pygame.K_s, pygame.K_KP2):
-            self.selected_option = (self.selected_option + 1) % len(self.menu_options[GameState.OPTIONS])
+            self.select_next_option()
         elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             if self.selected_option == 0:  # Control scheme toggle
                 # Toggle between arrows and wasd

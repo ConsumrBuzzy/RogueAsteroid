@@ -6,6 +6,7 @@ from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 from src.core.game import Game
+from src.core.entities.base import CollisionComponent, TransformComponent
 
 @pytest.fixture
 def game():
@@ -29,7 +30,7 @@ class TestPhysics:
         transform = ship.get_component('transform')
         physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.force = np.array([10.0, 10.0])  # Apply force instead of setting velocity directly
+        physics.force = np.array([100.0, 100.0])  # Increase force for noticeable movement
         ship.update(0.016)  # Update with 16ms delta time
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
