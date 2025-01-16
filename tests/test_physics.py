@@ -30,29 +30,41 @@ class TestPhysics:
         transform = ship.get_component('transform')
         physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.apply_force(pygame.Vector2(100000.0, 100000.0))  # Very large force for noticeable movement
-        ship.update(0.016)  # Update with 16ms delta time
-        new_pos = pygame.Vector2(transform.position)
-        assert new_pos != initial_pos
+        test_velocity = pygame.Vector2(100.0, 100.0)
+        physics.velocity = test_velocity
+        
+        dt = 0.016  # 16ms delta time
+        ship.update(dt)
+        
+        expected_pos = initial_pos + test_velocity * dt
+        assert transform.position == expected_pos, f"Position should be {expected_pos}, got {transform.position}"
 
     def test_acceleration(self, ship):
         """Test acceleration affects velocity correctly."""
         physics = ship.get_component('physics')
-        transform = ship.get_component('transform')
-        initial_velocity = pygame.Vector2(transform.velocity)
-        physics.apply_force(pygame.Vector2(1000.0, 1000.0))  # Large enough force for noticeable acceleration
-        ship.update(0.016)  # Update with 16ms delta time
-        new_velocity = pygame.Vector2(transform.velocity)
-        assert new_velocity != initial_velocity
+        test_force = pygame.Vector2(1000.0, 1000.0)
+        
+        dt = 0.016  # 16ms delta time
+        physics.apply_force(test_force)
+        ship.update(dt)
+        
+        expected_acceleration = test_force / physics.mass
+        expected_velocity = expected_acceleration * dt
+        assert physics.velocity.x == pytest.approx(expected_velocity.x, rel=1e-5)
+        assert physics.velocity.y == pytest.approx(expected_velocity.y, rel=1e-5)
 
     def test_drag_effect(self, ship):
         """Test drag reduces velocity over time."""
         physics = ship.get_component('physics')
-        physics.velocity = pygame.Vector2(100.0, 100.0)  # Set initial velocity
-        initial_speed = physics.velocity.length()
-        ship.update(0.016)  # Update with 16ms delta time
-        new_speed = physics.velocity.length()
-        assert new_speed < initial_speed
+        initial_velocity = pygame.Vector2(100.0, 100.0)
+        physics.velocity = initial_velocity
+        
+        dt = 0.016  # 16ms delta time
+        ship.update(dt)
+        
+        expected_velocity = initial_velocity * physics.drag
+        assert physics.velocity.x == pytest.approx(expected_velocity.x, rel=1e-5)
+        assert physics.velocity.y == pytest.approx(expected_velocity.y, rel=1e-5)
 
 class TestCollisionDetection:
     def test_circle_circle_collision(self, ship, asteroid):

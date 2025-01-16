@@ -133,7 +133,7 @@ class TransformComponent(Component):
         Args:
             dt: Delta time in seconds
         """
-        self.position += self.velocity * dt
+        # Only update rotation in transform, position is handled by physics
         self.rotation = (self.rotation + self.rotation_speed * dt) % 360.0
 
     def set_position(self, x: float, y: float) -> None:
@@ -162,11 +162,32 @@ class PhysicsComponent(Component):
     def __init__(self, entity: Entity) -> None:
         """Initialize physics component."""
         super().__init__(entity)
-        self.velocity = pygame.Vector2(0, 0)
-        self.acceleration = pygame.Vector2(0, 0)
+        self._velocity = pygame.Vector2(0, 0)
+        self._acceleration = pygame.Vector2(0, 0)
         self.max_speed = 500.0  # Maximum speed in pixels per second
-        self.drag = 0.98  # Drag coefficient (1 = no drag, 0 = full stop)
+        self.friction = 0.95  # Friction coefficient (1 = no friction, 0 = full stop)
+        self.drag = 0.95  # Drag coefficient (1 = no drag, 0 = full stop)
         self.mass = 1.0  # Mass in arbitrary units
+
+    @property
+    def velocity(self) -> pygame.Vector2:
+        """Get the current velocity."""
+        return pygame.Vector2(self._velocity)
+
+    @velocity.setter
+    def velocity(self, value: pygame.Vector2) -> None:
+        """Set the current velocity."""
+        if isinstance(value, (list, tuple)):
+            self._velocity = pygame.Vector2(value[0], value[1])
+        elif isinstance(value, pygame.Vector2):
+            self._velocity = pygame.Vector2(value)
+        else:
+            raise ValueError(f"Invalid velocity type: {type(value)}")
+
+    @property
+    def acceleration(self) -> pygame.Vector2:
+        """Get the current acceleration."""
+        return pygame.Vector2(self._acceleration)
 
     def apply_force(self, force: pygame.Vector2) -> None:
         """Apply a force to the entity.
@@ -175,7 +196,9 @@ class PhysicsComponent(Component):
             force: Force vector to apply
         """
         # F = ma -> a = F/m
-        self.acceleration += force / self.mass
+        if isinstance(force, (list, tuple)):
+            force = pygame.Vector2(force[0], force[1])
+        self._acceleration += force / self.mass
 
     def update(self, dt: float) -> None:
         """Update physics simulation.
@@ -189,21 +212,21 @@ class PhysicsComponent(Component):
             return
 
         # Update velocity based on acceleration (v = v0 + at)
-        self.velocity += self.acceleration * dt
+        self._velocity += self._acceleration * dt
 
         # Apply drag (exponential decay)
-        self.velocity *= self.drag
+        self._velocity *= self.drag
 
         # Limit speed
-        if self.velocity.length() > self.max_speed:
-            self.velocity.scale_to_length(self.max_speed)
+        speed = self._velocity.length()
+        if speed > self.max_speed:
+            self._velocity.scale_to_length(self.max_speed)
 
-        # Update transform's velocity and position
-        transform.velocity = pygame.Vector2(self.velocity)
-        transform.position += self.velocity * dt
+        # Update transform's position (x = x0 + vt)
+        transform.position += self._velocity * dt
 
         # Reset acceleration
-        self.acceleration = pygame.Vector2(0, 0)
+        self._acceleration = pygame.Vector2(0, 0)
 
 class RenderComponent(Component):
     """Component for rendering entities.
