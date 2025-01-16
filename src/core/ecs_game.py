@@ -9,15 +9,18 @@ from src.core.ecs.components import (
     Position, Velocity, Input, Renderable, Collider,
     Physics, Player, Bullet, Asteroid, Particle, Sound, Menu
 )
+from src.core.ecs.systems import System
+from src.core.ecs.game_systems import (
+    PlayerControlSystem,
+    BulletSystem,
+    AsteroidSystem,
+    CollisionHandlingSystem
+)
 from src.core.ecs.systems import (
     PhysicsSystem,
     CollisionSystem,
     InputSystem,
     RenderSystem,
-    PlayerControlSystem,
-    BulletSystem,
-    AsteroidSystem,
-    CollisionHandlingSystem,
     ParticleSystem,
     MenuSystem,
     SoundSystem

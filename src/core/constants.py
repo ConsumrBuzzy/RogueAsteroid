@@ -3,8 +3,8 @@ Game-wide constants.
 """
 
 # Window settings
-WINDOW_WIDTH = 480
-WINDOW_HEIGHT = 640
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
 WINDOW_TITLE = "Rogue Asteroid"
 FPS = 60
 
@@ -22,13 +22,14 @@ PLAYER_MAX_SPEED = 500.0
 PLAYER_ROTATION_SPEED = 360.0  # Degrees per second
 PLAYER_FRICTION = 0.1
 PLAYER_INVULNERABLE_TIME = 3.0
-PLAYER_SHOOT_COOLDOWN = 0.2
 PLAYER_INITIAL_LIVES = 3
+PLAYER_SHOOT_COOLDOWN = 0.2
 
 # Bullet settings
 BULLET_SPEED = 800.0
 BULLET_LIFETIME = 0.5
 BULLET_DAMAGE = 1
+BULLET_COOLDOWN = 0.2
 
 # Asteroid settings
 ASTEROID_SIZES = ["large", "medium", "small"]
@@ -44,8 +45,8 @@ ASTEROID_RADIUS = {
 }
 ASTEROID_SPEED = {
     "large": (50, 100),  # (min, max) speed
-    "medium": (75, 150),
-    "small": (100, 200)
+    "medium": (100, 150),
+    "small": (150, 200)
 }
 ASTEROID_SPLIT_COUNT = 2
 MIN_ASTEROID_COUNT = 4
@@ -59,20 +60,20 @@ THRUST_PARTICLE_LIFETIME = 0.5
 THRUST_PARTICLE_SPEED = 100.0
 PARTICLE_COLORS = [
     (255, 255, 255),  # White
-    (255, 255, 0),    # Yellow
-    (255, 165, 0),    # Orange
-    (255, 0, 0)       # Red
+    (255, 200, 50),   # Yellow
+    (255, 100, 0),    # Orange
+    (255, 50, 0)      # Red
 ]
 
 # Menu settings
 MENU_FONT_SIZE = 32
-MENU_COLOR = WHITE
-MENU_HOVER_COLOR = YELLOW
+MENU_COLOR = (255, 255, 255)
+MENU_HOVER_COLOR = (255, 255, 0)
 MENU_SPACING = 50
 
 # Sound settings
-SOUND_VOLUME = 0.7
-MUSIC_VOLUME = 0.5
+SOUND_VOLUME = 1.0
+MUSIC_VOLUME = 0.7
 
 # Asset paths
 ASSET_DIR = "assets"
