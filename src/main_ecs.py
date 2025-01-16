@@ -1,5 +1,5 @@
 """
-ECS-based main entry point for RogueAsteroid game.
+Main entry point for RogueAsteroid game.
 """
 
 import os
@@ -38,7 +38,7 @@ def init_pygame() -> bool:
         return False
 
 def main():
-    """Entry point for the ECS-based game."""
+    """Entry point for the game."""
     logger = get_logger()
     
     try:
@@ -49,19 +49,15 @@ def main():
         
         # Create and run game
         game = ECSGame()
-        logger.info("Starting game loop")
         game.run()
         
-    except KeyboardInterrupt:
-        logger.info("\nGame terminated by user")
-        
     except Exception as e:
-        logger.error(f"Fatal error running game: {e}")
+        logger.error(f"Unhandled error: {e}")
         traceback.print_exc()
         
     finally:
-        logger.info("Cleaning up...")
         pygame.quit()
+        logger.info("Game terminated")
 
 if __name__ == "__main__":
     main()

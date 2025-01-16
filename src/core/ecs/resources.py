@@ -3,7 +3,8 @@ Resource management for global game state.
 """
 
 from typing import Dict, Type, TypeVar, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import pygame
 
 T = TypeVar('T')
 
@@ -29,6 +30,18 @@ class GameState:
     level: int = 1
     lives: int = 3
     paused: bool = False
+
+@dataclass
+class SpriteResource:
+    """Resource for managing game sprites."""
+    sprites: Dict[str, pygame.Surface] = field(default_factory=dict)
+    shapes: Dict[str, list] = field(default_factory=dict)
+
+@dataclass
+class AudioResource:
+    """Resource for managing game audio."""
+    sounds: Dict[str, pygame.mixer.Sound] = field(default_factory=dict)
+    music: Dict[str, str] = field(default_factory=dict)  # Music paths
 
 class Resources:
     """

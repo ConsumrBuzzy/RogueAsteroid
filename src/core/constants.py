@@ -1,78 +1,90 @@
-"""Game constants."""
+"""
+Game-wide constants.
+"""
 
-# Display
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+# Window settings
+WINDOW_WIDTH = 480
+WINDOW_HEIGHT = 640
+WINDOW_TITLE = "Rogue Asteroid"
 FPS = 60
 
 # Colors
-WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
 
-# Particle Effects
-EXPLOSION_COLORS = [
-    (255, 69, 0),    # Red-orange
-    (255, 140, 0),   # Dark orange
-    (255, 165, 0),   # Orange
-    (255, 215, 0),   # Yellow
-]
+# Player settings
+PLAYER_ACCELERATION = 200.0
+PLAYER_MAX_SPEED = 500.0
+PLAYER_ROTATION_SPEED = 360.0  # Degrees per second
+PLAYER_FRICTION = 0.1
+PLAYER_INVULNERABLE_TIME = 3.0
+PLAYER_SHOOT_COOLDOWN = 0.2
+PLAYER_INITIAL_LIVES = 3
 
-THRUST_COLORS = [
-    (200, 200, 200),  # Light gray
-    (180, 180, 180),  # Medium gray
-    (160, 160, 160),  # Dark gray
-]
+# Bullet settings
+BULLET_SPEED = 800.0
+BULLET_LIFETIME = 0.5
+BULLET_DAMAGE = 1
 
-# Game Settings
-STARTING_LIVES = 3
-SCORE_MULTIPLIER = 100
-HIGH_SCORE_COUNT = 10
-
-# Ship Settings
-SHIP_ACCELERATION = 300.0
-SHIP_MAX_SPEED = 300.0
-SHIP_ROTATION_SPEED = 150.0  # Degrees per second
-SHIP_FRICTION = 0.02
-SHIP_INVULNERABLE_TIME = 3.0
-
-# Weapon Settings
-BULLET_SPEED = 500.0
-BULLET_LIFETIME = 1.0
-MAX_BULLETS = 4
-
-# Asteroid Settings
-MAX_ASTEROIDS = 12
-ASTEROID_SIZES = {
-    'large': {
-        'radius': 40,
-        'speed_range': (50, 100),
-        'mass': 9.0,
-        'points': 3,
-        'vertices_range': (10, 14)  # More vertices for larger asteroids
-    },
-    'medium': {
-        'radius': 20,
-        'speed_range': (100, 150),
-        'mass': 4.0,
-        'points': 2,
-        'vertices_range': (8, 12)  # Medium complexity
-    },
-    'small': {
-        'radius': 10,
-        'speed_range': (150, 200),
-        'mass': 1.0,
-        'points': 1,
-        'vertices_range': (6, 10)  # Simpler shape for small asteroids
-    }
+# Asteroid settings
+ASTEROID_SIZES = ["large", "medium", "small"]
+ASTEROID_POINTS = {
+    "large": 20,
+    "medium": 50,
+    "small": 100
 }
+ASTEROID_RADIUS = {
+    "large": 40,
+    "medium": 20,
+    "small": 10
+}
+ASTEROID_SPEED = {
+    "large": (50, 100),  # (min, max) speed
+    "medium": (75, 150),
+    "small": (100, 200)
+}
+ASTEROID_SPLIT_COUNT = 2
+MIN_ASTEROID_COUNT = 4
 
-# Particle Settings
-PARTICLE_MIN_LIFETIME = 0.2
-PARTICLE_MAX_LIFETIME = 0.4
-THRUST_PARTICLE_COUNT = (2, 3)  # (min, max) particles per thrust
-THRUST_PARTICLE_SPEED = (50, 150)  # (min, max) speed
-THRUST_PARTICLE_SPREAD = 30  # Degrees
-THRUST_PARTICLE_SIZE = (1.0, 2.0)  # (min, max) point size 
+# Particle effects
+EXPLOSION_PARTICLE_COUNT = 20
+EXPLOSION_PARTICLE_LIFETIME = 1.0
+EXPLOSION_PARTICLE_SPEED = 200.0
+THRUST_PARTICLE_COUNT = 5
+THRUST_PARTICLE_LIFETIME = 0.5
+THRUST_PARTICLE_SPEED = 100.0
+PARTICLE_COLORS = [
+    (255, 255, 255),  # White
+    (255, 255, 0),    # Yellow
+    (255, 165, 0),    # Orange
+    (255, 0, 0)       # Red
+]
+
+# Menu settings
+MENU_FONT_SIZE = 32
+MENU_COLOR = WHITE
+MENU_HOVER_COLOR = YELLOW
+MENU_SPACING = 50
+
+# Sound settings
+SOUND_VOLUME = 0.7
+MUSIC_VOLUME = 0.5
+
+# Asset paths
+ASSET_DIR = "assets"
+SPRITE_DIR = f"{ASSET_DIR}/sprites"
+SOUND_DIR = f"{ASSET_DIR}/sounds"
+MUSIC_DIR = f"{ASSET_DIR}/music"
+FONT_DIR = f"{ASSET_DIR}/fonts"
+
+# Layer settings (higher numbers render on top)
+LAYER_BACKGROUND = 0
+LAYER_PARTICLES = 1
+LAYER_ASTEROIDS = 2
+LAYER_BULLETS = 3
+LAYER_PLAYER = 4
+LAYER_UI = 5

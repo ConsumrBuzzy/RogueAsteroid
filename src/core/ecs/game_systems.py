@@ -5,179 +5,196 @@ Game-specific systems for the ECS architecture.
 import math
 import random
 import pygame
-from typing import TYPE_CHECKING, List, Tuple
+from typing import List, Tuple, Optional
 from .components import (
     Position, Velocity, Input, Renderable, Collider,
-    Physics, Player, Bullet, Asteroid, Particle
+    Physics, Player, Bullet, Asteroid, Particle, Sound
 )
-from .resources import WindowInfo, SpriteResource
+from .resources import WindowInfo, GameState
 from .events import CollisionEvent, ScoreEvent
+from .systems import System
+from src.core.constants import (
+    PLAYER_ACCELERATION, PLAYER_MAX_SPEED, PLAYER_ROTATION_SPEED,
+    BULLET_SPEED, BULLET_LIFETIME,
+    ASTEROID_RADIUS, ASTEROID_SPEED, ASTEROID_POINTS,
+    PARTICLE_COLORS, EXPLOSION_PARTICLE_COUNT, EXPLOSION_PARTICLE_LIFETIME
+)
 
-if TYPE_CHECKING:
-    from .world import World
-
-class PlayerControlSystem:
-    """Handles player input and control."""
+class PlayerControlSystem(System):
+    """Handles player ship control."""
     
     def update(self, world: 'World', dt: float) -> None:
         """Update player based on input."""
-        for entity, (pos, vel, input_comp, physics) in world.get_components(Position, Velocity, Input, Physics):
-            if not world.has_component(entity, Player):
-                continue
-            
+        for entity, (pos, vel, input_comp, physics, player) in world.get_components(
+            Position, Velocity, Input, Physics, Player
+        ):
             # Handle rotation
             if input_comp.left:
-                pos.rotation += 360 * dt  # Rotate counterclockwise
+                pos.rotation += PLAYER_ROTATION_SPEED * dt
             if input_comp.right:
-                pos.rotation -= 360 * dt  # Rotate clockwise
+                pos.rotation -= PLAYER_ROTATION_SPEED * dt
             
             # Handle thrust
             if input_comp.up:
-                # Calculate thrust vector based on rotation
+                # Calculate thrust vector
                 angle = math.radians(pos.rotation)
-                thrust_x = math.cos(angle) * physics.thrust
-                thrust_y = -math.sin(angle) * physics.thrust
+                thrust_x = math.cos(angle) * PLAYER_ACCELERATION
+                thrust_y = -math.sin(angle) * PLAYER_ACCELERATION
                 
                 # Apply thrust
                 vel.x += thrust_x * dt
                 vel.y += thrust_y * dt
                 
-                # Limit speed
-                speed = math.sqrt(vel.x * vel.x + vel.y * vel.y)
-                if speed > physics.max_speed:
-                    vel.x = (vel.x / speed) * physics.max_speed
-                    vel.y = (vel.y / speed) * physics.max_speed
-            
-            # Apply friction
-            if physics.friction > 0:
-                vel.x *= (1.0 - physics.friction * dt)
-                vel.y *= (1.0 - physics.friction * dt)
+                # Create thrust particles
+                self._create_thrust_particles(world, pos)
             
             # Handle shooting
-            player = world.get_component(entity, Player)
             if input_comp.fire and player.shoot_cooldown <= 0:
-                self._spawn_bullet(world, entity)
-                player.shoot_cooldown = 0.2  # Reset cooldown
+                self._create_bullet(world, pos)
+                player.shoot_cooldown = player.max_shoot_cooldown
             
             # Update cooldown
             if player.shoot_cooldown > 0:
                 player.shoot_cooldown -= dt
+            
+            # Update invulnerability
+            if player.invulnerable:
+                player.invulnerable_timer -= dt
+                if player.invulnerable_timer <= 0:
+                    player.invulnerable = False
     
-    def _spawn_bullet(self, world: 'World', player_entity: int) -> None:
-        """Spawn a bullet from the player's position."""
-        pos = world.get_component(player_entity, Position)
-        if not pos:
-            return
-        
-        # Create bullet entity
-        bullet_entity = world.create_entity()
+    def _create_bullet(self, world: 'World', player_pos: Position) -> None:
+        """Create a bullet entity."""
+        bullet = world.create_entity()
         
         # Calculate bullet direction and position
-        angle = math.radians(pos.rotation)
+        angle = math.radians(player_pos.rotation)
         direction = pygame.Vector2(math.cos(angle), -math.sin(angle))
         
         # Add components
-        world.add_component(bullet_entity, Position(
-            x=pos.x + direction.x * 20,  # Offset from player
-            y=pos.y + direction.y * 20,
-            rotation=pos.rotation
+        world.add_component(bullet, Position(
+            x=player_pos.x + direction.x * 20,
+            y=player_pos.y + direction.y * 20,
+            rotation=player_pos.rotation
         ))
         
-        world.add_component(bullet_entity, Velocity(
-            x=direction.x * 800,  # Bullet speed
-            y=direction.y * 800
+        world.add_component(bullet, Velocity(
+            x=direction.x * BULLET_SPEED,
+            y=direction.y * BULLET_SPEED
         ))
         
-        world.add_component(bullet_entity, Bullet())
-        world.add_component(bullet_entity, Collider(radius=2))
-        
-        # Add renderable with bullet shape
-        render = Renderable(
+        world.add_component(bullet, Bullet(lifetime=BULLET_LIFETIME))
+        world.add_component(bullet, Collider(radius=2))
+        world.add_component(bullet, Renderable(
             sprite_name="bullet",
-            color=(255, 255, 0),  # Yellow
-            line_width=2
-        )
-        world.add_component(bullet_entity, render)
+            color=(255, 255, 0),
+            layer=3  # Bullet layer
+        ))
+    
+    def _create_thrust_particles(self, world: 'World', pos: Position) -> None:
+        """Create thrust particle effects."""
+        angle = math.radians(pos.rotation)
+        base_direction = pygame.Vector2(-math.cos(angle), math.sin(angle))
+        
+        for _ in range(2):
+            particle = world.create_entity()
+            
+            # Randomize direction slightly
+            spread = math.radians(random.uniform(-15, 15))
+            direction = pygame.Vector2(
+                base_direction.x * math.cos(spread) - base_direction.y * math.sin(spread),
+                base_direction.x * math.sin(spread) + base_direction.y * math.cos(spread)
+            )
+            
+            # Add components
+            world.add_component(particle, Position(
+                x=pos.x - direction.x * 20,
+                y=pos.y - direction.y * 20
+            ))
+            
+            world.add_component(particle, Velocity(
+                x=direction.x * random.uniform(50, 150),
+                y=direction.y * random.uniform(50, 150)
+            ))
+            
+            world.add_component(particle, Particle(
+                lifetime=random.uniform(0.2, 0.4),
+                fade=True,
+                shrink=True
+            ))
+            
+            world.add_component(particle, Renderable(
+                color=(200, 200, 200),
+                size=random.uniform(1, 2),
+                layer=1  # Particle layer
+            ))
 
-class BulletSystem:
-    """Handles bullet behavior and lifetime."""
+class BulletSystem(System):
+    """Handles bullet behavior."""
     
     def update(self, world: 'World', dt: float) -> None:
-        """Update all bullets."""
+        """Update bullets."""
         for entity, (bullet,) in world.get_components(Bullet):
             # Update lifetime
             bullet.lifetime -= dt
-            
-            # Destroy if expired
             if bullet.lifetime <= 0:
                 world.destroy_entity(entity)
 
-class AsteroidSystem:
-    """Handles asteroid behavior and spawning."""
+class AsteroidSystem(System):
+    """Handles asteroid behavior."""
     
     def update(self, world: 'World', dt: float) -> None:
-        """Update all asteroids."""
+        """Update asteroids and spawn new ones."""
         # Count existing asteroids
         asteroid_count = sum(1 for _ in world.get_components(Asteroid))
         
         # Spawn new asteroids if needed
-        if asteroid_count < 4:
-            self._spawn_asteroid(world, "large")
-    
-    def _spawn_asteroid(self, world: 'World', size: str) -> None:
-        """Spawn a new asteroid."""
         window = world.resources.get(WindowInfo)
-        if not window:
-            return
+        if window and asteroid_count < 4:
+            self._create_asteroid(world, "large", window)
+    
+    def _create_asteroid(self, world: 'World', size: str, window: WindowInfo) -> None:
+        """Create an asteroid entity."""
+        asteroid = world.create_entity()
         
-        # Create asteroid entity
-        asteroid_entity = world.create_entity()
-        
-        # Randomize position at screen edge
+        # Random position at screen edge
         if random.random() < 0.5:
-            # Spawn on left/right edge
             x = 0 if random.random() < 0.5 else window.width
             y = random.uniform(0, window.height)
         else:
-            # Spawn on top/bottom edge
             x = random.uniform(0, window.width)
             y = 0 if random.random() < 0.5 else window.height
         
         # Random velocity
+        speed_range = ASTEROID_SPEED[size]
         angle = random.uniform(0, 2 * math.pi)
-        speed = random.uniform(50, 100)
-        vel_x = math.cos(angle) * speed
-        vel_y = math.sin(angle) * speed
+        speed = random.uniform(*speed_range)
         
         # Add components
-        world.add_component(asteroid_entity, Position(x=x, y=y))
-        world.add_component(asteroid_entity, Velocity(x=vel_x, y=vel_y))
-        world.add_component(asteroid_entity, Asteroid(size=size))
+        world.add_component(asteroid, Position(x=x, y=y))
+        world.add_component(asteroid, Velocity(
+            x=math.cos(angle) * speed,
+            y=math.sin(angle) * speed,
+            rotation=random.uniform(-45, 45)  # Random rotation
+        ))
         
-        # Size-based properties
-        if size == "large":
-            radius = 40
-            points = 20
-        elif size == "medium":
-            radius = 20
-            points = 50
-        else:  # small
-            radius = 10
-            points = 100
+        world.add_component(asteroid, Asteroid(
+            size=size,
+            points=ASTEROID_POINTS[size]
+        ))
         
-        world.add_component(asteroid_entity, Collider(radius=radius))
+        world.add_component(asteroid, Collider(
+            radius=ASTEROID_RADIUS[size]
+        ))
         
-        # Add renderable with asteroid shape
         variant = random.randint(1, 3)
-        render = Renderable(
+        world.add_component(asteroid, Renderable(
             sprite_name=f"asteroid_{size}_{variant}",
-            color=(255, 255, 255),  # White
-            line_width=2
-        )
-        world.add_component(asteroid_entity, render)
+            layer=2  # Asteroid layer
+        ))
 
-class CollisionHandlingSystem:
-    """Handles collision responses between entities."""
+class CollisionHandlingSystem(System):
+    """Handles collision responses."""
     
     def update(self, world: 'World', dt: float) -> None:
         """Process collision events."""
@@ -196,29 +213,31 @@ class CollisionHandlingSystem:
     
     def _handle_bullet_asteroid_collision(self, world: 'World', entity1: int, entity2: int) -> None:
         """Handle collision between bullet and asteroid."""
-        # Determine which is which
         bullet = entity1 if world.has_component(entity1, Bullet) else entity2
         asteroid = entity2 if world.has_component(entity2, Asteroid) else entity1
         
-        # Get asteroid info
+        # Get components
         asteroid_comp = world.get_component(asteroid, Asteroid)
-        if not asteroid_comp:
+        asteroid_pos = world.get_component(asteroid, Position)
+        if not asteroid_comp or not asteroid_pos:
             return
         
         # Award points
         world.events.emit(ScoreEvent(asteroid_comp.points))
         
+        # Create explosion particles
+        self._create_explosion(world, asteroid_pos)
+        
         # Split asteroid if not smallest
         if asteroid_comp.size != "small":
             self._split_asteroid(world, asteroid)
         
-        # Destroy both entities
+        # Destroy entities
         world.destroy_entity(bullet)
         world.destroy_entity(asteroid)
     
     def _handle_player_asteroid_collision(self, world: 'World', entity1: int, entity2: int) -> None:
         """Handle collision between player and asteroid."""
-        # Determine which is which
         player = entity1 if world.has_component(entity1, Player) else entity2
         asteroid = entity2 if world.has_component(entity2, Asteroid) else entity1
         
@@ -227,10 +246,15 @@ class CollisionHandlingSystem:
         if not player_comp or player_comp.invulnerable:
             return
         
+        # Get asteroid position for explosion
+        asteroid_pos = world.get_component(asteroid, Position)
+        if asteroid_pos:
+            self._create_explosion(world, asteroid_pos)
+        
         # Reduce player lives and make temporarily invulnerable
         player_comp.lives -= 1
         player_comp.invulnerable = True
-        player_comp.invulnerable_timer = 3.0  # 3 seconds of invulnerability
+        player_comp.invulnerable_timer = 3.0
         
         # Destroy asteroid
         world.destroy_entity(asteroid)
@@ -245,18 +269,59 @@ class CollisionHandlingSystem:
         # Determine new size
         new_size = "medium" if asteroid_comp.size == "large" else "small"
         
-        # Create two new asteroids
+        # Create new asteroids
         for _ in range(2):
-            # Random direction
             angle = random.uniform(0, 2 * math.pi)
-            speed = random.uniform(100, 150)
-            vel_x = math.cos(angle) * speed
-            vel_y = math.sin(angle) * speed
+            speed_range = ASTEROID_SPEED[new_size]
+            speed = random.uniform(*speed_range)
             
-            # Spawn new asteroid
-            self._spawn_asteroid(world, new_size)
-            # Set position and velocity
             new_asteroid = world.create_entity()
             world.add_component(new_asteroid, Position(x=pos.x, y=pos.y))
-            world.add_component(new_asteroid, Velocity(x=vel_x, y=vel_y))
-            world.add_component(new_asteroid, Asteroid(size=new_size))
+            world.add_component(new_asteroid, Velocity(
+                x=math.cos(angle) * speed,
+                y=math.sin(angle) * speed,
+                rotation=random.uniform(-45, 45)
+            ))
+            
+            world.add_component(new_asteroid, Asteroid(
+                size=new_size,
+                points=ASTEROID_POINTS[new_size]
+            ))
+            
+            world.add_component(new_asteroid, Collider(
+                radius=ASTEROID_RADIUS[new_size]
+            ))
+            
+            variant = random.randint(1, 3)
+            world.add_component(new_asteroid, Renderable(
+                sprite_name=f"asteroid_{new_size}_{variant}",
+                layer=2
+            ))
+    
+    def _create_explosion(self, world: 'World', pos: Position) -> None:
+        """Create explosion particle effects."""
+        for _ in range(EXPLOSION_PARTICLE_COUNT):
+            particle = world.create_entity()
+            
+            # Random direction and speed
+            angle = random.uniform(0, 2 * math.pi)
+            speed = random.uniform(100, 200)
+            
+            # Add components
+            world.add_component(particle, Position(x=pos.x, y=pos.y))
+            world.add_component(particle, Velocity(
+                x=math.cos(angle) * speed,
+                y=math.sin(angle) * speed
+            ))
+            
+            world.add_component(particle, Particle(
+                lifetime=random.uniform(0.5, EXPLOSION_PARTICLE_LIFETIME),
+                fade=True,
+                shrink=True
+            ))
+            
+            world.add_component(particle, Renderable(
+                color=random.choice(PARTICLE_COLORS),
+                size=random.uniform(2, 4),
+                layer=1
+            ))
