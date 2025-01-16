@@ -27,7 +27,7 @@ class ScreenWrapComponent(Component):
         Args:
             dt: Delta time in seconds
         """
-        transform = self.entity.get_component(TransformComponent)
+        transform = self.entity.get_component('transform')
         if not transform:
             return
         
