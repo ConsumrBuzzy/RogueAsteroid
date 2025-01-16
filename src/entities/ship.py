@@ -23,6 +23,7 @@ from src.core.constants import (
 from src.entities.bullet import Bullet
 from src.entities.particle import Particle
 import random
+import math
 
 if TYPE_CHECKING:
     from src.core.game import Game
@@ -31,6 +32,8 @@ class Ship(Entity):
     """Player controlled ship entity."""
     
     SHOOT_COOLDOWN = 0.20  # Reduced from 0.25 to 0.20 seconds between shots
+    rotation_speed = SHIP_ROTATION_SPEED
+    thrust_power = SHIP_ACCELERATION
     
     def __init__(self, game: 'Game'):
         super().__init__(game)
@@ -114,13 +117,13 @@ class Ship(Entity):
         
         # Bind controls - each key in the key groups
         for thrust_key in thrust_keys:
-            self.input_component.bind_key(thrust_key, self._apply_thrust, True)
+            self.input_component.bind_key(thrust_key, self.thrust, True)
         for reverse_key in reverse_keys:
-            self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
+            self.input_component.bind_key(reverse_key, self.reverse_thrust, True)
         for left_key in left_keys:
-            self.input_component.bind_key(left_key, self._rotate_left, True)
+            self.input_component.bind_key(left_key, self.rotate_left, True)
         for right_key in right_keys:
-            self.input_component.bind_key(right_key, self._rotate_right, True)
+            self.input_component.bind_key(right_key, self.rotate_right, True)
             
         # Bind shoot to both regular space and numpad enter with continuous=True
         self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
@@ -128,57 +131,45 @@ class Ship(Entity):
         
         print(f"Controls updated to scheme: {controls}")  # Debug info
     
-    def _apply_thrust(self) -> None:
-        """Apply forward thrust force."""
-        self._apply_thrust_force(1.0)
-    
-    def _apply_reverse_thrust(self) -> None:
-        """Apply reverse thrust force."""
-        self._apply_thrust_force(-0.5)  # Half power for reverse
-    
-    def _apply_thrust_force(self, power: float) -> None:
-        """Apply thrust force in current direction with given power."""
-        transform = self.get_component('transform')
-        physics = self.get_component('physics')
-        effects = self.get_component('effects')
-        
-        if transform and physics:
-            # Calculate thrust direction
-            # Adjust angle by -90 degrees because ship points up at 0 degrees
-            angle_rad = np.radians(transform.rotation - 90)
-            direction = np.array([
-                np.cos(angle_rad),
-                np.sin(angle_rad)
-            ])
-            
-            # Debug thrust direction
-            print(f"Rotation: {transform.rotation}, Thrust direction: {direction}, Power: {power}")  # Debug info
-            
-            # Apply force
-            force = direction * SHIP_ACCELERATION * power
-            physics.apply_force(force)
-            
-            # Activate thrust effect
-            if effects and power > 0:
-                effects.set_effect_active('thrust', True)
-    
-    def _rotate_left(self) -> None:
-        """Rotate ship counter-clockwise."""
-        transform = self.get_component('transform')
+    def rotate_left(self) -> None:
+        """Rotate the ship counter-clockwise."""
+        transform = self.get_component("transform")
         if transform:
-            # Apply rotation speed based on delta time
-            rotation_change = SHIP_ROTATION_SPEED * self.game.dt
-            transform.rotation = (transform.rotation - rotation_change) % 360
-            print(f"Rotating left: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
-    
-    def _rotate_right(self) -> None:
-        """Rotate ship clockwise."""
-        transform = self.get_component('transform')
+            transform.rotation -= self.rotation_speed
+            print(f"Rotating left: change={-self.rotation_speed}, new rotation={transform.rotation}")
+
+    def rotate_right(self) -> None:
+        """Rotate the ship clockwise."""
+        transform = self.get_component("transform")
         if transform:
-            # Apply rotation speed based on delta time
-            rotation_change = SHIP_ROTATION_SPEED * self.game.dt
-            transform.rotation = (transform.rotation + rotation_change) % 360
-            print(f"Rotating right: change={rotation_change}, new rotation={transform.rotation}")  # Debug info
+            transform.rotation += self.rotation_speed
+            print(f"Rotating right: change={self.rotation_speed}, new rotation={transform.rotation}")
+
+    def thrust(self) -> None:
+        """Apply thrust to move the ship forward."""
+        transform = self.get_component("transform")
+        if transform:
+            # Calculate thrust vector based on current rotation
+            angle = math.radians(transform.rotation)
+            thrust_vector = pygame.Vector2(
+                math.sin(angle) * self.thrust_power,
+                -math.cos(angle) * self.thrust_power
+            )
+            transform.velocity += thrust_vector
+            print(f"Applying thrust: vector={thrust_vector}, new velocity={transform.velocity}")
+    
+    def reverse_thrust(self) -> None:
+        """Apply reverse thrust to move the ship backward."""
+        transform = self.get_component("transform")
+        if transform:
+            # Calculate thrust vector based on current rotation
+            angle = math.radians(transform.rotation)
+            thrust_vector = pygame.Vector2(
+                math.sin(angle) * -self.thrust_power / 2,
+                -math.cos(angle) * -self.thrust_power / 2
+            )
+            transform.velocity += thrust_vector
+            print(f"Applying reverse thrust: vector={thrust_vector}, new velocity={transform.velocity}")
     
     def _shoot(self):
         """Create and fire a bullet."""

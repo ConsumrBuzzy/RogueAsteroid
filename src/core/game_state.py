@@ -2,6 +2,7 @@
 from enum import Enum, auto
 import pygame
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
+from typing import Optional
 
 class GameState(Enum):
     MAIN_MENU = auto()
@@ -11,47 +12,48 @@ class GameState(Enum):
     HIGH_SCORE = auto()
     NEW_HIGH_SCORE = auto()  # For entering name when achieving high score
     GAME_OVER = auto()
+    QUIT = auto()
 
 class StateManager:
+    """Manages game state transitions."""
+    
     def __init__(self, game):
         """Initialize the state manager."""
-        print("Initializing StateManager")  # Debug info
         self.game = game
-        self.current_state = None  # Initialize to None, let Game class set initial state
-        self.previous_state = None  # Track previous state for returning from menus
-        self.selected_option = 0
-        self.menu_options = {
-            GameState.MAIN_MENU: ['New Game', 'High Scores', 'Options', 'Quit'],
-            GameState.OPTIONS: [f'Control Scheme: {self.game.settings["controls"].upper()}', 'Back'],
-            GameState.PAUSED: ['Resume', 'Options', 'Main Menu']
+        self._current_state = None
+        self._valid_transitions = {
+            None: [GameState.MAIN_MENU],
+            GameState.MAIN_MENU: [GameState.PLAYING, GameState.OPTIONS, GameState.HIGH_SCORE, GameState.QUIT],
+            GameState.PLAYING: [GameState.PAUSED, GameState.GAME_OVER],
+            GameState.PAUSED: [GameState.PLAYING, GameState.MAIN_MENU, GameState.OPTIONS],
+            GameState.OPTIONS: [GameState.MAIN_MENU, GameState.PLAYING],
+            GameState.GAME_OVER: [GameState.MAIN_MENU, GameState.QUIT],
+            GameState.HIGH_SCORE: [GameState.MAIN_MENU],
+            GameState.NEW_HIGH_SCORE: [GameState.MAIN_MENU]
         }
-        self.high_score_name = ""  # For new high score entry
-    
-    def change_state(self, new_state):
-        """Change the current game state."""
-        if new_state == self.current_state:
-            return
+        print("Initializing StateManager")
+        
+    @property
+    def current_state(self) -> Optional[GameState]:
+        """Get the current game state."""
+        return self._current_state
+        
+    def change_state(self, new_state: GameState) -> None:
+        """Change to a new game state.
+        
+        Args:
+            new_state: The new state to transition to.
             
-        old_state = self.current_state
-        print(f"Changing state from {old_state} to {new_state}")  # Debug info
+        Raises:
+            ValueError: If the transition is not valid.
+        """
+        print(f"Changing state from {self._current_state} to {new_state}")
         
-        # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
-        if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
-            self.previous_state = old_state
-        
-        # Handle state-specific transitions
-        if new_state == GameState.PLAYING:
-            if old_state == GameState.MAIN_MENU:
-                print("Starting new game")  # Debug info
-                self.game.reset_game()
-            elif old_state == GameState.PAUSED:
-                print("Resuming game")  # Debug info
-        elif new_state == GameState.GAME_OVER:
-            print("Game Over!")  # Debug info
-        
-        self.current_state = new_state
-        self.selected_option = 0
-        print(f"State changed to: {self.current_state}")  # Debug info
+        if new_state not in self._valid_transitions.get(self._current_state, []):
+            raise ValueError(f"Invalid state transition from {self._current_state} to {new_state}")
+            
+        self._current_state = new_state
+        print(f"State changed to: {new_state}")
     
     def handle_input(self, event):
         """Handle input based on current state."""
@@ -143,13 +145,13 @@ class StateManager:
                     print(f"Updated ship controls to {new_scheme}")  # Debug info
             else:  # Back
                 # Return to previous state (MAIN_MENU or PLAYING)
-                if self.previous_state == GameState.PLAYING:
+                if self.game.state_manager.current_state == GameState.PLAYING:
                     self.change_state(GameState.PLAYING)
                 else:
                     self.change_state(GameState.MAIN_MENU)
         elif event.key == pygame.K_ESCAPE:
             # Return to previous state (MAIN_MENU or PLAYING)
-            if self.previous_state == GameState.PLAYING:
+            if self.game.state_manager.current_state == GameState.PLAYING:
                 self.change_state(GameState.PLAYING)
             else:
                 self.change_state(GameState.MAIN_MENU)

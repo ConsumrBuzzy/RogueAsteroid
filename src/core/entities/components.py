@@ -22,22 +22,20 @@ class ScreenWrapComponent(Component):
         print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
 
     def update(self, dt: float) -> None:
-        """Update entity position to wrap around screen edges.
+        """Update the screen wrap component.
         
         Args:
-            dt: Delta time in seconds
+            dt: Time delta in seconds.
         """
-        transform = self.entity.get_component('transform')
-        if not transform:
+        transform = self.entity.get_component("transform")
+        if transform is None:
             return
-        
-        # Wrap horizontally
+            
         if transform.position.x < 0:
             transform.position.x = self.width
         elif transform.position.x > self.width:
             transform.position.x = 0
-        
-        # Wrap vertically
+            
         if transform.position.y < 0:
             transform.position.y = self.height
         elif transform.position.y > self.height:
