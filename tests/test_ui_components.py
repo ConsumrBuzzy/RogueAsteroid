@@ -24,9 +24,13 @@ def pygame_init():
 class TestStateManager:
     def test_state_transitions(self, state_manager):
         """Test game state transitions."""
+        # Initialize menu options
+        state_manager.menu_options = ["Start Game", "Options", "Quit"]
+        state_manager.selected_option = 0
         assert state_manager.current_state == GameState.MAIN_MENU
         
-        # Test transition to PLAYING
+        # Test transition to PLAYING from menu selection
+        state_manager.selected_option = 0  # "Start Game" option
         state_manager.change_state(GameState.PLAYING)
         assert state_manager.current_state == GameState.PLAYING
         
@@ -37,9 +41,35 @@ class TestStateManager:
         # Test transition back to PLAYING
         state_manager.change_state(GameState.PLAYING)
         assert state_manager.current_state == GameState.PLAYING
+        
+        # Test transition to GAME_OVER
+        state_manager.change_state(GameState.GAME_OVER)
+        assert state_manager.current_state == GameState.GAME_OVER
+
+    def test_menu_navigation(self, state_manager):
+        """Test menu option navigation."""
+        state_manager.menu_options = ["Start Game", "Options", "Quit"]
+        state_manager.selected_option = 0
+        
+        # Test moving down in menu
+        state_manager.select_next_option()
+        assert state_manager.selected_option == 1
+        state_manager.select_next_option()
+        assert state_manager.selected_option == 2
+        
+        # Test wrapping around to top
+        state_manager.select_next_option()
+        assert state_manager.selected_option == 0
+        
+        # Test moving up in menu
+        state_manager.select_previous_option()
+        assert state_manager.selected_option == 2
 
     def test_invalid_state_transition(self, state_manager):
         """Test handling of invalid state transitions."""
+        state_manager.menu_options = ["Start Game", "Options", "Quit"]
+        state_manager.selected_option = 0
+        
         with pytest.raises(ValueError):
             state_manager.change_state("INVALID_STATE")
         
