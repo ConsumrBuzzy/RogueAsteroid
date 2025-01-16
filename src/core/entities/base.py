@@ -198,7 +198,8 @@ class PhysicsComponent(Component):
         if self.velocity.length() > self.max_speed:
             self.velocity.scale_to_length(self.max_speed)
 
-        # Update position
+        # Update transform's velocity and position
+        transform.velocity = self.velocity
         transform.position += self.velocity * dt
 
         # Reset acceleration

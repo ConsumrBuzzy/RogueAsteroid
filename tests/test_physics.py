@@ -30,7 +30,7 @@ class TestPhysics:
         transform = ship.get_component('transform')
         physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.force = np.array([100.0, 100.0])  # Increase force for noticeable movement
+        physics.force = np.array([1000.0, 1000.0])  # Increase force significantly for noticeable movement
         ship.update(0.016)  # Update with 16ms delta time
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
@@ -75,12 +75,21 @@ class TestCollisionDetection:
         """Test collision detection between a point and a circular object."""
         transform = ship.get_component('transform')
         collision = ship.get_component('collision')
-        point = pygame.Vector2(transform.position.x + collision.radius/2, 
-                             transform.position.y)
-        # Test using circle-circle collision with zero radius for point
-        point_collision = CollisionComponent(None, radius=0)
-        point_collision.transform = transform.__class__(None)
-        point_collision.transform.position = point
+        
+        # Create a point collision component with a mock entity
+        class MockEntity:
+            def __init__(self):
+                self.transform = TransformComponent(self)
+                self.transform.position = pygame.Vector2(transform.position.x + collision.radius/2, 
+                                                      transform.position.y)
+                
+            def get_component(self, name):
+                if name == 'transform':
+                    return self.transform
+                return None
+        
+        point_entity = MockEntity()
+        point_collision = CollisionComponent(point_entity, radius=0)
         assert collision.check_collision(point_collision)
 
     def test_edge_case_collisions(self, ship, asteroid):
