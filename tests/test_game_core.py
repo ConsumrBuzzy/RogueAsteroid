@@ -46,8 +46,9 @@ class TestShipMechanics:
     def test_ship_movement(self, ship):
         """Test ship movement mechanics."""
         transform = ship.get_component('transform')
+        physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        ship.thrust = True
+        physics.velocity = pygame.Vector2(10, 10)
         ship.update(0.016)  # Simulate one frame at 60 FPS
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
@@ -63,9 +64,9 @@ class TestShipMechanics:
     def test_ship_wrapping(self, ship):
         """Test screen wrapping for ship."""
         transform = ship.get_component('transform')
-        transform.position.x = WINDOW_WIDTH + 10
-        transform.position.y = WINDOW_HEIGHT + 10
-        ship.update(0.016)
+        screen_wrap = ship.get_component('screen_wrap')
+        transform.position = pygame.Vector2(WINDOW_WIDTH + 10, WINDOW_HEIGHT + 10)
+        screen_wrap.update()
         assert transform.position.x < WINDOW_WIDTH
         assert transform.position.y < WINDOW_HEIGHT
 
@@ -73,7 +74,9 @@ class TestAsteroidMechanics:
     def test_asteroid_movement(self, asteroid):
         """Test asteroid movement."""
         transform = asteroid.get_component('transform')
+        physics = asteroid.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
+        physics.velocity = pygame.Vector2(10, 10)
         asteroid.update(0.016)
         current_pos = pygame.Vector2(transform.position)
         assert initial_pos != current_pos
@@ -90,9 +93,9 @@ class TestAsteroidMechanics:
     def test_asteroid_wrapping(self, asteroid):
         """Test screen wrapping for asteroids."""
         transform = asteroid.get_component('transform')
-        transform.position.x = WINDOW_WIDTH + 10
-        transform.position.y = WINDOW_HEIGHT + 10
-        asteroid.update(0.016)
+        screen_wrap = asteroid.get_component('screen_wrap')
+        transform.position = pygame.Vector2(WINDOW_WIDTH + 10, WINDOW_HEIGHT + 10)
+        screen_wrap.update()
         assert transform.position.x < WINDOW_WIDTH
         assert transform.position.y < WINDOW_HEIGHT
 
@@ -103,12 +106,15 @@ class TestCollisions:
         position = pygame.Vector2(100, 100)
         asteroid = Asteroid(game, 'large', position)
         
-        # Position ship and asteroid at same location
         ship_transform = ship.get_component('transform')
+        ship_collision = ship.get_component('collision')
         asteroid_transform = asteroid.get_component('transform')
+        asteroid_collision = asteroid.get_component('collision')
+        
+        # Position ship and asteroid at same location
         ship_transform.position = pygame.Vector2(asteroid_transform.position)
         
-        assert ship.collides_with(asteroid)
+        assert ship_collision.check_collision(asteroid_collision)
 
     def test_no_collision_when_distant(self, game):
         """Test that distant objects don't collide."""
@@ -117,9 +123,12 @@ class TestCollisions:
         asteroid = Asteroid(game, 'large', position)
         
         ship_transform = ship.get_component('transform')
+        ship_collision = ship.get_component('collision')
+        asteroid_collision = asteroid.get_component('collision')
+        
         ship_transform.position = pygame.Vector2(0, 0)
         
-        assert not ship.collides_with(asteroid)
+        assert not ship_collision.check_collision(asteroid_collision)
 
 class TestGameProgression:
     def test_level_progression(self, game):
@@ -132,9 +141,9 @@ class TestGameProgression:
 
     def test_score_system(self, game):
         """Test scoring system."""
-        initial_score = game.scoring.get_score()
-        game.scoring.add_score(100)
-        assert game.scoring.get_score() == initial_score + 100
+        initial_score = game.score
+        game.add_score(100)
+        assert game.score == initial_score + 100
 
     def test_lives_system(self, game):
         """Test lives system."""

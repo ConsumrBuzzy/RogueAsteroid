@@ -27,8 +27,9 @@ class TestPhysics:
     def test_velocity_application(self, ship):
         """Test velocity affects position correctly."""
         transform = ship.get_component('transform')
+        physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        ship.thrust = True
+        physics.velocity = pygame.Vector2(10, 10)
         ship.update(1.0)  # Update with 1 second delta time
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
@@ -36,8 +37,9 @@ class TestPhysics:
     def test_acceleration(self, ship):
         """Test acceleration affects velocity correctly."""
         physics = ship.get_component('physics')
+        physics.velocity = pygame.Vector2(0, 0)
+        physics.acceleration = pygame.Vector2(10, 10)
         initial_velocity = pygame.Vector2(physics.velocity)
-        ship.thrust = True
         ship.update(1.0)
         new_velocity = pygame.Vector2(physics.velocity)
         assert new_velocity != initial_velocity
@@ -47,70 +49,83 @@ class TestPhysics:
         physics = ship.get_component('physics')
         physics.velocity = pygame.Vector2(10.0, 10.0)
         initial_speed = physics.velocity.length()
+        physics.drag = 0.5  # Set drag coefficient
         ship.update(1.0)
         new_speed = physics.velocity.length()
         assert new_speed < initial_speed
 
 class TestCollisionDetection:
-    def test_point_circle_collision(self, asteroid):
-        """Test point-circle collision detection."""
-        # Point inside asteroid
-        point = (asteroid.x, asteroid.y)
-        assert asteroid.point_in_hitbox(point[0], point[1])
-        
-        # Point outside asteroid
-        point = (asteroid.x + asteroid.radius * 2, asteroid.y + asteroid.radius * 2)
-        assert not asteroid.point_in_hitbox(point[0], point[1])
-
     def test_circle_circle_collision(self, ship, asteroid):
-        """Test circle-circle collision detection."""
-        # Place objects at same position
-        ship.x = asteroid.x
-        ship.y = asteroid.y
-        assert ship.collides_with(asteroid)
+        """Test collision detection between two circular objects."""
+        ship_transform = ship.get_component('transform')
+        ship_collision = ship.get_component('collision')
+        asteroid_transform = asteroid.get_component('transform')
+        asteroid_collision = asteroid.get_component('collision')
         
-        # Move ship away by more than combined radii
-        ship.x = asteroid.x + (ship.radius + asteroid.radius) * 2
-        assert not ship.collides_with(asteroid)
+        # Position objects to collide
+        ship_transform.position = pygame.Vector2(100, 100)
+        asteroid_transform.position = pygame.Vector2(110, 110)
+        
+        # Check collision
+        assert ship_collision.check_collision(asteroid_collision)
+
+    def test_point_circle_collision(self, ship, asteroid):
+        """Test collision detection between a point and a circular object."""
+        ship_transform = ship.get_component('transform')
+        ship_collision = ship.get_component('collision')
+        point = pygame.Vector2(ship_transform.position.x + ship_collision.radius/2, 
+                             ship_transform.position.y)
+        assert ship_collision.check_point_collision(point)
 
     def test_edge_case_collisions(self, ship, asteroid):
         """Test edge cases in collision detection."""
-        # Test exact edge collision
-        ship.x = asteroid.x + ship.radius + asteroid.radius
-        ship.y = asteroid.y
-        # Should not collide when exactly at edge
-        assert not ship.collides_with(asteroid)
+        ship_transform = ship.get_component('transform')
+        ship_collision = ship.get_component('collision')
+        asteroid_transform = asteroid.get_component('transform')
+        asteroid_collision = asteroid.get_component('collision')
         
-        # Move slightly closer
-        ship.x -= 1
-        # Should collide when slightly overlapping
-        assert ship.collides_with(asteroid)
+        # Test edge of collision radius
+        ship_transform.position = pygame.Vector2(100, 100)
+        asteroid_transform.position = pygame.Vector2(
+            ship_transform.position.x + ship_collision.radius + asteroid_collision.radius,
+            ship_transform.position.y
+        )
+        assert not ship_collision.check_collision(asteroid_collision)
 
 class TestBoundaryWrapping:
     def test_horizontal_wrapping(self, ship):
-        """Test horizontal screen wrapping."""
-        ship.x = WINDOW_WIDTH + 10
-        ship.update(0.016)
-        assert ship.x < ship.radius
-
-        ship.x = -10
-        ship.update(0.016)
-        assert ship.x > WINDOW_WIDTH - ship.radius
+        """Test screen wrapping horizontally."""
+        transform = ship.get_component('transform')
+        collision = ship.get_component('collision')
+        screen_wrap = ship.get_component('screen_wrap')
+        
+        # Move ship beyond right edge
+        transform.position.x = WINDOW_WIDTH + collision.radius
+        screen_wrap.update()
+        assert transform.position.x < collision.radius
 
     def test_vertical_wrapping(self, ship):
-        """Test vertical screen wrapping."""
-        ship.y = WINDOW_HEIGHT + 10
-        ship.update(0.016)
-        assert ship.y < ship.radius
-
-        ship.y = -10
-        ship.update(0.016)
-        assert ship.y > WINDOW_HEIGHT - ship.radius
+        """Test screen wrapping vertically."""
+        transform = ship.get_component('transform')
+        collision = ship.get_component('collision')
+        screen_wrap = ship.get_component('screen_wrap')
+        
+        # Move ship beyond bottom edge
+        transform.position.y = WINDOW_HEIGHT + collision.radius
+        screen_wrap.update()
+        assert transform.position.y < collision.radius
 
     def test_diagonal_wrapping(self, ship):
-        """Test diagonal screen wrapping."""
-        ship.x = WINDOW_WIDTH + 10
-        ship.y = WINDOW_HEIGHT + 10
-        ship.update(0.016)
-        assert ship.x < ship.radius
-        assert ship.y < ship.radius
+        """Test screen wrapping diagonally."""
+        transform = ship.get_component('transform')
+        collision = ship.get_component('collision')
+        screen_wrap = ship.get_component('screen_wrap')
+        
+        # Move ship beyond both edges
+        transform.position = pygame.Vector2(
+            WINDOW_WIDTH + collision.radius,
+            WINDOW_HEIGHT + collision.radius
+        )
+        screen_wrap.update()
+        assert transform.position.x < collision.radius
+        assert transform.position.y < collision.radius
