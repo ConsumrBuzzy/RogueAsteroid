@@ -47,7 +47,10 @@ class Entity:
         Raises:
             ValueError: If a component of the same type already exists.
         """
-        name = component_type.__name__.lower().replace('component', '')
+        # Convert CamelCase to snake_case and remove 'component'
+        name = ''.join(['_' + c.lower() if c.isupper() else c for c in component_type.__name__]).lstrip('_')
+        name = name.replace('_component', '')
+        
         if name in self._components:
             raise ValueError(f"Component {name} already exists on this entity")
             
@@ -64,6 +67,9 @@ class Entity:
         Returns:
             The component if found, None otherwise.
         """
+        # Convert CamelCase to snake_case if needed
+        if not name.islower():
+            name = ''.join(['_' + c.lower() if c.isupper() else c for c in name]).lstrip('_')
         return self._components.get(name.lower().replace('component', ''))
     
     def update(self, dt: float) -> None:

@@ -102,6 +102,7 @@ class Asteroid(Entity):
 
         # Screen wrap component
         screen_wrap = self.add_component(ScreenWrapComponent, width=self.game.width, height=self.game.height)
+        print("ScreenWrap initialized with width={}, height={}".format(self.game.width, self.game.height))
         
         print(f"Asteroid components initialized: transform={transform}, render={render}, collision={collision}, screen_wrap={screen_wrap}")  # Debug info
     
