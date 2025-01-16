@@ -5,7 +5,7 @@ World class for managing entities and their components.
 from typing import Dict, Set, Type, Iterator, Tuple, Any, TypeVar
 from collections import defaultdict
 from .components import Component
-from .events import EventEmitter
+from .events import EventManager
 from .resources import Resources
 
 T = TypeVar('T', bound=Component)
@@ -20,7 +20,7 @@ class World:
         self._components: Dict[Type[Component], Dict[int, Component]] = defaultdict(dict)
         self._next_entity_id: int = 0
         self._dead_entities: Set[int] = set()
-        self.events = EventEmitter()
+        self.events = EventManager()
         self.resources = Resources()
 
     def create_entity(self) -> int:
