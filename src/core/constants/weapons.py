@@ -1,5 +1,10 @@
-"""Weapon settings constants."""
+"""
+Weapon-related constants.
+"""
 
-BULLET_SPEED = 500.0
-BULLET_LIFETIME = 1.0
-MAX_BULLETS = 4 
+# Bullet settings
+BULLET_SPEED = 800.0
+BULLET_LIFETIME = 0.5
+BULLET_DAMAGE = 1
+BULLET_COOLDOWN = 0.2
+MAX_BULLETS = 4

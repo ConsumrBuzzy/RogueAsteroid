@@ -1,27 +1,23 @@
-"""Asteroid settings constants."""
+"""
+Asteroid-related constants.
+"""
 
-MAX_ASTEROIDS = 12
-
-ASTEROID_SIZES = {
-    'large': {
-        'radius': 40,
-        'speed_range': (50, 100),
-        'mass': 9.0,
-        'points': 3,
-        'vertices_range': (10, 14)  # More vertices for larger asteroids
-    },
-    'medium': {
-        'radius': 20,
-        'speed_range': (100, 150),
-        'mass': 4.0,
-        'points': 2,
-        'vertices_range': (8, 12)  # Medium complexity
-    },
-    'small': {
-        'radius': 10,
-        'speed_range': (150, 200),
-        'mass': 1.0,
-        'points': 1,
-        'vertices_range': (6, 10)  # Simpler shape for small asteroids
-    }
-} 
+# Asteroid settings
+ASTEROID_SIZES = ["large", "medium", "small"]
+ASTEROID_POINTS = {
+    "large": 20,
+    "medium": 50,
+    "small": 100
+}
+ASTEROID_RADIUS = {
+    "large": 40,
+    "medium": 20,
+    "small": 10
+}
+ASTEROID_SPEED = {
+    "large": (50, 100),  # (min, max) speed
+    "medium": (100, 150),
+    "small": (150, 200)
+}
+ASTEROID_SPLIT_COUNT = 2
+MIN_ASTEROID_COUNT = 4

@@ -1,7 +1,12 @@
-"""Ship settings constants."""
+"""
+Ship-related constants.
+"""
 
-SHIP_ACCELERATION = 300.0
-SHIP_MAX_SPEED = 300.0
-SHIP_ROTATION_SPEED = 270.0  # Increased from 180 to 270 degrees per second
-SHIP_FRICTION = 0.02
-SHIP_INVULNERABLE_TIME = 3.0 
+# Player ship settings
+SHIP_ACCELERATION = 200.0
+SHIP_MAX_SPEED = 500.0
+SHIP_ROTATION_SPEED = 360.0  # Degrees per second
+SHIP_FRICTION = 0.1
+SHIP_INVULNERABLE_TIME = 3.0
+SHIP_INITIAL_LIVES = 3
+SHIP_SHOOT_COOLDOWN = 0.2
