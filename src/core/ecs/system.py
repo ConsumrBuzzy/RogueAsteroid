@@ -76,23 +76,72 @@ class RenderSystem(System):
     """Handles rendering of entities with Position and Renderable components."""
     
     def update(self, world: 'World', dt: float) -> None:
-        # Get all renderable entities and sort by layer
-        renderables = sorted(
-            world.get_components(Position, Renderable),
-            key=lambda x: x[1][1].layer
-        )
-        
+        # Get the screen surface
         screen = pygame.display.get_surface()
         
-        for _, (pos, render) in renderables:
-            if not render.visible or not render.texture:
+        # Clear screen
+        screen.fill((0, 0, 0))
+        
+        # Draw all renderable entities
+        for _, (pos, render) in world.get_components(Position, Renderable):
+            if not render.visible:
                 continue
                 
-            # Get the rotated surface
-            rotated = pygame.transform.rotate(render.texture, -pos.rotation)
+            # Try to use sprite if available
+            sprite = render.sprite
             
-            # Get the new rect centered at the entity's position
-            rect = rotated.get_rect(center=(pos.x, pos.y))
+            if sprite:
+                # Calculate sprite position (center-based)
+                sprite_rect = sprite.get_rect()
+                sprite_rect.centerx = int(pos.x)
+                sprite_rect.centery = int(pos.y)
+                
+                # Create a rotated copy of the sprite
+                if render.rotation != 0:
+                    rotated_sprite = pygame.transform.rotate(sprite, -render.rotation)
+                    sprite_rect = rotated_sprite.get_rect(center=sprite_rect.center)
+                    screen.blit(rotated_sprite, sprite_rect)
+                else:
+                    screen.blit(sprite, sprite_rect)
             
-            # Draw to screen
-            screen.blit(rotated, rect)
+            else:
+                # Use vector shape if no sprite available
+                shape = render.shape
+                
+                if not shape:
+                    continue
+                
+                # Transform vertices based on position and rotation
+                transformed_verts = []
+                for x, y in shape:
+                    if render.rotation != 0:
+                        angle = math.radians(render.rotation)
+                        rx = x * math.cos(angle) - y * math.sin(angle)
+                        ry = x * math.sin(angle) + y * math.cos(angle)
+                        x, y = rx, ry
+                    
+                    transformed_verts.append((
+                        int(pos.x + x),
+                        int(pos.y + y)
+                    ))
+                
+                # Draw the shape
+                if len(transformed_verts) == 1:
+                    # Single point for particles
+                    pygame.draw.circle(
+                        screen,
+                        render.color,
+                        transformed_verts[0],
+                        render.size
+                    )
+                else:
+                    # Line shape for other entities
+                    pygame.draw.polygon(
+                        screen,
+                        render.color,
+                        transformed_verts,
+                        render.line_width
+                    )
+        
+        # Update display
+        pygame.display.flip()

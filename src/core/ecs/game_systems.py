@@ -1,193 +1,262 @@
 """
-Game-specific systems for Rogue Asteroid.
+Game-specific systems for the ECS architecture.
 """
 
 import math
+import random
 import pygame
-from typing import TYPE_CHECKING
-from .system import System
-from .components import Position, Velocity, Input, Collider
-from .game_components import (
-    Player,
-    Asteroid,
-    Bullet,
-    Lifetime,
-    Physics,
-    EntityType,
-    EntityTag
+from typing import TYPE_CHECKING, List, Tuple
+from .components import (
+    Position, Velocity, Input, Renderable, Collider,
+    Physics, Player, Bullet, Asteroid, Particle
 )
+from .resources import WindowInfo, SpriteResource
 from .events import CollisionEvent, ScoreEvent
-from .resources import GameState, WindowInfo
 
 if TYPE_CHECKING:
     from .world import World
 
-class PlayerControlSystem(System):
-    """Handles player ship control and movement."""
-    
-    THRUST_FORCE = 200.0
-    ROTATION_SPEED = 180.0  # Degrees per second
+class PlayerControlSystem:
+    """Handles player input and control."""
     
     def update(self, world: 'World', dt: float) -> None:
-        for entity, (pos, vel, input_comp, physics) in world.get_components(
-            Position, Velocity, Input, Physics
-        ):
+        """Update player based on input."""
+        for entity, (pos, vel, input_comp, physics) in world.get_components(Position, Velocity, Input, Physics):
             if not world.has_component(entity, Player):
                 continue
-                
+            
             # Handle rotation
-            if input_comp.rotate_left:
-                pos.rotation += self.ROTATION_SPEED * dt
-            if input_comp.rotate_right:
-                pos.rotation -= self.ROTATION_SPEED * dt
+            if input_comp.left:
+                pos.rotation += 360 * dt  # Rotate counterclockwise
+            if input_comp.right:
+                pos.rotation -= 360 * dt  # Rotate clockwise
             
             # Handle thrust
-            if input_comp.thrust:
-                # Convert rotation to radians
-                angle_rad = math.radians(pos.rotation)
-                # Apply thrust force in direction of rotation
-                force_x = math.cos(angle_rad) * self.THRUST_FORCE
-                force_y = -math.sin(angle_rad) * self.THRUST_FORCE
+            if input_comp.up:
+                # Calculate thrust vector based on rotation
+                angle = math.radians(pos.rotation)
+                thrust_x = math.cos(angle) * physics.thrust
+                thrust_y = -math.sin(angle) * physics.thrust
                 
-                vel.dx += force_x * dt
-                vel.dy += force_y * dt
+                # Apply thrust
+                vel.x += thrust_x * dt
+                vel.y += thrust_y * dt
+                
+                # Limit speed
+                speed = math.sqrt(vel.x * vel.x + vel.y * vel.y)
+                if speed > physics.max_speed:
+                    vel.x = (vel.x / speed) * physics.max_speed
+                    vel.y = (vel.y / speed) * physics.max_speed
             
-            # Apply drag
-            if physics.drag > 0:
-                vel.dx *= (1.0 - physics.drag * dt)
-                vel.dy *= (1.0 - physics.drag * dt)
+            # Apply friction
+            if physics.friction > 0:
+                vel.x *= (1.0 - physics.friction * dt)
+                vel.y *= (1.0 - physics.friction * dt)
             
-            # Enforce speed limit
-            speed = math.sqrt(vel.dx * vel.dx + vel.dy * vel.dy)
-            if speed > physics.max_speed:
-                vel.dx = (vel.dx / speed) * physics.max_speed
-                vel.dy = (vel.dy / speed) * physics.max_speed
+            # Handle shooting
+            player = world.get_component(entity, Player)
+            if input_comp.fire and player.shoot_cooldown <= 0:
+                self._spawn_bullet(world, entity)
+                player.shoot_cooldown = 0.2  # Reset cooldown
+            
+            # Update cooldown
+            if player.shoot_cooldown > 0:
+                player.shoot_cooldown -= dt
+    
+    def _spawn_bullet(self, world: 'World', player_entity: int) -> None:
+        """Spawn a bullet from the player's position."""
+        pos = world.get_component(player_entity, Position)
+        if not pos:
+            return
+        
+        # Create bullet entity
+        bullet_entity = world.create_entity()
+        
+        # Calculate bullet direction and position
+        angle = math.radians(pos.rotation)
+        direction = pygame.Vector2(math.cos(angle), -math.sin(angle))
+        
+        # Add components
+        world.add_component(bullet_entity, Position(
+            x=pos.x + direction.x * 20,  # Offset from player
+            y=pos.y + direction.y * 20,
+            rotation=pos.rotation
+        ))
+        
+        world.add_component(bullet_entity, Velocity(
+            x=direction.x * 800,  # Bullet speed
+            y=direction.y * 800
+        ))
+        
+        world.add_component(bullet_entity, Bullet())
+        world.add_component(bullet_entity, Collider(radius=2))
+        
+        # Add renderable with bullet shape
+        render = Renderable(
+            sprite_name="bullet",
+            color=(255, 255, 0),  # Yellow
+            line_width=2
+        )
+        world.add_component(bullet_entity, render)
 
-class BulletSystem(System):
-    """Handles bullet lifetime and cleanup."""
+class BulletSystem:
+    """Handles bullet behavior and lifetime."""
     
     def update(self, world: 'World', dt: float) -> None:
-        for entity, (lifetime,) in world.get_components(Lifetime):
-            if not world.has_component(entity, Bullet):
-                continue
+        """Update all bullets."""
+        for entity, (bullet,) in world.get_components(Bullet):
+            # Update lifetime
+            bullet.lifetime -= dt
             
-            lifetime.remaining -= dt
-            if lifetime.remaining <= 0:
+            # Destroy if expired
+            if bullet.lifetime <= 0:
                 world.destroy_entity(entity)
 
-class AsteroidSystem(System):
+class AsteroidSystem:
     """Handles asteroid behavior and spawning."""
     
     def update(self, world: 'World', dt: float) -> None:
-        # This will be expanded with asteroid splitting logic
-        pass
-
-class CollisionHandlingSystem(System):
-    """Handles collision responses between different entity types."""
-    
-    def update(self, world: 'World', dt: float) -> None:
-        for event in world.events._pending_events:
-            if not isinstance(event, CollisionEvent):
-                continue
-            
-            self._handle_collision(world, event.entity1, event.entity2)
-    
-    def _handle_collision(self, world: 'World', entity1: int, entity2: int) -> None:
-        # Get entity types
-        tag1 = world.get_component(entity1, EntityTag)
-        tag2 = world.get_component(entity2, EntityTag)
+        """Update all asteroids."""
+        # Count existing asteroids
+        asteroid_count = sum(1 for _ in world.get_components(Asteroid))
         
-        if not tag1 or not tag2:
+        # Spawn new asteroids if needed
+        if asteroid_count < 4:
+            self._spawn_asteroid(world, "large")
+    
+    def _spawn_asteroid(self, world: 'World', size: str) -> None:
+        """Spawn a new asteroid."""
+        window = world.resources.get(WindowInfo)
+        if not window:
             return
         
-        # Handle bullet-asteroid collision
-        if (tag1.type == EntityType.BULLET and tag2.type == EntityType.ASTEROID or
-            tag2.type == EntityType.BULLET and tag1.type == EntityType.ASTEROID):
-            self._handle_bullet_asteroid_collision(
-                world,
-                entity1 if tag1.type == EntityType.ASTEROID else entity2,
-                entity2 if tag2.type == EntityType.BULLET else entity1
-            )
+        # Create asteroid entity
+        asteroid_entity = world.create_entity()
         
-        # Handle player-asteroid collision
-        elif (tag1.type == EntityType.PLAYER and tag2.type == EntityType.ASTEROID or
-              tag2.type == EntityType.PLAYER and tag1.type == EntityType.ASTEROID):
-            self._handle_player_asteroid_collision(
-                world,
-                entity1 if tag1.type == EntityType.PLAYER else entity2,
-                entity2 if tag2.type == EntityType.ASTEROID else entity1
-            )
+        # Randomize position at screen edge
+        if random.random() < 0.5:
+            # Spawn on left/right edge
+            x = 0 if random.random() < 0.5 else window.width
+            y = random.uniform(0, window.height)
+        else:
+            # Spawn on top/bottom edge
+            x = random.uniform(0, window.width)
+            y = 0 if random.random() < 0.5 else window.height
+        
+        # Random velocity
+        angle = random.uniform(0, 2 * math.pi)
+        speed = random.uniform(50, 100)
+        vel_x = math.cos(angle) * speed
+        vel_y = math.sin(angle) * speed
+        
+        # Add components
+        world.add_component(asteroid_entity, Position(x=x, y=y))
+        world.add_component(asteroid_entity, Velocity(x=vel_x, y=vel_y))
+        world.add_component(asteroid_entity, Asteroid(size=size))
+        
+        # Size-based properties
+        if size == "large":
+            radius = 40
+            points = 20
+        elif size == "medium":
+            radius = 20
+            points = 50
+        else:  # small
+            radius = 10
+            points = 100
+        
+        world.add_component(asteroid_entity, Collider(radius=radius))
+        
+        # Add renderable with asteroid shape
+        variant = random.randint(1, 3)
+        render = Renderable(
+            sprite_name=f"asteroid_{size}_{variant}",
+            color=(255, 255, 255),  # White
+            line_width=2
+        )
+        world.add_component(asteroid_entity, render)
+
+class CollisionHandlingSystem:
+    """Handles collision responses between entities."""
     
-    def _handle_bullet_asteroid_collision(
-        self,
-        world: 'World',
-        asteroid_entity: int,
-        bullet_entity: int
-    ) -> None:
-        asteroid = world.get_component(asteroid_entity, Asteroid)
-        if not asteroid:
+    def update(self, world: 'World', dt: float) -> None:
+        """Process collision events."""
+        for event in world.events.get(CollisionEvent):
+            entity1, entity2 = event.entity1, event.entity2
+            
+            # Handle bullet-asteroid collisions
+            if (world.has_component(entity1, Bullet) and world.has_component(entity2, Asteroid) or
+                world.has_component(entity2, Bullet) and world.has_component(entity1, Asteroid)):
+                self._handle_bullet_asteroid_collision(world, entity1, entity2)
+            
+            # Handle player-asteroid collisions
+            elif (world.has_component(entity1, Player) and world.has_component(entity2, Asteroid) or
+                  world.has_component(entity2, Player) and world.has_component(entity1, Asteroid)):
+                self._handle_player_asteroid_collision(world, entity1, entity2)
+    
+    def _handle_bullet_asteroid_collision(self, world: 'World', entity1: int, entity2: int) -> None:
+        """Handle collision between bullet and asteroid."""
+        # Determine which is which
+        bullet = entity1 if world.has_component(entity1, Bullet) else entity2
+        asteroid = entity2 if world.has_component(entity2, Asteroid) else entity1
+        
+        # Get asteroid info
+        asteroid_comp = world.get_component(asteroid, Asteroid)
+        if not asteroid_comp:
             return
         
         # Award points
-        world.events.emit(ScoreEvent(points=asteroid.points, entity=asteroid_entity))
+        world.events.emit(ScoreEvent(asteroid_comp.points))
         
-        # Destroy bullet
-        world.destroy_entity(bullet_entity)
+        # Split asteroid if not smallest
+        if asteroid_comp.size != "small":
+            self._split_asteroid(world, asteroid)
         
-        # Handle asteroid splitting or destruction
-        if asteroid.size == "large":
-            self._split_asteroid(world, asteroid_entity, "medium")
-        elif asteroid.size == "medium":
-            self._split_asteroid(world, asteroid_entity, "small")
-        
-        # Destroy the original asteroid
-        world.destroy_entity(asteroid_entity)
+        # Destroy both entities
+        world.destroy_entity(bullet)
+        world.destroy_entity(asteroid)
     
-    def _handle_player_asteroid_collision(
-        self,
-        world: 'World',
-        player_entity: int,
-        asteroid_entity: int
-    ) -> None:
-        player = world.get_component(player_entity, Player)
-        if not player or player.invulnerable:
+    def _handle_player_asteroid_collision(self, world: 'World', entity1: int, entity2: int) -> None:
+        """Handle collision between player and asteroid."""
+        # Determine which is which
+        player = entity1 if world.has_component(entity1, Player) else entity2
+        asteroid = entity2 if world.has_component(entity2, Asteroid) else entity1
+        
+        # Get player component
+        player_comp = world.get_component(player, Player)
+        if not player_comp or player_comp.invulnerable:
             return
         
-        # Reduce player lives
-        player.lives -= 1
-        if player.lives <= 0:
-            # Game over
-            game_state = world.resources.get(GameState)
-            if game_state:
-                game_state.paused = True
-        else:
-            # Make player invulnerable temporarily
-            player.invulnerable = True
-            player.invulnerable_timer = 3.0  # 3 seconds of invulnerability
-    
-    def _split_asteroid(self, world: 'World', asteroid_entity: int, new_size: str) -> None:
-        pos = world.get_component(asteroid_entity, Position)
-        asteroid = world.get_component(asteroid_entity, Asteroid)
+        # Reduce player lives and make temporarily invulnerable
+        player_comp.lives -= 1
+        player_comp.invulnerable = True
+        player_comp.invulnerable_timer = 3.0  # 3 seconds of invulnerability
         
-        if not pos or not asteroid:
+        # Destroy asteroid
+        world.destroy_entity(asteroid)
+    
+    def _split_asteroid(self, world: 'World', asteroid: int) -> None:
+        """Split an asteroid into smaller pieces."""
+        pos = world.get_component(asteroid, Position)
+        asteroid_comp = world.get_component(asteroid, Asteroid)
+        if not pos or not asteroid_comp:
             return
         
-        for _ in range(asteroid.split_count):
-            # Create new asteroid with random velocity
-            angle = pygame.random.random() * 2 * math.pi
-            speed = 50.0 + pygame.random.random() * 50.0
+        # Determine new size
+        new_size = "medium" if asteroid_comp.size == "large" else "small"
+        
+        # Create two new asteroids
+        for _ in range(2):
+            # Random direction
+            angle = random.uniform(0, 2 * math.pi)
+            speed = random.uniform(100, 150)
+            vel_x = math.cos(angle) * speed
+            vel_y = math.sin(angle) * speed
             
+            # Spawn new asteroid
+            self._spawn_asteroid(world, new_size)
+            # Set position and velocity
             new_asteroid = world.create_entity()
             world.add_component(new_asteroid, Position(x=pos.x, y=pos.y))
-            world.add_component(new_asteroid, Velocity(
-                dx=math.cos(angle) * speed,
-                dy=math.sin(angle) * speed
-            ))
-            world.add_component(new_asteroid, Asteroid(
-                size=new_size,
-                points=asteroid.points * 2
-            ))
-            world.add_component(new_asteroid, EntityTag(type=EntityType.ASTEROID))
-            world.add_component(new_asteroid, Collider(
-                radius=20.0 if new_size == "medium" else 10.0
-            ))
+            world.add_component(new_asteroid, Velocity(x=vel_x, y=vel_y))
+            world.add_component(new_asteroid, Asteroid(size=new_size))
