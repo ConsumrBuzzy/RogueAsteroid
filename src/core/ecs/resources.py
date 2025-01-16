@@ -1,0 +1,56 @@
+"""
+Resource management for global game state.
+"""
+
+from typing import Dict, Type, TypeVar, Any, Optional
+from dataclasses import dataclass
+
+T = TypeVar('T')
+
+@dataclass
+class WindowInfo:
+    """Window configuration resource."""
+    width: int
+    height: int
+    title: str = "Rogue Asteroid"
+
+@dataclass
+class GameSettings:
+    """Game settings resource."""
+    difficulty: float = 1.0
+    sound_enabled: bool = True
+    music_volume: float = 0.7
+    sfx_volume: float = 1.0
+
+@dataclass
+class GameState:
+    """Current game state resource."""
+    score: int = 0
+    level: int = 1
+    lives: int = 3
+    paused: bool = False
+
+class Resources:
+    """
+    Manages global game resources and state.
+    Resources are singleton-like objects that can be accessed by systems.
+    """
+    def __init__(self):
+        self._resources: Dict[Type, Any] = {}
+
+    def add(self, resource: Any) -> None:
+        """Add or update a resource."""
+        self._resources[type(resource)] = resource
+
+    def get(self, resource_type: Type[T]) -> Optional[T]:
+        """Get a resource by type."""
+        return self._resources.get(resource_type)
+
+    def remove(self, resource_type: Type) -> None:
+        """Remove a resource."""
+        if resource_type in self._resources:
+            del self._resources[resource_type]
+
+    def clear(self) -> None:
+        """Remove all resources."""
+        self._resources.clear()
