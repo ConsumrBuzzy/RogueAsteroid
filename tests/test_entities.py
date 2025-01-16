@@ -25,34 +25,35 @@ class TestShip(unittest.TestCase):
         self.assertIsNotNone(self.ship.get_component('screen_wrap'))
     
     def test_thrust(self):
-        """Test ship thrust mechanics."""
-        transform = self.ship.get_component('transform')
-        self.assertIsNotNone(transform)
+        """Test ship thrust."""
+        game = Game()
+        ship = Ship(game)
+        transform = ship.get_component("transform")
+        initial_velocity = transform.velocity.copy()
         
-        # Apply thrust
-        self.ship._apply_thrust()
-        self.ship.update(1.0)
+        ship.thrust()  # Apply thrust
         
-        # Check that ship has moved
-        velocity_magnitude = (transform.velocity.x ** 2 + transform.velocity.y ** 2) ** 0.5
-        self.assertGreater(velocity_magnitude, 0.0)
+        # Velocity should change
+        self.assertNotEqual(transform.velocity, initial_velocity)
     
     def test_rotation(self):
         """Test ship rotation."""
-        transform = self.ship.get_component('transform')
-        self.assertIsNotNone(transform)
-        
+        game = Game()
+        ship = Ship(game)
+        transform = ship.get_component("transform")
         initial_rotation = transform.rotation
         
-        # Rotate left
-        self.ship._rotate_left()
-        self.ship.update(1.0)
+        ship.rotate_left()  # Rotate counter-clockwise
+        
+        # Rotation should decrease
         self.assertLess(transform.rotation, initial_rotation)
         
-        # Rotate right
-        initial_rotation = transform.rotation
-        self.ship._rotate_right()
-        self.ship.update(1.0)
+        # Reset rotation
+        transform.rotation = initial_rotation
+        
+        ship.rotate_right()  # Rotate clockwise
+        
+        # Rotation should increase
         self.assertGreater(transform.rotation, initial_rotation)
     
     def test_shooting(self):

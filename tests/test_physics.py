@@ -101,8 +101,13 @@ class TestBoundaryWrapping:
         
         # Move ship beyond right edge
         transform.position.x = WINDOW_WIDTH + collision.radius
-        screen_wrap.update()
+        screen_wrap.update(0.016)  # Add dt parameter
         assert transform.position.x < collision.radius
+
+        # Move ship beyond left edge
+        transform.position.x = -collision.radius
+        screen_wrap.update(0.016)  # Add dt parameter
+        assert transform.position.x > WINDOW_WIDTH - collision.radius
 
     def test_vertical_wrapping(self, ship):
         """Test screen wrapping vertically."""
@@ -112,8 +117,13 @@ class TestBoundaryWrapping:
         
         # Move ship beyond bottom edge
         transform.position.y = WINDOW_HEIGHT + collision.radius
-        screen_wrap.update()
+        screen_wrap.update(0.016)  # Add dt parameter
         assert transform.position.y < collision.radius
+
+        # Move ship beyond top edge
+        transform.position.y = -collision.radius
+        screen_wrap.update(0.016)  # Add dt parameter
+        assert transform.position.y > WINDOW_HEIGHT - collision.radius
 
     def test_diagonal_wrapping(self, ship):
         """Test screen wrapping diagonally."""
@@ -126,6 +136,15 @@ class TestBoundaryWrapping:
             WINDOW_WIDTH + collision.radius,
             WINDOW_HEIGHT + collision.radius
         )
-        screen_wrap.update()
+        screen_wrap.update(0.016)  # Add dt parameter
         assert transform.position.x < collision.radius
         assert transform.position.y < collision.radius
+
+        # Move ship beyond both edges in the other direction
+        transform.position = pygame.Vector2(
+            -collision.radius,
+            -collision.radius
+        )
+        screen_wrap.update(0.016)  # Add dt parameter
+        assert transform.position.x > WINDOW_WIDTH - collision.radius
+        assert transform.position.y > WINDOW_HEIGHT - collision.radius
