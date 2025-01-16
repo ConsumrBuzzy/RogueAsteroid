@@ -19,9 +19,11 @@ from src.core.ecs.game_systems import (
     CollisionHandlingSystem
 )
 from src.core.ecs.particle_system import ParticleSystem
+from src.core.ecs.menu_system import MenuSystem, MenuResource, create_main_menu
+from src.core.ecs.high_score_system import HighScoreSystem, HighScoreResource
 from src.core.ecs.resources import Resources, WindowInfo, GameSettings, GameState
 from src.core.ecs.events import CollisionEvent, ScoreEvent
-from src.core.ecs.game_components import EntityTag, EntityType, Physics
+from src.core.ecs.game_components import EntityTag, EntityType, Physics, Player, Asteroid
 from src.core.ecs.sprite_manager import SpriteResource, init_sprites
 from src.core.ecs.audio_manager import init_audio, play_sound, play_music
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
@@ -60,6 +62,10 @@ class ECSGame:
         init_sprites(self.resources)
         init_audio(self.resources)
         
+        # Initialize high scores
+        high_score_system = HighScoreSystem()
+        high_score_system.load_scores(self.world)
+        
         # Initialize systems
         self.systems = [
             PhysicsSystem(),
@@ -70,7 +76,9 @@ class ECSGame:
             CollisionHandlingSystem(),
             ParticleSystem(),
             InputSystem(),
-            RenderSystem()
+            RenderSystem(),
+            MenuSystem(),
+            high_score_system
         ]
         
         # Setup event handlers
@@ -78,6 +86,9 @@ class ECSGame:
         
         self.clock = pygame.time.Clock()
         self.running = True
+        
+        # Create main menu
+        create_main_menu(self.world)
         
         # Start menu music
         play_music(self.resources, "menu")
@@ -132,9 +143,17 @@ class ECSGame:
         # Process events
         self.world.events.process_events()
         
+        # Get current menu if any
+        menu = self.world.resources.get(MenuResource)
+        
         # Update all systems
         for system in self.systems:
-            system.update(self.world, dt)
+            if isinstance(system, MenuSystem) and menu:
+                # Only update menu system if we're in a menu
+                system.update(self.world, dt)
+            elif not isinstance(system, MenuSystem) and not menu:
+                # Only update game systems if we're not in a menu
+                system.update(self.world, dt)
         
         # Cleanup any dead entities
         self.world.cleanup()
@@ -144,10 +163,19 @@ class ECSGame:
         # Clear screen
         self.screen.fill((0, 0, 0))
         
-        # Render system will handle drawing entities
-        render_system = next((s for s in self.systems if isinstance(s, RenderSystem)), None)
-        if render_system:
-            render_system.update(self.world, 0)
+        # Get current menu if any
+        menu = self.world.resources.get(MenuResource)
+        
+        if menu:
+            # Render menu
+            menu_system = next((s for s in self.systems if isinstance(s, MenuSystem)), None)
+            if menu_system:
+                menu_system.render(self.screen, menu)
+        else:
+            # Render game
+            render_system = next((s for s in self.systems if isinstance(s, RenderSystem)), None)
+            if render_system:
+                render_system.update(self.world, 0)
         
         # Update display
         pygame.display.flip()

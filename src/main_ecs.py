@@ -11,20 +11,21 @@ import pygame
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.core.ecs_game import ECSGame
-from src.core.ecs.sprite_manager import init_sprites
 from src.core.logging import get_logger
 
 def init_pygame() -> bool:
     """Initialize pygame and its subsystems."""
+    logger = get_logger()
     try:
         pygame.init()
         if pygame.get_init():
-            logger = get_logger()
             logger.info("Pygame initialized successfully")
             
             # Initialize required subsystems
             if not pygame.font.get_init():
                 pygame.font.init()
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
             if not pygame.display.get_init():
                 pygame.display.init()
                 
@@ -33,7 +34,6 @@ def init_pygame() -> bool:
         return False
         
     except Exception as e:
-        logger = get_logger()
         logger.error(f"Error initializing pygame: {e}")
         return False
 
@@ -47,20 +47,8 @@ def main():
             logger.error("Failed to initialize pygame. Exiting.")
             return
         
-        # Create game instance
+        # Create and run game
         game = ECSGame()
-        
-        # Initialize sprites
-        init_sprites(game.resources)
-        
-        # Create initial entities
-        player = game.spawn_player()
-        
-        # Start with some asteroids
-        for _ in range(4):
-            game.spawn_asteroid("large")
-        
-        # Run the game
         logger.info("Starting game loop")
         game.run()
         
