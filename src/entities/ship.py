@@ -148,28 +148,30 @@ class Ship(Entity):
     def thrust(self) -> None:
         """Apply thrust to move the ship forward."""
         transform = self.get_component("transform")
-        if transform:
+        physics = self.get_component("physics")
+        if transform and physics:
             # Calculate thrust vector based on current rotation
             angle = math.radians(transform.rotation)
             thrust_vector = pygame.Vector2(
                 math.sin(angle) * self.thrust_power,
                 -math.cos(angle) * self.thrust_power
             )
-            transform.velocity += thrust_vector
-            print(f"Applying thrust: vector={thrust_vector}, new velocity={transform.velocity}")
+            physics.apply_force(thrust_vector)
+            print(f"Applying thrust: vector={thrust_vector}")
     
     def reverse_thrust(self) -> None:
         """Apply reverse thrust to move the ship backward."""
         transform = self.get_component("transform")
-        if transform:
+        physics = self.get_component("physics")
+        if transform and physics:
             # Calculate thrust vector based on current rotation
             angle = math.radians(transform.rotation)
             thrust_vector = pygame.Vector2(
                 math.sin(angle) * -self.thrust_power / 2,
                 -math.cos(angle) * -self.thrust_power / 2
             )
-            transform.velocity += thrust_vector
-            print(f"Applying reverse thrust: vector={thrust_vector}, new velocity={transform.velocity}")
+            physics.apply_force(thrust_vector)
+            print(f"Applying reverse thrust: vector={thrust_vector}")
     
     def _shoot(self):
         """Create and fire a bullet."""
