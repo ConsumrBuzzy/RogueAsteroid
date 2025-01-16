@@ -165,7 +165,7 @@ class PhysicsComponent(Component):
         self.velocity = pygame.Vector2(0, 0)
         self.acceleration = pygame.Vector2(0, 0)
         self.max_speed = 500.0  # Maximum speed in pixels per second
-        self.drag = 0.02  # Drag coefficient
+        self.drag = 0.98  # Drag coefficient (1 = no drag, 0 = full stop)
         self.mass = 1.0  # Mass in arbitrary units
 
     def apply_force(self, force: pygame.Vector2) -> None:
@@ -191,17 +191,15 @@ class PhysicsComponent(Component):
         # Update velocity based on acceleration (v = v0 + at)
         self.velocity += self.acceleration * dt
 
-        # Apply drag (F_drag = -kv^2)
-        if self.velocity.length() > 0:
-            drag_force = -self.velocity.normalize() * self.velocity.length_squared() * self.drag
-            self.velocity += drag_force * dt
+        # Apply drag (exponential decay)
+        self.velocity *= self.drag
 
         # Limit speed
         if self.velocity.length() > self.max_speed:
             self.velocity.scale_to_length(self.max_speed)
 
-        # Update transform's velocity and position (x = x0 + vt)
-        transform.velocity = self.velocity
+        # Update transform's velocity and position
+        transform.velocity = pygame.Vector2(self.velocity)
         transform.position += self.velocity * dt
 
         # Reset acceleration

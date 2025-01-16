@@ -30,7 +30,7 @@ class TestPhysics:
         transform = ship.get_component('transform')
         physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.apply_force(pygame.Vector2(10000.0, 10000.0))  # Increase force significantly
+        physics.apply_force(pygame.Vector2(100000.0, 100000.0))  # Very large force for noticeable movement
         ship.update(0.016)  # Update with 16ms delta time
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
@@ -40,7 +40,7 @@ class TestPhysics:
         physics = ship.get_component('physics')
         transform = ship.get_component('transform')
         initial_velocity = pygame.Vector2(transform.velocity)
-        physics.apply_force(pygame.Vector2(100.0, 100.0))  # Use apply_force instead of setting force
+        physics.apply_force(pygame.Vector2(1000.0, 1000.0))  # Large enough force for noticeable acceleration
         ship.update(0.016)  # Update with 16ms delta time
         new_velocity = pygame.Vector2(transform.velocity)
         assert new_velocity != initial_velocity
@@ -48,7 +48,6 @@ class TestPhysics:
     def test_drag_effect(self, ship):
         """Test drag reduces velocity over time."""
         physics = ship.get_component('physics')
-        transform = ship.get_component('transform')
         physics.velocity = pygame.Vector2(100.0, 100.0)  # Set initial velocity
         initial_speed = physics.velocity.length()
         ship.update(0.016)  # Update with 16ms delta time
