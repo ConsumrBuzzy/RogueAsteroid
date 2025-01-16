@@ -351,6 +351,75 @@ class Game:
                         transform1.rotation_speed = spin1
                         transform2.rotation_speed = spin2
     
+    def handle_input(self, event):
+        """Handle input events."""
+        if self.state_manager:
+            self.state_manager.handle_input(event)
+
+    def render(self):
+        """Render the game state."""
+        # Clear screen
+        self.screen.fill((0, 0, 0))
+        
+        # Render based on current state
+        if self.state_manager.current_state == GameState.PLAYING:
+            # Render game entities
+            if self.ship:
+                render = self.ship.get_component('render')
+                if render:
+                    render.draw(self.screen)
+            
+            for asteroid in self.asteroids:
+                render = asteroid.get_component('render')
+                if render:
+                    render.draw(self.screen)
+            
+            for bullet in self.bullets:
+                render = bullet.get_component('render')
+                if render:
+                    render.draw(self.screen)
+            
+            # Render score
+            font = pygame.font.Font(None, 36)
+            score_text = font.render(f"Score: {self.score}", True, (255, 255, 255))
+            self.screen.blit(score_text, (10, 10))
+            
+            # Render lives
+            lives_text = font.render(f"Lives: {self.lives}", True, (255, 255, 255))
+            self.screen.blit(lives_text, (10, 50))
+        
+        elif self.state_manager.current_state == GameState.MAIN_MENU:
+            # Render menu
+            font = pygame.font.Font(None, 64)
+            title = font.render("ROGUE ASTEROID", True, (255, 255, 255))
+            self.screen.blit(title, (self.width//2 - title.get_width()//2, 100))
+            
+            font = pygame.font.Font(None, 36)
+            for i, option in enumerate(self.state_manager.menu_options[GameState.MAIN_MENU]):
+                color = (255, 255, 0) if i == self.state_manager.selected_option else (255, 255, 255)
+                text = font.render(option, True, color)
+                self.screen.blit(text, (self.width//2 - text.get_width()//2, 300 + i*50))
+        
+        elif self.state_manager.current_state == GameState.GAME_OVER:
+            # Render game over screen
+            font = pygame.font.Font(None, 64)
+            text = font.render("GAME OVER", True, (255, 0, 0))
+            self.screen.blit(text, (self.width//2 - text.get_width()//2, self.height//2))
+            
+            font = pygame.font.Font(None, 36)
+            score_text = font.render(f"Final Score: {self.score}", True, (255, 255, 255))
+            self.screen.blit(score_text, (self.width//2 - score_text.get_width()//2, self.height//2 + 50))
+        
+        # Update display
+        pygame.display.flip()
+
+    def add_score(self, points):
+        """Add points to the current score."""
+        self.score += points
+        # Check for high score
+        if self.score > self.scoring.get_lowest_high_score():
+            self.state_manager.change_state(GameState.NEW_HIGH_SCORE)
+
     def run(self):
         """Main game loop."""
         print("Starting game loop")  # Debug info
@@ -380,8 +449,7 @@ class Game:
                 self.update(self.dt)
             
             # Draw
-            self.state_manager.draw(self.screen)
-            pygame.display.flip()
+            self.render()
         
         pygame.quit()
         print("Game loop ended")  # Debug info
