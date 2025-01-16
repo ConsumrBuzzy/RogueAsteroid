@@ -46,9 +46,8 @@ class TestShipMechanics:
     def test_ship_movement(self, ship):
         """Test ship movement mechanics."""
         transform = ship.get_component('transform')
-        physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.velocity = pygame.Vector2(10, 10)
+        ship.thrust()  # Apply thrust
         ship.update(0.016)  # Simulate one frame at 60 FPS
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
@@ -57,8 +56,8 @@ class TestShipMechanics:
         """Test ship rotation."""
         transform = ship.get_component('transform')
         initial_angle = transform.rotation
-        ship.rotating_right = True
-        ship.update(0.016)
+        ship.rotate_right()  # Rotate ship
+        ship.update(0.016)  # Update to apply rotation
         assert transform.rotation != initial_angle
 
     def test_ship_wrapping(self, ship):
@@ -66,7 +65,7 @@ class TestShipMechanics:
         transform = ship.get_component('transform')
         screen_wrap = ship.get_component('screen_wrap')
         transform.position = pygame.Vector2(WINDOW_WIDTH + 10, WINDOW_HEIGHT + 10)
-        screen_wrap.update()
+        screen_wrap.update(0.016)  # Add dt parameter
         assert transform.position.x < WINDOW_WIDTH
         assert transform.position.y < WINDOW_HEIGHT
 
@@ -95,7 +94,7 @@ class TestAsteroidMechanics:
         transform = asteroid.get_component('transform')
         screen_wrap = asteroid.get_component('screen_wrap')
         transform.position = pygame.Vector2(WINDOW_WIDTH + 10, WINDOW_HEIGHT + 10)
-        screen_wrap.update()
+        screen_wrap.update(0.016)  # Add dt parameter
         assert transform.position.x < WINDOW_WIDTH
         assert transform.position.y < WINDOW_HEIGHT
 

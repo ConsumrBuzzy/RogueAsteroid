@@ -21,15 +21,21 @@ class StateManager:
         """Initialize the state manager."""
         self.game = game
         self._current_state = None
+        self.selected_option = 0
+        self.menu_options = {
+            GameState.MAIN_MENU: ["New Game", "High Scores", "Options", "Quit"],
+            GameState.OPTIONS: ["Controls", "Sound", "Back"],
+            GameState.PAUSED: ["Resume", "Options", "Main Menu"]
+        }
         self._valid_transitions = {
             None: [GameState.MAIN_MENU],
             GameState.MAIN_MENU: [GameState.PLAYING, GameState.OPTIONS, GameState.HIGH_SCORE, GameState.QUIT],
-            GameState.PLAYING: [GameState.PAUSED, GameState.GAME_OVER],
+            GameState.PLAYING: [GameState.PAUSED, GameState.GAME_OVER, GameState.MAIN_MENU],
             GameState.PAUSED: [GameState.PLAYING, GameState.MAIN_MENU, GameState.OPTIONS],
-            GameState.OPTIONS: [GameState.MAIN_MENU, GameState.PLAYING],
-            GameState.GAME_OVER: [GameState.MAIN_MENU, GameState.QUIT],
+            GameState.OPTIONS: [GameState.MAIN_MENU, GameState.PLAYING, GameState.PAUSED],
+            GameState.GAME_OVER: [GameState.MAIN_MENU, GameState.QUIT, GameState.NEW_HIGH_SCORE],
             GameState.HIGH_SCORE: [GameState.MAIN_MENU],
-            GameState.NEW_HIGH_SCORE: [GameState.MAIN_MENU]
+            GameState.NEW_HIGH_SCORE: [GameState.MAIN_MENU, GameState.HIGH_SCORE]
         }
         print("Initializing StateManager")
         
