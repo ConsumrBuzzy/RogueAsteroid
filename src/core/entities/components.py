@@ -6,39 +6,37 @@ from src.core.entities.base import Component, Entity, TransformComponent
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
 class ScreenWrapComponent(Component):
-    """Component for wrapping entities around screen edges."""
-    
-    def __init__(self, entity, width=WINDOW_WIDTH, height=WINDOW_HEIGHT):
-        """Initialize the screen wrap component.
+    """Component that handles screen wrapping for entities."""
+
+    def __init__(self, width: int, height: int):
+        """Initialize screen wrap component.
         
         Args:
-            entity: The entity this component belongs to
-            width: Screen width to wrap at
-            height: Screen height to wrap at
+            width: Screen width
+            height: Screen height
         """
-        super().__init__(entity)
+        super().__init__()
         self.width = width
         self.height = height
-        self.wrap_offset = 2  # 2 pixel offset for minimal edge overlap
         print(f"ScreenWrap initialized with width={width}, height={height}")  # Debug info
-    
-    def update(self, dt: float) -> None:
-        """Update entity position to wrap around screen."""
+
+    def update(self):
+        """Update entity position to wrap around screen edges."""
         transform = self.entity.get_component('transform')
         if not transform:
             return
         
-        # Wrap x position with minimal offset
-        if transform.position[0] <= -self.wrap_offset:
-            transform.position[0] = self.width - self.wrap_offset
-        elif transform.position[0] >= self.width + self.wrap_offset:
-            transform.position[0] = self.wrap_offset
+        # Wrap horizontally
+        if transform.position.x < 0:
+            transform.position.x = self.width
+        elif transform.position.x > self.width:
+            transform.position.x = 0
         
-        # Wrap y position with minimal offset
-        if transform.position[1] <= -self.wrap_offset:
-            transform.position[1] = self.height - self.wrap_offset
-        elif transform.position[1] >= self.height + self.wrap_offset:
-            transform.position[1] = self.wrap_offset
+        # Wrap vertically
+        if transform.position.y < 0:
+            transform.position.y = self.height
+        elif transform.position.y > self.height:
+            transform.position.y = 0
 
 class InputComponent(Component):
     """Component for handling input."""

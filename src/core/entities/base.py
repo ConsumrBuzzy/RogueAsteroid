@@ -104,79 +104,73 @@ class Component:
         pass
 
 class TransformComponent(Component):
-    """Component for handling position and movement.
-    
-    Manages an entity's position, velocity, and rotation in 2D space.
-    """
-    
-    def __init__(self, entity: Entity, x: float = 0, y: float = 0) -> None:
-        """Initialize the transform component.
-        
-        Args:
-            entity: The entity this component belongs to.
-            x: Initial x position.
-            y: Initial y position.
-        """
+    """Component that handles position, rotation, and scale of an entity."""
+
+    def __init__(self, entity: Entity) -> None:
+        """Initialize transform component."""
         super().__init__(entity)
-        self._position = Vector2(float(x), float(y))
-        self._velocity = Vector2(0, 0)
-        self._rotation = 0.0  # Rotation in degrees
-        self._rotation_speed = 0.0  # Rotation speed in degrees per second
-    
-    @property
-    def position(self) -> Vector2:
-        """Get the current position."""
-        return self._position
-        
-    @position.setter
-    def position(self, value) -> None:
-        """Set the current position."""
-        if isinstance(value, (list, tuple, np.ndarray)):
-            self._position = Vector2(float(value[0]), float(value[1]))
-        else:
-            self._position = Vector2(value)
-    
-    @property
-    def velocity(self) -> Vector2:
-        """Get the current velocity."""
-        return self._velocity
-        
-    @velocity.setter
-    def velocity(self, value) -> None:
-        """Set the current velocity."""
-        if isinstance(value, (list, tuple, np.ndarray)):
-            self._velocity = Vector2(float(value[0]), float(value[1]))
-        else:
-            self._velocity = Vector2(value)
-    
-    @property
-    def rotation(self) -> float:
-        """Get the current rotation in degrees."""
-        return self._rotation
-        
-    @rotation.setter
-    def rotation(self, value: float) -> None:
-        """Set the current rotation in degrees."""
-        self._rotation = value % 360.0
-    
-    @property
-    def rotation_speed(self) -> float:
-        """Get the current rotation speed in degrees per second."""
-        return self._rotation_speed
-        
-    @rotation_speed.setter
-    def rotation_speed(self, value: float) -> None:
-        """Set the current rotation speed in degrees per second."""
-        self._rotation_speed = value
-    
+        self.position = pygame.Vector2(0, 0)
+        self.rotation = 0.0  # In degrees
+        self.rotation_speed = 0.0  # Degrees per second
+        self.scale = pygame.Vector2(1, 1)
+
     def update(self, dt: float) -> None:
-        """Update position based on velocity and rotation based on rotation speed.
+        """Update transform based on rotation speed.
         
         Args:
-            dt: Delta time since last update in seconds.
+            dt: Delta time in seconds
         """
-        self._position += self._velocity * dt
-        self._rotation = (self._rotation + self._rotation_speed * dt) % 360.0
+        self.rotation += self.rotation_speed * dt
+        # Keep rotation between 0 and 360 degrees
+        self.rotation = self.rotation % 360
+
+class PhysicsComponent(Component):
+    """Component that handles physics simulation for an entity."""
+
+    def __init__(self, entity: Entity) -> None:
+        """Initialize physics component."""
+        super().__init__(entity)
+        self.velocity = pygame.Vector2(0, 0)
+        self.acceleration = pygame.Vector2(0, 0)
+        self.max_speed = 500.0  # Maximum speed in pixels per second
+        self.drag = 0.02  # Drag coefficient
+
+    def apply_force(self, force: pygame.Vector2) -> None:
+        """Apply a force to the entity.
+        
+        Args:
+            force: Force vector to apply
+        """
+        self.acceleration += force
+
+    def update(self, dt: float) -> None:
+        """Update physics simulation.
+        
+        Args:
+            dt: Delta time in seconds
+        """
+        # Get transform component
+        transform = self.entity.get_component('transform')
+        if not transform:
+            return
+
+        # Update velocity based on acceleration
+        self.velocity += self.acceleration * dt
+
+        # Apply drag
+        if self.velocity.length() > 0:
+            drag_force = -self.velocity.normalize() * self.velocity.length_squared() * self.drag
+            self.velocity += drag_force * dt
+
+        # Limit speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
+
+        # Update position
+        transform.position += self.velocity * dt
+
+        # Reset acceleration
+        self.acceleration = pygame.Vector2(0, 0)
 
 class RenderComponent(Component):
     """Component for rendering entities.
@@ -376,4 +370,4 @@ class CollisionComponent(Component):
             return 0.0
             
         distance = transform.position.distance_to(other_transform.position)
-        return self._radius + other._radius - distance 
+        return self._radius + other._radius - distance

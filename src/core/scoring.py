@@ -20,17 +20,19 @@ class ScoreEntry:
 class ScoringSystem:
     """Manages game scoring and high scores."""
     
-    def __init__(self, save_file: str = 'highscores.json'):
+    def __init__(self, save_file: str = 'highscores.json', max_scores: int = 5):
         """Initialize the scoring system.
         
         Args:
             save_file: Path to the high scores save file
+            max_scores: Maximum number of high scores to keep
         """
         self.current_score = 0
         self.score_multiplier = 1.0
         self.combo_timer = 0.0
         self.combo_count = 0
         self.MAX_SCORE = 999999  # Maximum possible score
+        self.max_scores = max_scores
         
         # Ensure save file path is absolute
         if not os.path.isabs(save_file):
@@ -119,14 +121,17 @@ class ScoringSystem:
             reverse=True
         )[:limit]
     
-    def check_high_score(self) -> bool:
-        """Check if current score qualifies as high score."""
-        if len(self.high_scores) < 5:  # Changed from 10 to 5
+    def get_lowest_high_score(self):
+        """Get the lowest score from the high scores list."""
+        if not self.high_scores:
+            return 0
+        return min(score.score for score in self.high_scores)
+    
+    def is_high_score(self, score):
+        """Check if a score qualifies as a high score."""
+        if len(self.high_scores) < self.max_scores:
             return True
-            
-        return self.current_score > min(
-            entry.score for entry in self.high_scores
-        )
+        return score > self.get_lowest_high_score()
     
     def add_high_score(self, name: str, level: int) -> bool:
         """Add a new high score entry.
@@ -158,8 +163,8 @@ class ScoringSystem:
         self.high_scores.append(new_score)
         self.high_scores.sort(key=lambda x: x.score, reverse=True)
         
-        # Keep only top 5 scores
-        self.high_scores = self.high_scores[:5]
+        # Keep only top scores
+        self.high_scores = self.high_scores[:self.max_scores]
         
         # Save updated scores
         return self.save_high_scores()
