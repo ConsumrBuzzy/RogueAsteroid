@@ -30,7 +30,7 @@ class TestPhysics:
         transform = ship.get_component('transform')
         physics = ship.get_component('physics')
         initial_pos = pygame.Vector2(transform.position)
-        physics.force = np.array([1000.0, 1000.0])  # Increase force significantly for noticeable movement
+        physics.apply_force(pygame.Vector2(1000.0, 1000.0))  # Use apply_force instead of setting force directly
         ship.update(0.016)  # Update with 16ms delta time
         new_pos = pygame.Vector2(transform.position)
         assert new_pos != initial_pos
