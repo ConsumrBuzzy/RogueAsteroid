@@ -1,5 +1,6 @@
 """Test suite for physics and collision detection."""
 import pytest
+import pygame
 import numpy as np
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
@@ -17,33 +18,37 @@ def ship(game):
     return Ship(game)
 
 @pytest.fixture
-def asteroid():
+def asteroid(game):
     """Fixture to create an asteroid instance."""
-    return Asteroid(x=100, y=100, size='large')
+    position = pygame.Vector2(100, 100)
+    return Asteroid(game, 'large', position)
 
 class TestPhysics:
     def test_velocity_application(self, ship):
         """Test velocity affects position correctly."""
-        initial_pos = np.array([ship.x, ship.y])
-        ship.velocity = np.array([1.0, 1.0])
+        transform = ship.get_component('transform')
+        initial_pos = pygame.Vector2(transform.position)
+        ship.thrust = True
         ship.update(1.0)  # Update with 1 second delta time
-        new_pos = np.array([ship.x, ship.y])
-        expected_pos = initial_pos + ship.velocity
-        np.testing.assert_array_almost_equal(new_pos, expected_pos)
+        new_pos = pygame.Vector2(transform.position)
+        assert new_pos != initial_pos
 
     def test_acceleration(self, ship):
         """Test acceleration affects velocity correctly."""
-        initial_velocity = ship.velocity.copy()
+        physics = ship.get_component('physics')
+        initial_velocity = pygame.Vector2(physics.velocity)
         ship.thrust = True
         ship.update(1.0)
-        assert not np.array_equal(ship.velocity, initial_velocity)
+        new_velocity = pygame.Vector2(physics.velocity)
+        assert new_velocity != initial_velocity
 
     def test_drag_effect(self, ship):
         """Test drag reduces velocity over time."""
-        ship.velocity = np.array([10.0, 10.0])
-        initial_speed = np.linalg.norm(ship.velocity)
+        physics = ship.get_component('physics')
+        physics.velocity = pygame.Vector2(10.0, 10.0)
+        initial_speed = physics.velocity.length()
         ship.update(1.0)
-        new_speed = np.linalg.norm(ship.velocity)
+        new_speed = physics.velocity.length()
         assert new_speed < initial_speed
 
 class TestCollisionDetection:

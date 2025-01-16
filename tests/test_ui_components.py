@@ -24,7 +24,7 @@ def pygame_init():
 class TestStateManager:
     def test_state_transitions(self, state_manager):
         """Test game state transitions."""
-        assert state_manager.current_state == GameState.MENU
+        assert state_manager.current_state == GameState.MAIN_MENU
         state_manager.change_state(GameState.PLAYING)
         assert state_manager.current_state == GameState.PLAYING
         state_manager.change_state(GameState.PAUSED)
