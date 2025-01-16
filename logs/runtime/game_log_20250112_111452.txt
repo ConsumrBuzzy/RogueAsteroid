@@ -1,9 +1,0 @@
-=== Game Session Log 20250112_111452 ===
-
-[11:14:52] DEBUG: State transitions initialized
-[11:14:52] INFO: StateService initialized
-[11:14:52] INFO: Event manager connected to state service
-[11:14:52] DEBUG: Published initial state: GameState.MAIN_MENU
-[11:14:52] INFO: Event manager connected to state service
-[11:14:52] DEBUG: Published initial state: GameState.MAIN_MENU
-[11:14:56] INFO: StateService cleaned up

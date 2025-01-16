@@ -1,4 +1,0 @@
-=== Game Session Log 20250112_151350 ===
-
-[15:13:50] DEBUG: State transitions initialized
-[15:13:50] INFO: StateService initialized
