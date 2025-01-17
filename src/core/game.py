@@ -180,6 +180,14 @@ class Game:
             if self.ship and not self.ship.is_destroyed:
                 self.ship.update(dt)
             
+            # Update bullets and remove destroyed ones
+            for bullet in self.bullets[:]:  # Use slice copy to allow removal during iteration
+                if bullet.is_destroyed:
+                    if bullet in self.bullets:  # Check again in case it was already removed
+                        self.bullets.remove(bullet)
+                else:
+                    bullet.update(dt)
+            
             # Update asteroids and remove destroyed ones
             for asteroid in self.asteroids[:]:  # Use slice copy to allow removal during iteration
                 if asteroid.is_destroyed:

@@ -198,11 +198,12 @@ class Ship(Entity):
         bullet = Bullet(self.game, transform.position.copy(), direction)
         self.bullets.append(bullet)  # Add to ship's bullet list
         self.game.bullets.append(bullet)  # Add to game's bullet list for rendering
+        self.game.entities.append(bullet)  # Add to game's entities list for component updates
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
         
-        print("Bullet fired")  # Debug info
+        print(f"Bullet fired: pos={transform.position}, dir={direction}")  # Debug info
     
     def _create_thrust_particles(self):
         """Create particles for engine thrust effect"""
