@@ -59,6 +59,7 @@ class Game:
         self.entities = []
         self.bullets = []  # Track all bullets in the game
         self.asteroids = []
+        self.particles = []  # Track all particles in the game
         
         # Initialize state management (but don't set state yet)
         self.state_manager = StateManager(self)
@@ -99,6 +100,7 @@ class Game:
         self.entities.clear()
         self.asteroids.clear()
         self.bullets.clear()  # Clear bullets
+        self.particles.clear()  # Clear particles
         
         # Reset game properties
         self.level = 1
@@ -185,6 +187,14 @@ class Game:
                         self.asteroids.remove(asteroid)
                 else:
                     asteroid.update(dt)
+                    
+            # Update particles and remove expired ones
+            for particle in self.particles[:]:  # Use slice copy to allow removal during iteration
+                particle.update(dt)
+                particle_component = particle.get_component('particle')
+                if particle_component and particle_component.is_expired():
+                    if particle in self.particles:
+                        self.particles.remove(particle)
         
         # Handle collisions
         self.handle_collisions()
@@ -478,3 +488,33 @@ class Game:
             self.state_manager.change_state(GameState.OPTIONS)
         elif event.key == pygame.K_h:
             self.state_manager.change_state(GameState.HIGH_SCORE)
+
+    def draw(self):
+        """Draw the game state."""
+        # Clear screen
+        self.screen.fill((0, 0, 0))
+        
+        if self.state_manager.current_state == GameState.PLAYING:
+            # Draw game objects
+            if self.ship and not self.ship.is_destroyed:
+                self.ship.draw(self.screen)
+            
+            # Draw asteroids
+            for asteroid in self.asteroids:
+                if not asteroid.is_destroyed:
+                    asteroid.draw(self.screen)
+            
+            # Draw bullets
+            for bullet in self.bullets:
+                if not bullet.is_destroyed:
+                    bullet.draw(self.screen)
+                    
+            # Draw particles
+            for particle in self.particles:
+                particle.draw(self.screen)
+            
+            # Draw score
+            self._draw_score()
+            
+            # Draw lives
+            self._draw_lives()
