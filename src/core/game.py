@@ -4,6 +4,8 @@ import random
 import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
+from src.core.events.event_manager import EventManager
+from src.core.events.event_types import GameStateChangedEvent, ScoreChangedEvent
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
@@ -21,6 +23,10 @@ class Game:
         """Initialize the game."""
         print("Game initialized")
         
+        # Initialize event manager first
+        self.event_manager = EventManager()
+        print("Event manager initialized")
+        
         # Initialize pygame and display
         self.width = WINDOW_WIDTH
         self.height = WINDOW_HEIGHT
@@ -36,7 +42,7 @@ class Game:
         }
         
         # Initialize scoring system
-        self.scoring = ScoringSystem()
+        self.scoring = ScoringSystem(event_manager=self.event_manager)
         print("Scoring system initialized")
         
         # Initialize game properties

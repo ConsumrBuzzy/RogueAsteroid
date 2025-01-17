@@ -2,6 +2,7 @@
 from enum import Enum, auto
 import pygame
 from src.core.constants import WHITE, WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.events.event_types import GameStateChangedEvent
 
 class GameState(Enum):
     MAIN_MENU = auto()
@@ -34,6 +35,9 @@ class StateManager:
             
         old_state = self.current_state
         print(f"Changing state from {old_state} to {new_state}")  # Debug info
+        
+        # Emit state change event
+        self.game.event_manager.emit(GameStateChangedEvent(old_state, new_state))
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
         if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:

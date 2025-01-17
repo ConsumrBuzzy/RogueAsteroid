@@ -4,6 +4,7 @@ import os
 from typing import List, Dict, Optional
 from dataclasses import dataclass, asdict
 from datetime import datetime
+from src.core.events.event_types import ScoreChangedEvent
 
 @dataclass
 class ScoreEntry:
@@ -20,17 +21,19 @@ class ScoreEntry:
 class ScoringSystem:
     """Manages game scoring and high scores."""
     
-    def __init__(self, save_file: str = 'highscores.json'):
+    def __init__(self, save_file: str = 'highscores.json', event_manager=None):
         """Initialize the scoring system.
         
         Args:
             save_file: Path to the high scores save file
+            event_manager: Optional event manager instance
         """
         self.current_score = 0
         self.score_multiplier = 1.0
         self.combo_timer = 0.0
         self.combo_count = 0
         self.MAX_SCORE = 999999  # Maximum possible score
+        self.event_manager = event_manager
         
         # Ensure save file path is absolute
         if not os.path.isabs(save_file):
@@ -59,17 +62,18 @@ class ScoringSystem:
         if base_points < 0:
             raise ValueError("Cannot add negative points")
             
-        points = int(base_points * self.score_multiplier)
+        old_score = self.current_score
+        points = min(int(base_points * self.score_multiplier), self.MAX_SCORE)
+        self.current_score = min(self.current_score + points, self.MAX_SCORE)
         
-        # Check if adding points would exceed max score
-        if self.current_score + points > self.MAX_SCORE:
-            points = self.MAX_SCORE - self.current_score
-            self.current_score = self.MAX_SCORE
-            print(f"Score capped at maximum: {self.MAX_SCORE}")  # Debug info
-            return points
+        # Emit score changed event if event manager exists
+        if self.event_manager:
+            self.event_manager.emit(ScoreChangedEvent(old_score, self.current_score))
             
-        self.current_score += points
-        
+        # Check if adding points would exceed max score
+        if self.current_score == self.MAX_SCORE:
+            print(f"Score capped at maximum: {self.MAX_SCORE}")  # Debug info
+            
         # Update combo
         self.combo_count += 1
         self.combo_timer = 2.0  # Reset combo timer
@@ -214,4 +218,4 @@ class ScoringSystem:
             return True
         except Exception as e:
             print(f"Error saving high scores: {e}")  # Debug info
-            return False 
+            return False
