@@ -57,7 +57,7 @@ class Game:
         
         # Entity tracking
         self.entities = []
-        self.bullets = []
+        self.bullets = []  # Track all bullets in the game
         self.asteroids = []
         
         # Initialize state management (but don't set state yet)

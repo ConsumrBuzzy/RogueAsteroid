@@ -38,6 +38,7 @@ class Ship(Entity):
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
         self.is_destroyed = False  # Track if ship is destroyed
+        self.bullets = []  # List to track active bullets
         
         # Add components
         self._init_components()
@@ -182,7 +183,7 @@ class Ship(Entity):
     
     def _shoot(self):
         """Create and fire a bullet."""
-        if len(self.game.bullets) >= MAX_BULLETS or self.shoot_timer > 0:
+        if self.shoot_timer > 0:
             return
             
         transform = self.get_component('transform')
@@ -190,23 +191,13 @@ class Ship(Entity):
             return
             
         # Calculate bullet direction based on ship's rotation
-        # Adjust angle by -90 degrees because ship points up at 0 degrees
-        angle_rad = np.radians(transform.rotation - 90)
-        direction = pygame.Vector2(
-            np.cos(angle_rad),
-            np.sin(angle_rad)
-        )
+        angle = np.radians(transform.rotation - 90)  # -90 because ship points up at 0 degrees
+        direction = pygame.Vector2(np.cos(angle), np.sin(angle))
         
-        # Create bullet at ship's position with calculated direction
-        bullet = Bullet(
-            self.game,
-            pygame.Vector2(transform.position),  # Convert position to Vector2
-            direction
-        )
-        
-        # Add to tracking lists
-        self.game.bullets.append(bullet)
-        self.game.entities.append(bullet)
+        # Create bullet at ship's position
+        bullet = Bullet(self.game, transform.position.copy(), direction)
+        self.bullets.append(bullet)  # Add to ship's bullet list
+        self.game.bullets.append(bullet)  # Add to game's bullet list for rendering
         
         # Reset shoot timer
         self.shoot_timer = self.SHOOT_COOLDOWN
@@ -256,18 +247,38 @@ class Ship(Entity):
     
     def destroy(self):
         """Destroy the ship."""
+        if self.is_destroyed:
+            return
+            
         self.is_destroyed = True
+        
+        # Disable collision detection
+        collision = self.get_component('collision')
+        if collision:
+            collision.active = False
+            
+        # Clear all bullets
+        for bullet in self.bullets[:]:  # Use slice copy for safe removal
+            bullet.is_destroyed = True
+            if bullet in self.game.bullets:
+                self.game.bullets.remove(bullet)
+        self.bullets.clear()
+        
         # Create explosion particles
-        for _ in range(10):
-            velocity = [random.uniform(-100, 100), random.uniform(-100, 100)]
-            particle = Particle(
-                self.game,
-                self.position.copy(),
-                velocity,
-                WHITE,
-                random.uniform(0.5, 1.0)  # Random lifetime
-            )
-            self.game.particles.append(particle)
+        transform = self.get_component('transform')
+        if transform:
+            for _ in range(12):  # Create 12 particles
+                velocity = [random.uniform(-200, 200), random.uniform(-200, 200)]
+                particle = Particle(
+                    self.game,
+                    transform.position.copy(),
+                    velocity,
+                    WHITE,
+                    random.uniform(0.5, 1.0)  # Random lifetime between 0.5 and 1.0 seconds
+                )
+                self.game.particles.append(particle)
+                
+        print("Ship destroyed")  # Debug info
 
     def reset(self):
         """Reset the ship for a new life."""
@@ -284,8 +295,9 @@ class Ship(Entity):
         super().update(dt)
         
         # Update shoot cooldown
-        self.shoot_timer = max(0.0, self.shoot_timer - dt)
-        
+        if self.shoot_timer > 0:
+            self.shoot_timer = max(0.0, self.shoot_timer - dt)
+            
         # Update invulnerability
         if self.invulnerable_timer > 0:
             self.invulnerable_timer = max(0.0, self.invulnerable_timer - dt)
@@ -299,6 +311,16 @@ class Ship(Entity):
             render = self.get_component('render')
             if render:
                 render.visible = True
+        
+        # Update and cleanup bullets
+        for bullet in self.bullets[:]:  # Use slice copy for safe removal
+            if bullet.is_destroyed:
+                if bullet in self.bullets:
+                    self.bullets.remove(bullet)
+                if bullet in self.game.bullets:
+                    self.game.bullets.remove(bullet)
+            else:
+                bullet.update(dt)
         
         # Create thrust particles if thrusting
         input_component = self.get_component('input')
