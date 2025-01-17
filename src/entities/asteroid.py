@@ -20,6 +20,7 @@ class Asteroid(Entity):
         """Initialize the asteroid."""
         super().__init__(game)
         self.size = size
+        self.is_destroyed = False  # Track if asteroid is destroyed
         
         # Convert position tuple to Vector2 if needed
         if isinstance(position, tuple):
@@ -129,11 +130,11 @@ class Asteroid(Entity):
         # Get current size and properties
         transform = self.get_component('transform')
         if not transform:
-            return []
+            return
             
         collision = self.get_component('collision')
         if not collision:
-            return []
+            return
             
         current_size = collision.radius
         
@@ -209,6 +210,63 @@ class Asteroid(Entity):
         
         return pieces
     
+    def destroy(self):
+        """Destroy the asteroid and create particle effects."""
+        if self.is_destroyed:
+            return
+            
+        self.is_destroyed = True
+        
+        # Create explosion particles
+        transform = self.get_component('transform')
+        if transform:
+            for _ in range(8):  # Create 8 particles
+                velocity = [random.uniform(-100, 100), random.uniform(-100, 100)]
+                particle = Particle(
+                    self.game,
+                    transform.position.copy(),
+                    velocity,
+                    WHITE,
+                    random.uniform(0.3, 0.7)  # Random lifetime between 0.3 and 0.7 seconds
+                )
+                self.game.particles.append(particle)
+        
+        # Split into smaller asteroids if possible
+        if self.size != 'small':
+            self._split()
+            
+    def _split(self):
+        """Split the asteroid into smaller pieces."""
+        if self.size == 'large':
+            new_size = 'medium'
+        elif self.size == 'medium':
+            new_size = 'small'
+        else:
+            return  # Small asteroids don't split
+            
+        transform = self.get_component('transform')
+        if not transform:
+            return
+            
+        # Create two smaller asteroids
+        for _ in range(2):
+            # Calculate new velocity at an angle from the original
+            speed = random.uniform(50, 100)
+            angle = random.uniform(0, 2 * math.pi)
+            new_velocity = pygame.Vector2(
+                math.cos(angle) * speed,
+                math.sin(angle) * speed
+            )
+            
+            # Create new asteroid
+            new_asteroid = Asteroid(
+                self.game,
+                new_size,
+                transform.position.copy(),
+                new_velocity
+            )
+            self.game.asteroids.append(new_asteroid)
+            
     def _create_destruction_particles(self):
         """Create explosion particles when asteroid is destroyed."""
         transform = self.get_component('transform')
@@ -284,4 +342,4 @@ class Asteroid(Entity):
         super().update(dt)
         # Add any asteroid-specific update logic here
         pass 
-        pass 
+        pass

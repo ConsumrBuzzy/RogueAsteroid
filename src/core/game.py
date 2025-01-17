@@ -164,17 +164,28 @@ class Game:
     
     def update(self, dt):
         """Update game state."""
-        # Handle ship respawn timer
-        if self.ship is None and self.lives > 0:
-            self.respawn_timer -= dt
-            if self.respawn_timer <= 0:
-                print("Respawning ship...")  # Debug info
-                self.respawn_ship()
+        self.dt = dt
         
-        # Update all entities
-        for entity in self.entities[:]:  # Use copy to allow removal
-            entity.update(dt)
+        if self.state_manager.current_state == GameState.PLAYING:
+            # Update respawn timer if ship is destroyed
+            if self.ship and self.ship.is_destroyed and self.lives > 0:
+                self.respawn_timer -= dt
+                if self.respawn_timer <= 0:
+                    self.ship.reset()
+                    print("Ship respawned")  # Debug info
             
+            # Update all game objects
+            if self.ship and not self.ship.is_destroyed:
+                self.ship.update(dt)
+            
+            # Update asteroids and remove destroyed ones
+            for asteroid in self.asteroids[:]:  # Use slice copy to allow removal during iteration
+                if asteroid.is_destroyed:
+                    if asteroid in self.asteroids:  # Check again in case it was already removed
+                        self.asteroids.remove(asteroid)
+                else:
+                    asteroid.update(dt)
+        
         # Handle collisions
         self.handle_collisions()
         
@@ -380,6 +391,31 @@ class Game:
                         self.event_manager.emit(CollisionEvent(bullet, asteroid))
                         self.handle_asteroid_hit(asteroid, bullet)
                         break
+    
+    def handle_asteroid_hit(self, asteroid, bullet):
+        """Handle asteroid being hit by bullet."""
+        if asteroid.is_destroyed or bullet.is_destroyed:
+            return
+            
+        # Destroy the bullet
+        bullet.is_destroyed = True
+        self.ship.bullets.remove(bullet)
+        
+        # Award points based on asteroid size
+        points = {
+            'large': 100,
+            'medium': 150,
+            'small': 200
+        }.get(asteroid.size, 0)
+        
+        self.scoring.add_points(points)
+        
+        # Destroy the asteroid (it will handle splitting itself)
+        asteroid.destroy()
+        
+        # Remove if fully destroyed (small asteroids)
+        if asteroid.size == 'small':
+            self.asteroids.remove(asteroid)
     
     def handle_ship_collision(self):
         """Handle ship collision with asteroid."""
