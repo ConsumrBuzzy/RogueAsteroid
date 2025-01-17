@@ -197,13 +197,21 @@ class ParticleComponent(Component):
         self.alpha = 255  # For fade out effect
         self.size = 2.0  # Particle size in pixels
         
-    def update(self, dt: float) -> None:
+    def is_expired(self) -> bool:
+        """Check if the particle has expired.
+        
+        Returns:
+            True if the particle's lifetime has ended, False otherwise.
+        """
+        return self.time_remaining <= 0
+        
+    def update(self, dt: float):
         """Update the particle state."""
         if not self.entity or not self.entity.game:
             return
             
         self.time_remaining -= dt
-        if self.time_remaining <= 0:
+        if self.is_expired():
             # Remove from game entities list if it exists
             if self.entity in self.entity.game.entities:
                 self.entity.game.entities.remove(self.entity)
