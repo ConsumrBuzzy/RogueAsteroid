@@ -381,6 +381,24 @@ class Game:
                         self.handle_asteroid_hit(asteroid, bullet)
                         break
     
+    def handle_ship_collision(self):
+        """Handle ship collision with asteroid."""
+        if not self.ship or self.ship.is_destroyed:
+            return
+            
+        self.lives -= 1
+        print(f"Ship destroyed! Lives remaining: {self.lives}")  # Debug info
+        
+        # Destroy the ship
+        self.ship.destroy()
+        
+        if self.lives > 0:
+            # Reset ship after a delay
+            self.respawn_timer = 2.0  # 2 second delay before respawning
+        else:
+            # Game over
+            self.state_manager.change_state(GameState.GAME_OVER)
+    
     def run(self):
         """Main game loop."""
         print("Starting game loop")  # Debug info

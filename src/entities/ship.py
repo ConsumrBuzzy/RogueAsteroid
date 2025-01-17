@@ -37,6 +37,7 @@ class Ship(Entity):
         print("Initializing ship...")  # Debug info
         self.shoot_timer = 0.0
         self.invulnerable_timer = 0.0
+        self.is_destroyed = False  # Track if ship is destroyed
         
         # Add components
         self._init_components()
@@ -253,6 +254,31 @@ class Ship(Entity):
             # Add to game entities
             self.game.entities.append(particle)
     
+    def destroy(self):
+        """Destroy the ship."""
+        self.is_destroyed = True
+        # Create explosion particles
+        for _ in range(10):
+            velocity = [random.uniform(-100, 100), random.uniform(-100, 100)]
+            particle = Particle(
+                self.game,
+                self.position.copy(),
+                velocity,
+                WHITE,
+                random.uniform(0.5, 1.0)  # Random lifetime
+            )
+            self.game.particles.append(particle)
+
+    def reset(self):
+        """Reset the ship for a new life."""
+        self.is_destroyed = False
+        self.invulnerable_timer = SHIP_INVULNERABLE_TIME
+        transform = self.get_component('transform')
+        if transform:
+            transform.position = np.array([WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2])
+            transform.velocity = np.array([0.0, 0.0])
+            transform.rotation = 0.0
+
     def update(self, dt: float) -> None:
         """Update ship state."""
         super().update(dt)
@@ -304,4 +330,4 @@ class Ship(Entity):
     @property
     def invulnerable(self):
         """Check if ship is currently invulnerable."""
-        return self.invulnerable_timer > 0 
+        return self.invulnerable_timer > 0
