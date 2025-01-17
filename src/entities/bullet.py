@@ -40,17 +40,21 @@ class Bullet(Entity):
         """Initialize bullet components."""
         # Transform component
         transform = self.add_component(TransformComponent, x=position.x, y=position.y)
-        transform.velocity = direction * 1200  # Fixed bullet speed
-        print(f"Bullet velocity: {transform.velocity}")  # Debug info
+        transform.velocity = direction * self.SPEED  # Use class constant for speed
+        
+        # Set rotation based on direction vector
+        angle = pygame.math.Vector2().angle_to(direction)
+        transform.rotation = angle + 90  # +90 because 0 degrees is up
+        print(f"Bullet initialized: pos={transform.position}, vel={transform.velocity}, rot={transform.rotation}")
         
         # Physics component
         physics = self.add_component(PhysicsComponent)
-        physics.max_speed = 1200  # Match bullet speed
+        physics.max_speed = self.SPEED  # Use class constant
         physics.friction = 0.0  # No friction for bullets
         
         # Render component
         render = self.add_component(RenderComponent)
-        render.vertices = [(0, 0), (0, 2)]  # Simple 2-pixel line
+        render.vertices = [(0, 0), (0, 4)]  # 4-pixel long line
         render.color = (255, 255, 255)  # White
         render.visible = True
         
@@ -120,12 +124,9 @@ class Bullet(Entity):
         # Get bullet position
         pos = transform.position
         
-        # Get bullet direction from velocity
-        velocity = transform.velocity
-        if velocity.length() > 0:
-            direction = velocity.normalize()
-        else:
-            direction = pygame.Vector2(0, -1)  # Default upward direction
+        # Calculate direction from rotation
+        angle = math.radians(transform.rotation - 90)  # -90 because 0 degrees is up
+        direction = pygame.Vector2(math.cos(angle), math.sin(angle))
             
         # Calculate end point (bullet length = 4 pixels)
         end_pos = pos + direction * 4
