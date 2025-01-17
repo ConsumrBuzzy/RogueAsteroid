@@ -221,14 +221,22 @@ class Asteroid(Entity):
         transform = self.get_component('transform')
         if transform:
             for _ in range(8):  # Create 8 particles
-                velocity = [random.uniform(-100, 100), random.uniform(-100, 100)]
+                # Create particle with base parameters
                 particle = Particle(
                     self.game,
-                    transform.position.copy(),
-                    velocity,
-                    WHITE,
-                    random.uniform(0.3, 0.7)  # Random lifetime between 0.3 and 0.7 seconds
+                    lifetime=random.uniform(0.3, 0.7),  # Random lifetime between 0.3 and 0.7 seconds
+                    color=WHITE
                 )
+                
+                # Set position and velocity through transform component
+                particle_transform = particle.get_component('transform')
+                if particle_transform:
+                    particle_transform.position = transform.position.copy()
+                    particle_transform.velocity = pygame.Vector2(
+                        random.uniform(-100, 100),
+                        random.uniform(-100, 100)
+                    )
+                
                 self.game.particles.append(particle)
         
         # Split into smaller asteroids if possible

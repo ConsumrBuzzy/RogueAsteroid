@@ -20,7 +20,7 @@ def init_pygame():
             # Initialize required subsystems
             if not pygame.font.get_init():
                 pygame.font.init()
-            if not pygame.display.get_init():
+            if not pygame.display.get_init() :
                 pygame.display.init()
             return True
         return False
