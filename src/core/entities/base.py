@@ -74,6 +74,25 @@ class Entity:
         """
         for component in self._components.values():
             component.update(dt)
+    
+    def collides_with(self, other: 'Entity') -> bool:
+        """Check if this entity collides with another entity.
+        
+        Args:
+            other: The other entity to check collision with.
+            
+        Returns:
+            True if the entities are colliding, False otherwise.
+        """
+        # Get collision components
+        self_collision = self.get_component('collision')
+        other_collision = other.get_component('collision')
+        
+        # Check if both entities have collision components and they're active
+        if self_collision and other_collision and self_collision.active and other_collision.active:
+            return self_collision.check_collision(other_collision)
+            
+        return False
 
 class Component:
     """Base class for all components.
@@ -376,4 +395,4 @@ class CollisionComponent(Component):
             return 0.0
             
         distance = transform.position.distance_to(other_transform.position)
-        return self._radius + other._radius - distance 
+        return self._radius + other._radius - distance

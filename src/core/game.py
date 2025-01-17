@@ -376,8 +376,7 @@ class Game:
         # Check asteroid collisions with ship
         for asteroid in self.asteroids[:]:  # Use slice copy to allow removal during iteration
             if not asteroid.is_destroyed and self.ship.collides_with(asteroid):
-                self.event_manager.emit(CollisionEvent(self.ship, asteroid))
-                if not self.ship.is_invulnerable:
+                if not self.ship.invulnerable:
                     self.handle_ship_collision()
                     break
 
@@ -388,10 +387,9 @@ class Game:
                     continue
                 for asteroid in self.asteroids[:]:  # Use slice copy
                     if not asteroid.is_destroyed and bullet.collides_with(asteroid):
-                        self.event_manager.emit(CollisionEvent(bullet, asteroid))
                         self.handle_asteroid_hit(asteroid, bullet)
                         break
-    
+
     def handle_asteroid_hit(self, asteroid, bullet):
         """Handle asteroid being hit by bullet."""
         if asteroid.is_destroyed or bullet.is_destroyed:
@@ -399,7 +397,8 @@ class Game:
             
         # Destroy the bullet
         bullet.is_destroyed = True
-        self.ship.bullets.remove(bullet)
+        if bullet in self.ship.bullets:  # Check if bullet still exists
+            self.ship.bullets.remove(bullet)
         
         # Award points based on asteroid size
         points = {
@@ -414,7 +413,7 @@ class Game:
         asteroid.destroy()
         
         # Remove if fully destroyed (small asteroids)
-        if asteroid.size == 'small':
+        if asteroid.size == 'small' and asteroid in self.asteroids:
             self.asteroids.remove(asteroid)
     
     def handle_ship_collision(self):

@@ -29,6 +29,7 @@ class Bullet(Entity):
         """
         super().__init__(game)
         self.lifetime = self.LIFETIME  # Time until bullet disappears
+        self.is_destroyed = False  # Track if bullet is destroyed
         # Normalize direction
         self.direction = direction.normalize()
         
@@ -105,9 +106,10 @@ class Bullet(Entity):
         """Update bullet state."""
         super().update(dt)
         
-        # Update lifetime and despawn if expired
+        # Update lifetime and destroy if expired
         self.lifetime -= dt
         if self.lifetime <= 0:
+            self.is_destroyed = True
             # Remove bullet from tracking lists
             if self in self.game.bullets:
                 self.game.bullets.remove(self)
