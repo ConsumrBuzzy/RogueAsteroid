@@ -102,6 +102,43 @@ class Bullet(Entity):
             self.game.entities.append(particle)
             print(f"Created impact particle {i}")  # Debug info
     
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the bullet on the screen.
+        
+        Args:
+            screen: The pygame surface to draw on.
+        """
+        if self.is_destroyed:
+            return
+        
+        transform = self.get_component('transform')
+        render = self.get_component('render')
+        
+        if not transform or not render:
+            return
+        
+        # Get bullet position
+        pos = transform.position
+        
+        # Get bullet direction from velocity
+        velocity = transform.velocity
+        if velocity.length() > 0:
+            direction = velocity.normalize()
+        else:
+            direction = pygame.Vector2(0, -1)  # Default upward direction
+            
+        # Calculate end point (bullet length = 4 pixels)
+        end_pos = pos + direction * 4
+        
+        # Draw bullet line
+        pygame.draw.line(
+            screen,
+            render.color,  # Use render component's color
+            (int(pos.x), int(pos.y)),
+            (int(end_pos.x), int(end_pos.y)),
+            2  # Line width
+        )
+    
     def update(self, dt: float) -> None:
         """Update bullet state."""
         super().update(dt)
