@@ -36,12 +36,15 @@ class StateManager:
         old_state = self.current_state
         print(f"Changing state from {old_state} to {new_state}")  # Debug info
         
-        # Emit state change event
+        # Emit state change event before changing state
         self.game.event_manager.emit(GameStateChangedEvent(old_state, new_state))
         
         # Update previous state, but don't track transitions to/from NEW_HIGH_SCORE
         if old_state != GameState.NEW_HIGH_SCORE and new_state != GameState.NEW_HIGH_SCORE:
             self.previous_state = old_state
+        
+        # Set new state
+        self.current_state = new_state
         
         # Handle state-specific transitions
         if new_state == GameState.PLAYING:
@@ -53,7 +56,6 @@ class StateManager:
         elif new_state == GameState.GAME_OVER:
             print("Game Over!")  # Debug info
         
-        self.current_state = new_state
         self.selected_option = 0
         print(f"State changed to: {self.current_state}")  # Debug info
     

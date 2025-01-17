@@ -5,7 +5,7 @@ import numpy as np
 from src.core.game_state import StateManager, GameState
 from src.core.scoring import ScoringSystem
 from src.core.events.event_manager import EventManager
-from src.core.events.event_types import GameStateChangedEvent, ScoreChangedEvent
+from src.core.events.event_types import GameStateChangedEvent, ScoreChangedEvent, CollisionEvent
 from src.entities.ship import Ship
 from src.entities.asteroid import Asteroid
 from src.core.constants import (
@@ -250,7 +250,7 @@ class Game:
         """Handle collisions between game entities."""
         if not self.ship:
             return
-            
+        
         # Check ship collision with asteroids
         if self.ship and not self.ship.invulnerable:
             ship_collision = self.ship.get_component('collision')
@@ -357,6 +357,30 @@ class Game:
                         transform1.rotation_speed = spin1
                         transform2.rotation_speed = spin2
     
+    def check_collisions(self):
+        """Check for collisions between game objects."""
+        if not self.ship or self.ship.is_destroyed:
+            return
+
+        # Check asteroid collisions with ship
+        for asteroid in self.asteroids[:]:  # Use slice copy to allow removal during iteration
+            if not asteroid.is_destroyed and self.ship.collides_with(asteroid):
+                self.event_manager.emit(CollisionEvent(self.ship, asteroid))
+                if not self.ship.is_invulnerable:
+                    self.handle_ship_collision()
+                    break
+
+        # Check bullet collisions with asteroids
+        if self.ship and self.ship.bullets:
+            for bullet in self.ship.bullets[:]:  # Use slice copy
+                if bullet.is_destroyed:
+                    continue
+                for asteroid in self.asteroids[:]:  # Use slice copy
+                    if not asteroid.is_destroyed and bullet.collides_with(asteroid):
+                        self.event_manager.emit(CollisionEvent(bullet, asteroid))
+                        self.handle_asteroid_hit(asteroid, bullet)
+                        break
+    
     def run(self):
         """Main game loop."""
         print("Starting game loop")  # Debug info
@@ -384,6 +408,7 @@ class Game:
             # Update game state
             if self.state_manager.current_state == GameState.PLAYING:
                 self.update(self.dt)
+                self.check_collisions()
             
             # Draw
             self.state_manager.draw(self.screen)
