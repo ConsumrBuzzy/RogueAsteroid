@@ -61,22 +61,22 @@ class Asteroid(Entity):
             ship_pos.y - spawn_y
         ).normalize()
         
-        # Generate velocity angle that's not toward the ship
-        # Calculate forbidden angle range (toward ship ±45 degrees)
-        ship_angle = math.atan2(to_ship.y, to_ship.x)
-        min_allowed = ship_angle + math.pi/4  # +45 degrees
-        max_allowed = ship_angle + 7*math.pi/4  # +315 degrees
-        
-        # Choose a random angle outside the forbidden range
-        velocity_angle = random.uniform(min_allowed, max_allowed)
-        speed = random.uniform(50, 100)
+        # Generate velocity that's not directly toward or away from ship
+        velocity_angle = random.uniform(0, 2 * math.pi)  # Any direction
+        min_speed = ASTEROID_SIZES['large']['speed_range'][0]
+        max_speed = ASTEROID_SIZES['large']['speed_range'][1]
+        speed = random.uniform(min_speed, max_speed)
         
         velocity = pygame.Vector2(
             math.cos(velocity_angle) * speed,
             math.sin(velocity_angle) * speed
         )
         
-        print(f"Spawning asteroid at {position} with velocity {velocity}")  # Debug info
+        # Ensure minimum velocity magnitude
+        if velocity.length() < min_speed:
+            velocity = velocity.normalize() * min_speed
+            
+        print(f"Spawning asteroid at {position} with velocity {velocity} (speed={velocity.length():.2f})")
         return cls(game, 'large', position, velocity)
     
     def _init_components(self, position: pygame.Vector2, velocity: pygame.Vector2):

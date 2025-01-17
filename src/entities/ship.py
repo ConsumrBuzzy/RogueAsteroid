@@ -91,43 +91,32 @@ class Ship(Entity):
     
     def update_controls(self) -> None:
         """Update control bindings based on current control scheme."""
-        if not self.input_component:
+        input_component = self.get_component('input')
+        if not input_component:
             return
             
         # Clear existing bindings
-        self.input_component.clear_bindings()
+        input_component.clear_bindings()
         
         # Get current control scheme
         controls = self.game.settings.get('controls', 'arrows')
         
-        # Set up keys based on control scheme
         if controls == 'arrows':
-            # Regular arrow keys and numpad
-            thrust_keys = [pygame.K_UP, pygame.K_KP8]
-            reverse_keys = [pygame.K_DOWN, pygame.K_KP2]
-            left_keys = [pygame.K_LEFT, pygame.K_KP4]
-            right_keys = [pygame.K_RIGHT, pygame.K_KP6]
-        else:  # wasd
-            thrust_keys = [pygame.K_w]
-            reverse_keys = [pygame.K_s]
-            left_keys = [pygame.K_a]
-            right_keys = [pygame.K_d]
-        
-        # Bind controls - each key in the key groups
-        for thrust_key in thrust_keys:
-            self.input_component.bind_key(thrust_key, self._apply_thrust, True)
-        for reverse_key in reverse_keys:
-            self.input_component.bind_key(reverse_key, self._apply_reverse_thrust, True)
-        for left_key in left_keys:
-            self.input_component.bind_key(left_key, self._rotate_left, True)
-        for right_key in right_keys:
-            self.input_component.bind_key(right_key, self._rotate_right, True)
+            # Arrow key controls
+            input_component.bind_key(pygame.K_UP, self._apply_thrust, True)
+            input_component.bind_key(pygame.K_DOWN, self._apply_reverse_thrust, True)
+            input_component.bind_key(pygame.K_LEFT, self._rotate_left, True)
+            input_component.bind_key(pygame.K_RIGHT, self._rotate_right, True)
+            input_component.bind_key(pygame.K_SPACE, self._shoot)
+        else:  # WASD controls
+            # WASD controls
+            input_component.bind_key(pygame.K_w, self._apply_thrust, True)
+            input_component.bind_key(pygame.K_s, self._apply_reverse_thrust, True)
+            input_component.bind_key(pygame.K_a, self._rotate_left, True)
+            input_component.bind_key(pygame.K_d, self._rotate_right, True)
+            input_component.bind_key(pygame.K_SPACE, self._shoot)
             
-        # Bind shoot to both regular space and numpad enter with continuous=True
-        self.input_component.bind_key(pygame.K_SPACE, self._shoot, True)
-        self.input_component.bind_key(pygame.K_KP_ENTER, self._shoot, True)
-        
-        print(f"Controls updated to scheme: {controls}")  # Debug info
+        print(f"Updated ship controls to {controls} scheme")  # Debug info
     
     def _apply_thrust(self) -> None:
         """Apply forward thrust force."""

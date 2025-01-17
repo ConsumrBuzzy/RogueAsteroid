@@ -492,12 +492,19 @@ class Game:
 
     def _handle_playing_input(self, event):
         """Handle input in the playing state."""
-        if event.key in (pygame.K_ESCAPE, pygame.K_p):
-            self.state_manager.change_state(GameState.PAUSED)
-        elif event.key == pygame.K_o:
-            self.state_manager.change_state(GameState.OPTIONS)
-        elif event.key == pygame.K_h:
-            self.state_manager.change_state(GameState.HIGH_SCORE)
+        if event.type == pygame.KEYDOWN:
+            if event.key in (pygame.K_ESCAPE, pygame.K_p):
+                self.state_manager.change_state(GameState.PAUSED)
+            elif event.key == pygame.K_o:
+                self.state_manager.change_state(GameState.OPTIONS)
+            elif event.key == pygame.K_h:
+                self.state_manager.change_state(GameState.HIGH_SCORE)
+            elif event.key == pygame.K_c:  # 'C' key to toggle controls
+                # Toggle between 'arrows' and 'wasd'
+                self.settings['controls'] = 'wasd' if self.settings['controls'] == 'arrows' else 'arrows'
+                if self.ship:
+                    self.ship.update_controls()  # Update ship controls
+                print(f"Switched to {self.settings['controls']} controls")  # Debug info
 
     def draw(self):
         """Draw the game state."""
