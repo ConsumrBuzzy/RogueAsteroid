@@ -1,8 +1,10 @@
+"""Base event system classes."""
 from dataclasses import dataclass
 from typing import Any
 from enum import Enum, auto
 
 class EventType(Enum):
+    """Types of events that can occur in the game."""
     ENTITY_CREATED = auto()
     ENTITY_DESTROYED = auto()
     COLLISION = auto()

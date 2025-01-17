@@ -1,3 +1,4 @@
+"""Specific event type implementations."""
 from dataclasses import dataclass
 from .event import Event, EventType
 from typing import Any
