@@ -4,6 +4,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Callable, Optional
 from src.core.entities.base import Component, Entity, TransformComponent
 from src.core.constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from src.core.utils import to_vector2, ensure_minimum_velocity
 
 class ScreenWrapComponent(Component):
     """Component for wrapping entities around screen edges."""
@@ -88,6 +89,7 @@ class PhysicsComponent(Component):
         self.max_speed = max_speed
         self.force = np.array([0.0, 0.0])
         self.friction = 0.0  # 0 to 1, applied each frame
+        self.min_speed = 50.0  # Minimum speed to maintain
     
     def apply_force(self, force: np.ndarray) -> None:
         """Apply a force to the entity."""
@@ -102,17 +104,22 @@ class PhysicsComponent(Component):
         # Apply forces
         if self.mass > 0:
             acceleration = self.force / self.mass
-            transform.velocity += acceleration * dt
+            # Convert numpy array to pygame Vector2 for velocity update
+            accel_vec = to_vector2(acceleration)
+            transform.velocity += accel_vec * dt
         
         # Apply friction
         if self.friction > 0:
             transform.velocity *= (1.0 - self.friction)
         
+        # Ensure minimum speed is maintained
+        transform.velocity = ensure_minimum_velocity(transform.velocity, self.min_speed)
+        
         # Limit speed
         if self.max_speed is not None:
-            speed = np.linalg.norm(transform.velocity)
-            if speed > self.max_speed:
-                transform.velocity = (transform.velocity / speed) * self.max_speed
+            current_speed = transform.velocity.length()
+            if current_speed > self.max_speed:
+                transform.velocity = transform.velocity.normalize() * self.max_speed
         
         # Reset forces
         self.force = np.array([0.0, 0.0])

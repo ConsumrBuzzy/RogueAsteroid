@@ -9,6 +9,7 @@ import pygame
 import math
 from pygame import Vector2
 import numpy as np
+from src.core.utils import to_vector2, ensure_minimum_velocity
 
 T = TypeVar('T', bound='Component')
 
@@ -137,10 +138,11 @@ class TransformComponent(Component):
             y: Initial y position.
         """
         super().__init__(entity)
-        self._position = Vector2(float(x), float(y))
+        self._position = to_vector2((x, y))
         self._velocity = Vector2(0, 0)
         self._rotation = 0.0  # Rotation in degrees
         self._rotation_speed = 0.0  # Rotation speed in degrees per second
+        self._min_speed = 50.0  # Minimum speed when moving
     
     @property
     def position(self) -> Vector2:
@@ -150,10 +152,7 @@ class TransformComponent(Component):
     @position.setter
     def position(self, value) -> None:
         """Set the current position."""
-        if isinstance(value, (list, tuple, np.ndarray)):
-            self._position = Vector2(float(value[0]), float(value[1]))
-        else:
-            self._position = Vector2(value)
+        self._position = to_vector2(value)
     
     @property
     def velocity(self) -> Vector2:
@@ -163,19 +162,7 @@ class TransformComponent(Component):
     @velocity.setter
     def velocity(self, value) -> None:
         """Set the current velocity."""
-        if isinstance(value, (list, tuple, np.ndarray)):
-            vel = Vector2(float(value[0]), float(value[1]))
-        else:
-            vel = Vector2(value)
-            
-        # Ensure velocity is never too close to zero
-        if vel.length() < 0.1:  # If practically zero
-            if vel.length() == 0:  # If exactly zero
-                vel = Vector2(0.1, 0)  # Give it a small default velocity
-            else:
-                vel = vel.normalize() * 0.1  # Scale up to minimum velocity
-                
-        self._velocity = vel
+        self._velocity = ensure_minimum_velocity(value, self._min_speed)
     
     @property
     def rotation(self) -> float:
@@ -203,7 +190,11 @@ class TransformComponent(Component):
         Args:
             dt: Delta time since last update in seconds.
         """
+        # Ensure velocity is properly converted and maintains minimum speed
+        self._velocity = ensure_minimum_velocity(self._velocity, self._min_speed)
         self._position += self._velocity * dt
+        
+        # Update rotation
         self._rotation = (self._rotation + self._rotation_speed * dt) % 360.0
 
 class RenderComponent(Component):

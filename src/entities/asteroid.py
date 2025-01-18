@@ -12,6 +12,7 @@ from src.core.constants import (
     ASTEROID_SIZES
 )
 from src.entities.particle import Particle
+from src.core.utils import to_vector2, angle_to_vector, vector_to_angle
 
 class Asteroid(Entity):
     """Asteroid entity that can be destroyed by bullets and split into smaller pieces."""
@@ -151,7 +152,7 @@ class Asteroid(Entity):
         if transform.velocity.length() < 0.1:
             orig_angle = random.uniform(0, 360)
         else:
-            orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
+            orig_angle = vector_to_angle(transform.velocity)
             
         # Set speeds based on size
         if new_size == 'small':
@@ -167,22 +168,15 @@ class Asteroid(Entity):
         for angle_offset in split_angles:
             # Calculate new direction
             new_angle = orig_angle + angle_offset
-            angle_rad = math.radians(new_angle)
             
             # Create velocity vector with fixed speed and direction
-            new_velocity = pygame.Vector2(
-                math.cos(angle_rad) * speed,
-                math.sin(angle_rad) * speed
-            )
+            new_velocity = angle_to_vector(new_angle) * speed
             
             # Offset spawn positions perpendicular to velocity
-            perp_angle = math.radians(new_angle + 90)
+            perp_angle = new_angle + 90
             offset = 25 if new_size == 'medium' else 15
             spawn_pos = pygame.Vector2(transform.position)
-            spawn_pos += pygame.Vector2(
-                math.cos(perp_angle) * offset,
-                math.sin(perp_angle) * offset
-            )
+            spawn_pos += angle_to_vector(perp_angle) * offset
             
             # Create new asteroid
             piece = Asteroid(self.game, new_size, spawn_pos, new_velocity)
