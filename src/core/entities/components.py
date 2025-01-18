@@ -203,7 +203,8 @@ class ParticleComponent(Component):
         self.color = color
         self.alpha = 255
         self.size = 2.0
-        print(f"Created particle with lifetime={self.lifetime:.2f}s")
+        self._marked_for_removal = False
+        print(f"Created particle with lifetime={self.lifetime:.2f}s, id={id(self)}")
         
     def is_expired(self) -> bool:
         """Check if the particle has expired.
@@ -211,20 +212,23 @@ class ParticleComponent(Component):
         Returns:
             True if the particle's lifetime has ended, False otherwise.
         """
-        return self.time_remaining <= 0
+        return self.time_remaining <= 0 or self._marked_for_removal
         
     def update(self, dt: float):
         """Update the particle state."""
-        if not self.entity or not self.entity.game:
+        if not self.entity or not self.entity.game or self._marked_for_removal:
             return
             
         # Update time remaining
+        old_time = self.time_remaining
         self.time_remaining = max(0, self.time_remaining - dt)
         
         # Handle expiration
-        if self.is_expired():
+        if self.is_expired() and not self._marked_for_removal:
+            self._marked_for_removal = True
             if self.entity in self.entity.game.entities:
-                print(f"Removing expired particle at {self.time_remaining:.2f}s")
+                print(f"Marking particle {id(self)} for removal at {self.time_remaining:.3f}s "
+                      f"(was {old_time:.3f}s, dt={dt:.3f}s)")
                 self.entity.game.entities.remove(self.entity)
             return
 
@@ -233,11 +237,18 @@ class ParticleComponent(Component):
         self.alpha = max(0, min(255, int(fade_factor * 255)))
         
         # Gradually reduce size
-        self.size = max(1.0, self.size * (0.95 ** (dt * 60)))  # Shrink over time
+        self.size = max(0.5, self.size * (0.95 ** (dt * 60)))  # Shrink over time
         
+        # Force removal if too small or transparent
+        if self.size < 0.5 or self.alpha < 5:
+            self._marked_for_removal = True
+            if self.entity in self.entity.game.entities:
+                print(f"Force removing particle {id(self)} due to size={self.size:.1f} or alpha={self.alpha}")
+                self.entity.game.entities.remove(self.entity)
+
     def draw(self, screen: pygame.Surface):
         """Draw the particle."""
-        if not self.entity:
+        if not self.entity or self._marked_for_removal:
             return
             
         transform = self.entity.get_component('transform')
@@ -245,12 +256,9 @@ class ParticleComponent(Component):
             return
             
         # Get position as integers for drawing
-        if hasattr(transform.position, 'x'):
-            pos_x = int(transform.position.x)
-            pos_y = int(transform.position.y)
-        else:
-            pos_x = int(transform.position[0])
-            pos_y = int(transform.position[1])
+        pos = to_vector2(transform.position)
+        pos_x = int(pos.x)
+        pos_y = int(pos.y)
             
         # Create a surface with per-pixel alpha
         size_int = max(1, int(self.size * 2))  # Ensure minimum size of 1
@@ -266,4 +274,4 @@ class ParticleComponent(Component):
         )
         
         # Draw to screen at integer positions
-        screen.blit(particle_surface, (pos_x - int(self.size), pos_y - int(self.size))) 
+        screen.blit(particle_surface, (pos_x - int(self.size), pos_y - int(self.size)))
