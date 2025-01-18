@@ -144,20 +144,21 @@ class Asteroid(Entity):
         # Determine new size
         new_size = 'medium' if self.size == 'large' else 'small'
         
-        # Get speed range for new size
+        # Get speed range for new size and ensure higher minimum speeds
         min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
+        min_speed = max(min_speed, 100.0)  # Ensure minimum speed is at least 100
         
         # Create split pieces with near-opposite velocities
         pieces = []
         # For small pieces, use exact opposite directions with slight variation
         if new_size == 'small':
             base_angles = [0, 180]  # Opposite directions
-            speed_multiplier = 1.5  # 50% faster for small pieces
+            speed_multiplier = 1.8  # 80% faster for small pieces
             angle_variation = 15  # Less variation for small pieces
             offset_distance = 15  # Smaller offset for small pieces
         else:
             base_angles = [-120, 120]  # Wide but not exactly opposite for medium pieces
-            speed_multiplier = 1.2  # 20% faster for medium pieces
+            speed_multiplier = 1.4  # 40% faster for medium pieces
             angle_variation = 20  # More variation for medium pieces
             offset_distance = 25  # Larger offset for medium pieces
         
@@ -175,16 +176,25 @@ class Asteroid(Entity):
             
             # Calculate new velocity with size-based speed scaling and ensure minimum speed
             # Start with a base speed that's at least the minimum for this size
-            base_speed = max(orig_speed, min_speed * 1.2)  # Ensure at least 20% above minimum
+            base_speed = max(orig_speed, min_speed * 1.5)  # Ensure at least 50% above minimum
             new_speed = base_speed * speed_multiplier
             # Cap at maximum speed for size
             new_speed = min(new_speed, max_speed)
+            
+            # Ensure new_speed is never too small
+            new_speed = max(new_speed, 100.0)  # Absolute minimum speed of 100
             
             # Create velocity vector at the split angle
             new_velocity = pygame.Vector2(
                 math.cos(angle_rad) * new_speed,
                 math.sin(angle_rad) * new_speed
             )
+            
+            # Ensure velocity components are never too close to zero
+            if abs(new_velocity.x) < 0.1:
+                new_velocity.x = 0.1 if new_velocity.x >= 0 else -0.1
+            if abs(new_velocity.y) < 0.1:
+                new_velocity.y = 0.1 if new_velocity.y >= 0 else -0.1
             
             # Offset the spawn position in the direction of travel
             spawn_pos = pygame.Vector2(transform.position)
