@@ -164,9 +164,18 @@ class TransformComponent(Component):
     def velocity(self, value) -> None:
         """Set the current velocity."""
         if isinstance(value, (list, tuple, np.ndarray)):
-            self._velocity = Vector2(float(value[0]), float(value[1]))
+            vel = Vector2(float(value[0]), float(value[1]))
         else:
-            self._velocity = Vector2(value)
+            vel = Vector2(value)
+            
+        # Ensure velocity is never too close to zero
+        if vel.length() < 0.1:  # If practically zero
+            if vel.length() == 0:  # If exactly zero
+                vel = Vector2(0.1, 0)  # Give it a small default velocity
+            else:
+                vel = vel.normalize() * 0.1  # Scale up to minimum velocity
+                
+        self._velocity = vel
     
     @property
     def rotation(self) -> float:
