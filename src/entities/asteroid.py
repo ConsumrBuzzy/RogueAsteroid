@@ -193,14 +193,19 @@ class Asteroid(Entity):
             if i == 1:  # Second piece
                 piece_transform = piece.get_component('transform')
                 if piece_transform:
-                    # Store initial values to apply after delay
-                    piece._initial_pos = spawn_pos
-                    piece._initial_vel = new_velocity
-                    # Start off-screen temporarily
-                    piece_transform.position = pygame.Vector2(-100, -100)
-                    piece_transform.velocity = pygame.Vector2(0, 0)
-                    # Schedule position/velocity update
-                    self.game.schedule_event(0.05, lambda: self._activate_delayed_piece(piece))
+                    try:
+                        # Store initial values to apply after delay
+                        piece._initial_pos = spawn_pos
+                        piece._initial_vel = new_velocity
+                        # Start off-screen temporarily
+                        piece_transform.position = pygame.Vector2(-100, -100)
+                        piece_transform.velocity = pygame.Vector2(0, 0)
+                        # Schedule position/velocity update
+                        self.game.schedule_event(0.05, lambda: self._activate_delayed_piece(piece))
+                    except AttributeError:
+                        print("Warning: Game does not support scheduling, spawning piece immediately")
+                        piece_transform.position = spawn_pos
+                        piece_transform.velocity = new_velocity
             
             # Verify piece velocity
             piece_transform = piece.get_component('transform')

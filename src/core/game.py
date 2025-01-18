@@ -68,6 +68,9 @@ class Game:
         print("Game initialization complete")
         print(f"Game initialized with settings: {self.settings}")
         
+        # Initialize scheduled events
+        self._scheduled_events = []  # List of (time_remaining, callback) tuples
+        
         # Now set initial state
         self.state_manager.change_state(GameState.MAIN_MENU)
         print(f"Initial state set to: {self.state_manager.current_state}")
@@ -169,6 +172,9 @@ class Game:
     def update(self, dt):
         """Update game state."""
         self.dt = dt
+        
+        # Update scheduled events first
+        self._update_scheduled_events(dt)
         
         if self.state_manager.current_state == GameState.PLAYING:
             # Update respawn timer if ship is destroyed
@@ -453,6 +459,36 @@ class Game:
         else:
             # Game over
             self.state_manager.change_state(GameState.GAME_OVER)
+    
+    def schedule_event(self, delay: float, callback) -> None:
+        """Schedule an event to occur after a delay.
+        
+        Args:
+            delay: Time in seconds to wait before executing callback
+            callback: Function to call after delay
+        """
+        self._scheduled_events.append((delay, callback))
+        print(f"Scheduled event with delay={delay:.3f}s")
+        
+    def _update_scheduled_events(self, dt: float) -> None:
+        """Update scheduled events, executing any that are due.
+        
+        Args:
+            dt: Time elapsed since last update in seconds
+        """
+        remaining_events = []
+        for time_remaining, callback in self._scheduled_events:
+            new_time = time_remaining - dt
+            if new_time <= 0:
+                # Execute the callback
+                try:
+                    callback()
+                    print(f"Executed scheduled event after {time_remaining:.3f}s delay")
+                except Exception as e:
+                    print(f"Error in scheduled event: {e}")
+            else:
+                remaining_events.append((new_time, callback))
+        self._scheduled_events = remaining_events
     
     def run(self):
         """Main game loop."""
