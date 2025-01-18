@@ -149,20 +149,25 @@ class Asteroid(Entity):
         min_speed, max_speed = ASTEROID_SIZES[new_size]['speed_range']
         
         # Get original velocity direction, or random if stationary
+        orig_speed = transform.velocity.length()
+        print(f"Original asteroid velocity: {transform.velocity}, speed: {orig_speed}")
+        
         if transform.velocity.length() < 0.1:
             orig_angle = random.uniform(0, 360)
+            print(f"Using random angle {orig_angle} due to low speed")
         else:
             orig_angle = vector_to_angle(transform.velocity)
+            print(f"Using velocity-based angle {orig_angle}")
             
         # Set speeds based on size
         if new_size == 'small':
-            speed = 200.0  # Fixed high speed for small asteroids
-            # Split at 45 degree angles from original direction
-            split_angles = [45, -45]  
+            speed = 250.0  # Increased speed for small asteroids
+            # Split at wider angles for better separation
+            split_angles = [60, -60]  
         else:
-            speed = 150.0  # Fixed medium speed for medium asteroids
-            # Split at 30 degree angles from original direction
-            split_angles = [30, -30]
+            speed = 200.0  # Increased speed for medium asteroids
+            # Split at wider angles for better separation
+            split_angles = [45, -45]
             
         pieces = []
         for angle_offset in split_angles:
@@ -172,17 +177,29 @@ class Asteroid(Entity):
             # Create velocity vector with fixed speed and direction
             new_velocity = angle_to_vector(new_angle) * speed
             
+            # Double check velocity is not zero
+            if new_velocity.length() < 0.1:
+                print(f"WARNING: Generated zero velocity! angle={new_angle}, speed={speed}")
+                # Force a minimum velocity
+                new_velocity = angle_to_vector(new_angle) * 200.0
+            
             # Offset spawn positions perpendicular to velocity
             perp_angle = new_angle + 90
-            offset = 25 if new_size == 'medium' else 15
+            offset = 30 if new_size == 'medium' else 20  # Increased offset for better separation
             spawn_pos = pygame.Vector2(transform.position)
             spawn_pos += angle_to_vector(perp_angle) * offset
             
-            # Create new asteroid
+            # Create new asteroid with guaranteed velocity
             piece = Asteroid(self.game, new_size, spawn_pos, new_velocity)
-            pieces.append(piece)
             
-            print(f"Created split piece: size={new_size}, angle={new_angle:.1f}°, speed={speed:.1f}, pos={spawn_pos}")
+            # Verify piece velocity
+            piece_transform = piece.get_component('transform')
+            if piece_transform:
+                print(f"Created split piece: size={new_size}, angle={new_angle:.1f}°, "
+                      f"speed={piece_transform.velocity.length():.1f}, "
+                      f"velocity={piece_transform.velocity}, pos={spawn_pos}")
+            
+            pieces.append(piece)
         
         return pieces
     

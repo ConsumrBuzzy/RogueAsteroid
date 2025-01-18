@@ -198,11 +198,12 @@ class ParticleComponent(Component):
             color: RGB color tuple for the particle
         """
         super().__init__(entity)
-        self.lifetime = lifetime
-        self.time_remaining = lifetime  # Separate tracker for remaining time
+        self.lifetime = max(0.1, min(lifetime, 2.0))  # Clamp between 0.1 and 2.0 seconds
+        self.time_remaining = self.lifetime
         self.color = color
-        self.alpha = 255  # For fade out effect
-        self.size = 2.0  # Particle size in pixels
+        self.alpha = 255
+        self.size = 2.0
+        print(f"Created particle with lifetime={self.lifetime:.2f}s")
         
     def is_expired(self) -> bool:
         """Check if the particle has expired.
@@ -217,16 +218,23 @@ class ParticleComponent(Component):
         if not self.entity or not self.entity.game:
             return
             
-        self.time_remaining -= dt
+        # Update time remaining
+        self.time_remaining = max(0, self.time_remaining - dt)
+        
+        # Handle expiration
         if self.is_expired():
-            # Remove from game entities list if it exists
             if self.entity in self.entity.game.entities:
+                print(f"Removing expired particle at {self.time_remaining:.2f}s")
                 self.entity.game.entities.remove(self.entity)
             return
 
-        # Update alpha for fade out (ensure it stays between 0 and 255)
-        self.alpha = max(0, min(255, int((self.time_remaining / self.lifetime) * 255)))
-
+        # Update alpha for fade out
+        fade_factor = self.time_remaining / self.lifetime
+        self.alpha = max(0, min(255, int(fade_factor * 255)))
+        
+        # Gradually reduce size
+        self.size = max(1.0, self.size * (0.95 ** (dt * 60)))  # Shrink over time
+        
     def draw(self, screen: pygame.Surface):
         """Draw the particle."""
         if not self.entity:
