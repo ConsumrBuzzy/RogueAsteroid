@@ -228,39 +228,9 @@ class Asteroid(Entity):
         
         # Split into smaller asteroids if possible
         if self.size != 'small':
-            self._split()
-            
-    def _split(self):
-        """Split the asteroid into smaller pieces."""
-        if self.size == 'large':
-            new_size = 'medium'
-        elif self.size == 'medium':
-            new_size = 'small'
-        else:
-            return  # Small asteroids don't split
-            
-        transform = self.get_component('transform')
-        if not transform:
-            return
-            
-        # Create two smaller asteroids
-        for _ in range(2):
-            # Calculate new velocity at an angle from the original
-            speed = random.uniform(50, 100)
-            angle = random.uniform(0, 2 * math.pi)
-            new_velocity = pygame.Vector2(
-                math.cos(angle) * speed,
-                math.sin(angle) * speed
-            )
-            
-            # Create new asteroid
-            new_asteroid = Asteroid(
-                self.game,
-                new_size,
-                transform.position.copy(),
-                new_velocity
-            )
-            self.game.asteroids.append(new_asteroid)
+            new_pieces = self.split()
+            for piece in new_pieces:
+                self.game.asteroids.append(piece)
             
     def _create_destruction_particles(self):
         """Create explosion particles when asteroid is destroyed."""
