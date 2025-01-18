@@ -161,18 +161,22 @@ class Asteroid(Entity):
             angle_variation = 20  # More variation for medium pieces
             offset_distance = 25  # Larger offset for medium pieces
         
-        # Get original velocity angle
-        orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
-        orig_speed = transform.velocity.length()
+        # Get original velocity angle and ensure minimum speed
+        orig_speed = max(transform.velocity.length(), min_speed)  # Ensure minimum speed
+        if transform.velocity.length() < 0.1:  # If practically stationary
+            orig_angle = random.uniform(0, 360)  # Choose random base direction
+        else:
+            orig_angle = math.degrees(math.atan2(transform.velocity.y, transform.velocity.x))
         
         for base_angle in base_angles:
             # Add controlled randomness to the split angle
             angle = orig_angle + base_angle + random.uniform(-angle_variation, angle_variation)
             angle_rad = math.radians(angle)
             
-            # Calculate new velocity with size-based speed scaling
-            # Use the larger of: minimum speed for size, or original speed * multiplier
-            new_speed = max(min_speed, orig_speed * speed_multiplier)
+            # Calculate new velocity with size-based speed scaling and ensure minimum speed
+            # Start with a base speed that's at least the minimum for this size
+            base_speed = max(orig_speed, min_speed * 1.2)  # Ensure at least 20% above minimum
+            new_speed = base_speed * speed_multiplier
             # Cap at maximum speed for size
             new_speed = min(new_speed, max_speed)
             
