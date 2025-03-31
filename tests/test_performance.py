@@ -12,6 +12,8 @@ from src.entities.ship import Ship
 import pygame
 import random
 
+random.seed(42)
+
 @dataclass
 class BenchmarkResult:
     """Results from a benchmark run."""
